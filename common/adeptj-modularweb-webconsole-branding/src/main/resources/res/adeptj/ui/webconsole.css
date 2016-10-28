@@ -1,0 +1,4 @@
+@import url("../../../res/ui/webconsole.css");
+
+/* language selection element */
+#langSelect { display: none; position: absolute;   top: 5px; right: 5px }
