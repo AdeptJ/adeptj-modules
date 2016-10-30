@@ -22,10 +22,10 @@
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modularweb-parent</artifactId>
 		<version>1.0.0.RELEASE</version>
-		<relativePath>../adeptj-modularweb-parent/pom.xml</relativePath>
+		<relativePath>../../parent/adeptj-modularweb-parent/pom.xml</relativePath>
 	</parent>
 	<packaging>bundle</packaging>
-	<artifactId>adeptj-modularweb-thymeleaf</artifactId>
+	<artifactId>adeptj-modularweb-viewengine-thymeleaf</artifactId>
 	<name>AdeptJ Modular Web :: Thymeleaf Template Engine Provider Bundle</name>
 	<description>AdeptJ Modular Web :: Thymeleaf Template Engine Provider Bundle</description>
 	

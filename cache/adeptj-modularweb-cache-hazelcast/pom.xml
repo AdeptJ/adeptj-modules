@@ -22,9 +22,9 @@
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modularweb-parent</artifactId>
 		<version>1.0.0.RELEASE</version>
-		<relativePath>../adeptj-modularweb-parent/pom.xml</relativePath>
+		<relativePath>../../parent/adeptj-modularweb-parent/pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modularweb-cache</artifactId>
+	<artifactId>adeptj-modularweb-cache-hazelcast</artifactId>
 	<packaging>bundle</packaging>
 	<name>AdeptJ Modular Web :: Cache Provider Bundle</name>
 	<description>AdeptJ Modular Web :: Cache Provider Bundle</description>

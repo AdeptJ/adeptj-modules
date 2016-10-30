@@ -22,9 +22,9 @@
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modularweb-parent</artifactId>
 		<version>1.0.0.RELEASE</version>
-		<relativePath>../adeptj-modularweb-parent/pom.xml</relativePath>
+		<relativePath>../../parent/adeptj-modularweb-parent/pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modularweb-persistence</artifactId>
+	<artifactId>adeptj-modularweb-data-cassandra</artifactId>
 	<packaging>bundle</packaging>
 	<name>AdeptJ Modular Web :: Persistence Provider Bundle</name>
 	<description>AdeptJ Modular Web :: Persistence Provider(Ployglot) Bundle</description>

@@ -22,10 +22,10 @@
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modularweb-parent</artifactId>
 		<version>1.0.0.RELEASE</version>
-		<relativePath>../adeptj-modularweb-parent/pom.xml</relativePath>
+		<relativePath>../../parent/adeptj-modularweb-parent/pom.xml</relativePath>
 	</parent>
 	<packaging>bundle</packaging>
-	<artifactId>adeptj-modularweb-viewengine</artifactId>
+	<artifactId>adeptj-modularweb-viewengine-core</artifactId>
 	<name>AdeptJ Modular Web :: ViewEngine Provider Bundle</name>
 	<description>AdeptJ Modular Web :: ViewEngine Provider Bundle</description>
 	
