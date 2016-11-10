@@ -2,3 +2,10 @@
 
 /* language selection element */
 #langSelect { display: none; position: absolute;   top: 5px; right: 5px }
+
+/* logout element
+.logoutButton {
+    float: right;
+    text-decoration: none;
+    visibility:hidden;
+}*/

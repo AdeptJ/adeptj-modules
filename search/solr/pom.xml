@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  
 	Copyright (c) 2016 AdeptJ
-	Copyright (c) 2016 Rakesh Kumar <irakeshk@outlook.com>
 	
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -20,14 +19,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.adeptj</groupId>
-	    <artifactId>adeptj-modularweb-parent</artifactId>
-		<version>1.0.0.RELEASE</version>
-		<relativePath>../../parent/adeptj-modularweb-parent/pom.xml</relativePath>
+	    <artifactId>adeptj-modules</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modularweb-search-solr</artifactId>
+	<artifactId>adeptj-modules-search-solr</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modular Web :: Search Provider Bundle</name>
-	<description>AdeptJ Modular Web :: Search Provider Bundle</description>
+	<name>AdeptJ Modules :: Solr Search Provider Bundle</name>
+	<description>AdeptJ Modules :: Solr Search Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

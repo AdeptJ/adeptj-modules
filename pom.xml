@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  
 	Copyright (c) 2016 AdeptJ
-	Copyright (c) 2016 Rakesh Kumar <irakeshk@outlook.com>
 	
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -18,12 +17,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.adeptj</groupId>
-	<artifactId>adeptj-modularweb-parent</artifactId>
-	<version>1.0.0.RELEASE</version>
+	<parent>
+		<groupId>com.adeptj</groupId>
+		<artifactId>adeptj-parent</artifactId>
+		<version>1.0.0.Final</version>
+	</parent>
+	<artifactId>adeptj-modules</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>AdeptJ Modular Web :: Parent</name>
-	<description>Reactor for AdeptJ Modular Web</description>
+	<name>AdeptJ Modules :: Parent</name>
+	<description>Parent for AdeptJ Modules Project</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,83 +43,117 @@
 	</properties>
 
 	<modules>
-		<module>../../cache/adeptj-modularweb-cache-api</module>
-		<module>../../cache/adeptj-modularweb-cache-ehcache</module>
-		<module>../../cache/adeptj-modularweb-cache-geode</module>
-		<module>../../cache/adeptj-modularweb-cache-hazelcast</module>
-		<module>../../cache/adeptj-modularweb-cache-infispan</module>
-
-		<module>../../common/adeptj-modularweb-common</module>
-		<module>../../common/adeptj-modularweb-datasource</module>
-		<module>../../common/adeptj-modularweb-logging</module>
-		<module>../../common/adeptj-modularweb-mail</module>
-		<module>../../common/adeptj-modularweb-oauth</module>
-		<module>../../common/adeptj-modularweb-beanvalidation</module>
-		<module>../../common/adeptj-modularweb-pkgexport-fragment</module>
-		<module>../../common/adeptj-modularweb-resourcebundle</module>
-		<module>../../common/adeptj-modularweb-webconsole-branding</module>
-		<module>../../common/adeptj-modularweb-webconsole-security-provider</module>
-
-		<module>../../search/adeptj-modularweb-search-api</module>
-		<module>../../search/adeptj-modularweb-search-common</module>
-		<module>../../search/adeptj-modularweb-search-elasticsearch</module>
-		<module>../../search/adeptj-modularweb-search-solr</module>
-
-		<module>../../data/adeptj-modularweb-data-common</module>
-		<module>../../data/adeptj-modularweb-data-aerospike</module>
-		<module>../../data/adeptj-modularweb-data-api</module>
-		<module>../../data/adeptj-modularweb-data-cassandra</module>
-		<module>../../data/adeptj-modularweb-data-cockroachdb</module>
-		<module>../../data/adeptj-modularweb-data-couchbase</module>
-		<module>../../data/adeptj-modularweb-data-couchdb</module>
-		<module>../../data/adeptj-modularweb-data-jpa</module>
-		<module>../../data/adeptj-modularweb-data-mongodb</module>
-		<module>../../data/adeptj-modularweb-data-redis</module>
-
-		<module>../../jaxrs/adeptj-modularweb-jaxrs-jersey</module>
-		<module>../../jaxrs/adeptj-modularweb-jaxrs-resteasy</module>
-
-		<module>../../viewengine/adeptj-modularweb-viewengine-api</module>
-		<module>../../viewengine/adeptj-modularweb-viewengine-core</module>
-		<module>../../viewengine/adeptj-modularweb-viewengine-handlebars</module>
-		<module>../../viewengine/adeptj-modularweb-viewengine-thymeleaf</module>
-		
-		<module>../../websecurity/adeptj-modularweb-websecurity-esapi</module>
-		<module>../../websecurity/adeptj-modularweb-websecurity-shiro</module>
+        
+        <!-- Common Modules Start -->
+        
+        <module>common/util</module>
+		<module>common/beanvalidation</module>
+		<module>common/datasource</module>
+		<module>common/javamail</module>
+        <module>common/logging</module>
+        <module>common/oauth</module>
+        <module>common/pkgexport-fragment</module>
+		<module>common/resourcebundle</module>
+        <module>common/webconsole-branding</module>
+        <module>common/webconsole-security-provider</module>
+        
+        <!-- Common Modules Ends -->
+        
+         <!-- Cache Modules Start -->
+	    
+		<module>cache/api</module>
+		<module>cache/ehcache</module>
+		<module>cache/geode</module>
+        <module>cache/hazelcast</module>
+        <module>cache/infispan</module>
+        
+        <!-- Cache Modules Ends -->
+        
+        <!-- Web Security Modules Start -->
+	    
+		<module>websecurity/shiro</module>
+		<module>websecurity/esapi</module>
+        
+        <!-- Web Security Modules Ends -->
+        
+        <!-- Data Modules Start -->
+        
+		<module>data/api</module>
+		<module>data/core</module>
+		<module>data/aerospike</module>
+		<module>data/cassandra</module>
+        <module>data/cockroachdb</module>
+        <module>data/couchbase</module>
+		<module>data/couchdb</module>
+		<module>data/jpa</module>
+		<module>data/mongodb</module>
+        <module>data/redis</module>
+        
+        <!-- Data Modules Ends -->
+        
+        <!-- REST Modules Start -->
+	    
+		<module>rest/resteasy</module>
+        
+        <!-- REST Modules Ends -->
+        
+        <!-- Search Modules Start -->
+	    
+		<module>search/api</module>
+		<module>search/core</module>
+		<module>search/elasticsearch</module>
+        <module>search/solr</module>
+        
+        <!-- Search Modules Ends -->
+        
+        <!-- ViewEngine Modules Start -->
+	    
+		<module>viewengine/api</module>
+		<module>viewengine/core</module>
+		<module>viewengine/thymeleaf</module>
+        <module>viewengine/handlebars</module>
+        
+        <!-- ViewEngine Modules Ends -->
+        
 	</modules>
-
+	
 	<build>
-		<pluginManagement>
-			<plugins>
-
+	   
+	    <pluginManagement>
+	    
+		    <plugins>
+		        
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${compiler.plugin.version}</version>
+					<configuration>
+						<compilerArgument>-parameters</compilerArgument>
+						<source>${jdk.version}</source>
+						<target>${jdk.version}</target>
+					</configuration>
+				</plugin>
+				
 				<plugin>
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
 					<version>${maven.bundle.plugin.version}</version>
 					<extensions>true</extensions>
 				</plugin>
-
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${version.compiler.plugin}</version>
-					<configuration>
-						<compilerArgument>-parameters</compilerArgument>
-						<source>${maven.compiler.source}</source>
-						<target>${maven.compiler.target}</target>
-					</configuration>
-				</plugin>
-
+				
 				<!-- Apache Felix SCR Plugin -->
 				<plugin>
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-scr-plugin</artifactId>
 					<version>${maven.scr.version}</version>
 				</plugin>
-
+	
 			</plugins>
-		</pluginManagement>
+	    
+	    </pluginManagement>
+		
 	</build>
+
 
 	<dependencyManagement>
 
