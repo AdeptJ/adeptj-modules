@@ -118,7 +118,6 @@
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf</artifactId>
-			<version>3.0.2.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -142,7 +141,6 @@
 		<dependency>
 			<groupId>ognl</groupId>
 			<artifactId>ognl</artifactId>
-			<version>3.1.11</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javassist</groupId>
@@ -154,7 +152,6 @@
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.20.0-GA</version>
 		</dependency>
 
 		<dependency>
