@@ -24,6 +24,7 @@
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 	<artifactId>adeptj-modules-common-webconsole-branding</artifactId>
+	<version>1.0.0.RELEASE</version>
 	<packaging>bundle</packaging>
 	<name>AdeptJ Modules :: Felix WebConsole Branding Provider Bundle</name>
 	<description>AdeptJ Modules :: Felix WebConsole Branding Provider Bundle</description>

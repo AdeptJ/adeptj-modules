@@ -3,6 +3,27 @@
 /* language selection element */
 #langSelect { display: none; position: absolute;   top: 5px; right: 5px }
 
+/* LOGO & BRANDING */
+#lead {
+	padding-top:10px;
+	margin: 0;
+	height: 80px; /* must be the same as logo (#lead p) height */
+}
+#lead h1 { /* This contains the page title */
+	font-size: 26px;
+	font-weight: bold;
+	float: left;
+}
+#lead p { /* This contains the logo */
+	float: right;
+	height: 80px; /* must be the same as #lead height */
+}
+#lead p img {
+ /* This is the logo */
+ height: 70px;
+ /* must be #lead.height - #lead.padding-top */
+}
+
 /* logout element
 .logoutButton {
     float: right;
