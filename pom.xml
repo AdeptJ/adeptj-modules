@@ -27,6 +27,8 @@
 	<packaging>pom</packaging>
 	<name>AdeptJ Modules :: Parent</name>
 	<description>Parent for AdeptJ Modules Project</description>
+	<url>http://www.adeptj.com</url>
+    <inceptionYear>2016</inceptionYear>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,6 +43,70 @@
 		<maven.bundle.plugin.version>3.2.0</maven.bundle.plugin.version>
 		<ehcache.version>3.1.1</ehcache.version>
 	</properties>
+	
+	<prerequisites>
+	    <!-- This defines only the minimum version for plugins, but not for the build
+             See http://maven.apache.org/ref/3.3.9/maven-model/maven.html#class_prerequisites.
+             Therefore the enforcer plugin needs to verify the maven version. See configuration
+             of the plugin further below
+        -->
+        <maven>3.3.9</maven>
+    </prerequisites>
+    
+    <!-- Project Information -->
+    <organization>
+        <name>AdeptJ</name>
+        <url>http://www.adeptj.com</url>
+    </organization>
+    
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <id>rakeshk15</id>
+            <name>Rakesh Kumar</name>
+            <email>irakeshk@outlook.com</email>
+            <url>https://www.linkedin.com/in/iamrakesh</url>
+            <organization>AdeptJ</organization>
+            <organizationUrl>http://www.adeptj.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+5:30</timezone>
+            <properties>
+                <picUrl>https://media.licdn.com/mpr/mpr/shrinknp_200_200/p/6/005/0b5/282/397d47f.jpg</picUrl>
+            </properties>
+        </developer>
+    </developers>
+    
+     <issueManagement>
+        <url>https://github.com/AdeptJ/adeptj-modularweb-micro/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>oss-adeptj</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>oss-adeptj</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/AdeptJ/adeptj-modularweb-micro</url>
+        <connection>scm:git:git@github.com:AdeptJ/adeptj-modularweb-micro.git</connection>
+        <developerConnection>scm:git:git@github.com:AdeptJ/adeptj-modularweb-micro.git</developerConnection>
+    </scm>
 
 	<modules>
         

@@ -41,7 +41,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-                        <Bundle-Activator>com.adeptj.modularweb.cache.internal.CacheActivator</Bundle-Activator>
+                        <Bundle-Activator>com.adeptj.modules.cache.ehcache.internal.EhcacheActivator</Bundle-Activator>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -120,6 +120,13 @@
 					<artifactId>slf4j-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.adeptj</groupId>
+			<artifactId>adeptj-modules-cache-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>

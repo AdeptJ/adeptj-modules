@@ -39,11 +39,6 @@
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-                        <Bundle-Activator>com.adeptj.modularweb.cache.internal.CacheActivator</Bundle-Activator>
-					</instructions>
-				</configuration>
 			</plugin>
 
 			<plugin>
