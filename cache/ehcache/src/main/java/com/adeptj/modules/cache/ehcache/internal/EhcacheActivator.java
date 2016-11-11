@@ -47,7 +47,9 @@ public class EhcacheActivator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		Hashtable<String, Object> props = new Hashtable<>();
 		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
-		props.put(Constants.SERVICE_PID, EhcacheCacheProvider.SERVICE_PID);
+		// SERVICE_PID should match the name property of the @Component annotation on EhcacheCacheProvider.
+		// Otherwise ConfigurationAdmin won't be able to bind the factory configuration.
+		props.put(Constants.SERVICE_PID, EhcacheCacheProvider.FACTORY_PID);
 		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ OSGi CacheProvider Factory");
 		this.cacheMgr = CacheManagerBuilder.newCacheManagerBuilder().build(true);
 		this.svcReg = context.registerService(

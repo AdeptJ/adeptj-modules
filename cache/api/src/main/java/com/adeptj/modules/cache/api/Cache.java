@@ -37,18 +37,9 @@ public interface Cache<K, V> {
 
 	void clear();
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	int size();
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	Set<K> keys();
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	Collection<V> values();
 }

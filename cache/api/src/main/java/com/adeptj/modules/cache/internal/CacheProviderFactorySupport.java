@@ -27,19 +27,23 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.adeptj.modules.cache.api.CacheProvider;
 import com.adeptj.modules.cache.api.CacheProviderFactory;
 import com.adeptj.modules.cache.api.CacheProviderType;
 
 /**
- * CacheProviderFactoryImpl.
+ * CacheProviderFactorySupport.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(immediate = true)
 @Service
-public class CacheProviderFactoryImpl implements CacheProviderFactory {
+public class CacheProviderFactorySupport implements CacheProviderFactory {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(CacheProviderFactorySupport.class);
 
 	/**
 	 * Collect all of the CacheProvider services as and when they become available.
@@ -53,10 +57,12 @@ public class CacheProviderFactoryImpl implements CacheProviderFactory {
 	}
 
 	protected void bindCacheProvider(CacheProvider provider) {
+		LOGGER.info("Binding CacheProvider: [{}]", provider.getName());
 		this.cacheProviders.put(provider.getName(), provider);
 	}
 
 	protected void unbindCacheProvider(CacheProvider provider) {
+		LOGGER.info("Uninding CacheProvider: [{}]", provider.getName());
 		this.cacheProviders.remove(provider.getName());
 	}
 }

@@ -69,17 +69,11 @@ public class EhcacheCache<K, V> implements Cache<K, V> {
 		this.ehcache.clear();
 	}
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	@Override
 	public int size() {
 		return CollectionUtils.size(ehcache);
 	}
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	@Override
 	public Set<K> keys() {
 		Set<K> keys = new HashSet<>();
@@ -87,9 +81,6 @@ public class EhcacheCache<K, V> implements Cache<K, V> {
 		return keys;
 	}
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	@Override
 	public Collection<V> values() {
 		List<V> values = new ArrayList<>();

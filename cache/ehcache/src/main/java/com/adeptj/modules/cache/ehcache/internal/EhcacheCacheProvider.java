@@ -52,13 +52,13 @@ import com.adeptj.modules.cache.api.CacheProvider;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true, ds = false, metatype = true, configurationFactory = true, name = EhcacheCacheProvider.SERVICE_PID, 
-label = "AdeptJ Modular Web CacheProviderFactory", description = "AdeptJ Modular Web CacheProvider creates or gets cache on demand")
+@Component(immediate = true, ds = false, metatype = true, configurationFactory = true, name = EhcacheCacheProvider.FACTORY_PID, 
+	label = "AdeptJ Modules Ehcache Cache Factory", description = "AdeptJ Modules Ehcache CacheProvider creates or gets cache on demand")
 public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EhcacheCacheProvider.class);
 	
-	public static final String SERVICE_PID = "cache.CacheProvider.factory";
+	public static final String FACTORY_PID = "cache.ehcache.CacheProvider.factory";
 
 	@Property(label = "Cache Name", description = "Cache Name", value = "")
 	public static final String CACHE_NAME = "cache.name";
@@ -116,7 +116,7 @@ public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactor
 
 	@Override
 	public String getName() {
-		return "AdeptJ OSGi Cache Provider Factory";
+		return "AdeptJ Modules Ehcache Cache Factory";
 	}
 
 	@Override
