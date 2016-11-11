@@ -22,6 +22,7 @@ package com.adeptj.modules.cache.ehcache.internal;
 
 import java.util.Dictionary;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +82,7 @@ public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactor
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <K, V> Cache<K, V> getCache(String name, Class<K> keyType, Class<V> valueType) {
+	public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
 		LOGGER.info("Getting Cache with name: [{}]", name);
 		// First check in the local cache map.
 		Cache<?, ?> cache = this.cacheMap.get(name);
@@ -111,7 +112,7 @@ public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactor
 				LOGGER.error("Could not get Cache with name: [{}], Exception!!", name, ex);
 			}
 		}
-		return (Cache<K, V>) cache;
+		return Optional.ofNullable((Cache<K, V>) cache);
 	}
 
 	@Override

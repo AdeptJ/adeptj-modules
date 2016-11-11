@@ -20,6 +20,7 @@
 package com.adeptj.modules.cache.internal;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.felix.scr.annotations.Component;
@@ -52,8 +53,8 @@ public class CacheProviderFactorySupport implements CacheProviderFactory {
 	private final Map<String, CacheProvider> cacheProviders = new ConcurrentHashMap<>();
 
 	@Override
-	public CacheProvider getCacheProvider(CacheProviderType providerType) {
-		return this.cacheProviders.get(providerType.toString());
+	public Optional<CacheProvider> getCacheProvider(CacheProviderType providerType) {
+		return Optional.ofNullable(this.cacheProviders.get(providerType.toString()));
 	}
 
 	protected void bindCacheProvider(CacheProvider provider) {
@@ -62,7 +63,7 @@ public class CacheProviderFactorySupport implements CacheProviderFactory {
 	}
 
 	protected void unbindCacheProvider(CacheProvider provider) {
-		LOGGER.info("Uninding CacheProvider: [{}]", provider.getName());
+		LOGGER.info("Unbinding CacheProvider: [{}]", provider.getName());
 		this.cacheProviders.remove(provider.getName());
 	}
 }

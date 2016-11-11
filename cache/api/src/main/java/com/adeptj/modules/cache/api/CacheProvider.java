@@ -19,11 +19,16 @@
 */
 package com.adeptj.modules.cache.api;
 
+import java.util.Optional;
+
+import org.osgi.annotation.versioning.ConsumerType;
+
 /**
  * The CacheProvider provides access to all caches in the system.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
+@ConsumerType
 public interface CacheProvider {
 	
 	/**
@@ -41,6 +46,6 @@ public interface CacheProvider {
 	 * @param valueType
 	 * @return Cache
 	 */
-	<K, V> Cache<K, V> getCache(String name, Class<K> keyType, Class<V> valueType);
+	<K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType);
 	
 }

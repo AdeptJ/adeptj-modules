@@ -19,12 +19,17 @@
 */
 package com.adeptj.modules.cache.api;
 
+import java.util.Optional;
+
+import org.osgi.annotation.versioning.ProviderType;
+
 /**
  * The CacheProviderFactory.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 public interface CacheProviderFactory {
 
-	CacheProvider getCacheProvider(CacheProviderType providerType);
+	Optional<CacheProvider> getCacheProvider(CacheProviderType providerType);
 }

@@ -22,19 +22,13 @@ package com.adeptj.modules.cache.hazelcast.internal;
 
 import java.util.Dictionary;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
-import org.ehcache.CacheManager;
-import org.ehcache.config.builders.CacheConfigurationBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.expiry.Duration;
-import org.ehcache.expiry.Expirations;
-import org.ehcache.expiry.Expiry;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
@@ -69,10 +63,7 @@ public class HazelcastCacheProvider implements CacheProvider, ManagedServiceFact
 	@Property(label = "Cache Entries", description = "Number of elements in Cache", longValue = 1000)
 	public static final String CACHE_ENTRIES = "cache.entries";
 
-	private CacheManager cacheMgr;
-
-	public HazelcastCacheProvider(CacheManager cacheMgr) {
-		this.cacheMgr = cacheMgr;
+	public HazelcastCacheProvider() {
 	}
 
 	private ConcurrentMap<String, CacheConfig> configMap = new ConcurrentHashMap<>();
@@ -81,7 +72,7 @@ public class HazelcastCacheProvider implements CacheProvider, ManagedServiceFact
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <K, V> Cache<K, V> getCache(String name, Class<K> keyType, Class<V> valueType) {
+	public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
 		LOGGER.info("Getting Cache with name: [{}]", name);
 		// First check in the local cache map.
 		Cache<?, ?> cache = this.cacheMap.get(name);
@@ -92,26 +83,14 @@ public class HazelcastCacheProvider implements CacheProvider, ManagedServiceFact
 					CacheConfig cacheCfg = entry.getValue();
 					String cacheName = cacheCfg.getCacheName();
 					if (StringUtils.equals(name, cacheName)) {
-						org.ehcache.Cache<K, V> ehCache = this.cacheMgr.getCache(name, keyType, valueType);
-						if (ehCache == null) {
-							Expiry<Object, Object> timeToLiveExpiration = Expirations
-									.timeToLiveExpiration(new Duration(cacheCfg.getTtlSeconds(), TimeUnit.SECONDS));
-							ehCache = this.cacheMgr.createCache(cacheName,
-									CacheConfigurationBuilder
-											.newCacheConfigurationBuilder(keyType, valueType,
-													ResourcePoolsBuilder.heap(1000l))
-											.withExpiry(timeToLiveExpiration).build());
-						}
-						cache = new HazelcastCache<>(ehCache);
-						this.cacheMap.put(name, cache);
-						break;
+						
 					}
 				}
 			} catch (Exception ex) {
 				LOGGER.error("Could not get Cache with name: [{}], Exception!!", name, ex);
 			}
 		}
-		return (Cache<K, V>) cache;
+		return Optional.ofNullable((Cache<K, V>) cache);
 	}
 
 	@Override
@@ -138,7 +117,6 @@ public class HazelcastCacheProvider implements CacheProvider, ManagedServiceFact
 		CacheConfig cacheCfg = this.configMap.remove(pid);
 		if (cacheCfg != null) {
 			String cacheName = cacheCfg.getCacheName();
-			this.cacheMgr.removeCache(cacheName);
 			LOGGER.info("Removed Cache: {}", cacheName);
 		}
 	}

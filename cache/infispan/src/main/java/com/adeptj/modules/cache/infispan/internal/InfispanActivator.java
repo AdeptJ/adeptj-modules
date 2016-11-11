@@ -22,8 +22,6 @@ package com.adeptj.modules.cache.infispan.internal;
 
 import java.util.Hashtable;
 
-import org.ehcache.CacheManager;
-import org.ehcache.config.builders.CacheManagerBuilder;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -41,24 +39,20 @@ public class InfispanActivator implements BundleActivator {
 
 	private ServiceRegistration<?> svcReg;
 
-	private CacheManager cacheMgr;
-
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Hashtable<String, Object> props = new Hashtable<>();
 		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
 		props.put(Constants.SERVICE_PID, InfispanCacheProvider.SERVICE_PID);
 		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ OSGi CacheProvider Factory");
-		this.cacheMgr = CacheManagerBuilder.newCacheManagerBuilder().build(true);
 		this.svcReg = context.registerService(
 				new String[] { ManagedServiceFactory.class.getName(), CacheProvider.class.getName() },
-				new InfispanCacheProvider(this.cacheMgr), props);
+				new InfispanCacheProvider(), props);
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		svcReg.unregister();
-		this.cacheMgr.close();
 	}
 
 }

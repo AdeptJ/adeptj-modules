@@ -271,6 +271,14 @@
             </dependency>
 
             <!-- OSGi annotations for DS and metatype -->
+            
+            <dependency>
+			    <groupId>org.osgi</groupId>
+			    <artifactId>org.osgi.annotation</artifactId>
+			    <version>6.0.0</version>
+			    <scope>provided</scope>
+			</dependency>
+            
 			<dependency>
 				<groupId>org.osgi</groupId>
 				<artifactId>org.osgi.service.component.annotations</artifactId>
