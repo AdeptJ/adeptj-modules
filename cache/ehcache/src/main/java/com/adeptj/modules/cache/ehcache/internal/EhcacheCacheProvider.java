@@ -21,13 +21,12 @@
 package com.adeptj.modules.cache.ehcache.internal;
 
 import java.util.Dictionary;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
 import org.ehcache.CacheManager;
@@ -76,43 +75,32 @@ public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactor
 		this.cacheMgr = cacheMgr;
 	}
 
-	private ConcurrentMap<String, CacheConfig> configMap = new ConcurrentHashMap<>();
+	private ConcurrentMap<String, CacheConfig> cacheConfigs = new ConcurrentHashMap<>();
 
-	private ConcurrentMap<String, Cache<?, ?>> cacheMap = new ConcurrentHashMap<>();
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
-		LOGGER.info("Getting Cache with name: [{}]", name);
-		// First check in the local cache map.
-		Cache<?, ?> cache = this.cacheMap.get(name);
-		if (cache == null) {
-			// Request for new Cache.
-			try {
-				for (Entry<String, CacheConfig> entry : this.configMap.entrySet()) {
-					CacheConfig cacheCfg = entry.getValue();
-					String cacheName = cacheCfg.getCacheName();
-					if (StringUtils.equals(name, cacheName)) {
-						org.ehcache.Cache<K, V> ehCache = this.cacheMgr.getCache(name, keyType, valueType);
-						if (ehCache == null) {
-							Expiry<Object, Object> timeToLiveExpiration = Expirations
-									.timeToLiveExpiration(new Duration(cacheCfg.getTtlSeconds(), TimeUnit.SECONDS));
-							ehCache = this.cacheMgr.createCache(cacheName,
-									CacheConfigurationBuilder
-											.newCacheConfigurationBuilder(keyType, valueType,
-													ResourcePoolsBuilder.heap(1000l))
-											.withExpiry(timeToLiveExpiration).build());
-						}
-						cache = new EhcacheCache<>(ehCache);
-						this.cacheMap.put(name, cache);
-						break;
-					}
+		Cache<K, V> cache = null;
+		Optional<CacheConfig> optionalCacheConfig = this.cacheConfigs.entrySet().stream().filter(entry -> {
+			return entry.getValue().getCacheName().equals(name); }).map(entry -> { return entry.getValue(); }).findFirst();
+		if (optionalCacheConfig.isPresent()) {
+			org.ehcache.Cache<K, V> ehcache = this.cacheMgr.getCache(name, keyType, valueType);
+			if (ehcache == null) {
+				try {
+					CacheConfig cacheConfig = optionalCacheConfig.get();
+					Expiry<Object, Object> timeToLiveExpiration = Expirations
+							.timeToLiveExpiration(new Duration(cacheConfig.getTtlSeconds(), TimeUnit.SECONDS));
+					cache = new EhcacheCache<>(this.cacheMgr.createCache(cacheConfig.getCacheName(),
+							CacheConfigurationBuilder
+									.newCacheConfigurationBuilder(keyType, valueType, ResourcePoolsBuilder.heap(1000l))
+									.withExpiry(timeToLiveExpiration).build()));
+				} catch (Exception ex) {
+					LOGGER.error("Could not get Cache with name: [{}], Exception!!", name, ex);
 				}
-			} catch (Exception ex) {
-				LOGGER.error("Could not get Cache with name: [{}], Exception!!", name, ex);
 			}
+		} else {
+			LOGGER.warn("CacheConfig against name [{}] doesn't exist, please create it first!", name);
 		}
-		return Optional.ofNullable((Cache<K, V>) cache);
+		return Optional.ofNullable(cache);
 	}
 
 	@Override
@@ -122,21 +110,30 @@ public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactor
 
 	@Override
 	public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-		String cacheName = (String) properties.get(CACHE_NAME);
+		String cacheName = (String) Objects.requireNonNull(properties.get(CACHE_NAME), "Cache name can't be null!!");
 		Long cacheTTL = (Long) properties.get(CACHE_TTL);
 		Long cacheEntries = (Long) properties.get(CACHE_ENTRIES);
-		CacheConfig cacheConfig = new CacheConfig(cacheName, pid, cacheTTL, cacheEntries);
-		this.configMap.putIfAbsent(pid, cacheConfig);
-		if (cacheConfig.equals(this.configMap.get(pid))) {
+		CacheConfig newCacheConfig = new CacheConfig(cacheName, pid, cacheTTL, cacheEntries);
+		CacheConfig storedCacheConfig = this.cacheConfigs.get(pid);
+		// If no CacheConfig against the given PID, create one.
+		if (storedCacheConfig == null) {
+			this.cacheConfigs.put(pid, newCacheConfig);
+		} else if (storedCacheConfig.equals(newCacheConfig)) {
+			// If CacheConfig unchanged(user just saved the Factory configuration without changing values), do nothing. 
 			LOGGER.warn("Unchanged CacheConfig, ignoring it!!");
 		} else {
-			this.configMap.put(pid, cacheConfig);
+			// Just remove the cache from CacheManager and update the CacheConfig.
+			LOGGER.info("Removing cache with name: [{}] from Ehcache CacheManager.", cacheName);
+			this.cacheMgr.removeCache(cacheName);
+			storedCacheConfig.setCacheEntries(cacheEntries);
+			storedCacheConfig.setTtlSeconds(cacheTTL);
+			storedCacheConfig.setCacheName(cacheName);
 		}
 	}
 
 	@Override
 	public void deleted(String pid) {
-		CacheConfig cacheCfg = this.configMap.remove(pid);
+		CacheConfig cacheCfg = this.cacheConfigs.remove(pid);
 		if (cacheCfg != null) {
 			String cacheName = cacheCfg.getCacheName();
 			this.cacheMgr.removeCache(cacheName);
