@@ -20,81 +20,50 @@
  */
 package com.adeptj.modules.cache.infispan.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 import com.adeptj.modules.cache.api.Cache;
 
 /**
- * Implementation for Cache interface, internally this uses the EHCache
- * CacheManager for performing the low level operations.
+ * Implementation for Cache interface, internally this uses the Infispan for performing the low level operations.
  * 
  * @author Rakesh.Kumar
  */
 public class InfispanCache<K, V> implements Cache<K, V> {
 
-	private org.ehcache.Cache<K, V> ehcache;
-
-	public InfispanCache(org.ehcache.Cache<K, V> backingCache) {
-		this.ehcache = backingCache;
-	}
-
 	@Override
 	public V get(K key) {
-		return this.ehcache.get(key);
+		return null;
 	}
 
 	@Override
 	public V put(K key, V value) {
-		return this.ehcache.putIfAbsent(key, value);
+		return null;
 	}
 
 	@Override
 	public V remove(K key) {
-		V element = null;
-		if (this.ehcache.containsKey(key)) {
-			element = this.ehcache.get(key);
-			this.ehcache.remove(key);
-		}
-		return element;
+		return null;
 	}
 
 	@Override
 	public void clear() {
-		this.ehcache.clear();
 	}
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	@Override
 	public int size() {
-		return CollectionUtils.size(ehcache);
+		return 0;
 	}
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	@Override
 	public Set<K> keys() {
-		Set<K> keys = new HashSet<>();
-		this.ehcache.iterator().forEachRemaining(action -> keys.add(action.getKey()));
-		return keys;
+		return null;
 	}
 
-	/**
-	 * NOTE: Very expensive.
-	 */
 	@Override
 	public Collection<V> values() {
-		List<V> values = new ArrayList<>();
-		this.ehcache.iterator().forEachRemaining(action -> values.add(action.getValue()));
-		return values;
+		return null;
 	}
-
+	
 }

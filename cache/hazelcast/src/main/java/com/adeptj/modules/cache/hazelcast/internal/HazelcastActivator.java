@@ -44,7 +44,7 @@ public class HazelcastActivator implements BundleActivator {
 		Hashtable<String, Object> props = new Hashtable<>();
 		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
 		props.put(Constants.SERVICE_PID, HazelcastCacheProvider.SERVICE_PID);
-		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ OSGi CacheProvider Factory");
+		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules Hazelcast Cache Factory");
 		this.svcReg = context.registerService(
 				new String[] { ManagedServiceFactory.class.getName(), CacheProvider.class.getName() },
 				new HazelcastCacheProvider(), props);

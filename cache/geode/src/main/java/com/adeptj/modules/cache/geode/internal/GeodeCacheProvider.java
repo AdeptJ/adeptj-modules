@@ -21,12 +21,10 @@
 package com.adeptj.modules.cache.geode.internal;
 
 import java.util.Dictionary;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
 import org.osgi.service.cm.ConfigurationException;
@@ -77,18 +75,7 @@ public class GeodeCacheProvider implements CacheProvider, ManagedServiceFactory 
 		// First check in the local cache map.
 		Cache<?, ?> cache = this.cacheMap.get(name);
 		if (cache == null) {
-			// Request for new Cache.
-			try {
-				for (Entry<String, CacheConfig> entry : this.configMap.entrySet()) {
-					CacheConfig cacheCfg = entry.getValue();
-					String cacheName = cacheCfg.getCacheName();
-					if (StringUtils.equals(name, cacheName)) {
-						
-					}
-				}
-			} catch (Exception ex) {
-				LOGGER.error("Could not get Cache with name: [{}], Exception!!", name, ex);
-			}
+			
 		}
 		return Optional.ofNullable((Cache<K, V>) cache);
 	}
