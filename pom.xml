@@ -93,7 +93,7 @@
         
         <!-- REST Modules Start -->
 	    
-		<module>rest/resteasy</module>
+		<module>jaxrs/resteasy</module>
         
         <!-- REST Modules Ends -->
         
