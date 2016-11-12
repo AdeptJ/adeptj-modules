@@ -40,9 +40,9 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.cache.api.Cache;
-import com.adeptj.modules.cache.api.CacheConfig;
-import com.adeptj.modules.cache.api.CacheProvider;
+import com.adeptj.modules.cache.common.Cache;
+import com.adeptj.modules.cache.common.CacheConfig;
+import com.adeptj.modules.cache.spi.CacheProvider;
 
 /**
  * OSGi service for cache manager, this services initializes the EHcache
@@ -88,7 +88,7 @@ public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactor
 				try {
 					CacheConfig cacheConfig = optionalCacheConfig.get();
 					Expiry<Object, Object> timeToLiveExpiration = Expirations
-							.timeToLiveExpiration(new Duration(cacheConfig.getTtlSeconds(), TimeUnit.SECONDS));
+							.timeToLiveExpiration(new Duration((long) cacheConfig.getTtlSeconds(), TimeUnit.SECONDS));
 					cache = new EhcacheCache<>(this.cacheMgr.createCache(cacheConfig.getCacheName(),
 							CacheConfigurationBuilder
 									.newCacheConfigurationBuilder(keyType, valueType, ResourcePoolsBuilder.heap(1000l))

@@ -31,9 +31,9 @@ import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.cache.api.CacheProvider;
-import com.adeptj.modules.cache.api.CacheProviderFactory;
-import com.adeptj.modules.cache.api.CacheProviderType;
+import com.adeptj.modules.cache.common.CacheProviderType;
+import com.adeptj.modules.cache.spi.CacheProvider;
+import com.adeptj.modules.cache.spi.CacheProviderFactory;
 
 /**
  * CacheProviderFactorySupport.

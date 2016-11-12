@@ -28,7 +28,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
 
-import com.adeptj.modules.cache.api.CacheProvider;
+import com.adeptj.modules.cache.spi.CacheProvider;
 
 /**
  * HazelcastActivator.
@@ -39,19 +39,26 @@ public class HazelcastActivator implements BundleActivator {
 
 	private ServiceRegistration<?> svcReg;
 
+	private HazelcastCacheProvider hazelcastOSGiServiceTracker;
+
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Hashtable<String, Object> props = new Hashtable<>();
 		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
-		props.put(Constants.SERVICE_PID, HazelcastCacheProvider.SERVICE_PID);
-		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules Hazelcast Cache Factory");
+		props.put(Constants.SERVICE_PID, HazelcastCacheProvider.FACTORY_PID);
+		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules Hazelcast CacheProvider");
+		this.hazelcastOSGiServiceTracker = new HazelcastCacheProvider(context);
+		this.hazelcastOSGiServiceTracker.open();
 		this.svcReg = context.registerService(
 				new String[] { ManagedServiceFactory.class.getName(), CacheProvider.class.getName() },
-				new HazelcastCacheProvider(), props);
+				this.hazelcastOSGiServiceTracker, props);
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
+		if (this.hazelcastOSGiServiceTracker != null) {
+			this.hazelcastOSGiServiceTracker.close();
+		}
 		svcReg.unregister();
 	}
 

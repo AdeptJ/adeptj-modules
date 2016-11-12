@@ -23,7 +23,7 @@ package com.adeptj.modules.cache.infispan.internal;
 import java.util.Collection;
 import java.util.Set;
 
-import com.adeptj.modules.cache.api.Cache;
+import com.adeptj.modules.cache.common.Cache;
 
 /**
  * Implementation for Cache interface, internally this uses the Infispan for performing the low level operations.

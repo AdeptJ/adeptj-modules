@@ -23,7 +23,8 @@ package com.adeptj.modules.cache.hazelcast.internal;
 import java.util.Collection;
 import java.util.Set;
 
-import com.adeptj.modules.cache.api.Cache;
+import com.adeptj.modules.cache.common.Cache;
+import com.hazelcast.core.IMap;
 
 /**
  * Implementation for Cache interface, internally this uses the Hazelcast for performing the low level operations.
@@ -32,38 +33,45 @@ import com.adeptj.modules.cache.api.Cache;
  */
 public class HazelcastCache<K, V> implements Cache<K, V> {
 
+	private IMap<K, V> cache;
+	
+	public HazelcastCache(IMap<K, V> cache) {
+		this.cache = cache;
+	}
+
 	@Override
 	public V get(K key) {
-		return null;
+		return cache.get(key);
 	}
 
 	@Override
 	public V put(K key, V value) {
-		return null;
+		return cache.put(key, value);
 	}
 
 	@Override
 	public V remove(K key) {
-		return null;
+		return cache.remove(key);
 	}
 
 	@Override
 	public void clear() {
+		cache.clear();
 	}
 
 	@Override
 	public int size() {
-		return 0;
+		return cache.size();
 	}
 
 	@Override
 	public Set<K> keys() {
-		return null;
+		return cache.keySet();
 	}
 
 	@Override
 	public Collection<V> values() {
-		return null;
+		return cache.values();
 	}
 	
 }

@@ -34,9 +34,9 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.cache.api.Cache;
-import com.adeptj.modules.cache.api.CacheConfig;
-import com.adeptj.modules.cache.api.CacheProvider;
+import com.adeptj.modules.cache.common.Cache;
+import com.adeptj.modules.cache.common.CacheConfig;
+import com.adeptj.modules.cache.spi.CacheProvider;
 
 /**
  * OSGi service for cache manager, this services initializes the EHcache

@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.cache.api;
+package com.adeptj.modules.cache.common;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,10 +33,10 @@ public class CacheConfig {
 
 	private String cacheServicePid;
 
-	private long ttlSeconds;
-	
-	private long cacheEntries;
-	
+	private Object ttlSeconds;
+
+	private Object cacheEntries;
+
 	private Map<String, ?> otherConfigs;
 
 	public CacheConfig(String cacheName, String cacheServicePid, long ttlSeconds, long cacheEntries) {
@@ -63,19 +63,19 @@ public class CacheConfig {
 		this.cacheServicePid = cacheServicePid;
 	}
 
-	public long getTtlSeconds() {
+	public Object getTtlSeconds() {
 		return ttlSeconds;
 	}
 
-	public void setTtlSeconds(long ttlSeconds) {
+	public void setTtlSeconds(Object ttlSeconds) {
 		this.ttlSeconds = ttlSeconds;
 	}
 
-	public long getCacheEntries() {
+	public Object getCacheEntries() {
 		return cacheEntries;
 	}
 
-	public void setCacheEntries(long cacheEntries) {
+	public void setCacheEntries(Object cacheEntries) {
 		this.cacheEntries = cacheEntries;
 	}
 
@@ -87,9 +87,10 @@ public class CacheConfig {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((cacheEntries == null) ? 0 : cacheEntries.hashCode());
 		result = prime * result + ((cacheName == null) ? 0 : cacheName.hashCode());
 		result = prime * result + ((cacheServicePid == null) ? 0 : cacheServicePid.hashCode());
-		result = prime * result + (int) (ttlSeconds ^ (ttlSeconds >>> 32));
+		result = prime * result + ((ttlSeconds == null) ? 0 : ttlSeconds.hashCode());
 		return result;
 	}
 
@@ -102,6 +103,11 @@ public class CacheConfig {
 		if (getClass() != obj.getClass())
 			return false;
 		CacheConfig other = (CacheConfig) obj;
+		if (cacheEntries == null) {
+			if (other.cacheEntries != null)
+				return false;
+		} else if (!cacheEntries.equals(other.cacheEntries))
+			return false;
 		if (cacheName == null) {
 			if (other.cacheName != null)
 				return false;
@@ -112,7 +118,10 @@ public class CacheConfig {
 				return false;
 		} else if (!cacheServicePid.equals(other.cacheServicePid))
 			return false;
-		if (ttlSeconds != other.ttlSeconds)
+		if (ttlSeconds == null) {
+			if (other.ttlSeconds != null)
+				return false;
+		} else if (!ttlSeconds.equals(other.ttlSeconds))
 			return false;
 		return true;
 	}

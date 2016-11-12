@@ -30,7 +30,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
 
-import com.adeptj.modules.cache.api.CacheProvider;
+import com.adeptj.modules.cache.spi.CacheProvider;
 
 /**
  * EhcacheActivator.

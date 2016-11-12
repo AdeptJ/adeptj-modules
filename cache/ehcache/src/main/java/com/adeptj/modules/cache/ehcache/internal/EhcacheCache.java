@@ -28,7 +28,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.adeptj.modules.cache.api.Cache;
+import com.adeptj.modules.cache.common.Cache;
 
 /**
  * Implementation for Cache interface, internally this uses the EHCache

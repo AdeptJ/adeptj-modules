@@ -17,20 +17,29 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.cache.api;
+package com.adeptj.modules.cache.common;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
- * CacheProviderType.
+ * A Cache managed by the cache manager.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
-public enum CacheProviderType {
+public interface Cache<K, V> {
 
-	EHCAHE,
-	
-	GEODE,
-	
-	HAZELCAST,
-	
-	INFISPAN
+	V get(K key);
+
+	V put(K key, V value);
+
+	V remove(K key);
+
+	void clear();
+
+	int size();
+
+	Set<K> keys();
+
+	Collection<V> values();
 }

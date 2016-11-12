@@ -17,29 +17,34 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.cache.api;
+package com.adeptj.modules.cache.spi;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.Optional;
+
+import com.adeptj.modules.cache.common.Cache;
 
 /**
- * A Cache managed by the cache manager.
+ * The CacheProvider provides access to all caches in the system.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface Cache<K, V> {
+public interface CacheProvider {
+	
+	/**
+	 * Get the name of this provider.
+	 * 
+	 * @return provider name
+	 */
+	String getName();
 
-	V get(K key);
-
-	V put(K key, V value);
-
-	V remove(K key);
-
-	void clear();
-
-	int size();
-
-	Set<K> keys();
-
-	Collection<V> values();
+	/***
+	 * Get the cache for the given name and the types(key and value)
+	 * 
+	 * @param name
+	 * @param keyType
+	 * @param valueType
+	 * @return Cache
+	 */
+	<K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType);
+	
 }

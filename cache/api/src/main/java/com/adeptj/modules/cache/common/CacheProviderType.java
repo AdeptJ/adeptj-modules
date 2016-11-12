@@ -17,35 +17,20 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.cache.api;
-
-import java.util.Optional;
-
-import org.osgi.annotation.versioning.ProviderType;
+package com.adeptj.modules.cache.common;
 
 /**
- * The CacheProvider provides access to all caches in the system.
+ * CacheProviderType.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
-@ProviderType
-public interface CacheProvider {
-	
-	/**
-	 * Get the name of this provider.
-	 * 
-	 * @return provider name
-	 */
-	String getName();
+public enum CacheProviderType {
 
-	/***
-	 * Get the cache for the given name and the types(key and value)
-	 * 
-	 * @param name
-	 * @param keyType
-	 * @param valueType
-	 * @return Cache
-	 */
-	<K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType);
+	EHCAHE,
 	
+	GEODE,
+	
+	HAZELCAST,
+	
+	INFISPAN
 }
