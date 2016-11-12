@@ -131,7 +131,7 @@
 		<module>cache/ehcache</module>
 		<module>cache/geode</module>
         <module>cache/hazelcast</module>
-        <module>cache/infispan</module>
+        <module>cache/infinispan</module>
         
         <!-- Cache Modules Ends -->
         

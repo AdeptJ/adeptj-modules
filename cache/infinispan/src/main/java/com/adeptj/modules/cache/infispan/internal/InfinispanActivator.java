@@ -30,27 +30,31 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import com.adeptj.modules.cache.spi.CacheProvider;
 
 /**
- * InfispanActivator.
+ * InfinispanActivator.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class InfispanActivator implements BundleActivator {
+public class InfinispanActivator implements BundleActivator {
 
 	private ServiceRegistration<?> svcReg;
+	
+	private InfinispanCacheProvider infinispanCacheProvider;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Hashtable<String, Object> props = new Hashtable<>();
 		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
-		props.put(Constants.SERVICE_PID, InfispanCacheProvider.SERVICE_PID);
-		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ OSGi CacheProvider Factory");
+		props.put(Constants.SERVICE_PID, InfinispanCacheProvider.SERVICE_PID);
+		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules Infinispan Cache Factory");
+		this.infinispanCacheProvider = new InfinispanCacheProvider();
 		this.svcReg = context.registerService(
 				new String[] { ManagedServiceFactory.class.getName(), CacheProvider.class.getName() },
-				new InfispanCacheProvider(), props);
+				this.infinispanCacheProvider, props);
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
+		this.infinispanCacheProvider.shutdownInfinispan();
 		svcReg.unregister();
 	}
 

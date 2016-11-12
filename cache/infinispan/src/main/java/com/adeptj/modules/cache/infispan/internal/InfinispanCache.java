@@ -25,15 +25,15 @@ import java.util.Set;
 import com.adeptj.modules.cache.common.Cache;
 
 /**
- * Implementation for Cache interface, internally this uses the Infispan for performing the low level operations.
+ * Implementation for Cache interface, internally this uses the Infinispan for performing the low level operations.
  * 
  * @author Rakesh.Kumar
  */
-public class InfispanCache<K, V> implements Cache<K, V> {
+public class InfinispanCache<K, V> implements Cache<K, V> {
 	
 	private org.infinispan.Cache<K, V> cache;
 
-	public InfispanCache(org.infinispan.Cache<K, V> cache) {
+	public InfinispanCache(org.infinispan.Cache<K, V> cache) {
 		this.cache = cache;
 	}
 
