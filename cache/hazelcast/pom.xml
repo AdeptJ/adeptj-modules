@@ -123,13 +123,6 @@
 		    <version>3.7.2</version>
 		    <scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-		    <groupId>com.hazelcast</groupId>
-		    <artifactId>hazelcast-client</artifactId>
-		    <version>3.7.2</version>
-		    <scope>provided</scope>
-		</dependency>
 
 	</dependencies>
 </project>
