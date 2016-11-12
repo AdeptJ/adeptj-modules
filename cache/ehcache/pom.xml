@@ -25,8 +25,8 @@
 	</parent>
 	<artifactId>adeptj-modules-cache-ehcache</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Ehcache Provider Bundle</name>
-	<description>AdeptJ Modules :: Ehcache Provider Bundle</description>
+	<name>AdeptJ Modules :: Cache :: Ehcache CacheProvider Bundle</name>
+	<description>AdeptJ Modules :: Cache :: Ehcache CacheProvider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
