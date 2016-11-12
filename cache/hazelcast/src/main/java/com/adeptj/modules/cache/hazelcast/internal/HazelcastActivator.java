@@ -1,23 +1,22 @@
-/* 
- * =============================================================================
- * 
- * Copyright (c) 2016 AdeptJ
- * Copyright (c) 2016 Rakesh Kumar <irakeshk@outlook.com>
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * 
- * =============================================================================
- */
+/** 
+###############################################################################
+#                                                                             # 
+#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#                                                                             #
+#    Licensed under the Apache License, Version 2.0 (the "License");          #
+#    you may not use this file except in compliance with the License.         #
+#    You may obtain a copy of the License at                                  #
+#                                                                             #
+#        http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                             #
+#    Unless required by applicable law or agreed to in writing, software      #
+#    distributed under the License is distributed on an "AS IS" BASIS,        #
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#    See the License for the specific language governing permissions and      #
+#    limitations under the License.                                           #
+#                                                                             #
+###############################################################################
+*/
 package com.adeptj.modules.cache.hazelcast.internal;
 
 import java.util.Hashtable;
@@ -39,7 +38,7 @@ public class HazelcastActivator implements BundleActivator {
 
 	private ServiceRegistration<?> svcReg;
 
-	private HazelcastCacheProvider hazelcastOSGiServiceTracker;
+	private HazelcastCacheProvider hazelcastCacheProvider;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -47,18 +46,20 @@ public class HazelcastActivator implements BundleActivator {
 		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
 		props.put(Constants.SERVICE_PID, HazelcastCacheProvider.FACTORY_PID);
 		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules Hazelcast CacheProvider");
-		this.hazelcastOSGiServiceTracker = new HazelcastCacheProvider(context);
-		this.hazelcastOSGiServiceTracker.open();
+		this.hazelcastCacheProvider = new HazelcastCacheProvider(context);
+		this.hazelcastCacheProvider.open();
 		this.svcReg = context.registerService(
 				new String[] { ManagedServiceFactory.class.getName(), CacheProvider.class.getName() },
-				this.hazelcastOSGiServiceTracker, props);
+				this.hazelcastCacheProvider, props);
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		if (this.hazelcastOSGiServiceTracker != null) {
-			this.hazelcastOSGiServiceTracker.close();
+		if (this.hazelcastCacheProvider != null) {
+			this.hazelcastCacheProvider.close();
+			this.hazelcastCacheProvider.shutdownHazelcastInstance();
 		}
+		
 		svcReg.unregister();
 	}
 

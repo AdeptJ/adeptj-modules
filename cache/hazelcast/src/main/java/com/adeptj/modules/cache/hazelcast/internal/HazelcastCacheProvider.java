@@ -1,23 +1,22 @@
-/* 
- * =============================================================================
- * 
- * Copyright (c) 2016 AdeptJ
- * Copyright (c) 2016 Rakesh Kumar <irakeshk@outlook.com>
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * 
- * =============================================================================
- */
+/** 
+###############################################################################
+#                                                                             # 
+#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#                                                                             #
+#    Licensed under the Apache License, Version 2.0 (the "License");          #
+#    you may not use this file except in compliance with the License.         #
+#    You may obtain a copy of the License at                                  #
+#                                                                             #
+#        http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                             #
+#    Unless required by applicable law or agreed to in writing, software      #
+#    distributed under the License is distributed on an "AS IS" BASIS,        #
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#    See the License for the specific language governing permissions and      #
+#    limitations under the License.                                           #
+#                                                                             #
+###############################################################################
+*/
 package com.adeptj.modules.cache.hazelcast.internal;
 
 import java.util.Dictionary;
@@ -43,7 +42,6 @@ import com.adeptj.modules.cache.spi.CacheProvider;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
 import com.hazelcast.osgi.HazelcastOSGiService;
 
 /**
@@ -90,6 +88,13 @@ public class HazelcastCacheProvider extends ServiceTracker<HazelcastOSGiService,
 			LOGGER.info("Hazelcast initialization took: [{}] ms!!", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime));
 		}
 	}
+	
+	protected void shutdownHazelcastInstance() {
+		if (this.hazelcast != null) {
+			this.hazelcast.shutdown();
+			LOGGER.info("Hazelcast shutdown successfully!!");
+		}
+	}
 
 	@Override
 	public HazelcastOSGiService addingService(ServiceReference<HazelcastOSGiService> reference) {
@@ -131,8 +136,8 @@ public class HazelcastCacheProvider extends ServiceTracker<HazelcastOSGiService,
 	public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
 		this.initHazelcastInstance();
 		String cacheName = (String) Objects.requireNonNull(properties.get(CACHE_NAME), "Cache name can't be null!!");
-		Long cacheTTL = (Long) properties.get(CACHE_TTL);
-		Long cacheEntries = (Long) properties.get(CACHE_ENTRIES);
+		Integer cacheTTL = (Integer) properties.get(CACHE_TTL);
+		Integer cacheEntries = (Integer) properties.get(CACHE_ENTRIES);
 		CacheConfig newCacheConfig = new CacheConfig(cacheName, pid, cacheTTL, cacheEntries);
 		CacheConfig storedCacheConfig = this.cacheConfigs.get(pid);
 		// If no CacheConfig against the given PID, create one.
@@ -162,9 +167,10 @@ public class HazelcastCacheProvider extends ServiceTracker<HazelcastOSGiService,
 		CacheConfig cacheCfg = this.cacheConfigs.remove(pid);
 		if (cacheCfg != null) {
 			String cacheName = cacheCfg.getCacheName();
-			IMap<Object, Object> cache = this.hazelcast.getMap(cacheName);
-			if (cache != null) {
-				cache.destroy();
+			Config config = this.hazelcast.getConfig();
+			MapConfig mapConfig = config.getMapConfigs().get(cacheName);
+			if (mapConfig != null) {
+				this.hazelcast.getMap(mapConfig.getName()).destroy();
 				LOGGER.info("Removed Cache: {}", cacheName);
 			}
 		}

@@ -19,68 +19,39 @@
 */
 package com.adeptj.modules.cache.geode.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Hashtable;
 
-import com.adeptj.modules.cache.common.Cache;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ManagedServiceFactory;
+
+import com.adeptj.modules.cache.spi.CacheProvider;
 
 /**
- * Implementation for Cache interface, internally this uses the EHCache
- * CacheManager for performing the low level operations.
- * 
- * @author Rakesh.Kumar
+ * GeodeActivator.
+ *
+ * @author Rakesh.Kumar, AdeptJ.
  */
-public class GeodeCache<K, V> implements Cache<K, V> {
+public class GeodeActivator implements BundleActivator {
 
-	public GeodeCache() {
+	private ServiceRegistration<?> svcReg;
+
+	@Override
+	public void start(BundleContext context) throws Exception {
+		Hashtable<String, Object> props = new Hashtable<>();
+		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
+		props.put(Constants.SERVICE_PID, GeodeCacheProvider.SERVICE_PID);
+		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ OSGi CacheProvider Factory");
+		this.svcReg = context.registerService(
+				new String[] { ManagedServiceFactory.class.getName(), CacheProvider.class.getName() },
+				new GeodeCacheProvider(), props);
 	}
 
 	@Override
-	public V get(K key) {
-		return null;
-	}
-
-	@Override
-	public V put(K key, V value) {
-		return null;
-	}
-
-	@Override
-	public V remove(K key) {
-		return null;
-	}
-
-	@Override
-	public void clear() {
-	}
-
-	/**
-	 * NOTE: Very expensive.
-	 */
-	@Override
-	public int size() {
-		return 0;
-	}
-
-	/**
-	 * NOTE: Very expensive.
-	 */
-	@Override
-	public Set<K> keys() {
-		Set<K> keys = new HashSet<>();
-		return keys;
-	}
-
-	/**
-	 * NOTE: Very expensive.
-	 */
-	@Override
-	public Collection<V> values() {
-		List<V> values = new ArrayList<>();
-		return values;
+	public void stop(BundleContext context) throws Exception {
+		svcReg.unregister();
 	}
 
 }
