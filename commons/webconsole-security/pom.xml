@@ -26,8 +26,8 @@
 	<artifactId>adeptj-modules-commons-webconsole-security</artifactId>
 	<version>1.0.0.RELEASE</version>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Commons :: Felix WebConsole Security Bundle</name>
-	<description>AdeptJ Modules :: Commons :: Felix WebConsole Security Bundle</description>
+	<name>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</name>
+	<description>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -43,6 +43,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Commons</Bundle-Category>
 					</instructions>
 				</configuration>
 			</plugin>

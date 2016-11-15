@@ -42,6 +42,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Cache</Bundle-Category>
                         <Bundle-Activator>com.adeptj.modules.cache.infispan.internal.InfinispanActivator</Bundle-Activator>
 					</instructions>
 				</configuration>

@@ -42,6 +42,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Security</Bundle-Category>
 						<Embed-Dependency>*;scope=compile;inline=false;type=jar</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<_exportcontents>

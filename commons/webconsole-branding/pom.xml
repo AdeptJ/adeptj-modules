@@ -42,6 +42,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Commons</Bundle-Category>
 						<!-- Always Make sure this fragment should be installed before the Host Bundle -->
 						<Fragment-Host>org.apache.felix.webconsole;bundle-version="[4,5)"</Fragment-Host>
 					</instructions>

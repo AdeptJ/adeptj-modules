@@ -42,6 +42,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Commons</Bundle-Category>
 						<Bundle-Activator>com.adeptj.modularweb.beanval.internal.activator.BeanValidationActivator</Bundle-Activator>
 					</instructions>
 				</configuration>

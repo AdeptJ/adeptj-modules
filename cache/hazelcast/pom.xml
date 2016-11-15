@@ -42,6 +42,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Cache</Bundle-Category>
                         <Bundle-Activator>com.adeptj.modules.cache.hazelcast.internal.HazelcastActivator</Bundle-Activator>
 					</instructions>
 				</configuration>

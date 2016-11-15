@@ -43,6 +43,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Security</Bundle-Category>
 						<Import-Package>
                             org.apache.shiro.web.config,
                             org.apache.shiro.web.env,

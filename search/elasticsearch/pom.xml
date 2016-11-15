@@ -43,6 +43,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Category>AdeptJ Search</Bundle-Category>
 					</instructions>
 				</configuration>
 			</plugin>
