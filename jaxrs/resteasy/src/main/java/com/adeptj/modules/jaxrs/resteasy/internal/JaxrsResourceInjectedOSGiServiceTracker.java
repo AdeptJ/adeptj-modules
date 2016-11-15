@@ -41,8 +41,7 @@ public class JaxrsResourceInjectedOSGiServiceTracker extends ServiceTracker<Obje
 
 	private Field injected;
 
-	public JaxrsResourceInjectedOSGiServiceTracker(BundleContext context, Class<?> klazz, Object jaxrsResource,
-			Field injected) {
+	public JaxrsResourceInjectedOSGiServiceTracker(BundleContext context, Class<?> klazz, Object jaxrsResource, Field injected) {
 		super(context, klazz.getName(), null);
 		this.jaxrsResource = jaxrsResource;
 		this.injected = injected;

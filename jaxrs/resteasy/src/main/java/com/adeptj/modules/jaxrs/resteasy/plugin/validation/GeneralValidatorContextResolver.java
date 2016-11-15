@@ -58,8 +58,8 @@ public class GeneralValidatorContextResolver implements ContextResolver<GeneralV
 				this.validatorFactory = ValidatorFactoryInitializer.INSTANCE.getValidatorFactory();
 			}
 			return new GeneralValidatorImpl(this.validatorFactory, true, ALL_VALIDATED_EXECUTABLE_TYPES);
-		} catch (Exception e) {
-			throw new ValidationException(Messages.MESSAGES.unableToLoadValidationSupport(), e);
+		} catch (Exception ex) {
+			throw new ValidationException(Messages.MESSAGES.unableToLoadValidationSupport(), ex);
 		}
 	}
 

@@ -25,15 +25,12 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 
 import com.adeptj.modules.jaxrs.resteasy.adapter.api.ResteasyResourceAdapter;
 import com.adeptj.modules.jaxrs.resteasy.common.JaxrsResourceCollector;
 import com.adeptj.modules.jaxrs.resteasy.internal.JaxrsResourcePackageBundleListener;
 import com.adeptj.modules.jaxrs.resteasy.osgi.dispatcher.ExtHttpServletDispatcher;
-
-import javax.servlet.Servlet;
 
 /**
  * ResteasyResourceAdapter Implementation.
@@ -44,17 +41,13 @@ import javax.servlet.Servlet;
 @Component(immediate = true)
 public class ResteasyResourceAdapterImpl implements ResteasyResourceAdapter {
 
-    private BundleContext bundleContext;
-
     private JaxrsResourcePackageBundleListener listener;
 
     @Reference(target = "(osgi.http.whiteboard.servlet.name=Resteasy HttpServletDispatcher)")
-    private Servlet servlet;
-    
     private ExtHttpServletDispatcher dispatcherServlet;
-
+    
     @Override
-    public void addSingletonResource(String alias, Object resource) {
+    public <T> void addSingletonResource(String alias, T resource) {
         if (dispatcherServlet.isInitialized() && !dispatcherServlet.getProcessedResources().containsKey(alias)) {
             dispatcherServlet.getDispatcher().getRegistry().addSingletonResource(resource);
         } else {
@@ -70,14 +63,11 @@ public class ResteasyResourceAdapterImpl implements ResteasyResourceAdapter {
 
     @Activate
     protected void activate(ComponentContext context) {
-    	dispatcherServlet = (ExtHttpServletDispatcher) servlet;
-        bundleContext = context.getBundleContext();
-        listener = new JaxrsResourcePackageBundleListener(bundleContext, this);
+        listener = new JaxrsResourcePackageBundleListener(context.getBundleContext(), this);
     }
 
     @Deactivate
     protected void deactivate(ComponentContext context) {
         listener.unregisterAll();
-        bundleContext = null;
     }
 }

@@ -50,13 +50,13 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class JaxrsResourcePackageBundleListener implements BundleTrackerCustomizer<Object> {
+public class JaxrsResourcePackageBundleListener implements BundleTrackerCustomizer<Map<String, Class<?>>> {
 
 	public static final String HEADER = "JAXRS-Resource-Packages";
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsResourcePackageBundleListener.class);
 
-	private final BundleTracker<Object> bundleTracker;
+	private final BundleTracker<Map<String, Class<?>>> bundleTracker;
 
 	private ResteasyResourceAdapter resourceAdapter;
 
@@ -69,7 +69,7 @@ public class JaxrsResourcePackageBundleListener implements BundleTrackerCustomiz
 	}
 
 	@Override
-	public Object addingBundle(Bundle bundle, BundleEvent event) {
+	public Map<String, Class<?>> addingBundle(Bundle bundle, BundleEvent event) {
 		Map<String, Class<?>> resourceMap = new ConcurrentHashMap<>(32);
 		Dictionary<?, ?> headers = bundle.getHeaders();
 		String packageList = (String) headers.get(HEADER);
@@ -93,7 +93,7 @@ public class JaxrsResourcePackageBundleListener implements BundleTrackerCustomiz
 							this.registerResource(resourceMap, serviceReferences, bundleContext, resourceType, path);
 						}
 					} catch (ClassNotFoundException ex) {
-						ex.printStackTrace();
+						LOGGER.error("Exception!!", ex);
 					}
 				}
 			}
@@ -143,31 +143,27 @@ public class JaxrsResourcePackageBundleListener implements BundleTrackerCustomiz
 	}
 
 	@Override
-	public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+	public void modifiedBundle(Bundle bundle, BundleEvent event, Map<String, Class<?>> resourceMap) {
 		// NOP
 	}
 
 	@Override
-	public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
-		if (object instanceof Map<?, ?>) {
-			@SuppressWarnings("unchecked")
-			Map<String, Class<?>> resourceMap = Map.class.cast(object);
-			resourceMap.forEach((path, resourceType) -> {
-				this.resourceAdapter.removeSingletonResource(path, resourceType);
-				// Clean the tracked reference as well.
-				Field[] fields = resourceType.getDeclaredFields();
-				for (Field field : fields) {
-					if (field.isAnnotationPresent(OSGiService.class)) {
-						JaxrsResourceInjectedOSGiServiceTrackers.INSTANCE.getTrackers().forEach(tracker -> {
-							Object service = tracker.getService();
-							if (service != null && field.getType().equals(service.getClass())) {
-								tracker.close();
-							}
-						});
-					}
+	public void removedBundle(Bundle bundle, BundleEvent event, Map<String, Class<?>> resourceMap) {
+		resourceMap.forEach((path, resourceType) -> {
+			this.resourceAdapter.removeSingletonResource(path, resourceType);
+			// Clean the tracked reference as well.
+			Field[] fields = resourceType.getDeclaredFields();
+			for (Field field : fields) {
+				if (field.isAnnotationPresent(OSGiService.class)) {
+					JaxrsResourceInjectedOSGiServiceTrackers.INSTANCE.getTrackers().forEach(tracker -> {
+						Object service = tracker.getService();
+						if (service != null && field.getType().equals(service.getClass())) {
+							tracker.close();
+						}
+					});
 				}
-			});
-		}
+			}
+		});
 		BundleContext bundleContext = bundle.getBundleContext();
 		serviceRefs.forEach((symbolicName, services) -> {
 			if (StringUtils.equals(symbolicName, bundle.getSymbolicName())) {
