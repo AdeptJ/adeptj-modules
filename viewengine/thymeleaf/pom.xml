@@ -25,8 +25,8 @@
 	</parent>
 	<packaging>bundle</packaging>
 	<artifactId>adeptj-modules-viewengine-thymeleaf</artifactId>
-	<name>AdeptJ Modules :: Thymeleaf ViewEngine Provider Bundle</name>
-	<description>AdeptJ Modules :: Thymeleaf ViewEngine Provider Bundle</description>
+	<name>AdeptJ Modules :: ViewEngine :: Thymeleaf Provider Bundle</name>
+	<description>AdeptJ Modules :: ViewEngine :: Thymeleaf Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

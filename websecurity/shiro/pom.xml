@@ -25,8 +25,8 @@
 	</parent>
 	<artifactId>adeptj-modules-websecurity-shiro</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Shiro Web Security Provider Bundle</name>
-	<description>AdeptJ Modules :: Shiro Web Security Provider Bundle</description>
+	<name>AdeptJ Modules :: WebSecurity :: Shiro Provider Bundle</name>
+	<description>AdeptJ Modules :: WebSecurity :: Shiro Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

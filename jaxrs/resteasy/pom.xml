@@ -25,8 +25,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>bundle</packaging>
 	<artifactId>adeptj-modules-jaxrs-resteasy</artifactId>
-	<name>AdeptJ Modules :: Resteasy JAX-RS Provider Bundle</name>
-	<description>AdeptJ Modules :: JAX-RS(Resteasy) Provider Bundle</description>
+	<name>AdeptJ Modules :: JAX-RS :: Resteasy Provider Bundle</name>
+	<description>AdeptJ Modules :: JAX-RS :: Resteasy Provider Bundle</description>
 	
 	<properties>
 	    <resteasy.version>3.1.0.CR2</resteasy.version>

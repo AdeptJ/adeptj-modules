@@ -25,8 +25,8 @@
 	</parent>
 	<artifactId>adeptj-modules-data-cockroachdb</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Cockroachdb Data Provider Bundle</name>
-	<description>AdeptJ Modules :: Cockroachdb Data Provider Bundle</description>
+	<name>AdeptJ Modules :: Data :: Cockroachdb Data Provider Bundle</name>
+	<description>AdeptJ Modules :: Data :: Cockroachdb Data Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
