@@ -42,6 +42,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Import-Package>
                             org.apache.shiro.web.config,
                             org.apache.shiro.web.env,

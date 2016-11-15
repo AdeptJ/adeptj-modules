@@ -41,6 +41,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>com.adeptj.modules.cache.ehcache.internal.EhcacheActivator</Bundle-Activator>
 					</instructions>
 				</configuration>

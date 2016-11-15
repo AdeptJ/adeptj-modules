@@ -40,6 +40,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Fragment-Host>system.bundle;extension:=framework</Fragment-Host>
 						<Export-Package>
 							javassist.*;version=[3.11.0.GA,4),

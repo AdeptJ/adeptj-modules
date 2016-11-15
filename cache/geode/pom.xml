@@ -41,7 +41,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-                        <Bundle-Activator>com.adeptj.modularweb.cache.internal.CacheActivator</Bundle-Activator>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 					</instructions>
 				</configuration>
 			</plugin>

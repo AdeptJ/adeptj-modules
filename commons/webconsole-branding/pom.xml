@@ -41,6 +41,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<!-- Always Make sure this fragment should be installed before the Host Bundle -->
 						<Fragment-Host>org.apache.felix.webconsole;bundle-version="[4,5)"</Fragment-Host>
 					</instructions>

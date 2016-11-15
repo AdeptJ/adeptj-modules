@@ -23,11 +23,11 @@
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modules-commons-webconsole-security-provider</artifactId>
+	<artifactId>adeptj-modules-commons-webconsole-security</artifactId>
 	<version>1.0.0.RELEASE</version>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</name>
-	<description>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: Felix WebConsole Security Bundle</name>
+	<description>AdeptJ Modules :: Commons :: Felix WebConsole Security Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,6 +40,11 @@
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+					</instructions>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.felix</groupId>

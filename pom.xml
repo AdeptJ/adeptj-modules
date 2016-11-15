@@ -122,7 +122,7 @@
         <module>commons/pkgexport-fragment</module>
 		<module>commons/resourcebundle</module>
         <module>commons/webconsole-branding</module>
-        <module>commons/webconsole-security-provider</module>
+        <module>commons/webconsole-security</module>
         
         <!-- Common Modules Ends -->
         
