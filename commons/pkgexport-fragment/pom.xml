@@ -23,10 +23,10 @@
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modules-common-pkgexport-fragment</artifactId>
+	<artifactId>adeptj-modules-commons-pkgexport-fragment</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Framework Extension Fragment Bundle</name>
-	<description>AdeptJ Modules :: Framework Extension Fragment Bundle</description>
+	<name>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</name>
+	<description>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

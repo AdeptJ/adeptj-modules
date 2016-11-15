@@ -23,10 +23,10 @@
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modules-common-resourcebundle</artifactId>
+	<artifactId>adeptj-modules-commons-beanvalidation</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: ResourceBundle Provider Bundle</name>
-	<description>AdeptJ Modules :: ResourceBundle Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: Bean Validation Provider Bundle</name>
+	<description>AdeptJ Modules :: Commons :: Bean Validation Provider Bundle(Hibernate Validator Based)</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,10 +34,16 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-Activator>com.adeptj.modularweb.beanval.internal.activator.BeanValidationActivator</Bundle-Activator>
+					</instructions>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -62,15 +68,16 @@
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 
 	<dependencies>
-
+	
 		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.core</artifactId>
-			<scope>provided</scope>
+		    <groupId>org.osgi</groupId>
+		    <artifactId>osgi.core</artifactId>
+		    <scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -87,11 +94,47 @@
 
 		<dependency>
 			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr.annotations</artifactId>
+			<artifactId>org.apache.felix.http.api</artifactId>
+			<version>3.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.scr.annotations</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.adeptj</groupId>
+			<artifactId>adeptj-modularweb-common</artifactId>
+			<version>1.0.0.RELEASE</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.1.0.Final</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.2.4.Final</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.logging</groupId>
+					<artifactId>jboss-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml</groupId>
+					<artifactId>classmate</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 	</dependencies>
-
-
 </project>

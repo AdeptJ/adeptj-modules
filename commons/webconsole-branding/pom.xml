@@ -23,10 +23,11 @@
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modules-common-javamail</artifactId>
+	<artifactId>adeptj-modules-commons-webconsole-branding</artifactId>
+	<version>1.0.0.RELEASE</version>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: JavaMail API Provider Bundle</name>
-	<description>AdeptJ Modules :: JavaMail API Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: Felix WebConsole Branding Provider Bundle</name>
+	<description>AdeptJ Modules :: Commons :: Felix WebConsole Branding Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,58 +35,18 @@
 
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-scr-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-scr-scrdescriptor</id>
-						<goals>
-							<goal>scr</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<compilerArgument>-parameters</compilerArgument>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
+					<instructions>
+						<!-- Always Make sure this fragment should be installed before the Host Bundle -->
+						<Fragment-Host>org.apache.felix.webconsole;bundle-version="[4,5)"</Fragment-Host>
+					</instructions>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
-
-	<dependencies>
 	
-		<dependency>
-		    <groupId>org.osgi</groupId>
-		    <artifactId>osgi.core</artifactId>
-		    <scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.cmpn</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr.annotations</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-	</dependencies>
 </project>

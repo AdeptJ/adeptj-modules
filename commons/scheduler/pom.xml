@@ -23,10 +23,10 @@
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modules-common-beanvalidation</artifactId>
+	<artifactId>adeptj-modules-commons-scheduler</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Bean Validation Provider Bundle</name>
-	<description>AdeptJ Modules :: Bean Validation Provider Bundle(Hibernate Validator Based)</description>
+	<name>AdeptJ Modules :: Commons :: Scheduler Provider Bundle</name>
+	<description>AdeptJ Modules :: Commons :: Scheduler Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,11 +39,6 @@
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-Activator>com.adeptj.modularweb.beanval.internal.activator.BeanValidationActivator</Bundle-Activator>
-					</instructions>
-				</configuration>
 			</plugin>
 
 			<plugin>
@@ -87,53 +82,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.http.api</artifactId>
-			<version>3.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.scr.annotations</artifactId>
 			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.adeptj</groupId>
-			<artifactId>adeptj-modularweb-common</artifactId>
-			<version>1.0.0.RELEASE</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.1.0.Final</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>5.2.4.Final</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.jboss.logging</groupId>
-					<artifactId>jboss-logging</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml</groupId>
-					<artifactId>classmate</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 	</dependencies>

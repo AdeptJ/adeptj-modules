@@ -112,16 +112,17 @@
         
         <!-- Common Modules Start -->
         
-        <module>common/util</module>
-		<module>common/beanvalidation</module>
-		<module>common/datasource</module>
-		<module>common/javamail</module>
-        <module>common/logging</module>
-        <module>common/oauth</module>
-        <module>common/pkgexport-fragment</module>
-		<module>common/resourcebundle</module>
-        <module>common/webconsole-branding</module>
-        <module>common/webconsole-security-provider</module>
+        <module>commons/util</module>
+        <module>commons/scheduler</module>
+		<module>commons/beanvalidation</module>
+		<module>commons/datasource</module>
+		<module>commons/javamail</module>
+        <module>commons/logging</module>
+        <module>commons/oauth</module>
+        <module>commons/pkgexport-fragment</module>
+		<module>commons/resourcebundle</module>
+        <module>commons/webconsole-branding</module>
+        <module>commons/webconsole-security-provider</module>
         
         <!-- Common Modules Ends -->
         

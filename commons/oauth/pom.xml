@@ -23,10 +23,10 @@
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modules-common-oauth</artifactId>
+	<artifactId>adeptj-modules-commons-oauth</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: OAuth Provider Bundle</name>
-	<description>AdeptJ Modules :: OAuth Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: OAuth Provider Bundle</name>
+	<description>AdeptJ Modules :: Commons :: OAuth Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

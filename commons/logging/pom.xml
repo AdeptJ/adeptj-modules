@@ -23,24 +23,26 @@
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
-	<artifactId>adeptj-modules-common-webconsole-security-provider</artifactId>
-	<version>1.0.0.RELEASE</version>
+	<artifactId>adeptj-modules-commons-logging</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Felix WebConsole Security Provider Bundle</name>
-	<description>AdeptJ Modules :: Felix WebConsole Security Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: Logging Configuration Bundle</name>
+	<description>AdeptJ Modules :: Commons :: Logging Configuration Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<felix.webconsole.version>4.2.16</felix.webconsole.version>
+		<logback-core.version>1.1.7</logback-core.version>
+		<logback-classic.version>1.1.7</logback-classic.version>
 	</properties>
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
 				<extensions>true</extensions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-scr-plugin</artifactId>
@@ -53,21 +55,23 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<compilerArgument>-parameters</compilerArgument>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
-	
+
 	<dependencies>
 	
-	   <dependency>
+		<dependency>
 		    <groupId>org.osgi</groupId>
 		    <artifactId>osgi.core</artifactId>
 		    <scope>provided</scope>
@@ -80,24 +84,22 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.webconsole</artifactId>
-			<version>${felix.webconsole.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.scr.annotations</artifactId>
 			<scope>provided</scope>
 		</dependency>
-	
-	</dependencies>
+		
+		<!-- LOGBACK dependencies -->
+		
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+		</dependency>
 
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+
+	</dependencies>
 </project>

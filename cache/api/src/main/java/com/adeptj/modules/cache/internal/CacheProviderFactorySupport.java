@@ -41,7 +41,7 @@ import com.adeptj.modules.cache.spi.CacheProviderFactory;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(immediate = true)
-@Service
+@Service(CacheProviderFactory.class)
 public class CacheProviderFactorySupport implements CacheProviderFactory {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CacheProviderFactorySupport.class);
