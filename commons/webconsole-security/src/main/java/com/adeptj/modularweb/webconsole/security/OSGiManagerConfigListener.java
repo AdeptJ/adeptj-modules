@@ -89,7 +89,7 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 			Configuration cfg = this.configAdmin.getConfiguration(pid, null);
 			if (cfg == null) {
 				LOGGER.warn("Configuration doesn't exist for pid: [{}]", pid);
-			} else if ((configs = cfg.getProperties()) != null) {
+			} else if ((configs = cfg.getProperties()) != null && configs.get("password") != null) {
 				Class<?> klazz = this.passwordUpdateAwareClass();
 				Object updateAware = klazz.getMethod("getInstance", (Class[]) null).invoke(null, (Object[]) null);
 				klazz.getMethod("setPassword", char[].class).invoke(updateAware, ((String) configs.get("password")).toCharArray());
