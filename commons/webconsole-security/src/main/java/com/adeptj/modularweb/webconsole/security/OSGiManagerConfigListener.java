@@ -59,7 +59,9 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 			if (OSGI_MGR_PID.equals(deletedPid)) {
 				try {
 					LOGGER.info("Deleting pid: [{}]", deletedPid);
-					this.passwordUpdateAwareClass().getMethod("setPassword", char[].class).invoke(null, (char[]) null);
+					Class<?> klazz = this.passwordUpdateAwareClass();
+					Object updateAware = klazz.getMethod("getInstance", (Class[]) null).invoke(null, (Object[]) null);
+					klazz.getMethod("setPassword", char[].class).invoke(updateAware, (char[]) null);
 				} catch (Exception ex) {
 					LOGGER.error("Exception!!", ex);
 				}
@@ -88,8 +90,9 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 			if (cfg == null) {
 				LOGGER.warn("Configuration doesn't exist for pid: [{}]", pid);
 			} else if ((configs = cfg.getProperties()) != null) {
-				String pwd = (String) configs.get("password");
-				this.passwordUpdateAwareClass().getMethod("setPassword", char[].class).invoke(null, pwd.toCharArray());
+				Class<?> klazz = this.passwordUpdateAwareClass();
+				Object updateAware = klazz.getMethod("getInstance", (Class[]) null).invoke(null, (Object[]) null);
+				klazz.getMethod("setPassword", char[].class).invoke(updateAware, ((String) configs.get("password")).toCharArray());
 			}
 		} catch (Exception ex) {
 			LOGGER.error("Exception!!", ex);
