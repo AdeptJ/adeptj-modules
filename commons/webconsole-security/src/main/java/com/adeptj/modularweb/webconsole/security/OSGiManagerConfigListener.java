@@ -68,7 +68,7 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 		case ConfigurationEvent.CM_UPDATED:
 			String updatedPid = event.getPid();
 			if (OSGI_MGR_PID.equals(updatedPid)) {
-				LOGGER.info("Handling Configuration update event for pid: [{}]", updatedPid);
+				LOGGER.debug("Handling Configuration update event for pid: [{}]", updatedPid);
 				this.handleOSGiManagerPwd(updatedPid);
 			}
 			break;
@@ -86,7 +86,7 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 		try {
 			Configuration cfg = this.configAdmin.getConfiguration(pid, null);
 			if (cfg == null) {
-				LOGGER.warn("No Configuration found of pid: [{}]", pid);
+				LOGGER.warn("Configuration doesn't exist for pid: [{}]", pid);
 			} else if ((configs = cfg.getProperties()) != null) {
 				String pwd = (String) configs.get("password");
 				this.passwordUpdateAwareClass().getMethod("setPassword", char[].class).invoke(null, pwd.toCharArray());
