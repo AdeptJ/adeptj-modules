@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modularweb.webconsole.security;
+package com.adeptj.modules.commons.webconsole.security;
 
 import java.util.Dictionary;
 
