@@ -36,12 +36,20 @@ import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
 @Component(immediate = true)
 public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
 
+	private static final String URL_ADMIN_LOGOUT = "/admin/logout";
+
+	private static final String HEADER_LOC = "Location";
+
+	private static final String ADMIN = "admin";
+	
+	private static final String ROLE_OSGI_ADMIN = "OSGiAdmin";
+
 	/**
 	 * Role [OSGiAdmin] is already set by Undertow SecurityHandler.
 	 */
 	@Override
 	public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
-		return request.isUserInRole("OSGiAdmin");
+		return request.isUserInRole(ROLE_OSGI_ADMIN);
 	}
 
 	/**
@@ -49,7 +57,7 @@ public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 
 	 */
 	@Override
 	public Object authenticate(String username, String password) {
-		return "admin";
+		return ADMIN;
 	}
 
 	/**
@@ -68,9 +76,9 @@ public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 
 		// Note: Semantics of this method states that Session invalidation should not happen here.
 		// Not using response.sendRedirect due to exception handling we need to do, avoiding that.
 		// Set the status to [302] and location header to [/admin/logout] so that browser could redirect there.
-		// ProxyDispatcherServlet will take care of Session invalidation later.
+		// ProxyServlet will take care of Session invalidation later.
 		response.setStatus(HttpServletResponse.SC_FOUND); 
-		response.setHeader("Location", "/admin/logout");
+		response.setHeader(HEADER_LOC, URL_ADMIN_LOGOUT);
 	}
 
 }

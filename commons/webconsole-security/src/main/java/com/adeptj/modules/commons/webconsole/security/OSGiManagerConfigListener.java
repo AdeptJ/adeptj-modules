@@ -42,6 +42,12 @@ import org.slf4j.LoggerFactory;
 @Component(immediate = true)
 public class OSGiManagerConfigListener implements ConfigurationListener {
 
+	private static final String CFG_PWD = "password";
+
+	private static final String METHOD_SET_PASSWORD = "setPassword";
+
+	private static final String METHOD_GET_INSTANCE = "getInstance";
+
 	private static final String WEBCONSOLE_PWD_UPDATE_AWARE_CLASS = "com.adeptj.runtime.osgi.WebConsolePasswordUpdateAware";
 
 	private static final String OSGI_MGR_PID = "org.apache.felix.webconsole.internal.servlet.OsgiManager";
@@ -60,8 +66,8 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 				try {
 					LOGGER.info("Deleting pid: [{}]", deletedPid);
 					Class<?> klazz = this.passwordUpdateAwareClass();
-					Object updateAware = klazz.getMethod("getInstance", (Class[]) null).invoke(null, (Object[]) null);
-					klazz.getMethod("setPassword", char[].class).invoke(updateAware, (char[]) null);
+					Object updateAware = klazz.getMethod(METHOD_GET_INSTANCE, (Class[]) null).invoke(null, (Object[]) null);
+					klazz.getMethod(METHOD_SET_PASSWORD, char[].class).invoke(updateAware, (char[]) null);
 				} catch (Exception ex) {
 					LOGGER.error("Exception!!", ex);
 				}
@@ -89,10 +95,10 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 			Configuration cfg = this.configAdmin.getConfiguration(pid, null);
 			if (cfg == null) {
 				LOGGER.warn("Configuration doesn't exist for pid: [{}]", pid);
-			} else if ((configs = cfg.getProperties()) != null && configs.get("password") != null) {
+			} else if ((configs = cfg.getProperties()) != null && configs.get(CFG_PWD) != null) {
 				Class<?> klazz = this.passwordUpdateAwareClass();
-				Object updateAware = klazz.getMethod("getInstance", (Class[]) null).invoke(null, (Object[]) null);
-				klazz.getMethod("setPassword", char[].class).invoke(updateAware, ((String) configs.get("password")).toCharArray());
+				Object updateAware = klazz.getMethod(METHOD_GET_INSTANCE, (Class[]) null).invoke(null, (Object[]) null);
+				klazz.getMethod(METHOD_SET_PASSWORD, char[].class).invoke(updateAware, ((String) configs.get(CFG_PWD)).toCharArray());
 			}
 		} catch (Exception ex) {
 			LOGGER.error("Exception!!", ex);
