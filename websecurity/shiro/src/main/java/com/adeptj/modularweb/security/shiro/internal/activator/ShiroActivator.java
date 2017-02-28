@@ -58,7 +58,7 @@ public class ShiroActivator implements BundleActivator {
 		// Register the Shiro EnvironmentLoaderListener first.
 		Dictionary<String, Object> shiroListenerProps = new Hashtable<>();
 		shiroListenerProps.put(Constants.SERVICE_VENDOR, "AdeptJ");
-		shiroListenerProps.put("osgi.http.whiteboard.listener", "ExtEnvironmentLoaderListener");
+		shiroListenerProps.put("osgi.http.whiteboard.listener", "true");
 		servRegShiroListener = context.registerService(ServletContextListener.class, new ExtEnvironmentLoaderListener(),
 				shiroListenerProps);
 		// Now Register the ShiroFilter.
