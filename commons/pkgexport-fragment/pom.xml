@@ -44,9 +44,9 @@
 						<Bundle-Category>AdeptJ Commons</Bundle-Category>
 						<Fragment-Host>system.bundle;extension:=framework</Fragment-Host>
 						<Export-Package>
-							javassist.*;version=[3.11.0.GA,4),
-							org.thymeleaf.*;version=[3.0.2.RELEASE,4),
-							ognl.*;version=[3.1.10,4)
+							javassist.*;version=[3.21.0.GA,4),
+							org.thymeleaf.*;version=[3.0.3.RELEASE,4),
+							ognl.*;version=[3.2,4)
 						</Export-Package>
 					</instructions>
 				</configuration>
