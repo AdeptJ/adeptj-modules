@@ -32,10 +32,6 @@
 	<name>AdeptJ Modules :: JAX-RS :: Resteasy Provider Bundle</name>
 	<description>AdeptJ Modules :: JAX-RS :: Resteasy Provider Bundle</description>
 	
-	<properties>
-	    <resteasy.version>3.1.0.Final</resteasy.version>
-	</properties>
-
 	<build>
 
 		<plugins>
