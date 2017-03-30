@@ -57,6 +57,7 @@
          <!-- Cache Modules Start -->
 	    
 		<module>cache/api</module>
+		<module>cache/caffeine</module>
 		<module>cache/ehcache</module>
 		<module>cache/geode</module>
         <module>cache/hazelcast</module>
