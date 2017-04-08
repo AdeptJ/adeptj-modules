@@ -36,7 +36,7 @@ import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
 @Component(immediate = true)
 public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
 
-	private static final String URL_ADMIN_LOGOUT = "/admin/logout";
+	private static final String URL_TOOLS_LOGOUT = "/tools/logout";
 
 	private static final String HEADER_LOC = "Location";
 
@@ -75,10 +75,10 @@ public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
 		// Note: Semantics of this method states that Session invalidation should not happen here.
 		// Not using response.sendRedirect due to exception handling we need to do, avoiding that.
-		// Set the status to [302] and location header to [/admin/logout] so that browser could redirect there.
+		// Set the status to [302] and location header to [/tools/logout] so that browser could redirect there.
 		// ProxyServlet will take care of Session invalidation later.
 		response.setStatus(HttpServletResponse.SC_FOUND); 
-		response.setHeader(HEADER_LOC, URL_ADMIN_LOGOUT);
+		response.setHeader(HEADER_LOC, URL_TOOLS_LOGOUT);
 	}
 
 }

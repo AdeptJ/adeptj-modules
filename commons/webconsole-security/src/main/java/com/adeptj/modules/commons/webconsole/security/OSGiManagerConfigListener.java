@@ -1,4 +1,4 @@
-/** 
+/*
 ###############################################################################
 #                                                                             # 
 #    Copyright 2016, AdeptJ (http://adeptj.com)                               #
@@ -19,6 +19,9 @@
 */
 package com.adeptj.modules.commons.webconsole.security;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Dictionary;
 
 import org.apache.felix.scr.annotations.Activate;
@@ -56,6 +59,8 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 
 	@Reference
 	private ConfigurationAdmin configAdmin;
+	
+	private MethodHandle setPwdMethodHandle;
 
 	@Override
 	public void configurationEvent(ConfigurationEvent event) {
@@ -65,11 +70,9 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 			if (OSGI_MGR_PID.equals(deletedPid)) {
 				try {
 					LOGGER.info("Deleting pid: [{}]", deletedPid);
-					Class<?> klazz = this.passwordUpdateAwareClass();
-					Object updateAware = klazz.getMethod(METHOD_GET_INSTANCE, (Class[]) null).invoke(null, (Object[]) null);
-					klazz.getMethod(METHOD_SET_PASSWORD, char[].class).invoke(updateAware, (char[]) null);
-				} catch (Exception ex) {
-					LOGGER.error("Exception!!", ex);
+					this.setPwdMethodHandle.invoke((char[]) null);
+				} catch (Throwable th) { // NOSONAR
+					LOGGER.error("Exception!!", th);
 				}
 			}
 			break;
@@ -85,7 +88,8 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 	}
 
 	@Activate
-	protected void activate(BundleContext context) {
+	protected void activate(BundleContext context) throws ClassNotFoundException {
+		this.initSetPwdMethodHandle();
 		this.handleOSGiManagerPwd(OSGI_MGR_PID);
 	}
 
@@ -96,17 +100,24 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 			if (cfg == null) {
 				LOGGER.warn("Configuration doesn't exist for pid: [{}]", pid);
 			} else if ((configs = cfg.getProperties()) != null && configs.get(CFG_PWD) != null) {
-				Class<?> klazz = this.passwordUpdateAwareClass();
-				Object updateAware = klazz.getMethod(METHOD_GET_INSTANCE, (Class[]) null).invoke(null, (Object[]) null);
-				klazz.getMethod(METHOD_SET_PASSWORD, char[].class).invoke(updateAware, ((String) configs.get(CFG_PWD)).toCharArray());
+				this.setPwdMethodHandle.invoke(((String) configs.get(CFG_PWD)).toCharArray());
 			}
-		} catch (Exception ex) {
-			LOGGER.error("Exception!!", ex);
+		} catch (Throwable th) { // NOSONAR
+			LOGGER.error("Exception!!", th);
 		}
 	}
 	
-	private Class<?> passwordUpdateAwareClass() throws ClassNotFoundException {
-		// Load from Application class loader which in fact is the parent of OSGi Framework.
-		return this.getClass().getClassLoader().getParent().loadClass(WEBCONSOLE_PWD_UPDATE_AWARE_CLASS);
+	private void initSetPwdMethodHandle() {
+		if (this.setPwdMethodHandle == null) {
+			try {
+				// Load from Application class loader which in fact is the parent of OSGi Framework.
+				Class<?> klazz = this.getClass().getClassLoader().getParent().loadClass(WEBCONSOLE_PWD_UPDATE_AWARE_CLASS);
+				MethodHandles.Lookup lookup = MethodHandles.lookup();
+				this.setPwdMethodHandle = lookup.findVirtual(klazz, METHOD_SET_PASSWORD, MethodType.methodType(void.class, char[].class))
+						.bindTo(lookup.findStatic(klazz, METHOD_GET_INSTANCE, MethodType.methodType(klazz)).invoke());
+			} catch (Throwable th) { // NOSONAR
+				LOGGER.error("Exception!!", th);
+			}	
+		}
 	}
 }
