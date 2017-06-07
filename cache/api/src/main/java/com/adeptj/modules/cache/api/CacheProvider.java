@@ -17,11 +17,11 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.cache.spi;
-
-import java.util.Optional;
+package com.adeptj.modules.cache.api;
 
 import com.adeptj.modules.cache.common.Cache;
+
+import java.util.Optional;
 
 /**
  * The CacheProvider provides access to all caches in the system.

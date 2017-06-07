@@ -18,53 +18,53 @@
 #                                                                             #
 ###############################################################################
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modules</artifactId>
 		<version>1.0.0.Final</version>
 		<relativePath/>
 	</parent>
-    <artifactId>adeptj-modules-commons-datasource</artifactId>
+	<artifactId>adeptj-modules-commons-aws-messaging</artifactId>
 	<packaging>jar</packaging>
-	<name>AdeptJ Modules :: Commons :: JDBC Datasource Provider Bundle</name>
-	<description>AdeptJ Modules :: Commons :: JDBC Datasource Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: AWS Email and SMS APIs</name>
+	<description>AdeptJ Modules :: Commons :: AWS Email and SMS APIs Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<aws.messaging.version>1.11.140</aws.messaging.version>
 	</properties>
 
 	<build>
 
-        <!-- Below BND plugin is required to process the OSGi Annotation-->
+		<!-- Below BND plugin is required to process the OSGi Annotation-->
 		<plugins>
-            <plugin>
-                <groupId>biz.aQute.bnd</groupId>
-                <artifactId>bnd-maven-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>bnd-process</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>bnd-process</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-            <!-- Below Maven Jar plugin is required to process MENIFEST.MF -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
+			<!-- Below Maven Jar plugin is required to process MENIFEST.MF -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<archive>
+						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+					</archive>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -78,9 +78,9 @@
 		</plugins>
 
 	</build>
-	
-	<dependencies>
 
+	<dependencies>
+	
 		<dependency>
 		    <groupId>org.osgi</groupId>
 		    <artifactId>osgi.core</artifactId>
@@ -93,41 +93,29 @@
 			<scope>provided</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.scr.annotations</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		
+		<dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sns</artifactId>
+            <version>${aws.messaging.version}</version>
+        </dependency>
+        
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>2.6.2</version>
-            <scope>provided</scope>
-            <exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.javassist</groupId>
-                    <artifactId>javassist</artifactId>
-				</exclusion>
-			</exclusions>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ses</artifactId>
+            <version>${aws.messaging.version}</version>
         </dependency>
 
 	</dependencies>
-
 </project>

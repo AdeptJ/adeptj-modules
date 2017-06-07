@@ -18,14 +18,18 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.datasource.core;
+package com.adeptj.modules.commons.ds;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
@@ -40,13 +44,17 @@ import java.util.Properties;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component
-@Designate(ocd = DatasourceConfig.class)
+@Designate(ocd = DataSourceConfig.class)
+@Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class DataSourceProvider implements DataSourceFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceProvider.class);
+
+    private HikariDataSource dataSource;
 
     @Override
     public DataSource createDataSource(Properties props) throws SQLException {
-        return new HikariDataSource(new HikariConfig(props));
+        return this.dataSource;
     }
 
     @Override
@@ -65,7 +73,16 @@ public class DataSourceProvider implements DataSourceFactory {
     }
 
     @Activate
-    protected void activate(DatasourceConfig config) {
+    protected void activate(DataSourceConfig config) {
+        Properties properties = new Properties();
+        properties.put("poolName", config.poolName());
+        LOGGER.info("Initializing JDBC Connection Pool: [{}]", config.poolName());
+        this.dataSource = new HikariDataSource(new HikariConfig(properties));
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        this.dataSource.close();
     }
 
 }

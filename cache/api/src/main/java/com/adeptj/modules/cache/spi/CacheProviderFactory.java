@@ -19,9 +19,10 @@
 */
 package com.adeptj.modules.cache.spi;
 
-import java.util.Optional;
-
+import com.adeptj.modules.cache.api.CacheProvider;
 import com.adeptj.modules.cache.common.CacheProviderType;
+
+import java.util.Optional;
 
 /**
  * The CacheProviderFactory.

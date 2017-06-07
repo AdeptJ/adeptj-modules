@@ -32,5 +32,7 @@ public enum CacheProviderType {
 	
 	HAZELCAST,
 	
-	INFISPAN
+	INFISPAN,
+
+    CAFFEINE,
 }

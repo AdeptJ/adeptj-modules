@@ -20,8 +20,12 @@
 
 -dsannotations: *
 
+Include-Resource: aws-java-sdk-*.jar
+
+Bundle-ClassPath: ., aws-java-sdk-core-1.11.140.jar, aws-java-sdk-sns-1.11.140.jar, aws-java-sdk-ses-1.11.140.jar, aws-java-sdk-sqs-1.11.140.jar
+
 Export-Package: \
-	com.adeptj.modules.commons.ds
-Bundle-Name: AdeptJ Modules :: Commons :: JDBC DataSource
+	com.adeptj.modules.commons.aws.messaging
+Bundle-Name: AdeptJ Modules :: Commons :: AWS Messaging
 Bundle-Category: AdeptJ Commons
 Bundle-Vendor: AdeptJ

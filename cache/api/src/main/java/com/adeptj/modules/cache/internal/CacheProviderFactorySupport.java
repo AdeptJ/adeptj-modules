@@ -19,10 +19,9 @@
 */
 package com.adeptj.modules.cache.internal;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.adeptj.modules.cache.api.CacheProvider;
+import com.adeptj.modules.cache.common.CacheProviderType;
+import com.adeptj.modules.cache.spi.CacheProviderFactory;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
@@ -31,9 +30,9 @@ import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.cache.common.CacheProviderType;
-import com.adeptj.modules.cache.spi.CacheProvider;
-import com.adeptj.modules.cache.spi.CacheProviderFactory;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * CacheProviderFactorySupport.
