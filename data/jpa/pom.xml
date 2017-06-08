@@ -34,7 +34,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<eclipselink.version>2.6.3</eclipselink.version>
+		<eclipselink.version>2.6.4</eclipselink.version>
 	</properties>
 
 	<build>
@@ -92,12 +92,6 @@
 			<artifactId>osgi.cmpn</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr.annotations</artifactId>
-			<scope>provided</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -105,31 +99,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mongodb.morphia</groupId>
-			<artifactId>morphia</artifactId>
-			<version>1.2.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>cglib</groupId>
-					<artifactId>cglib-nodep</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib-nodep</artifactId>
-			<version>3.2.4</version>
-		</dependency>
-
-		<!-- Eclipselink 2.6.3 Dependencies -->
+		<!-- Eclipselink 2.6.4 Dependencies -->
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -140,36 +110,42 @@
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.core</artifactId>
 			<version>${eclipselink.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa</artifactId>
 			<version>${eclipselink.version}</version>
+            <scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
 			<version>${eclipselink.version}</version>
+            <scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.antlr</artifactId>
 			<version>${eclipselink.version}</version>
+            <scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.asm</artifactId>
 			<version>${eclipselink.version}</version>
+            <scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.adeptj</groupId>
 			<artifactId>adeptj-modules-commons-datasource</artifactId>
 			<version>1.0.0.Final</version>
+            <scope>provided</scope>
 		</dependency>
 
 	</dependencies>
