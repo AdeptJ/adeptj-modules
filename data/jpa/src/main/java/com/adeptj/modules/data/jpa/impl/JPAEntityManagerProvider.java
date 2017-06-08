@@ -21,6 +21,8 @@
 package com.adeptj.modules.data.jpa.impl;
 
 import com.adeptj.modules.data.jpa.EntityManagerProvider;
+import org.eclipse.persistence.jpa.PersistenceProvider;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -32,11 +34,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.metamodel.EntityType;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 
 /**
@@ -67,15 +70,25 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
         if (this.managerFactory == null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(NON_JTA_DATASOURCE, this.sourceFactory.createDataSource(null));
-            this.managerFactory = Persistence.createEntityManagerFactory(this.unitName, properties);
+            properties.put(CLASSLOADER, this.getClass().getClassLoader());
+            PersistenceProvider provider = new PersistenceProvider();
+            this.managerFactory = provider.createEntityManagerFactory(this.unitName, properties);
         }
         log.info("Entitry manager factory: "+ this.managerFactory);
         return this.managerFactory;
     }
 
     @Activate
-    protected void activate(EntityManagerConfig managerConfig) {
-        this.unitName = managerConfig.persistenceUnitName();
+    protected void activate(ComponentContext context) {
+        this.unitName = (String) context.getProperties().get("persistenceUnitName");
+        try {
+            this.getEntityManagerFactory();
+            for (EntityType<?> entityType : this.managerFactory.getMetamodel().getEntities()) {
+                log.info("Reserved Entity Type: "+ entityType.getName());
+            }
+        } catch (SQLException ex) {
+            log.error("Unable to initialize entity manager factory: ", ex);
+        }
     }
 
     @Override
