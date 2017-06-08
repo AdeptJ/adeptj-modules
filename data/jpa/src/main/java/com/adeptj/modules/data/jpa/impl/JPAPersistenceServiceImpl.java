@@ -36,6 +36,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -128,6 +129,33 @@ public class JPAPersistenceServiceImpl implements JPAPersistenceService {
             CriteriaQuery<T> cq = this.entityManager.getCriteriaBuilder().createQuery(entityClass);
             return this.entityManager.createQuery(cq.select(cq.from(entityClass))).getResultList();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+            throw new JpaPersistenceException(ex);
+        }
+    }
+
+    @Override
+    public <T> void delete(T entityInstance) {
+        try {
+            this.entityManager.remove(this.entityManager.contains(entityInstance) ? entityInstance :
+                    this.entityManager.merge(entityInstance));
+            this.entityManager.getTransaction().commit();
+        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
+            throw new JpaPersistenceException(ex);
+        }
+    }
+
+    @Override
+    public <T> int deleteByCriteria(Class<T> entity, Map<String, Object> predicateMap) {
+        try {
+            CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+            CriteriaDelete<T> delete = cb.createCriteriaDelete(entity);
+            List<Predicate> predicates = this.getPredicates(predicateMap, cb, delete.from(entity));
+            delete.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
+            int rowCount = this.entityManager.createQuery(delete).executeUpdate();
+            log.info("deleteByCriteria: No. of rows deleted: {}", rowCount);
+            this.entityManager.getTransaction().commit();
+            return rowCount;
+        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
             throw new JpaPersistenceException(ex);
         }
     }

@@ -78,4 +78,22 @@ public interface JPAPersistenceService {
      */
     <T> List<T> findAll(Class<T> entityClass);
 
+    /**
+     * Delete an entity form Database.
+     *
+     * @param entityInstance
+     * @param <T>
+     */
+    <T> void delete(T entityInstance);
+
+    /**
+     * Delete by criteria.
+     *
+     * @param entity
+     * @param predicateMap
+     * @param <T>
+     * @return
+     */
+    <T> int deleteByCriteria(Class<T> entity, Map<String, Object> predicateMap);
+
 }
