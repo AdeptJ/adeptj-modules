@@ -77,6 +77,7 @@ public class DataSourceProvider implements DataSourceFactory {
         Properties properties = new Properties();
         properties.put("poolName", config.poolName());
         properties.put("jdbcUrl", config.jdbcUrl());
+        properties.put("driverClassName", config.driverClassName());
         properties.put("username", config.username());
         properties.put("password", config.password());
         properties.put("autoCommit", config.autoCommit());

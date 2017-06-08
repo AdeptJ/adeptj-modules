@@ -35,10 +35,13 @@ public @interface DataSourceConfig {
     String poolName();
 
     @AttributeDefinition(name = "jdbcUrl", description = "JDBC URL for target Database")
-    String jdbcUrl();
+    String jdbcUrl() default "jdbc:mysql://localhost:3306/";
+
+    @AttributeDefinition(name = "driverClassName", description = "JDBC driver FQCN")
+    String driverClassName() default "com.mysql.jdbc.Driver";
 
     @AttributeDefinition(name = "username", description = "JDBC default authentication username")
-    String username();
+    String username() default "root";
 
     @AttributeDefinition(name = "password", description = "JDBC default authentication password")
     String password();
