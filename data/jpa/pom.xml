@@ -28,7 +28,7 @@
 		<relativePath/>
 	</parent>
 	<artifactId>adeptj-modules-data-jpa</artifactId>
-	<packaging>bundle</packaging>
+	<packaging>jar</packaging>
 	<name>AdeptJ Modules :: Data :: JPA Data Provider Bundle</name>
 	<description>AdeptJ Modules :: Data :: JPA Data Provider Bundle</description>
 	
@@ -38,30 +38,32 @@
 	</properties>
 
 	<build>
+
+		<!-- Below BND plugin is required to process the OSGi Annotation-->
 		<plugins>
 			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Category>AdeptJ Data</Bundle-Category>
-					</instructions>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-scr-plugin</artifactId>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
-						<id>generate-scr-scrdescriptor</id>
 						<goals>
-							<goal>scr</goal>
+							<goal>bnd-process</goal>
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+
+			<!-- Below Maven Jar plugin is required to process MENIFEST.MF -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<archive>
+						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+					</archive>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -69,11 +71,12 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<compilerArgument>-parameters</compilerArgument>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
 				</configuration>
 			</plugin>
 		</plugins>
+
 	</build>
 
 	<dependencies>
@@ -161,6 +164,12 @@
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.asm</artifactId>
 			<version>${eclipselink.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.adeptj</groupId>
+			<artifactId>adeptj-modules-commons-datasource</artifactId>
+			<version>1.0.0.Final</version>
 		</dependency>
 
 	</dependencies>
