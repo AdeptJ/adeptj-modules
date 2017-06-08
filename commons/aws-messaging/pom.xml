@@ -34,7 +34,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<aws.messaging.version>1.11.140</aws.messaging.version>
+		<aws.messaging.version>1.11.141</aws.messaging.version>
 	</properties>
 
 	<build>
