@@ -76,6 +76,7 @@ public class JPAPersistenceServiceImpl implements JPAPersistenceService {
     @Override
     public <T> T insert(T transientObj) {
         try {
+            this.entityManager.getTransaction().begin();
             this.entityManager.persist(transientObj);
             this.entityManager.getTransaction().commit();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
@@ -88,6 +89,7 @@ public class JPAPersistenceServiceImpl implements JPAPersistenceService {
     public <T> T update(T persistentObj) {
         T updated = null;
         try {
+            this.entityManager.getTransaction().begin();
             updated = this.entityManager.merge(persistentObj);
             this.entityManager.getTransaction().commit();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
@@ -136,6 +138,7 @@ public class JPAPersistenceServiceImpl implements JPAPersistenceService {
     @Override
     public <T> void delete(T entityInstance) {
         try {
+            this.entityManager.getTransaction().begin();
             this.entityManager.remove(this.entityManager.contains(entityInstance) ? entityInstance :
                     this.entityManager.merge(entityInstance));
             this.entityManager.getTransaction().commit();
@@ -147,6 +150,7 @@ public class JPAPersistenceServiceImpl implements JPAPersistenceService {
     @Override
     public <T> int deleteByCriteria(Class<T> entity, Map<String, Object> predicateMap) {
         try {
+            this.entityManager.getTransaction().begin();
             CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
             CriteriaDelete<T> delete = cb.createCriteriaDelete(entity);
             List<Predicate> predicates = this.getPredicates(predicateMap, cb, delete.from(entity));
