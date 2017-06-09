@@ -29,8 +29,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>bundle</packaging>
 	<artifactId>adeptj-modules-jaxrs-resteasy</artifactId>
-	<name>AdeptJ Modules :: JAX-RS :: Resteasy Provider Bundle</name>
-	<description>AdeptJ Modules :: JAX-RS :: Resteasy Provider Bundle</description>
+	<name>AdeptJ Modules :: JAX-RS :: RESTEasy Provider Bundle</name>
+	<description>AdeptJ Modules :: JAX-RS :: RESTEasy Provider Bundle</description>
 	
 	<build>
 
@@ -42,7 +42,7 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Category>AdeptJ JAXRS</Bundle-Category>
+						<Bundle-Category>AdeptJ JAX-RS</Bundle-Category>
 						<Embed-Dependency>*;scope=compile;inline=false;type=jar</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
 						<Import-Package>

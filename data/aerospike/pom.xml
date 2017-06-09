@@ -34,7 +34,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<eclipselink.version>2.6.3</eclipselink.version>
+		<eclipselink.version>2.6.4</eclipselink.version>
 	</properties>
 
 	<build>
@@ -126,7 +126,7 @@
 			<version>3.2.4</version>
 		</dependency>
 
-		<!-- Eclipselink 2.6.3 Dependencies -->
+		<!-- Eclipselink 2.6.4 Dependencies -->
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>

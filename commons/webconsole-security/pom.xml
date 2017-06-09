@@ -103,6 +103,7 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Category>AdeptJ Commons</Bundle-Category>
+						<!-- <Bundle-Activator>com.adeptj.modules.commons.webconsole.security.Activator</Bundle-Activator> -->
 					</instructions>
 				</configuration>
 			</plugin>
