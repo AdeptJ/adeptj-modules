@@ -24,6 +24,7 @@ import com.adeptj.modules.commons.aws.messaging.AWSMessagingService;
 import com.adeptj.modules.commons.aws.messaging.MessageType;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClientBuilder;
 import com.amazonaws.services.simpleemail.model.Body;
@@ -110,10 +111,12 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
                 .withDataType("String"));
         this.smsAttributes.put("AWS.SNS.SMS.SMSType", new MessageAttributeValue().withStringValue(config.smsType())
                 .withDataType("String"));
-        this.asyncSNS = AmazonSNSAsyncClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(config.snsAccessKeyId(), config.snsSecretKey()))).build();
+        this.asyncSNS = AmazonSNSAsyncClientBuilder.standard().withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
+                .snsServiceEndpoint(), config.snsSigningRegion())).withCredentials(new AWSStaticCredentialsProvider(
+                new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).build();
         this.asyncSES = AmazonSimpleEmailServiceAsyncClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(config.sesAccessKeyId(), config.sesSecretKey()))).build();
+                new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
+                .sesServiceEndpoint(), config.sesSigningRegion())).build();
     }
 
     @Deactivate

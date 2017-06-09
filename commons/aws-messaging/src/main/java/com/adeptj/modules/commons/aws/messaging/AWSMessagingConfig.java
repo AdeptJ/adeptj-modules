@@ -31,33 +31,36 @@ public @interface AWSMessagingConfig {
 
     // SNS Configs
 
-    @AttributeDefinition(name = "snsRegion", description = "AWS SNS Region")
-    String snsRegion();
+    @AttributeDefinition(name = "snsServiceEndpoint", description = "AWS SNS Service Endpoint")
+    String snsServiceEndpoint() default "sns.ap-northeast-1.amazonaws.com";
 
-    @AttributeDefinition(name = "senderId", description = "AWS SNS SenderID")
+    @AttributeDefinition(name = "snsSigningRegion", description = "AWS SNS Signing Region used for SigV4 signing of requests")
+    String snsSigningRegion() default "ap-northeast-1";
+
+    @AttributeDefinition(name = "senderId", description = "AWS SNS SenderID, check your country if SenderID is supported or not")
     String senderId();
 
     @AttributeDefinition(name = "SMSType", options = {@Option(label = "TRANSACTIONAL", value = "Transactional"),
             @Option(label = "PROMOTIONAL", value = "Promotional")})
     String smsType();
 
-    @AttributeDefinition(name = "snsAccessKeyId", description = "AWS SNS AccessKeyId")
-    String snsAccessKeyId();
-
-    @AttributeDefinition(name = "snsSecretKey", description = "AWS SNS SecretKey")
-    String snsSecretKey();
-
     // SES Configs
-
-    @AttributeDefinition(name = "sesRegion", description = "AWS SES Region")
-    String sesRegion();
 
     @AttributeDefinition(name = "from", description = "AWS SES Email From")
     String from();
 
-    @AttributeDefinition(name = "sesAccessKeyId", description = "AWS SES AccessKeyId")
-    String sesAccessKeyId();
+    @AttributeDefinition(name = "sesServiceEndpoint", description = "AWS SES Service Endpoint")
+    String sesServiceEndpoint() default "email.us-west-2.amazonaws.com";
 
-    @AttributeDefinition(name = "sesSecretKey", description = "AWS SES SecretKey")
-    String sesSecretKey();
+    @AttributeDefinition(name = "sesSigningRegion", description = "AWS SES Signing Region used for SigV4 signing of requests")
+    String sesSigningRegion() default "us-west-2";
+
+    // Common Configs
+
+    @AttributeDefinition(name = "accessKeyId", description = "AWS AccessKeyId")
+    String accessKeyId();
+
+    @AttributeDefinition(name = "secretKey", description = "AWS SecretKey")
+    String secretKey();
+
 }
