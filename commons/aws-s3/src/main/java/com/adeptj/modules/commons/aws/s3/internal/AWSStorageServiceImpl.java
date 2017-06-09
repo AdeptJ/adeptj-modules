@@ -23,8 +23,13 @@ import com.adeptj.modules.commons.aws.s3.AWSStorageConfig;
 import com.adeptj.modules.commons.aws.s3.AWSStorageService;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -32,6 +37,8 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
 
 /**
  * AWSStorageService for storing data in AWS S3 buckets.
@@ -47,8 +54,9 @@ public class AWSStorageServiceImpl implements AWSStorageService {
     private AmazonS3 s3Client;
 
     @Override
-    public void createBucket(String bucketName) {
-        this.s3Client.createBucket(bucketName);
+    public Bucket createBucket(String bucketName) {
+        LOGGER.info("Creating Bucket: [{}]!!", bucketName);
+        return this.s3Client.createBucket(bucketName);
     }
 
     @Override
@@ -57,18 +65,20 @@ public class AWSStorageServiceImpl implements AWSStorageService {
     }
 
     @Override
-    public void createRecord(String bucketName, String key, Object record) {
-
+    public void createRecord(String bucketName, String key, InputStream data) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        // metadata.se
+        this.s3Client.putObject(new PutObjectRequest(bucketName, key, data, metadata));
     }
 
     @Override
-    public void getRecord(String bucketName, String key) {
-
+    public S3Object getRecord(String bucketName, String key) {
+        return this.s3Client.getObject(bucketName, key);
     }
 
     @Override
     public void deleteRecord(String bucketName, String key) {
-
+        this.s3Client.deleteObject(bucketName, key);
     }
 
     // Lifecycle Methods
@@ -76,10 +86,13 @@ public class AWSStorageServiceImpl implements AWSStorageService {
     @Activate
     protected void activate(AWSStorageConfig config) {
         this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(config.s3AccessKeyId(), config.s3SecretKey()))).withRegion(config.region()).build();
+                new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
+                .serviceEndpoint(), config.signingRegion())).build();
+        // this.s3Client.createBucket("rakesh-liquidhub");
     }
 
     @Deactivate
     protected void deactivate() {
+        this.s3Client.shutdown();
     }
 }

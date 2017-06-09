@@ -30,12 +30,15 @@ public @interface AWSStorageConfig {
 
     // AWS S3 Configs
 
-    @AttributeDefinition(name = "region", description = "AWS Region")
-    String region();
+    @AttributeDefinition(name = "serviceEndpoint", description = "AWS S3 Service Endpoint")
+    String serviceEndpoint() default "s3.us-west-2.amazonaws.com";
 
-    @AttributeDefinition(name = "s3AccessKeyId", description = "AWS S3 AccessKeyId")
-    String s3AccessKeyId();
+    @AttributeDefinition(name = "signingRegion", description = "AWS S3 Signing Region used for SigV4 signing of requests")
+    String signingRegion() default "us-west-2";
 
-    @AttributeDefinition(name = "s3SecretKey", description = "AWS S3 SecretKey")
-    String s3SecretKey();
+    @AttributeDefinition(name = "accessKeyId", description = "AWS S3 AccessKeyId")
+    String accessKeyId();
+
+    @AttributeDefinition(name = "secretKey", description = "AWS S3 SecretKey")
+    String secretKey();
 }

@@ -111,5 +111,24 @@
             <version>${aws.s3.version}</version>
         </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-kms</artifactId>
+            <version>${aws.s3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>jmespath-java</artifactId>
+            <version>1.11.141</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.ion</groupId>
+            <artifactId>ion-java</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
+
+    </dependencies>
 </project>

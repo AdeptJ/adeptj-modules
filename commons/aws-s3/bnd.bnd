@@ -20,9 +20,10 @@
 
 -dsannotations: *
 
-Include-Resource: aws-java-sdk-*.jar
+Include-Resource: aws-java-sdk-*.jar,jmespath-java-*.jar,ion-java*.jar
 
-Bundle-ClassPath: ., aws-java-sdk-core-1.11.140.jar, aws-java-sdk-sns-1.11.140.jar, aws-java-sdk-ses-1.11.140.jar, aws-java-sdk-sqs-1.11.140.jar
+Bundle-ClassPath: ., aws-java-sdk-s3-1.11.141.jar, aws-java-sdk-core-1.11.141.jar,jmespath-java-1.11.141.jar,ion-java-1.0.2.jar,\
+aws-java-sdk-kms-1.11.141.jar
 
 Export-Package: \
 	com.adeptj.modules.commons.aws.s3

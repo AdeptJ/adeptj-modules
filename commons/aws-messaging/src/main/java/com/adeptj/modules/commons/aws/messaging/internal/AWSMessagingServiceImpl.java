@@ -88,17 +88,26 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
     }
 
     private void sendSMS(Map<String, String> data) {
-        this.asyncSNS.publishAsync(new PublishRequest().withMessage(data.get("message")).
-                withPhoneNumber(data.get("mobNo")).withMessageAttributes(this.smsAttributes));
+        try {
+            this.asyncSNS.publishAsync(new PublishRequest().withMessage(data.get("message")).
+                    withPhoneNumber(data.get("mobNo")).withMessageAttributes(this.smsAttributes));
+        } catch (Exception ex) {
+            LOGGER.error("Exception while sending sms!!", ex);
+        }
+
     }
 
     private void sendEmail(Map<String, String> data) {
-        Destination destination = new Destination().withToAddresses(data.get("recipient"));
-        Content subject = new Content().withData(data.get("subject"));
-        Content textBody = new Content().withData(data.get("message"));
-        Message message = new Message().withSubject(subject).withBody(new Body().withText(textBody));
-        this.asyncSES.sendEmailAsync(new
-                SendEmailRequest().withSource(this.config.from()).withDestination(destination).withMessage(message));
+        try {
+            Destination destination = new Destination().withToAddresses(data.get("recipient"));
+            Content subject = new Content().withData(data.get("subject"));
+            Content textBody = new Content().withData(data.get("message"));
+            Message message = new Message().withSubject(subject).withBody(new Body().withText(textBody));
+            this.asyncSES.sendEmailAsync(new
+                    SendEmailRequest().withSource(this.config.from()).withDestination(destination).withMessage(message));
+        } catch (Exception ex) {
+            LOGGER.error("Exception while sending email!!", ex);
+        }
     }
 
     // Lifecycle Methods

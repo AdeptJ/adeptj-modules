@@ -19,6 +19,11 @@
 */
 package com.adeptj.modules.commons.aws.s3;
 
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.S3Object;
+
+import java.io.InputStream;
+
 /**
  * API for storing data in AWS S3 buckets.
  *
@@ -26,13 +31,13 @@ package com.adeptj.modules.commons.aws.s3;
  */
 public interface AWSStorageService {
 
-    void createBucket(String bucketName);
+    Bucket createBucket(String bucketName);
 
     void deleteBucket(String bucketName);
 
-    void createRecord(String bucketName, String key, Object record);
+    void createRecord(String bucketName, String key, InputStream data);
 
-    void getRecord(String bucketName, String key);
+    S3Object getRecord(String bucketName, String key);
 
     void deleteRecord(String bucketName, String key);
 }
