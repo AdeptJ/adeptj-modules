@@ -26,7 +26,7 @@ import org.osgi.service.metatype.annotations.Option;
 /**
  * @author Rakesh.Kumar, AdeptJ.
  */
-@ObjectClassDefinition(name = "AWS Notification Services Configuration", description = "Configuration for AWS SES/SNS")
+@ObjectClassDefinition(name = "AdeptJ AWS Notification Services Configuration", description = "Configuration for AWS SES/SNS")
 public @interface AWSMessagingConfig {
 
     // SNS Configs

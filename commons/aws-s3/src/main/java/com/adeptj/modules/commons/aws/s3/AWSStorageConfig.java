@@ -25,7 +25,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 /**
  * @author Rakesh.Kumar, AdeptJ.
  */
-@ObjectClassDefinition(name = "AWS Storage Service Configuration", description = "Configuration for AWS S3")
+@ObjectClassDefinition(name = "AdeptJ AWS Storage Service Configuration", description = "Configuration for AWS S3")
 public @interface AWSStorageConfig {
 
     // AWS S3 Configs

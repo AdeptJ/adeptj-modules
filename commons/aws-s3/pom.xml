@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -28,13 +28,14 @@
 		<relativePath/>
 	</parent>
 	<artifactId>adeptj-modules-commons-aws-s3</artifactId>
+	<version>1.0.0.Final</version>
 	<packaging>jar</packaging>
 	<name>AdeptJ Modules :: Commons :: AWS S3 APIs</name>
 	<description>AdeptJ Modules :: Commons :: AWS S3 APIs Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<aws.s3.version>1.11.141</aws.s3.version>
+		<aws.s3.version>1.11.144</aws.s3.version>
 	</properties>
 
 	<build>
@@ -53,7 +54,7 @@
 				</executions>
 			</plugin>
 
-			<!-- Below Maven Jar plugin is required to process MENIFEST.MF -->
+			<!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -118,7 +119,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>jmespath-java</artifactId>
-            <version>1.11.141</version>
+            <version>${aws.s3.version}</version>
         </dependency>
 
         <dependency>
