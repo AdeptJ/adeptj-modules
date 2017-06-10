@@ -20,11 +20,10 @@
  */
 package com.adeptj.modularweb.security.shiro.internal;
 
+import com.adeptj.modules.cache.api.CacheProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-
-import com.adeptj.modularweb.cache.api.CacheProvider;
 
 /**
  * Track the {@link CacheProvider}.

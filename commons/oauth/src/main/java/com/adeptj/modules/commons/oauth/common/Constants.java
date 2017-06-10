@@ -18,31 +18,16 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.security.shiro.listener;
-
-import org.apache.shiro.web.env.EnvironmentLoaderListener;
-
-import javax.servlet.ServletContextEvent;
+package com.adeptj.modules.commons.oauth.common;
 
 /**
- * ExtEnvironmentLoaderListener.
+ * Common Constants.
  * 
- * @author Rakesh.Kumar, AdeptJ..
+ * @author Rakesh.Kumar, AdeptJ
  */
-public class ExtEnvironmentLoaderListener extends EnvironmentLoaderListener {
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-	}
-
+public final class Constants {
+	
+	public static final String OAUTH_PROVIDER_FACTORY = "com.adeptj.modularweb.oauth.provider.api.OAuthProviderFactory";
+	
+	public static final String MANAGED_SERVICE_FACTORY = "org.osgi.service.cm.ManagedServiceFactory";
 }

@@ -19,8 +19,7 @@
 */
 package com.adeptj.modules.cache.ehcache.internal;
 
-import java.util.Hashtable;
-
+import com.adeptj.modules.cache.api.CacheProvider;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.osgi.framework.BundleActivator;
@@ -29,7 +28,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
 
-import com.adeptj.modules.cache.spi.CacheProvider;
+import java.util.Hashtable;
 
 /**
  * EhcacheActivator.

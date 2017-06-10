@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.0.Final</version>
+		<version>1.0.1.Final</version>
 		<relativePath/>
 	</parent>
 	<artifactId>adeptj-modules-data-mongodb</artifactId>
@@ -34,7 +34,6 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<eclipselink.version>2.6.4</eclipselink.version>
 	</properties>
 
 	<build>
@@ -111,7 +110,7 @@
 		<dependency>
 			<groupId>org.mongodb.morphia</groupId>
 			<artifactId>morphia</artifactId>
-			<version>1.2.1</version>
+			<version>${morphia.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>cglib</groupId>
@@ -124,43 +123,6 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>3.2.4</version>
-		</dependency>
-
-		<!-- Eclipselink 2.6.4 Dependencies -->
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.core</artifactId>
-			<version>${eclipselink.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.jpa</artifactId>
-			<version>${eclipselink.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-			<version>${eclipselink.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.antlr</artifactId>
-			<version>${eclipselink.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.asm</artifactId>
-			<version>${eclipselink.version}</version>
 		</dependency>
 
 	</dependencies>

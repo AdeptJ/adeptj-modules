@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>com.adeptj</groupId>
 		<artifactId>adeptj-parent</artifactId>
-		<version>1.0.0.Final</version>
+		<version>1.0.3.Final</version>
 	</parent>
 	<artifactId>adeptj-modules-builder</artifactId>
 	<packaging>pom</packaging>
@@ -51,6 +51,8 @@
 		<module>commons/resourcebundle</module>
         <module>commons/webconsole-branding</module>
         <module>commons/webconsole-security</module>
+		<module>commons/aws-messaging</module>
+		<module>commons/aws-s3</module>
         
         <!-- Common Modules Ends -->
         
@@ -86,12 +88,6 @@
         <module>data/redis</module>
         
         <!-- Data Modules Ends -->
-        
-        <!-- REST Modules Start -->
-	    
-		<module>jaxrs/resteasy</module>
-        
-        <!-- REST Modules Ends -->
         
         <!-- Search Modules Start -->
 	    

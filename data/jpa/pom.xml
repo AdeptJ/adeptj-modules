@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.0.Final</version>
+		<version>1.0.1.Final</version>
 		<relativePath/>
 	</parent>
 	<artifactId>adeptj-modules-data-jpa</artifactId>
@@ -44,7 +44,6 @@
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
-				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -58,7 +57,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
 				<configuration>
 					<archive>
 						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -104,6 +102,8 @@
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
+			<version>${jpa.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -121,38 +121,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-			<version>${eclipselink.version}</version>
-            <scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.antlr</artifactId>
-			<version>${eclipselink.version}</version>
-            <scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.asm</artifactId>
-			<version>${eclipselink.version}</version>
-            <scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>com.adeptj</groupId>
 			<artifactId>adeptj-modules-commons-datasource</artifactId>
 			<version>1.0.0.Final</version>
             <scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-			<version>${jpa.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>

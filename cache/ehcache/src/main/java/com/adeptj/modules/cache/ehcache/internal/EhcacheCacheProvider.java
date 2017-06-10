@@ -19,13 +19,9 @@
 */
 package com.adeptj.modules.cache.ehcache.internal;
 
-import java.util.Dictionary;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
-
+import com.adeptj.modules.cache.api.CacheProvider;
+import com.adeptj.modules.cache.common.Cache;
+import com.adeptj.modules.cache.common.CacheConfig;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
 import org.ehcache.CacheManager;
@@ -39,9 +35,12 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.cache.common.Cache;
-import com.adeptj.modules.cache.common.CacheConfig;
-import com.adeptj.modules.cache.spi.CacheProvider;
+import java.util.Dictionary;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OSGi service for cache manager, this services initializes the EHcache

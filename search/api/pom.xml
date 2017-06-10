@@ -34,7 +34,6 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<elasticsearch.version>2.3.5</elasticsearch.version>
 	</properties>
 
 	<build>
@@ -76,6 +75,7 @@
 			</plugin>
 
 		</plugins>
+
 	</build>
 
 	<dependencies>
@@ -97,16 +97,6 @@
 			<artifactId>org.apache.felix.scr.annotations</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- Elastic search Dependencies Starts -->
-
-		<dependency>
-			<groupId>org.elasticsearch</groupId>
-			<artifactId>elasticsearch</artifactId>
-			<version>${elasticsearch.version}</version>
-		</dependency>
-
-		<!-- Elastic search Dependencies Ends -->
 
 	</dependencies>
 </project>

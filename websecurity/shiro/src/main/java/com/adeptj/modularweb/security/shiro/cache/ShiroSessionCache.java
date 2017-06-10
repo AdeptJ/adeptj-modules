@@ -34,7 +34,7 @@ import org.apache.shiro.session.Session;
  */
 public class ShiroSessionCache<K, V> implements Cache<K, V> {
 
-	private com.adeptj.modularweb.cache.api.Cache<K, V> cache;
+	private com.adeptj.modules.cache.api.Cache<K, V> cache;
 
 	public ShiroSessionCache(com.adeptj.modularweb.cache.api.Cache<K, V> backingCache) {
 		this.cache = backingCache;

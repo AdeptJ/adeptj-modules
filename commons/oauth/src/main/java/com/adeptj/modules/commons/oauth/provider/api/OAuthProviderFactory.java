@@ -18,31 +18,21 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.security.shiro.listener;
+package com.adeptj.modules.commons.oauth.provider.api;
 
-import org.apache.shiro.web.env.EnvironmentLoaderListener;
-
-import javax.servlet.ServletContextEvent;
+import com.adeptj.modules.commons.oauth.common.OAuthProvider;
+import com.github.scribejava.core.oauth.OAuth20Service;
 
 /**
- * ExtEnvironmentLoaderListener.
+ * OAuthProviderFactory.
  * 
- * @author Rakesh.Kumar, AdeptJ..
+ * @author Rakesh.Kumar, AdeptJ
  */
-public class ExtEnvironmentLoaderListener extends EnvironmentLoaderListener {
+public interface OAuthProviderFactory {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-	}
-
+	OAuthProvider getProvider(String providerName);
+	
+	void addOAuth2Service(String providerName, OAuth20Service service);
+	
+	OAuth20Service getOAuth2Service(String providerName);
 }

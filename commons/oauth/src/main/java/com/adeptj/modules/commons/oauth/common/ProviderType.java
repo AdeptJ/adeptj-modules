@@ -18,31 +18,24 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.security.shiro.listener;
-
-import org.apache.shiro.web.env.EnvironmentLoaderListener;
-
-import javax.servlet.ServletContextEvent;
+package com.adeptj.modules.commons.oauth.common;
 
 /**
- * ExtEnvironmentLoaderListener.
+ * ProviderType.
  * 
- * @author Rakesh.Kumar, AdeptJ..
+ * @author Rakesh.Kumar, AdeptJ
  */
-public class ExtEnvironmentLoaderListener extends EnvironmentLoaderListener {
+public enum ProviderType {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-	}
-
+	LINKEDIN,
+	
+	FACEBOOK,
+	
+	GITHUB,
+	
+	GOOGLE,
+	
+	TWITTER,
+	
+	XING
 }

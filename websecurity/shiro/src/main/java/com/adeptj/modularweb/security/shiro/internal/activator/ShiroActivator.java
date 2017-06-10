@@ -20,10 +20,9 @@
  */
 package com.adeptj.modularweb.security.shiro.internal.activator;
 
-import com.adeptj.modularweb.cache.api.CacheProvider;
 import com.adeptj.modularweb.security.shiro.internal.CacheProviderTracker;
 import com.adeptj.modularweb.security.shiro.listener.ExtEnvironmentLoaderListener;
-
+import com.adeptj.modules.cache.api.CacheProvider;
 import org.apache.shiro.web.servlet.ShiroFilter;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

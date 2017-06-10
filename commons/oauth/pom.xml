@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.0.Final</version>
+		<version>1.0.1.Final</version>
 		<relativePath/>
 	</parent>
 	<artifactId>adeptj-modules-commons-oauth</artifactId>
@@ -47,7 +47,7 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Category>AdeptJ Commons</Bundle-Category>
-						<Bundle-Activator>com.adeptj.modularweb.oauth.internal.Activator</Bundle-Activator>
+						<Bundle-Activator>com.adeptj.modules.commons.oauth.internal.Activator</Bundle-Activator>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -119,8 +119,15 @@
 		<dependency>
 		    <groupId>com.github.scribejava</groupId>
 		    <artifactId>scribejava-apis</artifactId>
-		    <version>3.2.0</version>
+		    <version>4.1.1</version>
 		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.scribejava</groupId>
+			<artifactId>scribejava-core</artifactId>
+			<version>4.1.1</version>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>

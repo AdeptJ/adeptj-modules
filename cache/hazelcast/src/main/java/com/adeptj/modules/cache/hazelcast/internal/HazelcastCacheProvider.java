@@ -19,13 +19,13 @@
 */
 package com.adeptj.modules.cache.hazelcast.internal;
 
-import java.util.Dictionary;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
-
+import com.adeptj.modules.cache.api.CacheProvider;
+import com.adeptj.modules.cache.common.Cache;
+import com.adeptj.modules.cache.common.CacheConfig;
+import com.hazelcast.config.Config;
+import com.hazelcast.config.MapConfig;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.osgi.HazelcastOSGiService;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Property;
 import org.osgi.framework.BundleContext;
@@ -36,13 +36,12 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.cache.common.Cache;
-import com.adeptj.modules.cache.common.CacheConfig;
-import com.adeptj.modules.cache.spi.CacheProvider;
-import com.hazelcast.config.Config;
-import com.hazelcast.config.MapConfig;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.osgi.HazelcastOSGiService;
+import java.util.Dictionary;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OSGi service for cache manager, this services initializes the Hazelcast

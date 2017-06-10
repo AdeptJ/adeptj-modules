@@ -19,15 +19,14 @@
 */
 package com.adeptj.modules.cache.hazelcast.internal;
 
-import java.util.Hashtable;
-
+import com.adeptj.modules.cache.api.CacheProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
 
-import com.adeptj.modules.cache.spi.CacheProvider;
+import java.util.Hashtable;
 
 /**
  * HazelcastActivator.
