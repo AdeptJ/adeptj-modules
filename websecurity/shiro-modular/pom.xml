@@ -65,7 +65,7 @@
 							org.apache.shiro.web.util,
 							*
 						</Import-Package>
-						<Bundle-Activator>com.adeptj.modularweb.security.shiro.internal.activator.ShiroActivator</Bundle-Activator>
+						<Bundle-Activator>ShiroActivator</Bundle-Activator>
 					</instructions>
 				</configuration>
 			</plugin>

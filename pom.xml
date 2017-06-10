@@ -27,6 +27,7 @@
 		<version>1.0.3.Final</version>
 	</parent>
 	<artifactId>adeptj-modules-builder</artifactId>
+    <version>1.0.1.Final</version>
 	<packaging>pom</packaging>
 	<name>AdeptJ Modules :: Builder</name>
 	<description>Pseudo project to build the complete AdeptJ Modules project</description>
@@ -68,9 +69,8 @@
         <!-- Cache Modules Ends -->
         
         <!-- Web Security Modules Start -->
-	    
-		<module>websecurity/shiro</module>
-		<module>websecurity/esapi</module>
+
+        <module>websecurity/esapi</module>
         
        <!--  Web Security Modules Ends -->
         
@@ -102,9 +102,7 @@
 	    
 		<module>viewengine/api</module>
 		<module>viewengine/core</module>
-		<module>viewengine/thymeleaf</module>
-        <module>viewengine/handlebars</module>
-        
+
         <!-- ViewEngine Modules Ends -->
         
 	</modules>

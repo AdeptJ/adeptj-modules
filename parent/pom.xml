@@ -19,32 +19,32 @@
 ###############################################################################
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-		<artifactId>adeptj-parent</artifactId>
-		<version>1.0.3.Final</version>
-		<relativePath/>
-	</parent>
-	<artifactId>adeptj-modules</artifactId>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-parent</artifactId>
+        <version>1.0.4.Final</version>
+        <relativePath/>
+    </parent>
+    <artifactId>adeptj-modules</artifactId>
     <version>1.0.1.Final</version>
-	<packaging>pom</packaging>
-	<name>AdeptJ Modules :: Parent</name>
-	<description>Parent for AdeptJ Modules Project</description>
-	<url>http://www.adeptj.com</url>
+    <packaging>pom</packaging>
+    <name>AdeptJ Modules :: Parent</name>
+    <description>Parent for AdeptJ Modules Project</description>
+    <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <!-- Project Information -->
     <organization>
         <name>AdeptJ</name>
         <url>http://www.adeptj.com</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>Apache License Version 2.0</name>
@@ -52,7 +52,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <developers>
         <developer>
             <id>rakeshk15</id>
@@ -67,12 +67,12 @@
             </roles>
             <timezone>+5:30</timezone>
             <properties>
-                <picUrl>https://media.licdn.com/mpr/mpr/shrinknp_200_200/p/6/005/0b5/282/397d47f.jpg</picUrl>
+                <picUrl>https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg</picUrl>
             </properties>
         </developer>
     </developers>
-    
-     <issueManagement>
+
+    <issueManagement>
         <url>https://github.com/AdeptJ/adeptj-modules/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
@@ -94,71 +94,71 @@
         <developerConnection>scm:git:git@github.com:AdeptJ/adeptj-modules.git</developerConnection>
     </scm>
 
-	<build>
-	   
-	    <pluginManagement>
-	    
-		    <plugins>
-		        
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${compiler.plugin.version}</version>
-					<configuration>
-						<compilerArgument>-parameters</compilerArgument>
-						<source>${jdk.version}</source>
-						<target>${jdk.version}</target>
-					</configuration>
-				</plugin>
-				
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<version>${maven.bundle.plugin.version}</version>
-					<extensions>true</extensions>
-				</plugin>
-				
-				<!-- Apache Felix SCR Plugin -->
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-scr-plugin</artifactId>
-					<version>${maven.scr.version}</version>
-				</plugin>
-	
-			</plugins>
-	    
-	    </pluginManagement>
-		
-	</build>
+    <build>
+
+        <pluginManagement>
+
+            <plugins>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${compiler.plugin.version}</version>
+                    <configuration>
+                        <compilerArgument>-parameters</compilerArgument>
+                        <source>${jdk.version}</source>
+                        <target>${jdk.version}</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${maven.bundle.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <!-- Apache Felix SCR Plugin -->
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-scr-plugin</artifactId>
+                    <version>${maven.scr.version}</version>
+                </plugin>
+
+            </plugins>
+
+        </pluginManagement>
+
+    </build>
 
 
-	<dependencyManagement>
+    <dependencyManagement>
 
-		<dependencies>
+        <dependencies>
 
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>osgi.core</artifactId>
-				<version>${org.osgi.core.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.core</artifactId>
+                <version>${org.osgi.core.version}</version>
+            </dependency>
 
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>osgi.cmpn</artifactId>
-				<version>${org.osgi.comp.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.cmpn</artifactId>
+                <version>${org.osgi.comp.version}</version>
+            </dependency>
 
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>${javax.servlet-api.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet-api.version}</version>
+            </dependency>
 
-			<dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.scr.annotations</artifactId>
-				<version>1.11.0</version>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.scr.annotations</artifactId>
+                <version>1.11.0</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -179,69 +179,68 @@
             </dependency>
 
             <!-- OSGi annotations for DS and metatype -->
-            
+
             <dependency>
-			    <groupId>org.osgi</groupId>
-			    <artifactId>org.osgi.annotation</artifactId>
-			    <version>6.0.0</version>
-			    <scope>provided</scope>
-			</dependency>
-            
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.service.component.annotations</artifactId>
-				<scope>provided</scope>
-			</dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.annotation</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.service.metatype.annotations</artifactId>
-				<scope>provided</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.service.component.annotations</artifactId>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${commons-lang.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.service.metatype.annotations</artifactId>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-collections4</artifactId>
-				<version>4.1</version>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>${commons-fileupload.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.1</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons-io.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.mongodb</groupId>
-				<artifactId>mongo-java-driver</artifactId>
-				<version>${mongo.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j-api.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-		</dependencies>
+        </dependencies>
 
-	</dependencyManagement>
-	
-	<profiles>
-	
-	    <profile>
+    </dependencyManagement>
+
+    <profiles>
+
+        <profile>
             <id>Release</id>
             <build>
                 <plugins>
@@ -298,6 +297,6 @@
         </profile>
 
     </profiles>
-	
+
 
 </project>
