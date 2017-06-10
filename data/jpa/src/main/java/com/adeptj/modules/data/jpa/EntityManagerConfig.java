@@ -18,7 +18,7 @@
  *
  * =============================================================================
  */
-package com.adeptj.modules.data.jpa.impl;
+package com.adeptj.modules.data.jpa;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;

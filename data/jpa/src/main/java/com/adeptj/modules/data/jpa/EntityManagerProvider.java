@@ -21,7 +21,6 @@
 package com.adeptj.modules.data.jpa;
 
 import javax.persistence.EntityManager;
-import java.sql.SQLException;
 
 /**
  * JPA Entity Manager Factory.
@@ -33,8 +32,7 @@ public interface EntityManagerProvider {
     /**
      * Get entity manager.
      *
-     * @return
-     * @throws SQLException
+     * @return EntityManager
      */
-    EntityManager getEntityManager() throws SQLException;
+    EntityManager getEntityManager();
 }

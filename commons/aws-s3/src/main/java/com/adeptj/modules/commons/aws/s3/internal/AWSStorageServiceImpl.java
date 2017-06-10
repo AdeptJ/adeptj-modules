@@ -88,7 +88,6 @@ public class AWSStorageServiceImpl implements AWSStorageService {
         this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
                 .serviceEndpoint(), config.signingRegion())).build();
-        // this.s3Client.createBucket("rakesh-liquidhub");
     }
 
     @Deactivate

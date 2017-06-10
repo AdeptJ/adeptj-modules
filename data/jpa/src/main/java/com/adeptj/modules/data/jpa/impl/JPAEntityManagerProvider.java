@@ -20,12 +20,13 @@
  */
 package com.adeptj.modules.data.jpa.impl;
 
+import com.adeptj.modules.data.jpa.EntityManagerConfig;
 import com.adeptj.modules.data.jpa.EntityManagerProvider;
 import org.eclipse.persistence.jpa.PersistenceProvider;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.metatype.annotations.Designate;
@@ -34,12 +35,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.metamodel.EntityType;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CREATE_OR_EXTEND;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_BOTH_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON_STARTUP;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_FILE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 
 /**
@@ -54,48 +60,49 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
     private static final Logger log = LoggerFactory.getLogger(JPAEntityManagerProvider.class);
 
     @Reference
-    private DataSourceFactory sourceFactory;
+    private DataSourceFactory dsFactory;
 
-    private EntityManagerFactory managerFactory;
+    private volatile EntityManagerFactory emf;
 
     private String unitName;
 
-    /**
-     * Entity Manager factory to populate entity manager.
-     *
-     * @return
-     * @throws SQLException
-     */
-    public EntityManagerFactory getEntityManagerFactory() throws SQLException {
-        if (this.managerFactory == null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(NON_JTA_DATASOURCE, this.sourceFactory.createDataSource(null));
-            properties.put(CLASSLOADER, this.getClass().getClassLoader());
-            PersistenceProvider provider = new PersistenceProvider();
-            this.managerFactory = provider.createEntityManagerFactory(this.unitName, properties);
-        }
-        log.info("Entitry manager factory: "+ this.managerFactory);
-        return this.managerFactory;
+    @Override
+    public EntityManager getEntityManager() {
+        return this.emf.createEntityManager();
     }
+
+    // Lifecycle Methods.
 
     @Activate
-    protected void activate(ComponentContext context) {
-        this.unitName = (String) context.getProperties().get("persistenceUnitName");
-        try {
-            this.getEntityManagerFactory();
-            for (EntityType<?> entityType : this.managerFactory.getMetamodel().getEntities()) {
-                log.info("Reserved Entity Type: "+ entityType.getName());
-            }
-        } catch (SQLException ex) {
-            log.error("Unable to initialize entity manager factory: ", ex);
-        }
+    protected void activate(EntityManagerConfig config) {
+        this.unitName = config.persistenceUnitName();
+        this.createEMF();
+        this.emf.getMetamodel().getEntities().forEach(entityType -> log.info("Reserved Entity Type: {}", entityType.getName()));
     }
 
-    @Override
-    public EntityManager getEntityManager() throws SQLException {
-        if (this.managerFactory == null) {
-            this.getEntityManagerFactory();
-        }
-        return this.managerFactory.createEntityManager();
+    @Deactivate
+    protected void deactivate() {
+        Optional.ofNullable(this.emf).ifPresent(emfConsumer -> this.emf.close());
+    }
+
+    private void createEMF() {
+        this.emf = Optional.ofNullable(this.emf).orElseGet(() -> {
+            EntityManagerFactory entityManagerFactory = null;
+            Map<String, Object> jpaProperties = new HashMap<>();
+            try {
+                jpaProperties.put(NON_JTA_DATASOURCE, this.dsFactory.createDataSource(null));
+                jpaProperties.put(DDL_GENERATION, CREATE_OR_EXTEND);
+                jpaProperties.put(DDL_GENERATION_MODE, DDL_BOTH_GENERATION);
+                jpaProperties.put(DEPLOY_ON_STARTUP, true);
+                jpaProperties.put(LOGGING_FILE, "jpa.log");
+                jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
+                PersistenceProvider provider = new PersistenceProvider();
+                entityManagerFactory = provider.createEntityManagerFactory(this.unitName, jpaProperties);
+            } catch (Exception ex) { // NOSONAR
+                log.error("Exception occurred!!", ex);
+            }
+            return entityManagerFactory;
+        });
+        log.info("EntityManagerFactory: {}", this.emf);
     }
 }
