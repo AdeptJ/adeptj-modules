@@ -28,13 +28,14 @@
 		<relativePath/>
 	</parent>
 	<artifactId>adeptj-modules-commons-aws-messaging</artifactId>
+	<version>1.0.0.Final</version>
 	<packaging>jar</packaging>
 	<name>AdeptJ Modules :: Commons :: AWS Email and SMS APIs</name>
 	<description>AdeptJ Modules :: Commons :: AWS Email and SMS APIs Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<aws.messaging.version>1.11.141</aws.messaging.version>
+		<aws.messaging.version>1.11.144</aws.messaging.version>
 	</properties>
 
 	<build>
@@ -54,7 +55,7 @@
 				</executions>
 			</plugin>
 
-			<!-- Below Maven Jar plugin is required to process MENIFEST.MF -->
+			<!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -120,7 +121,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>jmespath-java</artifactId>
-            <version>1.11.141</version>
+            <version>${aws.messaging.version}</version>
         </dependency>
 
         <dependency>

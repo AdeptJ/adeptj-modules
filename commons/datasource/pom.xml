@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -25,13 +25,14 @@
 	<parent>
 		<groupId>com.adeptj</groupId>
 	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.0.Final</version>
+		<version>1.0.1.Final</version>
 		<relativePath/>
 	</parent>
     <artifactId>adeptj-modules-commons-datasource</artifactId>
+	<version>1.0.0.Final</version>
 	<packaging>jar</packaging>
-	<name>AdeptJ Modules :: Commons :: JDBC Datasource Provider Bundle</name>
-	<description>AdeptJ Modules :: Commons :: JDBC Datasource Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: JDBC DataSource Provider Bundle</name>
+	<description>AdeptJ Modules :: Commons :: JDBC DataSource Provider Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,7 +45,6 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
-                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -54,11 +54,10 @@
                 </executions>
             </plugin>
 
-            <!-- Below Maven Jar plugin is required to process MENIFEST.MF -->
+            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
