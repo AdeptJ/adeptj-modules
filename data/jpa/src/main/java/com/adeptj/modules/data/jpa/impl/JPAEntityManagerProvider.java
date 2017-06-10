@@ -93,7 +93,7 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
                 jpaProperties.put(NON_JTA_DATASOURCE, this.dsFactory.createDataSource(null));
                 jpaProperties.put(DDL_GENERATION, CREATE_OR_EXTEND);
                 jpaProperties.put(DDL_GENERATION_MODE, DDL_BOTH_GENERATION);
-                jpaProperties.put(DEPLOY_ON_STARTUP, true);
+                jpaProperties.put(DEPLOY_ON_STARTUP, "true");
                 jpaProperties.put(LOGGING_FILE, "jpa.log");
                 jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
                 PersistenceProvider provider = new PersistenceProvider();
