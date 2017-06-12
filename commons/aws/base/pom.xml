@@ -27,15 +27,16 @@
 		<version>1.0.1.Final</version>
 		<relativePath/>
 	</parent>
-	<artifactId>adeptj-modules-commons-aws-messaging</artifactId>
+	<artifactId>adeptj-modules-commons-aws-base</artifactId>
 	<version>1.0.0.Final</version>
 	<packaging>jar</packaging>
-	<name>AdeptJ Modules :: Commons :: AWS Email and SMS APIs</name>
-	<description>AdeptJ Modules :: Commons :: AWS Email and SMS APIs Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: AWS Base Bundle</name>
+	<description>AdeptJ Modules :: Commons :: AWS Base Bundle</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<aws.messaging.version>1.11.144</aws.messaging.version>
+		<aws.base.version>1.11.144</aws.base.version>
+		<ion.java.version>1.0.2</ion.java.version>
 	</properties>
 
 	<build>
@@ -81,35 +82,11 @@
 	</build>
 
 	<dependencies>
-	
-		<dependency>
-		    <groupId>org.osgi</groupId>
-		    <artifactId>osgi.core</artifactId>
-		    <scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.cmpn</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr.annotations</artifactId>
-			<scope>provided</scope>
-		</dependency>
 
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>${aws.messaging.version}</version>
+            <version>${aws.base.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -136,41 +113,16 @@
 
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sns</artifactId>
-            <version>${aws.messaging.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-ses</artifactId>
-            <version>${aws.messaging.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
             <artifactId>jmespath-java</artifactId>
-            <version>${aws.messaging.version}</version>
+            <version>${aws.base.version}</version>
         </dependency>
 
         <dependency>
 			<groupId>software.amazon.ion</groupId>
 			<artifactId>ion-java</artifactId>
-			<version>1.0.2</version>
+			<version>${ion.java.version}</version>
 		</dependency>
 
-        <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
 	</dependencies>
+	
 </project>

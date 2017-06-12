@@ -20,13 +20,13 @@
 
 -dsannotations: *
 
-Include-Resource: aws-java-sdk-*.jar,jmespath-java-*.jar,ion-java*.jar
+Include-Resource: aws-java-sdk-s*-*.jar
 
-Bundle-ClassPath: ., aws-java-sdk-s3-1.11.144.jar, aws-java-sdk-core-1.11.144.jar,jmespath-java-1.11.144.jar,ion-java-1.0.2.jar,\
-aws-java-sdk-kms-1.11.144.jar
+Bundle-ClassPath: ., aws-java-sdk-sns-1.11.144.jar, aws-java-sdk-ses-1.11.144.jar, aws-java-sdk-sqs-1.11.144.jar
 
 Export-Package: \
-	com.adeptj.modules.commons.aws.s3
-Bundle-Name: AdeptJ Modules :: Commons :: AWS S3 APIs
+  com.adeptj.modules.commons.aws.messaging
+  
+Bundle-Name: AdeptJ Modules :: Commons :: AWS Messaging APIs
 Bundle-Category: AdeptJ Commons
 Bundle-Vendor: AdeptJ

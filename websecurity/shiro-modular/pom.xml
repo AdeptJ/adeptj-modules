@@ -24,13 +24,13 @@
 	<parent>
 		<groupId>com.adeptj</groupId>
 		<artifactId>adeptj-modules</artifactId>
-		<version>1.0.0.Final</version>
+		<version>1.0.1.Final</version>
 		<relativePath />
 	</parent>
 	<artifactId>adeptj-modules-websecurity-shiro-modular</artifactId>
 	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: WebSecurity :: Shiro Modular Provider Bundle</name>
-	<description>AdeptJ Modules :: WebSecurity :: Shiro Modular Provider Bundle</description>
+	<name>AdeptJ Modules :: WebSecurity :: Apache Shiro Provider Bundle</name>
+	<description>AdeptJ Modules :: WebSecurity :: ApacheShiro Shiro Provider Bundle</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

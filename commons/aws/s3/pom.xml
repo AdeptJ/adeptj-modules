@@ -98,16 +98,11 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr.annotations</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
             <version>${aws.s3.version}</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -148,12 +143,14 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>jmespath-java</artifactId>
             <version>${aws.s3.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>software.amazon.ion</groupId>
             <artifactId>ion-java</artifactId>
             <version>1.0.2</version>
+            <scope>provided</scope>
         </dependency>
 
 
