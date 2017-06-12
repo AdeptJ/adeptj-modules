@@ -20,7 +20,7 @@
  */
 package com.adeptj.modules.data.jpa.impl;
 
-import com.adeptj.modules.data.jpa.EntityManagerConfig;
+import com.adeptj.modules.data.jpa.EntityManagerFactoryConfig;
 import com.adeptj.modules.data.jpa.EntityManagerProvider;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.osgi.service.component.annotations.Activate;
@@ -53,18 +53,16 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_D
  *
  * @author prince.arora, AdeptJ
  */
-@Designate(ocd = EntityManagerConfig.class)
+@Designate(ocd = EntityManagerFactoryConfig.class)
 @Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class JPAEntityManagerProvider implements EntityManagerProvider {
 
-    private static final Logger log = LoggerFactory.getLogger(JPAEntityManagerProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JPAEntityManagerProvider.class);
 
     @Reference
     private DataSourceFactory dsFactory;
 
     private volatile EntityManagerFactory emf;
-
-    private String unitName;
 
     @Override
     public EntityManager getEntityManager() {
@@ -74,10 +72,10 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
     // Lifecycle Methods.
 
     @Activate
-    protected void activate(EntityManagerConfig config) {
-        this.unitName = config.persistenceUnitName();
-        this.createEMF();
-        this.emf.getMetamodel().getEntities().forEach(entityType -> log.info("Reserved Entity Type: {}", entityType.getName()));
+    protected void activate(EntityManagerFactoryConfig config) {
+        this.createEMF(config);
+        this.emf.getMetamodel().getEntities().forEach(entityType -> LOGGER.info("Registered EntityType: {}",
+                entityType.getName()));
     }
 
     @Deactivate
@@ -85,24 +83,23 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
         Optional.ofNullable(this.emf).ifPresent(emfConsumer -> this.emf.close());
     }
 
-    private void createEMF() {
+    private void createEMF(EntityManagerFactoryConfig config) {
         this.emf = Optional.ofNullable(this.emf).orElseGet(() -> {
-            EntityManagerFactory entityManagerFactory = null;
+            EntityManagerFactory emf = null;
             Map<String, Object> jpaProperties = new HashMap<>();
             try {
                 jpaProperties.put(NON_JTA_DATASOURCE, this.dsFactory.createDataSource(null));
                 jpaProperties.put(DDL_GENERATION, CREATE_OR_EXTEND);
                 jpaProperties.put(DDL_GENERATION_MODE, DDL_BOTH_GENERATION);
                 jpaProperties.put(DEPLOY_ON_STARTUP, "true");
-                jpaProperties.put(LOGGING_FILE, "jpa.log");
+                jpaProperties.put(LOGGING_FILE, "jpa.LOGGER");
                 jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
-                PersistenceProvider provider = new PersistenceProvider();
-                entityManagerFactory = provider.createEntityManagerFactory(this.unitName, jpaProperties);
+                emf = new PersistenceProvider().createEntityManagerFactory(config.pu(), jpaProperties);
             } catch (Exception ex) { // NOSONAR
-                log.error("Exception occurred!!", ex);
+                LOGGER.error("Exception occurred!!", ex);
             }
-            return entityManagerFactory;
+            return emf;
         });
-        log.info("EntityManagerFactory: {}", this.emf);
+        LOGGER.info("EntityManagerFactory: {}", this.emf);
     }
 }

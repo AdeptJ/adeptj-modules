@@ -24,16 +24,14 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * Entity Manager config defination.
+ * EntityManagerFactory configurations.
  *
  * @author prince.arora, AdeptJ
  */
-@ObjectClassDefinition(name = "Adeptj JPA Entity Manager Configuration",
-        description = "Adeptj JPA Entity Manager Configuration")
-public @interface EntityManagerConfig {
+@ObjectClassDefinition(name = "AdeptJ JPA EntityManagerFactory Configuration", description = "AdeptJ JPA EntityManagerFactory Configuration")
+public @interface EntityManagerFactoryConfig {
 
-    @AttributeDefinition(name = "persistenceUnitName", required = true,
-            description = "Persistence manager unit name")
-    String persistenceUnitName();
+    @AttributeDefinition(name = "pu", description = "Name of the PersistenceUnit.")
+    String pu();
 
 }
