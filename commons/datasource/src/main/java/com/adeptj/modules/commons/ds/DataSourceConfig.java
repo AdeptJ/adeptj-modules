@@ -20,6 +20,7 @@
 package com.adeptj.modules.commons.ds;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
@@ -43,7 +44,7 @@ public @interface DataSourceConfig {
     @AttributeDefinition(name = "username", description = "JDBC default authentication username")
     String username() default "root";
 
-    @AttributeDefinition(name = "password", description = "JDBC default authentication password")
+    @AttributeDefinition(name = "password", description = "JDBC default authentication password", type = AttributeType.PASSWORD)
     String password();
 
     @AttributeDefinition(name = "autoCommit", description = "JDBC auto-commit behavior of connections")

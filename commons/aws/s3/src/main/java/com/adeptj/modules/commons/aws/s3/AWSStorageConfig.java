@@ -20,6 +20,7 @@
 package com.adeptj.modules.commons.aws.s3;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
@@ -39,6 +40,6 @@ public @interface AWSStorageConfig {
     @AttributeDefinition(name = "accessKeyId", description = "AWS S3 AccessKeyId")
     String accessKeyId();
 
-    @AttributeDefinition(name = "secretKey", description = "AWS S3 SecretKey")
+    @AttributeDefinition(name = "secretKey", description = "AWS S3 SecretKey", type = AttributeType.PASSWORD)
     String secretKey();
 }

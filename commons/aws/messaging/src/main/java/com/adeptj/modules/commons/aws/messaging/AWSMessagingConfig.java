@@ -20,6 +20,7 @@
 package com.adeptj.modules.commons.aws.messaging;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
@@ -60,7 +61,7 @@ public @interface AWSMessagingConfig {
     @AttributeDefinition(name = "accessKeyId", description = "AWS AccessKeyId")
     String accessKeyId();
 
-    @AttributeDefinition(name = "secretKey", description = "AWS SecretKey")
+    @AttributeDefinition(name = "secretKey", description = "AWS SecretKey", type = AttributeType.PASSWORD)
     String secretKey();
 
 }
