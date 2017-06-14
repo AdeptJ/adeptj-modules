@@ -48,3 +48,4 @@ org.jboss.resteasy.plugins.providers.jaxb.XmlJAXBContextFinder
 org.jboss.resteasy.api.validation.ResteasyViolationExceptionMapper
 com.adeptj.modules.jaxrs.resteasy.GeneralValidatorContextResolver
 com.adeptj.modules.jaxrs.resteasy.CORSFeature
+com.adeptj.modules.jaxrs.resteasy.JWTCheckFilter
