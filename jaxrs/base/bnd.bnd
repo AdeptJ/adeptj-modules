@@ -20,12 +20,6 @@
 
 -dsannotations: *
 
-Include-Resource: resteasy-*.jar, apache-mime4j-*.jar
-
-Bundle-ClassPath: ., resteasy-jaxrs-3.1.3.Final.jar, resteasy-cdi-3.1.3.Final.jar, resteasy-validator-provider-11-3.1.3.Final.jar,\
-    resteasy-jackson2-provider-3.1.3.Final.jar, resteasy-jaxb-provider-3.1.3.Final.jar, resteasy-multipart-provider-3.1.3.Final.jar,\
-    apache-mime4j-0.6.1.jar
-
 Export-Package: \
   com.adeptj.modules.jaxrs.base
 
@@ -43,6 +37,6 @@ Import-Package: \
   com.sun.el;version="3.0.0",\
   *
   
-Bundle-Name: AdeptJ Modules :: JAX-RS :: RESTEasy Provider
+Bundle-Name: AdeptJ Modules :: JAX-RS :: Base Bundle
 Bundle-Category: AdeptJ REST
 Bundle-Vendor: AdeptJ

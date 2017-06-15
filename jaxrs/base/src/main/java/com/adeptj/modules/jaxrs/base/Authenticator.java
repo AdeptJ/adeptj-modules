@@ -1,4 +1,23 @@
-package com.adeptj.modules.jaxrs.resteasy;
+/*
+###############################################################################
+#                                                                             #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#                                                                             #
+#    Licensed under the Apache License, Version 2.0 (the "License");          #
+#    you may not use this file except in compliance with the License.         #
+#    You may obtain a copy of the License at                                  #
+#                                                                             #
+#        http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                             #
+#    Unless required by applicable law or agreed to in writing, software      #
+#    distributed under the License is distributed on an "AS IS" BASIS,        #
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#    See the License for the specific language governing permissions and      #
+#    limitations under the License.                                           #
+#                                                                             #
+###############################################################################
+*/
+package com.adeptj.modules.jaxrs.base;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -42,18 +61,18 @@ public class Authenticator {
 
     @GET
     @Path("jwt-check")
-    @JWTCheck
+    @ValidateJWT
     public Response withAuth() {
         return Response.ok().build();
     }
 
-    private String issueToken(String login) {
+    private String issueToken(String subject) {
         return Jwts.builder()
-                .setSubject(login)
+                .setSubject(subject)
                 .setIssuer("AdeptJ Runtime REST API")
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(LocalDateTime.now().plusMinutes(15l).atZone(ZoneId.systemDefault()).toInstant()))
-                .signWith(SignatureAlgorithm.HS256, SigningKeyProvider.INSTANCE.signingKey())
+                .signWith(SignatureAlgorithm.HS256, JaxRSAuthConfigProvider.INSTANCE.getJaxRSAuthConfig(subject).getSigningKey())
                 .compact();
     }
 }

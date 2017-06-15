@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,29 +16,24 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-modules</artifactId>
-        <version>1.0.2.Final</version>
-        <relativePath/>
-    </parent>
-    <artifactId>adeptj-modules-jaxrs</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: JAX-RS :: Builder</name>
-    <description>AdeptJ Modules :: Commons :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
+package com.adeptj.modules.jaxrs.base;
 
-    <modules>
+import javax.ws.rs.NameBinding;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-        <module>base</module>
-        <module>resteasy</module>
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-    </modules>
-
-</project>
+/**
+ * Annotation for use by JAX-RS resources wherever a JWT auth required.
+ *
+ * @author Rakesh.Kumar, AdeptJ.
+ */
+@NameBinding
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+public @interface ValidateJWT {
+}

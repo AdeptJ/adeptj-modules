@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,29 +16,33 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-modules</artifactId>
-        <version>1.0.2.Final</version>
-        <relativePath/>
-    </parent>
-    <artifactId>adeptj-modules-jaxrs</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: JAX-RS :: Builder</name>
-    <description>AdeptJ Modules :: Commons :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
+package com.adeptj.modules.jaxrs.base;
 
-    <modules>
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-        <module>base</module>
-        <module>resteasy</module>
+/**
+ * JaxRSAuthConfigOCD.
+ *
+ * @author Rakesh.Kumar, AdeptJ.
+ */
+@ObjectClassDefinition(name = "AdeptJ REST API Auth Config", description = "AdeptJ REST API Auth Config")
+public @interface JaxRSAuthConfigOCD {
 
-    </modules>
+    @AttributeDefinition(name = "subject", description = "Subject for JWT issuance")
+    String subject();
 
-</project>
+    @AttributeDefinition(name = "password", description = "Password of the Subject for JWT issuance", type = AttributeType.PASSWORD)
+    String password();
+
+    @AttributeDefinition(name = "signingKey", description = "SigningKey for JWT/S signing")
+    String signingKey();
+
+    @AttributeDefinition(name = "origins", description = "Origin(s) of the caller", cardinality = Integer.MAX_VALUE)
+    String origins();
+
+    @AttributeDefinition(name = "userAgents", description = "User Agents", cardinality = Integer.MAX_VALUE)
+    String userAgents();
+}
