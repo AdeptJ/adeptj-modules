@@ -37,6 +37,6 @@ Import-Package: \
   com.sun.el;version="3.0.0",\
   *
   
-Bundle-Name: AdeptJ Modules :: JAX-RS :: Base Bundle
+Bundle-Name: AdeptJ Modules :: JAX-RS :: Base
 Bundle-Category: AdeptJ REST
 Bundle-Vendor: AdeptJ

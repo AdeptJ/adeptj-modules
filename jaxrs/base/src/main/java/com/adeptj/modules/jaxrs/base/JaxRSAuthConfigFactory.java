@@ -42,16 +42,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Designate(ocd = JaxRSAuthConfigOCD.class)
-@Component(name="factory", property="service.pid=factory", configurationPolicy= ConfigurationPolicy.IGNORE)
+@Component(name = JaxRSAuthConfigFactory.NAME, property = JaxRSAuthConfigFactory.SERVICE_PID, configurationPolicy = ConfigurationPolicy.IGNORE)
 public class JaxRSAuthConfigFactory implements ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthConfigFactory.class);
+
+    public static final String NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
+
+    public static final String SERVICE_PID = "service.pid=com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
 
     private Map<String, JaxRSAuthConfig> mappings = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {
-        return "factory";
+        return NAME;
     }
 
     @Override
