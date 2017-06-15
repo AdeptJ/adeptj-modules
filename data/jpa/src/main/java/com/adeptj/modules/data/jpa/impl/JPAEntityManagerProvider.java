@@ -59,7 +59,7 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JPAEntityManagerProvider.class);
 
-    @Reference(target = "(objectClass=com.adeptj.modules.commons.ds.internal.DataSourceProvider)")
+    @Reference(target = "(osgi.ds.provider=AdeptJ DS Provider)")
     private DataSourceFactory dsFactory;
 
     private volatile EntityManagerFactory emf;

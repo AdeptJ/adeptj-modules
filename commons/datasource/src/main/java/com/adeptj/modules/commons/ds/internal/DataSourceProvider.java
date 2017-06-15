@@ -45,7 +45,7 @@ import java.util.Properties;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = DataSourceConfig.class)
-@Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(immediate = true, property = { "osgi.ds.provider=AdeptJ DS Provider" }, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class DataSourceProvider implements DataSourceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceProvider.class);
