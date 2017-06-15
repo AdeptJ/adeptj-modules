@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.base;
+package com.adeptj.modules.jaxrs.resteasy;
 
 import org.jboss.resteasy.spi.Registry;
 import org.osgi.framework.BundleContext;

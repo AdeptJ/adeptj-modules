@@ -53,7 +53,7 @@ public class Authenticator {
         try {
             // First authenticate the user using the credentials provided but from where?
             // Now issue a token for the user
-            return Response.ok().header(AUTHORIZATION, "Bearer " + this.issueToken(username)).build();
+            return Response.ok().header(AUTHORIZATION, this.issueToken(username)).build();
         } catch (Exception e) {
             return Response.status(UNAUTHORIZED).build();
         }
@@ -67,10 +67,7 @@ public class Authenticator {
     }
 
     private String issueToken(String subject) {
-        return Jwts.builder()
-                .setSubject(subject)
-                .setIssuer("AdeptJ Runtime REST API")
-                .setIssuedAt(new Date())
+        return "Bearer " + Jwts.builder().setSubject(subject).setIssuer("AdeptJ Runtime REST API").setIssuedAt(new Date())
                 .setExpiration(Date.from(LocalDateTime.now().plusMinutes(15l).atZone(ZoneId.systemDefault()).toInstant()))
                 .signWith(SignatureAlgorithm.HS256, JaxRSAuthConfigProvider.INSTANCE.getJaxRSAuthConfig(subject).getSigningKey())
                 .compact();

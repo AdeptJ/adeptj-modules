@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.base;
+package com.adeptj.modules.jaxrs.resteasy;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
@@ -63,37 +63,34 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            // Force RESTEasy to load the Provider classes from Bundle's classpath.
-            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-			super.init(servletConfig);
-			Dispatcher dispatcher = this.getDispatcher();
-            this.registerContextResolver(dispatcher.getProviderFactory());
-            this.resourceTracker = new ResourceTracker(context, dispatcher.getRegistry());
-            this.resourceTracker.open();
-			LOGGER.info("RESTEasyServlet initialized successfully!!");
-		} catch (Exception ex) { // NOSONAR
-			LOGGER.error("Exception while initializing RESTEasy HttpServletDispatcher!!", ex);
-			throw ex;
-		} finally {
-            Thread.currentThread().setContextClassLoader(contextClassLoader);
-        }
+        ClassLoaders.executeWith(this.getClass().getClassLoader(), () -> {
+            try {
+                super.init(servletConfig);
+                Dispatcher dispatcher = this.getDispatcher();
+                this.registerContextResolver(dispatcher.getProviderFactory());
+                this.resourceTracker = new ResourceTracker(context, dispatcher.getRegistry());
+                this.resourceTracker.open();
+                LOGGER.info("RESTEasyServlet initialized successfully!!");
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error("Exception while initializing RESTEasy HttpServletDispatcher!!", ex);
+                throw new JaxRSInitializationException(ex);
+            }
+        });
     }
 
 	private void registerContextResolver(ResteasyProviderFactory factory) {
-		try {
-			Map.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS , true).get(factory))
-					.remove(GeneralValidator.class);
-			Set.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_CLASSES, true).get(factory))
-					.remove(GeneralValidatorContextResolver.class);
-			factory.registerProvider(GeneralValidatorContextResolver.class);
-		} catch (IllegalArgumentException | IllegalAccessException ex) {
-			LOGGER.error("Exception while adding ContextResolver", ex);
-		}
-	}
-	
-	// LifeCycle Methods
+        try {
+            Map.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true).get(factory))
+                    .remove(GeneralValidator.class);
+            Set.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_CLASSES, true).get(factory))
+                    .remove(GeneralValidatorContextResolver.class);
+            factory.registerProvider(GeneralValidatorContextResolver.class);
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            LOGGER.error("Exception while adding ContextResolver", ex);
+        }
+    }
+
+    // LifeCycle Methods
 
     @Activate
     protected void activate(BundleContext context) {

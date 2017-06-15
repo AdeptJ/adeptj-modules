@@ -31,7 +31,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,12 +63,9 @@ public class JaxRSAuthConfigFactory implements ManagedServiceFactory {
         String subject = (String) properties.get("subject");
         String password = (String) properties.get("password");
         String signingKey = (String) properties.get("signingKey");
-        List<String> originList = new ArrayList<>();
-        Arrays.stream((String[]) properties.get("origins")).forEach(origin -> originList.add(origin));
-        List<String> userAgentList = new ArrayList<>();
-        Arrays.stream((String[]) properties.get("userAgents")).forEach(origin -> userAgentList.add(origin));
         JaxRSAuthConfig.Builder builder = new JaxRSAuthConfig.Builder();
-        builder.subject(subject).password(password).signingKey(signingKey).origins(originList).userAgents(userAgentList);
+        builder.subject(subject).password(password).signingKey(signingKey).origins(new ArrayList<>(Arrays.asList((String[]) properties.get("origins"))))
+                .userAgents(new ArrayList<>(Arrays.asList((String[]) properties.get("userAgents"))));
         JaxRSAuthConfig config = builder.build();
         this.mappings.put(pid, config);
         try {
