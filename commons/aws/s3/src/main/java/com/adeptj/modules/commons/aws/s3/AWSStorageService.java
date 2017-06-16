@@ -20,6 +20,8 @@
 package com.adeptj.modules.commons.aws.s3;
 
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 
 import java.io.InputStream;
@@ -31,13 +33,73 @@ import java.io.InputStream;
  */
 public interface AWSStorageService {
 
+    /**
+     * Create a new bucket on S3.
+     *
+     * @param bucketName
+     *                   Bucket Name.
+     *
+     * @return
+     */
     Bucket createBucket(String bucketName);
 
+    /**
+     * Delete an existing bucket on S3.
+     *
+     * @param bucketName
+     *                     Bucket Name.
+     */
     void deleteBucket(String bucketName);
 
-    void createRecord(String bucketName, String key, InputStream data);
+    /**
+     * Create a new record on S3.
+     *
+     * @param bucketName
+     *                      Bucket Name.
+     * @param key
+     *              Record Key.
+     * @param data
+     *              Record Data.
+     * @param acl
+     *              Record ACL.
+     */
+    void createRecord(String bucketName, String key, InputStream data, RecordACL acl);
 
+    /**
+     * Create a new record on S3 with metadata.
+     *
+     * @param bucketName
+     *                      Bucket Name.
+     * @param key
+     *              Record Key.
+     * @param metadata
+     *               Record Metadata.
+     * @param data
+     *              Record Data.
+     * @param acl
+     *              Record ACL.
+     */
+    void createRecord(String bucketName, String key, ObjectMetadata metadata,
+                      InputStream data, RecordACL acl);
+
+    /**
+     * Get a record from S3.
+     *
+     * @param bucketName
+     *                      Bucket Name.
+     * @param key
+     *                      Record Key.
+     * @return
+     */
     S3Object getRecord(String bucketName, String key);
 
+    /**
+     * Delete a record from S3.
+     *
+     * @param bucketName
+     *                      Bucket Name.
+     * @param key
+     *                      Record Key.
+     */
     void deleteRecord(String bucketName, String key);
 }

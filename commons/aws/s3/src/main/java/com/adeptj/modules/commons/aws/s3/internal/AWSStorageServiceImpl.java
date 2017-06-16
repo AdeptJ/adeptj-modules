@@ -21,12 +21,14 @@ package com.adeptj.modules.commons.aws.s3.internal;
 
 import com.adeptj.modules.commons.aws.s3.AWSStorageConfig;
 import com.adeptj.modules.commons.aws.s3.AWSStorageService;
+import com.adeptj.modules.commons.aws.s3.RecordACL;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
@@ -53,29 +55,57 @@ public class AWSStorageServiceImpl implements AWSStorageService {
 
     private AmazonS3 s3Client;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Bucket createBucket(String bucketName) {
         LOGGER.info("Creating Bucket: [{}]!!", bucketName);
         return this.s3Client.createBucket(bucketName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteBucket(String bucketName) {
         this.s3Client.deleteBucket(bucketName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void createRecord(String bucketName, String key, InputStream data) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        // metadata.se
-        this.s3Client.putObject(new PutObjectRequest(bucketName, key, data, metadata));
+    public void createRecord(String bucketName, String key, InputStream data,
+                             RecordACL acl) {
+        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, key, data,
+                new ObjectMetadata());
+        objectRequest.setCannedAcl(this.getS3Acl(acl));
+        this.s3Client.putObject(objectRequest);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createRecord(String bucketName, String key, ObjectMetadata metadata,
+                             InputStream data, RecordACL acl) {
+        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, key, data, metadata);
+        objectRequest.setCannedAcl(this.getS3Acl(acl));
+        this.s3Client.putObject(objectRequest);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public S3Object getRecord(String bucketName, String key) {
         return this.s3Client.getObject(bucketName, key);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteRecord(String bucketName, String key) {
         this.s3Client.deleteObject(bucketName, key);
@@ -88,6 +118,41 @@ public class AWSStorageServiceImpl implements AWSStorageService {
         this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
                 .serviceEndpoint(), config.signingRegion())).build();
+    }
+
+    private CannedAccessControlList getS3Acl(RecordACL acl) {
+        CannedAccessControlList accessControlList = null;
+        switch (acl) {
+
+            case AuthenticatedRead:
+                accessControlList = CannedAccessControlList.AuthenticatedRead;
+                break;
+            case AwsExecRead:
+                accessControlList = CannedAccessControlList.AwsExecRead;
+                break;
+            case BucketOwnerFullControl:
+                accessControlList = CannedAccessControlList.BucketOwnerFullControl;
+                break;
+            case BucketOwnerRead:
+                accessControlList = CannedAccessControlList.BucketOwnerRead;
+                break;
+            case LogDeliveryWrite:
+                accessControlList = CannedAccessControlList.LogDeliveryWrite;
+                break;
+            case Private:
+                accessControlList = CannedAccessControlList.Private;
+                break;
+            case PublicRead:
+                accessControlList = CannedAccessControlList.PublicRead;
+                break;
+            case PublicReadWrite:
+                accessControlList = CannedAccessControlList.PublicReadWrite;
+                break;
+            default:
+                accessControlList = CannedAccessControlList.Private;
+                break;
+        }
+        return accessControlList;
     }
 
     @Deactivate
