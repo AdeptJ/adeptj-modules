@@ -38,13 +38,13 @@ import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
- * Authenticator.
+ * JaxRSAuthenticator.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Path("/auth")
-@Component(immediate = true, service = Authenticator.class, property = "osgi.jaxrs.resource.base=auth")
-public class Authenticator {
+@Component(immediate = true, service = JaxRSAuthenticator.class, property = "osgi.jaxrs.resource.base=auth")
+public class JaxRSAuthenticator {
 
     @POST
     @Path("login")
@@ -68,7 +68,7 @@ public class Authenticator {
 
     private String issueToken(String subject) {
         return "Bearer " + Jwts.builder().setSubject(subject).setIssuer("AdeptJ Runtime REST API").setIssuedAt(new Date())
-                .setExpiration(Date.from(LocalDateTime.now().plusMinutes(15l).atZone(ZoneId.systemDefault()).toInstant()))
+                .setExpiration(Date.from(LocalDateTime.now().plusMinutes(30L).atZone(ZoneId.systemDefault()).toInstant()))
                 .signWith(SignatureAlgorithm.HS256, JaxRSAuthConfigProvider.INSTANCE.getJaxRSAuthConfig(subject).getSigningKey())
                 .compact();
     }

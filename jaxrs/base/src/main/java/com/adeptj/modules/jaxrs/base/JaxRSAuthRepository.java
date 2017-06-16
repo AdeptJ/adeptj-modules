@@ -15,14 +15,14 @@ import java.sql.Statement;
 import java.util.Properties;
 
 /**
- * AuthRepository for H2 DB.
+ * JaxRSAuthRepository for H2 DB.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Component(immediate = true, service = AuthRepository.class)
-public class AuthRepository {
+@Component(immediate = true, service = JaxRSAuthRepository.class)
+public class JaxRSAuthRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthRepository.class);
 
     @Reference(target = "(osgi.jdbc.driver.name=H2 JDBC Driver)")
     private DataSourceFactory dsFactory;
@@ -78,7 +78,7 @@ public class AuthRepository {
         jdbcProperties.put(DataSourceFactory.JDBC_URL, "jdbc:h2:file:./deployment/h2db/db:adeptj;DB_CLOSE_DELAY=-1");
         try {
             this.dataSource = dsFactory.createDataSource(jdbcProperties);
-            String q1 = "CREATE SCHEMA rest_auth_schema AUTHORIZATION sa;";
+            String q1 = "CREATE SCHEMA IF NOT EXISTS ADEPTJ_AUTH AUTHORIZATION sa;";
             try(Connection connection = this.dataSource.getConnection();
                 Statement statement = connection.createStatement();) {
                 statement.execute(q1);
