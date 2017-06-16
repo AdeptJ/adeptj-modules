@@ -76,10 +76,8 @@ public class AWSStorageServiceImpl implements AWSStorageService {
      * {@inheritDoc}
      */
     @Override
-    public void createRecord(String bucketName, String key, InputStream data,
-                             RecordACL acl) {
-        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, key, data,
-                new ObjectMetadata());
+    public void createRecord(String bucketName, String key, InputStream data, RecordACL acl) {
+        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, key, data, new ObjectMetadata());
         objectRequest.setCannedAcl(this.getS3Acl(acl));
         this.s3Client.putObject(objectRequest);
     }
@@ -88,8 +86,7 @@ public class AWSStorageServiceImpl implements AWSStorageService {
      * {@inheritDoc}
      */
     @Override
-    public void createRecord(String bucketName, String key, ObjectMetadata metadata,
-                             InputStream data, RecordACL acl) {
+    public void createRecord(String bucketName, String key, ObjectMetadata metadata, InputStream data, RecordACL acl) {
         PutObjectRequest objectRequest = new PutObjectRequest(bucketName, key, data, metadata);
         objectRequest.setCannedAcl(this.getS3Acl(acl));
         this.s3Client.putObject(objectRequest);
@@ -115,15 +112,18 @@ public class AWSStorageServiceImpl implements AWSStorageService {
 
     @Activate
     protected void activate(AWSStorageConfig config) {
-        this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
-                .serviceEndpoint(), config.signingRegion())).build();
+        try {
+            this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
+                    new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
+                    .serviceEndpoint(), config.signingRegion())).build();
+        } catch (Exception ex) {
+            LOGGER.error("Exception while creating S3 client!!", ex);
+        }
     }
 
     private CannedAccessControlList getS3Acl(RecordACL acl) {
         CannedAccessControlList accessControlList = null;
         switch (acl) {
-
             case AuthenticatedRead:
                 accessControlList = CannedAccessControlList.AuthenticatedRead;
                 break;
