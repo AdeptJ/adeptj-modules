@@ -20,6 +20,7 @@
  */
 package com.adeptj.modules.data.jpa.impl;
 
+import com.adeptj.modules.commons.ds.api.DataSourceProvider;
 import com.adeptj.modules.data.jpa.EntityManagerFactoryConfig;
 import com.adeptj.modules.data.jpa.EntityManagerProvider;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -28,7 +29,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +59,8 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JPAEntityManagerProvider.class);
 
-    @Reference(target = "(osgi.ds.provider=AdeptJ DS Provider)")
-    private DataSourceFactory dsFactory;
+    @Reference(target = "(osgi.ds.provider=AdeptJ HikariDataSource Provider)")
+    private DataSourceProvider dsProvider;
 
     private volatile EntityManagerFactory emf;
 
@@ -88,11 +88,11 @@ public class JPAEntityManagerProvider implements EntityManagerProvider {
             EntityManagerFactory emf = null;
             Map<String, Object> jpaProperties = new HashMap<>();
             try {
-                jpaProperties.put(NON_JTA_DATASOURCE, this.dsFactory.createDataSource(null));
+                jpaProperties.put(NON_JTA_DATASOURCE, this.dsProvider.getDataSource());
                 jpaProperties.put(DDL_GENERATION, CREATE_OR_EXTEND);
                 jpaProperties.put(DDL_GENERATION_MODE, DDL_BOTH_GENERATION);
                 jpaProperties.put(DEPLOY_ON_STARTUP, "true");
-                jpaProperties.put(LOGGING_FILE, "jpa.LOGGER");
+                jpaProperties.put(LOGGING_FILE, "jpa.log");
                 jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
                 emf = new PersistenceProvider().createEntityManagerFactory(config.pu(), jpaProperties);
             } catch (Exception ex) { // NOSONAR

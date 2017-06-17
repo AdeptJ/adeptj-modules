@@ -53,7 +53,7 @@
 				</executions>
 			</plugin>
 
-			<!-- Below Maven Jar plugin is required to process MENIFEST.MF -->
+			<!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>

@@ -60,8 +60,8 @@ public @interface DataSourceConfig {
     long maxLifetime() default 1800000; // 30 Minutes
 
     @AttributeDefinition(name = "minimumIdle", description = "Minimum number of idle connections that HikariCP tries to maintain in the pool")
-    int minimumIdle() default 32; // 32 Connection;
+    int minimumIdle() default 32; // 32 Connections;
 
     @AttributeDefinition(name = "maximumPoolSize", description = "Maximum size that the pool is allowed to reach, including both idle and in-use connections")
-    int maximumPoolSize() default 32; // 32 Connection;
+    int maximumPoolSize() default 32; // 32 Connections;
 }
