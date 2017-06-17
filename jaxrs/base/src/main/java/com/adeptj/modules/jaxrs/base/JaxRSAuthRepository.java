@@ -1,70 +1,89 @@
+/*
+###############################################################################
+#                                                                             #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#                                                                             #
+#    Licensed under the Apache License, Version 2.0 (the "License");          #
+#    you may not use this file except in compliance with the License.         #
+#    You may obtain a copy of the License at                                  #
+#                                                                             #
+#        http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                             #
+#    Unless required by applicable law or agreed to in writing, software      #
+#    distributed under the License is distributed on an "AS IS" BASIS,        #
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#    See the License for the specific language governing permissions and      #
+#    limitations under the License.                                           #
+#                                                                             #
+###############################################################################
+*/
 package com.adeptj.modules.jaxrs.base;
 
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ConfigurationEvent;
+import org.osgi.service.cm.ConfigurationListener;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Dictionary;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * JaxRSAuthRepository for H2 DB.
+ * JaxRSAuthRepository.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Component(immediate = true, service = JaxRSAuthRepository.class)
-public class JaxRSAuthRepository {
+@Component(immediate = true, service = { JaxRSAuthRepository.class, ConfigurationListener.class })
+public class JaxRSAuthRepository implements ConfigurationListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthRepository.class);
 
-    @Reference(target = "(osgi.jdbc.driver.name=H2 JDBC Driver)")
-    private DataSourceFactory dsFactory;
+    private static final String JAX_RS_AUTH_FACTORY_PID = "com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
 
-    private DataSource dataSource;
+    private static final String JAX_RS_AUTH_SERVICE_FACTORY_PID_FILTER = "(service.factoryPid=com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory)";
 
-    public void saveJaxRSAuthConfig(JaxRSAuthConfig config) {
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement psm = connection.prepareStatement("");) {
-            psm.setString(1, config.getSubject());
-            psm.executeUpdate();
-        } catch (SQLException ex) {
-        }
+    private static final String UTF8 = "UTF-8";
+
+    @Reference
+    private ConfigurationAdmin configAdmin;
+
+    private Map<String, JaxRSAuthConfig> configs = new ConcurrentHashMap<>();
+
+    public JaxRSAuthConfig getAuthConfig(String subject) {
+        return this.configs.get(subject);
     }
 
-    public void updateJaxRSAuthConfig(JaxRSAuthConfig config) {
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement psm = connection.prepareStatement("");) {
-            psm.setString(1, config.getSubject());
-            psm.executeUpdate();
-        } catch (SQLException ex) {
-            LOGGER.error("SQLException!!", ex);
-        }
-    }
-
-    public void deleteJaxRSAuthConfig(JaxRSAuthConfig config) {
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement psm = connection.prepareStatement("");) {
-            psm.setString(1, config.getSubject());
-            psm.executeUpdate();
-        } catch (SQLException ex) {
-            LOGGER.error("SQLException!!", ex);
-        }
-    }
-
-    public void getJaxRSAuthConfig(String subject) {
-        try(Connection connection = this.dataSource.getConnection();
-            PreparedStatement psm = connection.prepareStatement("");) {
-            psm.setString(1, subject);
-            psm.execute();
-        } catch (SQLException ex) {
-            LOGGER.error("SQLException!!", ex);
+    @Override
+    public void configurationEvent(ConfigurationEvent event) {
+        try {
+            switch (event.getType()) {
+                case ConfigurationEvent.CM_UPDATED:
+                    if (JAX_RS_AUTH_FACTORY_PID.equals(event.getFactoryPid())) {
+                        LOGGER.info("Factory Configuration PID: {}", event.getPid());
+                        JaxRSAuthConfig authConfig = this.toJaxRSAuthConfig(this.configAdmin.getConfiguration(event.getPid()));
+                        this.configs.put(authConfig.getSubject(), authConfig);
+                    }
+                    break;
+                case ConfigurationEvent.CM_DELETED:
+                    if (JAX_RS_AUTH_FACTORY_PID.equals(event.getFactoryPid())) {
+                        LOGGER.info("Factory Configuration PID: {}", event.getPid());
+                        this.configs.remove((String) this.configAdmin.getConfiguration(event.getPid()).getProperties().get("subject"));
+                    }
+                    break;
+                default:
+                    LOGGER.info("Ignoring ConfigurationEvent: {}", event.getType());
+            }
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error("Exception!!", ex);
         }
     }
 
@@ -72,23 +91,35 @@ public class JaxRSAuthRepository {
 
     @Activate
     protected void activate() {
-        Properties jdbcProperties = new Properties();
-        jdbcProperties.put(DataSourceFactory.JDBC_USER, "sa");
-        jdbcProperties.put(DataSourceFactory.JDBC_PASSWORD, "sa");
-        jdbcProperties.put(DataSourceFactory.JDBC_URL, "jdbc:h2:file:./deployment/h2db/db:adeptj;DB_CLOSE_DELAY=-1");
         try {
-            this.dataSource = dsFactory.createDataSource(jdbcProperties);
-            String q1 = "CREATE SCHEMA IF NOT EXISTS ADEPTJ_AUTH AUTHORIZATION sa;";
-            try(Connection connection = this.dataSource.getConnection();
-                Statement statement = connection.createStatement();) {
-                statement.execute(q1);
-                statement.close();
-                connection.commit();
-            } catch (Exception ex) {
-                LOGGER.error("SQLException!!", ex);
-            }
-        } catch (SQLException ex) {
-            LOGGER.error("SQLException!!", ex);
+            // Collect all the factory configs of JaxRSAuthConfigFactory and create a mapping of subject to JaxRSAuthConfig object.
+            Configuration[] configs = this.configAdmin.listConfigurations(JAX_RS_AUTH_SERVICE_FACTORY_PID_FILTER);
+            Optional.ofNullable(configs).ifPresent(cfgs -> Arrays.stream(cfgs).forEach(cfg -> {
+                LOGGER.info("Configuration for Factory PID: {}", cfg.getFactoryPid());
+                JaxRSAuthConfig authConfig = this.toJaxRSAuthConfig(cfg);
+                this.configs.put(authConfig.getSubject(), authConfig);
+            }));
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error("Exception!!", ex);
+        }
+    }
+
+    private JaxRSAuthConfig toJaxRSAuthConfig(Configuration configuration) {
+        Dictionary<String, Object> properties = configuration.getProperties();
+        return new JaxRSAuthConfig.Builder()
+                .subject((String) properties.get("subject"))
+                .password((String) properties.get("password"))
+                .signingKey(this.encode((String) properties.get("signingKey")))
+                .origins(Arrays.asList((String[]) properties.get("origins")))
+                .userAgents(Arrays.asList((String[]) properties.get("userAgents")))
+                .build();
+    }
+
+    private String encode(String signingKey) {
+        try {
+            return new String(Base64.getEncoder().encode(signingKey.getBytes(UTF8)));
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex); // NOSONAR
         }
     }
 

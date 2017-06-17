@@ -19,6 +19,8 @@
 */
 package com.adeptj.modules.jaxrs.resteasy;
 
+import com.adeptj.modules.jaxrs.base.JaxRSAuthRepository;
+import com.adeptj.modules.jaxrs.base.ValidateJWTFilter;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -27,6 +29,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +49,20 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Component(immediate = true, service = Servlet.class, property = { "osgi.http.whiteboard.servlet.name=RESTEasy HttpServlet30Dispatcher",
-        "osgi.http.whiteboard.servlet.pattern=/*", "osgi.http.whiteboard.servlet.asyncSupported=true", "servlet.init.resteasy.servlet.mapping.prefix=/"})
+@Component(immediate = true, service = Servlet.class,
+        property = {
+                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME + "=RESTEasy HttpServlet30Dispatcher",
+                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=/*",
+                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED + "=true",
+                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + "resteasy.servlet.mapping.prefix=/"
+        })
 public class RESTEasyServlet extends HttpServlet30Dispatcher {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RESTEasyServlet.class);
 
 	private static final long serialVersionUID = 8759503561853047365L;
-	
-	private static final String FIELD_CTX_RESOLVERS = "contextResolvers";
+
+    private static final String FIELD_CTX_RESOLVERS = "contextResolvers";
 
     private static final String FIELD_PROVIDER_CLASSES = "providerClasses";
     
@@ -61,14 +70,19 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
 
     private BundleContext context;
 
+    @Reference
+    private JaxRSAuthRepository authRepository;
+
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {
         ClassLoaders.executeWith(this.getClass().getClassLoader(), () -> {
             try {
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
-                this.registerContextResolver(dispatcher.getProviderFactory());
-                this.resourceTracker = new ResourceTracker(context, dispatcher.getRegistry());
+                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
+                providerFactory.register(new ValidateJWTFilter(this.authRepository));
+                this.registerContextResolver(providerFactory);
+                this.resourceTracker = new ResourceTracker(this.context, dispatcher.getRegistry());
                 this.resourceTracker.open();
                 LOGGER.info("RESTEasyServlet initialized successfully!!");
             } catch (Exception ex) { // NOSONAR
@@ -78,7 +92,7 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
         });
     }
 
-	private void registerContextResolver(ResteasyProviderFactory factory) {
+    private void registerContextResolver(ResteasyProviderFactory factory) {
         try {
             Map.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true).get(factory))
                     .remove(GeneralValidator.class);

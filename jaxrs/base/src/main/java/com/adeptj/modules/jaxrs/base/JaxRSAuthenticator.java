@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.base;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -46,12 +47,19 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 @Component(immediate = true, service = JaxRSAuthenticator.class, property = "osgi.jaxrs.resource.base=auth")
 public class JaxRSAuthenticator {
 
+    @Reference
+    private JaxRSAuthRepository authRepository;
+
     @POST
-    @Path("login")
+    @Path("token")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response authenticate(@FormParam("username") String username, @FormParam("pwd") String pwd) {
+    public Response issueToken(@FormParam("username") String username, @FormParam("pwd") String pwd) {
         try {
             // First authenticate the user using the credentials provided but from where?
+            JaxRSAuthConfig authConfig = this.authRepository.getAuthConfig(username);
+            if (authConfig == null) {
+                return Response.status(UNAUTHORIZED).build();
+            }
             // Now issue a token for the user
             return Response.ok().header(AUTHORIZATION, this.issueToken(username)).build();
         } catch (Exception e) {
@@ -69,7 +77,7 @@ public class JaxRSAuthenticator {
     private String issueToken(String subject) {
         return "Bearer " + Jwts.builder().setSubject(subject).setIssuer("AdeptJ Runtime REST API").setIssuedAt(new Date())
                 .setExpiration(Date.from(LocalDateTime.now().plusMinutes(30L).atZone(ZoneId.systemDefault()).toInstant()))
-                .signWith(SignatureAlgorithm.HS256, JaxRSAuthConfigProvider.INSTANCE.getJaxRSAuthConfig(subject).getSigningKey())
+                .signWith(SignatureAlgorithm.HS256, this.authRepository.getAuthConfig(subject).getSigningKey())
                 .compact();
     }
 }
