@@ -19,8 +19,11 @@
 -metatypeannotations: *
 
 -dsannotations: *
-Private-Package: com.adeptj.modules.data.jpa.impl
+
 Export-Package: com.adeptj.modules.data.jpa
+
 Bundle-Name: AdeptJ Modules :: Data :: JPA
+
 Bundle-Category: AdeptJ Data
+
 Bundle-Vendor: AdeptJ

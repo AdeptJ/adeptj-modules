@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  *
  * @author princearora
  */
-@Component(name = "AdeptJ JPA Persistence Service", immediate = true)
+@Component
 public class JPAPersistenceServiceImpl implements JPAPersistenceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JPAPersistenceServiceImpl.class);
@@ -203,21 +203,21 @@ public class JPAPersistenceServiceImpl implements JPAPersistenceService {
     }
 
     private <T> List<Predicate> toPredicates(Map<String, Object> predicateMap, CriteriaBuilder cb, Root<T> root) {
-        return predicateMap.entrySet().stream().map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue())).collect
-                (Collectors.toList());
+        return predicateMap.entrySet().stream().map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
     /**
      * This method sets the positional query parameters passed by the caller.
      *
-     * @param query
-     * @param queryParams
+     * @param query the JPA Query
+     * @param queryParams Named Parameters
      */
     private void setQueryParameters(TypedQuery<?> query, Object... queryParams) {
         if (queryParams != null && queryParams.length > 0) {
             // Positional parameters always starts with 1.
-            for (int i = 1; i < queryParams.length; i++) {
-                query.setParameter(i, queryParams[i-1]);
+            for (int i = 0; i < queryParams.length; i++) {
+                query.setParameter(i + 1, queryParams[i]);
             }
         }
     }
