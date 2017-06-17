@@ -39,20 +39,15 @@ public class ClassLoaders {
      * @author Rakesh.Kumar, AdeptJ
      */
     @FunctionalInterface
-    public static interface Callback {
+    public interface Callback {
         void execute();
     }
 
     /**
-     * Executes the provided callback within the context of the specified class
-     * loader.
+     * Executes the provided callback within the context of the specified class loader.
      *
-     * @param cl
-     *            the class loader to use as a context class loader for the
-     *            execution
-     * @param callback
-     *            the execution callback handler
-     * @return the result of the execution
+     * @param cl the class loader to use as a context class loader for the execution
+     * @param callback the execution callback handler
      */
     public static void executeWith(ClassLoader cl, Callback callback) {
         ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
