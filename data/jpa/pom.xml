@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,113 +19,113 @@
 ###############################################################################
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.1.Final</version>
-		<relativePath/>
-	</parent>
-	<artifactId>adeptj-modules-data-jpa</artifactId>
-	<packaging>jar</packaging>
-	<name>AdeptJ Modules :: Data :: JPA Data Provider Bundle</name>
-	<description>AdeptJ Modules :: Data :: JPA Data Provider Bundle</description>
-	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<eclipselink.version>2.6.4</eclipselink.version>
-	</properties>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-modules</artifactId>
+        <version>1.0.1.Final</version>
+        <relativePath/>
+    </parent>
+    <artifactId>adeptj-modules-data-jpa</artifactId>
+    <packaging>jar</packaging>
+    <name>AdeptJ Modules :: Data :: JPA Data Provider Bundle</name>
+    <description>AdeptJ Modules :: Data :: JPA Data Provider Bundle</description>
 
-	<build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <eclipselink.version>2.6.4</eclipselink.version>
+    </properties>
 
-		<!-- Below BND plugin is required to process the OSGi Annotation-->
-		<plugins>
-			<plugin>
-				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>bnd-process</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+    <build>
 
-			<!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
+        <!-- Below BND plugin is required to process the OSGi Annotation-->
+        <plugins>
+            <plugin>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bnd-process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgument>-parameters</compilerArgument>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-				</configuration>
-			</plugin>
-		</plugins>
+            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
 
-	</build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
 
-	<dependencies>
+    </build>
 
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.cmpn</artifactId>
-			<scope>provided</scope>
-		</dependency>
+    <dependencies>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Eclipselink 2.6.4 Dependencies -->
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-			<version>${jpa.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.core</artifactId>
-			<version>${eclipselink.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>org.eclipse.persistence.jpa</artifactId>
-			<version>${eclipselink.version}</version>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
-		</dependency>
+        </dependency>
 
-		<dependency>
-			<groupId>com.adeptj</groupId>
-			<artifactId>adeptj-modules-commons-datasource</artifactId>
-			<version>1.0.0.Final</version>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.cmpn</artifactId>
             <scope>provided</scope>
-		</dependency>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Eclipselink 2.6.4 Dependencies -->
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>${jpa.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${eclipselink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${eclipselink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-datasource</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 </project>

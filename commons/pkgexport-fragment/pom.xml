@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,43 +19,43 @@
 ###############################################################################
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.0.Final</version>
-		<relativePath/>
-	</parent>
-	<artifactId>adeptj-modules-commons-pkgexport-fragment</artifactId>
-	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</name>
-	<description>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</description>
-	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-modules</artifactId>
+        <version>1.0.0.Final</version>
+        <relativePath/>
+    </parent>
+    <artifactId>adeptj-modules-commons-pkgexport-fragment</artifactId>
+    <packaging>bundle</packaging>
+    <name>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</name>
+    <description>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</description>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Category>AdeptJ Commons</Bundle-Category>
-						<Fragment-Host>system.bundle;extension:=framework</Fragment-Host>
-						<Export-Package>
-							javassist.*;version=[3.21.0.GA,4),
-							org.thymeleaf.*;version=[3.0.6.RELEASE,4),
-							ognl.*;version=[3.2,4)
-						</Export-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Category>AdeptJ Commons</Bundle-Category>
+                        <Fragment-Host>system.bundle;extension:=framework</Fragment-Host>
+                        <Export-Package>
+                            javassist.*;version=[3.21.0.GA,4),
+                            org.thymeleaf.*;version=[3.0.6.RELEASE,4),
+                            ognl.*;version=[3.2,4)
+                        </Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

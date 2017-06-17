@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,69 +19,69 @@
 ###############################################################################
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.1.Final</version>
-		<relativePath/>
-	</parent>
-	<artifactId>adeptj-modules-commons-aws-base</artifactId>
-	<version>1.0.0.Final</version>
-	<packaging>jar</packaging>
-	<name>AdeptJ Modules :: Commons :: AWS Base Bundle</name>
-	<description>AdeptJ Modules :: Commons :: AWS Base Bundle</description>
-	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<aws.base.version>1.11.144</aws.base.version>
-		<ion.java.version>1.0.2</ion.java.version>
-	</properties>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-modules</artifactId>
+        <version>1.0.1.Final</version>
+        <relativePath/>
+    </parent>
+    <artifactId>adeptj-modules-commons-aws-base</artifactId>
+    <version>1.0.0.Final</version>
+    <packaging>jar</packaging>
+    <name>AdeptJ Modules :: Commons :: AWS Base Bundle</name>
+    <description>AdeptJ Modules :: Commons :: AWS Base Bundle</description>
 
-	<build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <aws.base.version>1.11.144</aws.base.version>
+        <ion.java.version>1.0.2</ion.java.version>
+    </properties>
 
-		<!-- Below BND plugin is required to process the OSGi Annotation-->
-		<plugins>
+    <build>
 
-			<plugin>
-				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>bnd-process</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+        <!-- Below BND plugin is required to process the OSGi Annotation-->
+        <plugins>
 
-			<!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bnd-process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgument>-parameters</compilerArgument>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-				</configuration>
-			</plugin>
+            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
 
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
 
-	</build>
+        </plugins>
 
-	<dependencies>
+    </build>
+
+    <dependencies>
 
         <dependency>
             <groupId>com.amazonaws</groupId>
@@ -118,11 +118,11 @@
         </dependency>
 
         <dependency>
-			<groupId>software.amazon.ion</groupId>
-			<artifactId>ion-java</artifactId>
-			<version>${ion.java.version}</version>
-		</dependency>
+            <groupId>software.amazon.ion</groupId>
+            <artifactId>ion-java</artifactId>
+            <version>${ion.java.version}</version>
+        </dependency>
 
-	</dependencies>
-	
+    </dependencies>
+
 </project>

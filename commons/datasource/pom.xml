@@ -22,27 +22,27 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.1.Final</version>
-		<relativePath/>
-	</parent>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-modules</artifactId>
+        <version>1.0.1.Final</version>
+        <relativePath/>
+    </parent>
     <artifactId>adeptj-modules-commons-datasource</artifactId>
-	<version>1.0.0.Final</version>
-	<packaging>jar</packaging>
-	<name>AdeptJ Modules :: Commons :: JDBC DataSource</name>
-	<description>AdeptJ Modules :: Commons :: JDBC DataSource</description>
-	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hikaricp.version>2.6.2</hikaricp.version>
-	</properties>
+    <version>1.0.0.Final</version>
+    <packaging>jar</packaging>
+    <name>AdeptJ Modules :: Commons :: JDBC DataSource</name>
+    <description>AdeptJ Modules :: Commons :: JDBC DataSource</description>
 
-	<build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hikaricp.version>2.6.2</hikaricp.version>
+    </properties>
+
+    <build>
 
         <!-- Below BND plugin is required to process the OSGi Annotations -->
-		<plugins>
+        <plugins>
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
@@ -66,32 +66,32 @@
                 </configuration>
             </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgument>-parameters</compilerArgument>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-				</configuration>
-			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
 
-	</build>
-	
-	<dependencies>
+    </build>
 
-		<dependency>
-		    <groupId>org.osgi</groupId>
-		    <artifactId>osgi.core</artifactId>
-		    <scope>provided</scope>
-		</dependency>
+    <dependencies>
 
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.cmpn</artifactId>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.cmpn</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -99,29 +99,29 @@
             <scope>provided</scope>
         </dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikaricp.version}</version>
             <scope>provided</scope>
             <exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.javassist</groupId>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.javassist</groupId>
                     <artifactId>javassist</artifactId>
-				</exclusion>
-			</exclusions>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-	</dependencies>
+    </dependencies>
 
 </project>

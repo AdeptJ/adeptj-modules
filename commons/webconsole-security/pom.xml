@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,31 +19,31 @@
 ###############################################################################
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.0.Final</version>
-		<relativePath/>
-	</parent>
-	<artifactId>adeptj-modules-commons-webconsole-security</artifactId>
-	<version>1.0.1.Final</version>
-	<packaging>bundle</packaging>
-	<name>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</name>
-	<description>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</description>
-	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<felix.webconsole.version>4.2.16</felix.webconsole.version>
-	</properties>
-	
-	<!-- Project Information -->
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-modules</artifactId>
+        <version>1.0.0.Final</version>
+        <relativePath/>
+    </parent>
+    <artifactId>adeptj-modules-commons-webconsole-security</artifactId>
+    <version>1.0.1.Final</version>
+    <packaging>bundle</packaging>
+    <name>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</name>
+    <description>AdeptJ Modules :: Commons :: Felix WebConsole Security Provider Bundle</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <felix.webconsole.version>4.2.16</felix.webconsole.version>
+    </properties>
+
+    <!-- Project Information -->
     <organization>
         <name>AdeptJ</name>
         <url>http://www.adeptj.com</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>Apache License Version 2.0</name>
@@ -51,7 +51,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <developers>
         <developer>
             <id>rakeshk15</id>
@@ -70,8 +70,8 @@
             </properties>
         </developer>
     </developers>
-    
-     <issueManagement>
+
+    <issueManagement>
         <url>https://github.com/AdeptJ/adeptj-modules/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
@@ -93,83 +93,83 @@
         <developerConnection>scm:git:git@github.com:AdeptJ/adeptj-modules.git</developerConnection>
     </scm>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Category>AdeptJ Commons</Bundle-Category>
-						<!-- <Bundle-Activator>com.adeptj.modules.commons.webconsole.security.Activator</Bundle-Activator> -->
-					</instructions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-scr-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-scr-scrdescriptor</id>
-						<goals>
-							<goal>scr</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgument>-parameters</compilerArgument>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	
-	<dependencies>
-	
-	   <dependency>
-		    <groupId>org.osgi</groupId>
-		    <artifactId>osgi.core</artifactId>
-		    <scope>provided</scope>
-		</dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Category>AdeptJ Commons</Bundle-Category>
+                        <!-- <Bundle-Activator>com.adeptj.modules.commons.webconsole.security.Activator</Bundle-Activator> -->
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-scr-scrdescriptor</id>
+                        <goals>
+                            <goal>scr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.cmpn</artifactId>
-			<scope>provided</scope>
-		</dependency>
+    <dependencies>
 
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.webconsole</artifactId>
-			<version>${felix.webconsole.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr.annotations</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-	
-	</dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.cmpn</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.webconsole</artifactId>
+            <version>${felix.webconsole.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 
 </project>

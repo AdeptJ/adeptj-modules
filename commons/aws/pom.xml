@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,28 +19,28 @@
 ###############################################################################
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-	    <artifactId>adeptj-modules</artifactId>
-		<version>1.0.1.Final</version>
-		<relativePath/>
-	</parent>
-	<artifactId>adeptj-modules-commons-aws</artifactId>
-	<version>1.0.0.Final</version>
-	<packaging>pom</packaging>
-	<name>AdeptJ Modules :: Commons :: AWS Builder</name>
-	<description>AdeptJ Modules :: Commons :: AWS Builder</description>
-	<url>http://www.adeptj.com</url>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-modules</artifactId>
+        <version>1.0.1.Final</version>
+        <relativePath/>
+    </parent>
+    <artifactId>adeptj-modules-commons-aws</artifactId>
+    <version>1.0.0.Final</version>
+    <packaging>pom</packaging>
+    <name>AdeptJ Modules :: Commons :: AWS Builder</name>
+    <description>AdeptJ Modules :: Commons :: AWS Builder</description>
+    <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
-    
+
     <modules>
-    
+
         <module>base</module>
         <module>messaging</module>
         <module>s3</module>
-    
+
     </modules>
-	
+
 </project>

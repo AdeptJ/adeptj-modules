@@ -2,7 +2,7 @@
 <!--  
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,31 +19,31 @@
 ###############################################################################
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.adeptj</groupId>
-		<artifactId>adeptj-parent</artifactId>
-		<version>1.0.4.Final</version>
-	</parent>
-	<artifactId>adeptj-modules-builder</artifactId>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.adeptj</groupId>
+        <artifactId>adeptj-parent</artifactId>
+        <version>1.0.4.Final</version>
+    </parent>
+    <artifactId>adeptj-modules-builder</artifactId>
     <version>1.0.1.Final</version>
-	<packaging>pom</packaging>
-	<name>AdeptJ Modules :: Builder</name>
-	<description>Pseudo project to build the complete AdeptJ Modules project</description>
-	<url>http://www.adeptj.com</url>
+    <packaging>pom</packaging>
+    <name>AdeptJ Modules :: Builder</name>
+    <description>Pseudo project to build the complete AdeptJ Modules project</description>
+    <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
-    
+
     <modules>
-    
+
         <module>parent</module>
         <module>commons</module>
-		<module>cache</module>
+        <module>cache</module>
         <module>websecurity</module>
         <module>data</module>
-		<module>search</module>
-		<module>viewengine</module>
-        
-	</modules>
+        <module>search</module>
+        <module>viewengine</module>
+
+    </modules>
 
 </project>
