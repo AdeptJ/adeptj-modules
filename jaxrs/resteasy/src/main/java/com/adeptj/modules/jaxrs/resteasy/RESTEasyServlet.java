@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +41,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
+import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED;
+import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX;
+import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME;
+import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN;
 
 
 /**
@@ -51,10 +55,10 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
  */
 @Component(immediate = true, service = Servlet.class,
         property = {
-                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME + "=RESTEasy HttpServlet30Dispatcher",
-                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=/*",
-                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED + "=true",
-                HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + "resteasy.servlet.mapping.prefix=/"
+                HTTP_WHITEBOARD_SERVLET_NAME + "=RESTEasy HttpServlet30Dispatcher",
+                HTTP_WHITEBOARD_SERVLET_PATTERN + "=/*",
+                HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED + "=true",
+                HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + "resteasy.servlet.mapping.prefix=/"
         })
 public class RESTEasyServlet extends HttpServlet30Dispatcher {
 
@@ -65,8 +69,10 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
     private static final String FIELD_CTX_RESOLVERS = "contextResolvers";
 
     private static final String FIELD_PROVIDER_CLASSES = "providerClasses";
+
+    private static final String JAXRS_RESOURCE_SERVICE_FILTER = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
     
-    private ResourceTracker resourceTracker;
+    private ServiceTracker<Object, Object> resourceTracker;
 
     private BundleContext context;
 
@@ -82,7 +88,8 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
                 providerFactory.register(new ValidateJWTFilter(this.authRepository));
                 this.registerContextResolver(providerFactory);
-                this.resourceTracker = new ResourceTracker(this.context, dispatcher.getRegistry());
+                this.resourceTracker = new ServiceTracker<>(this.context, this.context.createFilter(JAXRS_RESOURCE_SERVICE_FILTER),
+                        new JaxRSResourceManager(this.context, dispatcher.getRegistry()));
                 this.resourceTracker.open();
                 LOGGER.info("RESTEasyServlet initialized successfully!!");
             } catch (Exception ex) { // NOSONAR

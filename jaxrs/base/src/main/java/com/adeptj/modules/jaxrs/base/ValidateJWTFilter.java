@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.base;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,6 +37,7 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * Gets the HTTP Authorization header from the request and checks for the JSon Web Token (the Bearer string).
@@ -59,9 +61,13 @@ public class ValidateJWTFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         try {
             String subject = requestContext.getHeaderString("subject");
-            Jwts.parser().setSigningKey(this.authRepository.getAuthConfig(subject).getSigningKey())
+            JaxRSAuthConfig authConfig = this.authRepository.getAuthConfig(subject);
+            if (authConfig == null) {
+                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            }
+            Jwts.parser().setSigningKey(authConfig.getSigningKey())
                     .parseClaimsJws(StringUtils.substring(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION), "Bearer".length()));
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException ex) {
+        } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException ex) {
             LOGGER.error("Invalid JWT!!", ex);
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
         }

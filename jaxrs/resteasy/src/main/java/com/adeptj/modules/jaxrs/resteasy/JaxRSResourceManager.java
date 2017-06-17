@@ -21,46 +21,44 @@ package com.adeptj.modules.jaxrs.resteasy;
 
 import org.jboss.resteasy.spi.Registry;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
 /**
- * ResourceTracker is an OSGi ServiceTracker which tracks the services annotated with @Path JAX-RS annotation.
+ * JaxRSResourceManager is an OSGi ServiceTrackerCustomizer which registers the services annotated with JAX-RS @Path
+ * annotation with RESTEasy resource registry.
  *
  * Note: All the registered JAX-RS resources are Singleton by default.
  * 
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class ResourceTracker extends ServiceTracker<Object, Object> {
+public class JaxRSResourceManager implements ServiceTrackerCustomizer<Object, Object> {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceTracker.class);
-
-	private static final String JAXRS_RESOURCE_SERVICE_FILTER = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
+	private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResourceManager.class);
 
 	private Registry registry;
+
+	private BundleContext context;
     
-	public ResourceTracker(BundleContext context, Registry registry) {
-		super(context, anyServiceFilter(context, JAXRS_RESOURCE_SERVICE_FILTER), null);
+	public JaxRSResourceManager(BundleContext context, Registry registry) {
+	    this.context = context;
 		this.registry = registry;
 	}
 
 	@Override
 	public Object addingService(ServiceReference<Object> reference) {
-		Object resource = super.addingService(reference);
+		Object resource = this.context.getService(reference);
 		LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
         Optional.ofNullable(resource).ifPresent(consumer -> this.registry.addSingletonResource(resource));
 		return resource;
 	}
 
     /**
-     * Removes the given Resource from RESTEasy Registry and registers again.
+     * Removes the given Resource from RESTEasy Registry and registers again the modified service.
      */
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
@@ -72,19 +70,9 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     @Override
 	public void removedService(ServiceReference<Object> reference, Object service) {
-		super.removedService(reference, service);
+        this.context.ungetService(reference);
 		LOGGER.info("Removing JAX-RS Resource: [{}]", service);
 		this.registry.removeRegistrations(service.getClass());
 	}
-
-    private static Filter anyServiceFilter(BundleContext context, String filterExpr) {
-        try {
-            return context.createFilter(new StringBuilder("(&(").append(Constants.OBJECTCLASS).append("=")
-                    .append("*").append(")").append(filterExpr).append(")").toString());
-        } catch (InvalidSyntaxException ex) {
-            // Filter expression is malformed, not RFC-1960 based Filter.
-            throw new IllegalArgumentException("InvalidSyntaxException!!", ex);
-        }
-    }
 
 }
