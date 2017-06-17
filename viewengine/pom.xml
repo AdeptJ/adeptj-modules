@@ -27,18 +27,18 @@
         <version>1.0.2.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-jaxrs</artifactId>
+    <artifactId>adeptj-modules-viewengine</artifactId>
     <version>1.0.0.Final</version>
     <packaging>pom</packaging>
-    <name>AdeptJ Modules :: JAX-RS :: Builder</name>
-    <description>AdeptJ Modules :: JAX-RS :: Builder</description>
+    <name>AdeptJ Modules :: ViewEngine :: Builder</name>
+    <description>AdeptJ Modules :: ViewEngine :: Builder</description>
     <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
 
-        <module>base</module>
-        <module>resteasy</module>
+        <module>api</module>
+        <module>core</module>
 
     </modules>
 

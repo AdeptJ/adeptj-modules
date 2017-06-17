@@ -31,8 +31,8 @@
     <artifactId>adeptj-modules-commons-datasource</artifactId>
 	<version>1.0.0.Final</version>
 	<packaging>jar</packaging>
-	<name>AdeptJ Modules :: Commons :: JDBC DataSource Provider Bundle</name>
-	<description>AdeptJ Modules :: Commons :: JDBC DataSource Provider Bundle</description>
+	<name>AdeptJ Modules :: Commons :: JDBC DataSource</name>
+	<description>AdeptJ Modules :: Commons :: JDBC DataSource</description>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

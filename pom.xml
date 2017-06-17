@@ -36,74 +36,13 @@
     
     <modules>
     
-        <!-- AdeptJ Modules Parent -->
         <module>parent</module>
-        
-        <!-- Common Modules Start -->
-        
-        <module>commons/util</module>
-        <module>commons/scheduler</module>
-		<module>commons/beanvalidation</module>
-		<module>commons/datasource</module>
-		<module>commons/javamail</module>
-        <module>commons/logging</module>
-        <module>commons/oauth</module>
-        <module>commons/pkgexport-fragment</module>
-		<module>commons/resourcebundle</module>
-        <module>commons/webconsole-branding</module>
-        <module>commons/webconsole-security</module>
-		<module>commons/aws-messaging</module>
-		<module>commons/aws-s3</module>
-        
-        <!-- Common Modules Ends -->
-        
-         <!-- Cache Modules Start -->
-	    
-		<module>cache/api</module>
-		<module>cache/caffeine</module>
-		<module>cache/ehcache</module>
-		<module>cache/geode</module>
-        <module>cache/hazelcast</module>
-        <module>cache/infinispan</module>
-        
-        <!-- Cache Modules Ends -->
-        
-        <!-- Web Security Modules Start -->
-
-        <module>websecurity/esapi</module>
-        
-       <!--  Web Security Modules Ends -->
-        
-        <!-- Data Modules Start -->
-        
-		<module>data/api</module>
-		<module>data/core</module>
-		<module>data/aerospike</module>
-		<module>data/cassandra</module>
-        <module>data/cockroachdb</module>
-        <module>data/couchbase</module>
-		<module>data/couchdb</module>
-		<module>data/jpa</module>
-		<module>data/mongodb</module>
-        <module>data/redis</module>
-        
-        <!-- Data Modules Ends -->
-        
-        <!-- Search Modules Start -->
-	    
-		<module>search/api</module>
-		<module>search/core</module>
-		<module>search/elasticsearch</module>
-        <module>search/solr</module>
-        
-        <!-- Search Modules Ends -->
-        
-        <!-- ViewEngine Modules Start -->
-	    
-		<module>viewengine/api</module>
-		<module>viewengine/core</module>
-
-        <!-- ViewEngine Modules Ends -->
+        <module>commons</module>
+		<module>cache</module>
+        <module>websecurity</module>
+        <module>data</module>
+		<module>search</module>
+		<module>viewengine</module>
         
 	</modules>
 

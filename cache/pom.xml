@@ -27,18 +27,22 @@
         <version>1.0.2.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-jaxrs</artifactId>
+    <artifactId>adeptj-modules-cache</artifactId>
     <version>1.0.0.Final</version>
     <packaging>pom</packaging>
-    <name>AdeptJ Modules :: JAX-RS :: Builder</name>
-    <description>AdeptJ Modules :: JAX-RS :: Builder</description>
+    <name>AdeptJ Modules :: Cache :: Builder</name>
+    <description>AdeptJ Modules :: Cache :: Builder</description>
     <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
 
-        <module>base</module>
-        <module>resteasy</module>
+        <module>api</module>
+        <module>caffeine</module>
+        <module>ehcache</module>
+        <module>geode</module>
+        <module>hazelcast</module>
+        <module>infinispan</module>
 
     </modules>
 
