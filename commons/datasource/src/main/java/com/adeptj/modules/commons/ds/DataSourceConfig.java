@@ -28,8 +28,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(name = "AdeptJ Modules JDBC DataSource Provider Configuration",
-        description = "The configuration for the AdeptJ Modules JDBC DataSource Provider.")
+@ObjectClassDefinition(name = "AdeptJ HikariDataSource Configurations", description = "Configurations of HikariDataSource.")
 public @interface DataSourceConfig {
 
     @AttributeDefinition(name = "poolName", description = "DataSource Pool Name")
