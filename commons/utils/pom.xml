@@ -27,9 +27,9 @@
         <version>1.0.0.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-commons-util</artifactId>
+    <artifactId>adeptj-modules-commons-utils</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: Utilities Provider Bundle</name>
+    <name>AdeptJ Modules :: Commons :: Utils</name>
     <description>AdeptJ Modules :: Commons :: Bundle Providing Common Services And Utilities</description>
 
     <properties>

@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-websecurity-esapi</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: WebSecurity :: ESAPI Provider Bundle</name>
-    <description>AdeptJ Modules :: WebSecurity :: ESAPI Provider Bundle</description>
+    <name>AdeptJ Modules :: WebSecurity :: ESAPI</name>
+    <description>AdeptJ Modules :: WebSecurity :: ESAPI</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

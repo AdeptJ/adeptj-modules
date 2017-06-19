@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-data-couchdb</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Data :: Couchdb Data Provider Bundle</name>
-    <description>AdeptJ Modules :: Data :: Couchdb Data Provider Bundle</description>
+    <name>AdeptJ Modules :: Data :: CouchDB</name>
+    <description>AdeptJ Modules :: Data :: CouchDB</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -29,8 +29,8 @@
     </parent>
     <packaging>bundle</packaging>
     <artifactId>adeptj-modules-viewengine-api</artifactId>
-    <name>AdeptJ Modules :: ViewEngine :: API Bundle</name>
-    <description>AdeptJ Modules :: ViewEngine :: API Bundle</description>
+    <name>AdeptJ Modules :: ViewEngine :: API</name>
+    <description>AdeptJ Modules :: ViewEngine :: API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

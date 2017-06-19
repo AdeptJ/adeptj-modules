@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-data-couchbase</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Data :: Couchbase Data Provider Bundle</name>
-    <description>AdeptJ Modules :: Data :: Couchbase Data Provider Bundle</description>
+    <name>AdeptJ Modules :: Data :: Couchbase</name>
+    <description>AdeptJ Modules :: Data :: Couchbase</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

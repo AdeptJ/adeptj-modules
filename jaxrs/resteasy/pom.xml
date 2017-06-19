@@ -30,8 +30,8 @@
     <artifactId>adeptj-modules-jaxrs-resteasy</artifactId>
     <version>1.0.0.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: JAX-RS :: RESTEasy Provider</name>
-    <description>AdeptJ Modules :: JAX-RS :: RESTEasy Provider</description>
+    <name>AdeptJ Modules :: JAX-RS :: RESTEasy</name>
+    <description>RESTEasy as JAX-RS implementation</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

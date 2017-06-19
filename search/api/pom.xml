@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-search-api</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Search :: API Bundle</name>
-    <description>AdeptJ Modules :: Search :: API Bundle</description>
+    <name>AdeptJ Modules :: Search :: API</name>
+    <description>AdeptJ Modules :: Search :: API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

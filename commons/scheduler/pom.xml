@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-scheduler</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: Scheduler Provider Bundle</name>
-    <description>AdeptJ Modules :: Commons :: Scheduler Provider Bundle</description>
+    <name>AdeptJ Modules :: Commons :: Scheduler</name>
+    <description>AdeptJ Modules :: Commons :: Scheduler</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

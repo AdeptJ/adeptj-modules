@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-resourcebundle</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: ResourceBundle Provider Bundle</name>
-    <description>AdeptJ Modules :: Commons :: ResourceBundle Provider Bundle</description>
+    <name>AdeptJ Modules :: Commons :: i18n</name>
+    <description>AdeptJ Modules :: Commons :: ResourceBundle(i18n)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

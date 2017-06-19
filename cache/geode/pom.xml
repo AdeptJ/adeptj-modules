@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-cache-geode</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Cache :: Geode(Gemfire) CacheProvider Bundle</name>
-    <description>AdeptJ Modules :: Cache :: Geode(Gemfire) CacheProvider Bundle</description>
+    <name>AdeptJ Modules :: Cache :: Geode(Gemfire)</name>
+    <description>AdeptJ Modules :: Cache :: Geode(Gemfire)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

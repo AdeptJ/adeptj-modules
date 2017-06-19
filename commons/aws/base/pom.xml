@@ -30,8 +30,8 @@
     <artifactId>adeptj-modules-commons-aws-base</artifactId>
     <version>1.0.0.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Commons :: AWS Base Bundle</name>
-    <description>AdeptJ Modules :: Commons :: AWS Base Bundle</description>
+    <name>AdeptJ Modules :: Commons :: AWS Base</name>
+    <description>AdeptJ Modules :: Commons :: AWS Base</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

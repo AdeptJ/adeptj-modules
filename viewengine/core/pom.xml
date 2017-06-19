@@ -29,8 +29,8 @@
     </parent>
     <packaging>bundle</packaging>
     <artifactId>adeptj-modules-viewengine-core</artifactId>
-    <name>AdeptJ Modules :: ViewEngine :: Core Bundle</name>
-    <description>AdeptJ Modules :: ViewEngine :: Core Bundle</description>
+    <name>AdeptJ Modules :: ViewEngine :: Core</name>
+    <description>AdeptJ Modules :: ViewEngine :: Core</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

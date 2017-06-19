@@ -37,7 +37,7 @@
 
     <modules>
 
-        <module>util</module>
+        <module>utils</module>
         <module>aws</module>
         <module>beanvalidation</module>
         <module>datasource</module>
@@ -45,7 +45,7 @@
         <module>logging</module>
         <module>oauth</module>
         <module>pkgexport-fragment</module>
-        <module>resourcebundle</module>
+        <module>i18n</module>
         <module>scheduler</module>
         <module>webconsole-branding</module>
         <module>webconsole-security</module>

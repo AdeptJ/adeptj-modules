@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-data-redis</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Data :: Redis Data Provider Bundle</name>
-    <description>AdeptJ Modules :: Data :: Redis Data Provider Bundle</description>
+    <name>AdeptJ Modules :: Data :: Redis</name>
+    <description>AdeptJ Modules :: Data :: Redis</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

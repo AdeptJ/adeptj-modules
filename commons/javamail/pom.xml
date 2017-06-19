@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-javamail</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: JavaMail API Provider Bundle</name>
-    <description>AdeptJ Modules :: Commons :: JavaMail API Provider Bundle</description>
+    <name>AdeptJ Modules :: Commons :: JavaMail</name>
+    <description>AdeptJ Modules :: Commons :: JavaMail</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-pkgexport-fragment</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</name>
-    <description>AdeptJ Modules :: Commons :: Framework Extension Fragment Bundle</description>
+    <name>AdeptJ Modules :: Commons :: Framework Extension Fragment</name>
+    <description>AdeptJ Modules :: Commons :: Framework Extension Fragment</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

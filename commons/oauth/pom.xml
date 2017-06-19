@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-oauth</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: OAuth Provider Bundle</name>
-    <description>AdeptJ Modules :: Commons :: OAuth Provider Bundle</description>
+    <name>AdeptJ Modules :: Commons :: OAuth</name>
+    <description>AdeptJ Modules :: Commons :: OAuth</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

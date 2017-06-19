@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-data-jpa</artifactId>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Data :: JPA Data Provider Bundle</name>
-    <description>AdeptJ Modules :: Data :: JPA Data Provider Bundle</description>
+    <name>AdeptJ Modules :: Data :: JPA</name>
+    <description>AdeptJ Modules :: Data :: JPA(EclipseLink)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

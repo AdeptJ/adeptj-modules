@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-data-aerospike</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Data :: Aerospike Data Provider Bundle</name>
-    <description>AdeptJ Modules :: Data :: Aerospike Data Provider Bundle</description>
+    <name>AdeptJ Modules :: Data :: Aerospike</name>
+    <description>AdeptJ Modules :: Data :: Aerospike</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

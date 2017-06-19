@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-data-api</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Data :: API Bundle</name>
-    <description>AdeptJ Modules :: Data :: API Bundle</description>
+    <name>AdeptJ Modules :: Data :: API</name>
+    <description>AdeptJ Modules :: Data :: API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

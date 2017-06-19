@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-cache-api</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Cache :: API Bundle</name>
-    <description>AdeptJ Modules :: Cache :: API Bundle</description>
+    <name>AdeptJ Modules :: Cache :: API</name>
+    <description>AdeptJ Modules :: Cache :: API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

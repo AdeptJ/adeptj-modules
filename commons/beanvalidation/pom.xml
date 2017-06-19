@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-beanvalidation</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: Bean Validation Provider Bundle</name>
-    <description>AdeptJ Modules :: Commons :: Bean Validation Provider Bundle(Hibernate Validator Based)</description>
+    <name>AdeptJ Modules :: Commons :: Bean Validation</name>
+    <description>AdeptJ Modules :: Commons :: Bean Validation Provider Bundle(Hibernate Validator)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

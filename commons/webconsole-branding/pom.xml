@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-webconsole-branding</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: Felix WebConsole Branding Provider Bundle</name>
-    <description>AdeptJ Modules :: Commons :: Felix WebConsole Branding Provider Bundle</description>
+    <name>AdeptJ Modules :: Commons :: Felix WebConsole Branding</name>
+    <description>AdeptJ Modules :: Commons :: Felix WebConsole Branding</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-cache-caffeine</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Cache :: Caffeine CacheProvider Bundle</name>
-    <description>AdeptJ Modules :: Cache :: Caffeine CacheProvider Bundle</description>
+    <name>AdeptJ Modules :: Cache :: Caffeine</name>
+    <description>AdeptJ Modules :: Cache :: Caffeine</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

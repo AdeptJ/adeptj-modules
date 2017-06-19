@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-commons-logging</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Commons :: Logging Configuration Bundle</name>
-    <description>AdeptJ Modules :: Commons :: Logging Configuration Bundle</description>
+    <name>AdeptJ Modules :: Commons :: Logging</name>
+    <description>AdeptJ Modules :: Commons :: Logging</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

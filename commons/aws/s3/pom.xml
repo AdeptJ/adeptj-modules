@@ -30,7 +30,7 @@
     <artifactId>adeptj-modules-commons-aws-s3</artifactId>
     <version>1.0.0.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Commons :: AWS S3 APIs</name>
+    <name>AdeptJ Modules :: Commons :: AWS S3</name>
     <description>AdeptJ Modules :: Commons :: AWS S3 APIs Provider Bundle</description>
 
     <properties>

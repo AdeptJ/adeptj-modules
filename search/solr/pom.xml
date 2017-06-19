@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-search-solr</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Search :: Solr Provider Bundle</name>
-    <description>AdeptJ Modules :: Search :: Solr Provider Bundle</description>
+    <name>AdeptJ Modules :: Search :: Solr</name>
+    <description>AdeptJ Modules :: Search :: Solr</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

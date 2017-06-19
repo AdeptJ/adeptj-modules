@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-search-elasticsearch</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Search :: Elasticsearch Provider Bundle</name>
-    <description>AdeptJ Modules :: Search :: Elasticsearch Provider Bundle</description>
+    <name>AdeptJ Modules :: Search :: Elasticsearch</name>
+    <description>AdeptJ Modules :: Search :: Elasticsearch</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

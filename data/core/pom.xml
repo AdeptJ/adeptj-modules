@@ -27,10 +27,10 @@
         <version>1.0.0.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-data-common</artifactId>
+    <artifactId>adeptj-modules-data-core</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Data :: Common Bundle</name>
-    <description>AdeptJ Modules :: Data :: Common Bundle</description>
+    <name>AdeptJ Modules :: Data :: Core</name>
+    <description>AdeptJ Modules :: Data :: Core</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

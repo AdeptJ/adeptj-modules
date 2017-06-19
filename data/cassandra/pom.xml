@@ -29,8 +29,8 @@
     </parent>
     <artifactId>adeptj-modules-data-cassandra</artifactId>
     <packaging>bundle</packaging>
-    <name>AdeptJ Modules :: Data :: Cassandra Data Provider Bundle</name>
-    <description>AdeptJ Modules :: Data :: Cassandra Data Provider Bundle</description>
+    <name>AdeptJ Modules :: Data :: Cassandra</name>
+    <description>AdeptJ Modules :: Data :: Cassandra</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
