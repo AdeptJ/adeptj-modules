@@ -21,7 +21,8 @@
 -dsannotations: *
 
 Export-Package: \
-	com.adeptj.modules.commons.ds
+	com.adeptj.modules.commons.ds,\
+	com.adeptj.modules.commons.ds.api
 Bundle-Name: AdeptJ Modules :: Commons :: JDBC DataSource
 Bundle-Category: AdeptJ Commons
 Bundle-Vendor: AdeptJ

@@ -44,6 +44,6 @@ Import-Package: \
   com.adeptj.modules.jaxrs.base,\
   *
   
-Bundle-Name: AdeptJ Modules :: JAX-RS :: RESTEasy Provider
+Bundle-Name: AdeptJ Modules :: JAX-RS :: RESTEasy
 Bundle-Category: AdeptJ REST
 Bundle-Vendor: AdeptJ
