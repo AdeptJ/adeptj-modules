@@ -32,9 +32,14 @@ import java.util.stream.Collectors;
  * <p>
  * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaCrudRepository}
  *
+ * <code>
+ *
+ *     @ Reference(target="osgi.unit.name=pu")
+ *     private JpaCrudRepository repository;
+ *
+ * </code>
+ *
  * @author Rakesh.Kumar, AdeptJ.
- * @ Reference(target="osgi.unit.name=pu")
- * private JpaCrudRepository repository;
  */
 public class JpaCrudRepositoryImpl implements JpaCrudRepository {
 
@@ -129,7 +134,7 @@ public class JpaCrudRepositoryImpl implements JpaCrudRepository {
             TypedQuery<E> typedQuery = entityManager.createNamedQuery(namedQuery, scalarResultClass);
             this.setQueryParameters(typedQuery, queryParams);
             return typedQuery.getSingleResult();
-        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
+        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while getting ScalarResult!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -162,7 +167,7 @@ public class JpaCrudRepositoryImpl implements JpaCrudRepository {
             txn.begin();
             entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
             txn.commit();
-        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
+        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while deleting entity!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -185,7 +190,7 @@ public class JpaCrudRepositoryImpl implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("deleteByNamedQuery: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
-        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
+        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while deleting by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -210,7 +215,7 @@ public class JpaCrudRepositoryImpl implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("deleteByCriteria: No. of rows deleted: {}", rowCount);
             return rowCount;
-        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
+        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while deleting entity by criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -232,7 +237,7 @@ public class JpaCrudRepositoryImpl implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("deleteAll: No. of rows deleted: {}", rowCount);
             return rowCount;
-        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
+        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while deleting all Entities!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -260,7 +265,7 @@ public class JpaCrudRepositoryImpl implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("No. of rows updated: {}", rowCount);
             return rowCount;
-        } catch (PersistenceException | EclipseLinkException | IllegalArgumentException ex) {
+        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while updating by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
