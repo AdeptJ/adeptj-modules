@@ -65,9 +65,9 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManagerFactoryProvider.class);
 
-    static final String NAME = "com.adeptj.modules.data.jpa.EMFProvider.factory";
+    static final String NAME = "com.adeptj.modules.data.jpa.EntityManagerFactoryProvider.factory";
 
-    static final String SERVICE_PID = "service.pid=com.adeptj.modules.data.jpa.EMFProvider.factory";
+    static final String SERVICE_PID = "service.pid=com.adeptj.modules.data.jpa.EntityManagerFactoryProvider.factory";
 
     private Map<String, EntityManagerFactory> unitNameToEMFMapping = new ConcurrentHashMap<>();
 

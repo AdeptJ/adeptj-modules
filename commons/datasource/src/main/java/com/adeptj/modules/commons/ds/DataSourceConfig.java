@@ -38,7 +38,7 @@ public @interface DataSourceConfig {
     String jdbcUrl() default "jdbc:mysql://localhost:3306/";
 
     @AttributeDefinition(name = "driverClassName", description = "JDBC driver FQCN")
-    String driverClassName() default "com.mysql.jdbc.Driver";
+    String driverClassName() default "com.mysql.cj.jdbc.Driver";
 
     @AttributeDefinition(name = "username", description = "JDBC default authentication username")
     String username() default "root";
