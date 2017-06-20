@@ -35,40 +35,40 @@ import java.util.Map;
  */
 public interface JpaCrudRepository {
 
-    <T extends BaseEntity> T insert(T entity);
+    <T extends BaseEntity> void insert(T entity);
 
     <T extends BaseEntity> T update(T entity);
 
-    <T extends BaseEntity> List<T> findByCriteria(Class<T> criteriaClass, Map<String, Object> queryParams);
-
-    <T extends BaseEntity> List<T> findByNamedQuery(Class<T> criteriaClass, String namedQuery, Object... queryParams);
-
-    <E> E getScalarResultByNamedQuery(Class<E> scalarResultClass, String namedQuery, Object... queryParams);
-
-    <T extends BaseEntity> List<T> findAll(Class<T> entityClass);
+    <T extends BaseEntity> int updateByCriteria(Class<T> entityClass, Map<String, Object> namedParams, Map<String, Object> updateFields);
 
     <T extends BaseEntity> void delete(T entity);
 
-    <T extends BaseEntity> int deleteByNamedQuery(Class<T> entityClass, String namedQuery, Object... queryParams);
+    <T extends BaseEntity> int deleteByNamedQuery(Class<T> entityClass, String namedQuery, List<Object> positionalParams);
 
-    <T extends BaseEntity> int deleteByCriteria(Class<T> entityClass, Map<String, Object> predicateMap);
+    <T extends BaseEntity> int deleteByCriteria(Class<T> entityClass, Map<String, Object> namedParams);
 
     <T extends BaseEntity> int deleteAll(Class<T> entityClass);
 
-    <T extends BaseEntity> int updateByCriteria(Class<T> entityClass, Map<String, Object> predicateMap, Map<String, Object> updateFields);
+    <T extends BaseEntity> List<T> findByCriteria(Class<T> criteriaClass, Map<String, Object> namedParams);
+
+    <T extends BaseEntity> List<T> findByCriteria(Class<T> criteriaClass, Map<String, Object> namedParams, int startIndex, int limit);
+
+    <T extends BaseEntity> List<T> findByNamedQuery(Class<T> criteriaClass, String namedQuery, List<Object> positionalParams);
+
+    <T extends BaseEntity> List<T> findAll(Class<T> entityClass);
 
     <T extends BaseEntity> List<T> findByCriteriaWithINParams(Map<String, List<Object>> inParams, Class<T> criteriaClass);
 
     <T extends BaseEntity> List<T> findAll(Class<T> entityClass, int startIndex, int limit);
 
+    <E> E getScalarResultByNamedQuery(Class<E> scalarResultClass, String namedQuery, List<Object> positionalParams);
+
     <T extends BaseEntity> Long count(Class<T> entityClass);
 
-    <T extends BaseEntity> int countByCriteria(Class<T> entityClass, Map<String, Object> queryParams);
+    <T extends BaseEntity> Long countByCriteria(Class<T> entityClass, Map<String, Object> namedParams);
 
-    <T extends BaseEntity> List<T> findByCriteria(Class<T> criteriaClass, Map<String, Object> queryParams, int startIndex, int limit);
+    <T extends BaseEntity> List<T> selectByQuery(String jpaQuery, Class<T> entityClass);
 
-    <T extends BaseEntity> List<T> selectByQuery(String query, Class<T> entityClass);
-
-    <T extends BaseEntity> List<T> selectByQuery(String query, Class<T> entityClass, int startIndex, int limit);
+    <T extends BaseEntity> List<T> selectByQuery(String jpaQuery, Class<T> entityClass, int startIndex, int limit);
 
 }
