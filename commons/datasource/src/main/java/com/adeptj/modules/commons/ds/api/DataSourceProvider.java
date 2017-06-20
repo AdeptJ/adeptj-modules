@@ -29,5 +29,5 @@ import javax.sql.DataSource;
  */
 public interface DataSourceProvider {
 
-    DataSource getDataSource();
+    DataSource getDataSource(String dataSourceName);
 }

@@ -17,29 +17,17 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.base;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.adeptj.modules.data.jpa;
 
 /**
- * JaxRSAuthRepository.
+ * Constants for JPA properties.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Component(immediate = true, service = JaxRSAuthRepository.class)
-public class JaxRSAuthRepository {
+public class JpaConstants {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthRepository.class);
+    public static final String SHARED_CACHE_MODE = "javax.persistence.sharedCache.mode";
 
-    @Reference
-    private JaxRSAuthConfigFactory authConfigFactory;
-
-    public JaxRSAuthConfig getAuthConfig(String subject) {
-        LOGGER.info("Getting JaxRSAuthConfig for Subject: [{}]", subject);
-        return this.authConfigFactory.getJaxRSAuthConfig(subject);
-    }
-
+    public static final String PERSISTENCE_PROVIDER = "javax.persistence.provider";
 }

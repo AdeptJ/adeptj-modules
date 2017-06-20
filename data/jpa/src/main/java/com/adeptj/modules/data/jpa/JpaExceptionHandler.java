@@ -17,29 +17,30 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.base;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+package com.adeptj.modules.data.jpa;
+
+import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JaxRSAuthRepository.
+ * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
+ * the {@link org.eclipse.persistence.exceptions.ExceptionHandler} interface and provides a default (zero-argument) constructor.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * See more at: http://eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_exception_handler.htm
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ *
  */
-@Component(immediate = true, service = JaxRSAuthRepository.class)
-public class JaxRSAuthRepository {
+public class JpaExceptionHandler implements ExceptionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaExceptionHandler.class);
 
-    @Reference
-    private JaxRSAuthConfigFactory authConfigFactory;
-
-    public JaxRSAuthConfig getAuthConfig(String subject) {
-        LOGGER.info("Getting JaxRSAuthConfig for Subject: [{}]", subject);
-        return this.authConfigFactory.getJaxRSAuthConfig(subject);
+    @Override
+    public Object handleException(RuntimeException exception) {
+        LOGGER.error("Handling Exception:", exception);
+        // wrap this in a JpaSystemException and re-throw. Perform any other task if needed.
+        throw new JpaSystemException(exception);
     }
-
 }

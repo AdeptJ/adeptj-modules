@@ -17,39 +17,27 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.base;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+package com.adeptj.modules.data.jpa;
 
 /**
- * JaxRSAuthConfigProvider.
+ * Exception for Persistence related scenarios.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-public enum JaxRSAuthConfigProvider {
+public class JpaSystemException extends RuntimeException {
 
-    INSTANCE;
+    private static final long serialVersionUID = 7296926130485279382L;
 
-    private static final String ALGO_SHA256 = "SHA-256";
-
-    private static final String UTF8 = "UTF-8";
-
-    private Map<String, JaxRSAuthConfig> configs = new HashMap<>();
-
-    public void addJaxRSAuthConfig(JaxRSAuthConfig config) throws UnsupportedEncodingException {
-        // Update the signing key to Base64 encoded version.
-        config.setSigningKey(new String(Base64.getEncoder().encode(config.getSigningKey().getBytes(UTF8))));
-        this.configs.put(config.getSubject(), config);
+    public JpaSystemException(String msg) {
+        super(msg);
     }
 
-    public JaxRSAuthConfig deleteJaxRSAuthConfig(String subject) {
-        return this.configs.remove(subject);
+    public JpaSystemException(Throwable throwable) {
+        super(throwable);
     }
 
-    public JaxRSAuthConfig getJaxRSAuthConfig(String subject) {
-        return this.configs.get(subject);
+    public JpaSystemException(String msg, Throwable throwable) {
+        super(msg, throwable);
     }
 }

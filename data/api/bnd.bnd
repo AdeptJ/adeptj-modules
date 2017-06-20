@@ -20,10 +20,9 @@
 
 -dsannotations: *
 
-Export-Package: com.adeptj.modules.data.jpa,\
-   com.adeptj.modules.data.jpa.api
+Export-Package: com.adeptj.modules.data.api
 
-Bundle-Name: AdeptJ Modules :: Data :: JPA
+Bundle-Name: AdeptJ Modules :: Data :: API
 
 Bundle-Category: AdeptJ Data
 

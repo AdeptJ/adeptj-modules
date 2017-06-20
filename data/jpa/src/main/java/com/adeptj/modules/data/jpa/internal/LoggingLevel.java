@@ -17,29 +17,37 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.base;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.adeptj.modules.data.jpa.internal;
 
 /**
- * JaxRSAuthRepository.
+ * EclipseLink Log levels.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true, service = JaxRSAuthRepository.class)
-public class JaxRSAuthRepository {
+class LoggingLevel {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthRepository.class);
+    static final String OFF = "OFF";
 
-    @Reference
-    private JaxRSAuthConfigFactory authConfigFactory;
+    static final String SEVERE = "SEVERE";
 
-    public JaxRSAuthConfig getAuthConfig(String subject) {
-        LOGGER.info("Getting JaxRSAuthConfig for Subject: [{}]", subject);
-        return this.authConfigFactory.getJaxRSAuthConfig(subject);
+    static final String WARNING = "WARNING";
+
+    static final String INFO = "INFO";
+
+    static final String CONFIG = "CONFIG";
+
+    static final String FINE = "FINE";
+
+    static final String FINER = "FINER";
+
+    static final String FINEST = "FINEST";
+
+    static final String ALL = "ALL";
+
+    /**
+     * deny direct instantiation.
+     */
+    private LoggingLevel() {
     }
-
 }

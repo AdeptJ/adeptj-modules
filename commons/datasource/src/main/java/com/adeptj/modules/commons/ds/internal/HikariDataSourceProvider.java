@@ -55,7 +55,7 @@ import static com.adeptj.modules.commons.ds.DataSourceConstants.USERNAME;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = DataSourceConfig.class)
-@Component(property = { "osgi.ds.provider=AdeptJ HikariDataSource Provider" }, configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(immediate = true, property = { "osgi.ds.provider=AdeptJ HikariDataSource Provider" }, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class HikariDataSourceProvider implements DataSourceProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HikariDataSourceProvider.class);
@@ -63,7 +63,7 @@ public class HikariDataSourceProvider implements DataSourceProvider {
     private HikariDataSource dataSource;
 
     @Override
-    public DataSource getDataSource() {
+    public DataSource getDataSource(String dataSourceName) {
         return this.dataSource;
     }
 
