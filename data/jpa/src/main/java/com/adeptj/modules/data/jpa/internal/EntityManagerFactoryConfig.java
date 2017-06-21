@@ -61,14 +61,14 @@ public @interface EntityManagerFactoryConfig {
     @AttributeDefinition(name = "DataSource Name For Binding", description = "DataSource Name For Binding to this EntityManagerFactory")
     String dataSourceName();
 
+    @AttributeDefinition(name = "Persistence Provider", description = "FQCN of PersistenceProvider")
+    String persistenceProviderClassName() default "org.eclipse.persistence.jpa.PersistenceProvider";
+
     @AttributeDefinition(name = "EclipseLink LoggingFile", description = "EclipseLink Logging File")
     String loggingFile() default "jpa.log";
 
     @AttributeDefinition(name = "JPA Properties", description = "JPA Properties(key=value)", cardinality = CARDINALITY)
     String[] jpaProperties();
-
-    @AttributeDefinition(name = "Entity Mapping Files", description = "JPA Mapping Files i.e. orm.xml", cardinality = CARDINALITY)
-    String[] mappingFiles() default {"META-INF/orm.xml"};
 
     @AttributeDefinition(name = "Deploy on Startup", description = "Whether to create PersistenceUnit when the application starts up")
     boolean deployOnStartup() default true;

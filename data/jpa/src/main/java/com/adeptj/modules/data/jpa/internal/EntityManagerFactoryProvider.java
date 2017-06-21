@@ -127,11 +127,11 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
         jpaProperties.put(TRANSACTION_TYPE, (String) configs.get("persistenceUnitTransactionType"));
         jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, (String) configs.get("persistenceXmlLocation"));
         jpaProperties.put(SHARED_CACHE_MODE, (String) configs.get("sharedCacheMode"));
-        jpaProperties.put(PERSISTENCE_PROVIDER, PersistenceProvider.class.getName());
+        jpaProperties.put(PERSISTENCE_PROVIDER, (String) configs.get("persistenceProviderClassName"));
         jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
         jpaProperties.put(VALIDATION_MODE, (String) configs.get("validationMode"));
-        jpaProperties.putAll(Arrays.stream((String[]) configs.get("jpaProperties")).filter((prop) -> StringUtils.isNotBlank(prop))
+        jpaProperties.putAll(Arrays.stream((String[]) configs.get("jpaProperties")).filter(StringUtils::isNotBlank)
                 .map(prop -> prop.split("=")).collect(Collectors.toMap(elem -> elem[0], elem -> elem[1])));
         try {
             String unitName = (String) configs.get("unitName");
