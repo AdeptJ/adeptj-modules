@@ -32,7 +32,7 @@ public class JpaCrudRepositoryManager {
 
     private Map<String, ServiceRegistration<JpaCrudRepository>> jpaCrudRepositoryRegistrations;
 
-    void registerJpaCrudRepository(String unitName, EntityManagerFactory emf) {
+    void registerJpaCrudRepository(String unitName, EntityManagerFactory entityManagerFactory) {
         Dictionary<String , String> properties = new Hashtable<>();
         properties.put(Constants.SERVICE_VENDOR, "AdeptJ");
         properties.put(Constants.SERVICE_PID, JpaCrudRepositoryImpl.class.getName());
@@ -40,14 +40,18 @@ public class JpaCrudRepositoryManager {
         properties.put(EntityManagerFactoryBuilder.JPA_UNIT_NAME, unitName);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
         this.jpaCrudRepositoryRegistrations.put(unitName, this.context.registerService(JpaCrudRepository.class,
-                new JpaCrudRepositoryImpl(emf), properties));
+                new JpaCrudRepositoryImpl(entityManagerFactory), properties));
     }
 
     void unregisterJpaCrudRepository(String unitName) {
-        LOGGER.info("Un-registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
         try {
-            this.jpaCrudRepositoryRegistrations.entrySet().stream().filter(entry -> entry.getKey().equals(unitName))
-                    .forEach(consumer -> consumer.getValue().unregister());
+            ServiceRegistration<JpaCrudRepository> svcReg = this.jpaCrudRepositoryRegistrations.remove(unitName);
+            if (svcReg == null) {
+                LOGGER.info("No JpaCrudRepository found for PersistenceUnit: [{}]", unitName);
+            } else {
+                LOGGER.info("Un-registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
+                svcReg.unregister();
+            }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while unregistering JpaCrudRepository service!!", ex);
         }
