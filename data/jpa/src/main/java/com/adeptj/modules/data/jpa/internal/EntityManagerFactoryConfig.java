@@ -68,7 +68,7 @@ public @interface EntityManagerFactoryConfig {
     String[] jpaProperties();
 
     @AttributeDefinition(name = "Entity Mapping Files", description = "JPA Mapping Files i.e. orm.xml", cardinality = CARDINALITY)
-    String[] mappingFiles();
+    String[] mappingFiles() default {"META-INF/orm.xml"};
 
     @AttributeDefinition(name = "Deploy on Startup", description = "Whether to create PersistenceUnit when the application starts up")
     boolean deployOnStartup() default true;

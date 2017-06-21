@@ -61,7 +61,7 @@ import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.SE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = DataSourceConfig.class)
-@Component(name = NAME, property = SERVICE_PID, configurationPolicy = ConfigurationPolicy.IGNORE)
+@Component(immediate = true, name = NAME, property = SERVICE_PID, configurationPolicy = ConfigurationPolicy.IGNORE)
 public class HikariDataSourceProvider implements DataSourceProvider, ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HikariDataSourceProvider.class);

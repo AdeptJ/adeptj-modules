@@ -51,7 +51,7 @@ public class JaxRSAuthenticator {
     private JaxRSAuthRepository authRepository;
 
     @POST
-    @Path("token")
+    @Path("token/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response issueToken(@FormParam("username") String username, @FormParam("pwd") String pwd) {
         try {
@@ -68,7 +68,7 @@ public class JaxRSAuthenticator {
     }
 
     @GET
-    @Path("jwt-check")
+    @Path("token/check")
     @ValidateJWT
     public Response withAuth() {
         return Response.ok().build();
