@@ -102,7 +102,7 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
             Destination destination = new Destination().withToAddresses(data.get("recipient"));
             Content subject = new Content().withData(data.get("subject"));
             Content textBody = new Content().withData(data.get("message"));
-            Message message = new Message().withSubject(subject).withBody(new Body().withText(textBody));
+            Message message = new Message().withSubject(subject).withBody(new Body().withHtml(textBody));
             this.asyncSES.sendEmailAsync(new
                     SendEmailRequest().withSource(this.config.from()).withDestination(destination).withMessage(message));
         } catch (Exception ex) {

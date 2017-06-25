@@ -54,7 +54,7 @@ public class AWSMessagingController {
         Map<String, String> data = new HashMap<>();
         data.put("recipient", emailId);
         data.put("subject", "AdeptJ Runtime");
-        data.put("message", "Hi There, from AdeptJ!!");
+        data.put("message", "<h3>Hi There, </h3> <p>from AdeptJ!!</p>");
         this.messagingService.sendMessage(MessageType.EMAIL, data);
         return users;
     }
