@@ -23,6 +23,9 @@
 Export-Package: com.adeptj.modules.data.jpa,\
    com.adeptj.modules.data.jpa.api
 
+Import-Package: org.eclipse.persistence.indirection,\
+    *
+
 Bundle-Name: AdeptJ Modules :: Data :: JPA
 
 Bundle-Category: AdeptJ Data
