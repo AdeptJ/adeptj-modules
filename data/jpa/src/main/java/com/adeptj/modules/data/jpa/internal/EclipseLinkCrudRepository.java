@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link JpaCrudRepository}
+ * Implementation of {@link JpaCrudRepository} based on EclipseLink JPA Reference Implementation
  * <p>
  * This will be registered with the OSGi service registry whenever there is a new EntityManagerFactory configuration
  * saved by {@link EntityManagerFactoryProvider}
@@ -42,13 +42,13 @@ import java.util.stream.Collectors;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class JpaCrudRepositoryImpl implements JpaCrudRepository {
+public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaCrudRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EclipseLinkCrudRepository.class);
 
     private EntityManagerFactory entityManagerFactory;
 
-    JpaCrudRepositoryImpl(EntityManagerFactory entityManagerFactory) {
+    EclipseLinkCrudRepository(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
 

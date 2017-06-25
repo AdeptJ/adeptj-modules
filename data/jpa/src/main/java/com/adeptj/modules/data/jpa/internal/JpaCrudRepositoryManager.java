@@ -35,12 +35,12 @@ public class JpaCrudRepositoryManager {
     void registerJpaCrudRepository(String unitName, EntityManagerFactory entityManagerFactory) {
         Dictionary<String , String> properties = new Hashtable<>();
         properties.put(Constants.SERVICE_VENDOR, "AdeptJ");
-        properties.put(Constants.SERVICE_PID, JpaCrudRepositoryImpl.class.getName());
+        properties.put(Constants.SERVICE_PID, EclipseLinkCrudRepository.class.getName());
         properties.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules JpaCrudRepository");
         properties.put(EntityManagerFactoryBuilder.JPA_UNIT_NAME, unitName);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
         this.jpaCrudRepositoryRegistrations.put(unitName, this.context.registerService(JpaCrudRepository.class,
-                new JpaCrudRepositoryImpl(entityManagerFactory), properties));
+                new EclipseLinkCrudRepository(entityManagerFactory), properties));
     }
 
     void unregisterJpaCrudRepository(String unitName) {
