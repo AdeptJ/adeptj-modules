@@ -64,9 +64,10 @@ public class ValidateJWTFilter implements ContainerRequestFilter {
             JaxRSAuthConfig authConfig = this.authRepository.getAuthConfig(subject);
             if (authConfig == null) {
                 requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            } else {
+                Jwts.parser().setSigningKey(authConfig.getSigningKey())
+                        .parseClaimsJws(StringUtils.substring(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION), "Bearer".length()));
             }
-            Jwts.parser().setSigningKey(authConfig.getSigningKey())
-                    .parseClaimsJws(StringUtils.substring(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION), "Bearer".length()));
         } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException ex) {
             LOGGER.error("Invalid JWT!!", ex);
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());
