@@ -49,6 +49,8 @@ public interface JpaCrudRepository {
 
     <T extends BaseEntity> int deleteAll(Class<T> entity);
 
+    <T extends BaseEntity> T findById(Class<T> entity, Object primaryKey);
+
     <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> namedParams);
 
     <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> namedParams, int startPos, int maxResult);

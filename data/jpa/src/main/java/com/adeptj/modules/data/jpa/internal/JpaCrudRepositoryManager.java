@@ -68,7 +68,7 @@ public class JpaCrudRepositoryManager {
     @Deactivate
     protected void deactivate() {
         try {
-            this.jpaCrudRepositoryRegistrations.forEach((unitName, serviceRegistration) -> serviceRegistration.unregister());
+            this.jpaCrudRepositoryRegistrations.forEach((unitName, svcReg) -> svcReg.unregister());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while unregistering JpaCrudRepository services!!", ex);
         }
