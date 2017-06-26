@@ -142,6 +142,7 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
                 this.pidToUnitNameMapping.put(pid, unitName);
                 this.unitNameToEMFMapping.put(unitName, emf);
                 this.repositoryManager.registerJpaCrudRepository(unitName, emf);
+                // emf.getMetamodel().getEntities().forEach(type -> LOGGER.info("EntityType Registered: [{}]", type));
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);
