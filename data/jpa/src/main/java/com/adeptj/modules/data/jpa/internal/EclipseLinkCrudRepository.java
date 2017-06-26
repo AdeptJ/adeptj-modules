@@ -46,60 +46,59 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EclipseLinkCrudRepository.class);
 
-    private EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory emf;
 
-    EclipseLinkCrudRepository(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    EclipseLinkCrudRepository(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
     @Override
     public <T extends BaseEntity> void insert(T entity) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction txn = entityManager.getTransaction();
+        EntityManager em = this.emf.createEntityManager();
+        EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
-            entityManager.persist(entity);
+            em.persist(entity);
             txn.commit();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while inserting entity!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> T update(T entity) {
         T updated;
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction txn = entityManager.getTransaction();
+        EntityManager em = this.emf.createEntityManager();
+        EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
-            updated = entityManager.merge(entity);
+            updated = em.merge(entity);
             txn.commit();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while updating entity!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
         return updated;
     }
 
     @Override
     public <T extends BaseEntity> int updateByCriteria(Class<T> entity, Map<String, Object> namedParams, Map<String, Object> updateFields) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction txn = entityManager.getTransaction();
+        EntityManager em = this.emf.createEntityManager();
+        EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaUpdate<T> update = cb.createCriteriaUpdate(entity);
-            updateFields.forEach(update::set);
-            List<Predicate> predicates = this.predicates(namedParams, cb, update.from(entity));
-            update.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-            int rowsUpdated = entityManager.createQuery(update).executeUpdate();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaUpdate<T> cu = cb.createCriteriaUpdate(entity);
+            updateFields.forEach(cu::set);
+            cu.where(cb.and(this.predicates(namedParams, cb, cu.from(entity)).toArray(new Predicate[0])));
+            int rowsUpdated = em.createQuery(cu).executeUpdate();
             txn.commit();
             LOGGER.info("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
@@ -108,34 +107,34 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error("Exception while updating by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> void delete(T entity) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction txn = entityManager.getTransaction();
+        EntityManager em = this.emf.createEntityManager();
+        EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
-            entityManager.remove(entityManager.contains(entity) ? entity : entityManager.merge(entity));
+            em.remove(em.merge(entity));
             txn.commit();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             this.rollbackTxn(txn);
             LOGGER.error("Exception while deleting entity!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> int deleteByNamedQuery(Class<T> entity, String namedQuery, List<Object> posParams) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction txn = entityManager.getTransaction();
+        EntityManager em = this.emf.createEntityManager();
+        EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
-            TypedQuery<T> typedQuery = entityManager.createNamedQuery(namedQuery, entity);
+            TypedQuery<T> typedQuery = em.createNamedQuery(namedQuery, entity);
             this.setQueryParameters(typedQuery, posParams);
             int rowsDeleted = typedQuery.executeUpdate();
             txn.commit();
@@ -146,21 +145,20 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error("Exception while deleting by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> int deleteByCriteria(Class<T> entity, Map<String, Object> namedParams) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction txn = entityManager.getTransaction();
+        EntityManager em = this.emf.createEntityManager();
+        EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-            CriteriaDelete<T> delete = cb.createCriteriaDelete(entity);
-            List<Predicate> predicates = this.predicates(namedParams, cb, delete.from(entity));
-            delete.where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-            int rowsDeleted = entityManager.createQuery(delete).executeUpdate();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaDelete<T> cd = cb.createCriteriaDelete(entity);
+            cd.where(cb.and(this.predicates(namedParams, cb, cd.from(entity)).toArray(new Predicate[0])));
+            int rowsDeleted = em.createQuery(cd).executeUpdate();
             txn.commit();
             LOGGER.info("deleteByCriteria: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
@@ -169,18 +167,17 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error("Exception while deleting entity by criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> int deleteAll(Class<T> entity) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
-        EntityTransaction txn = entityManager.getTransaction();
+        EntityManager em = this.emf.createEntityManager();
+        EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
-            CriteriaDelete<T> criteriaDelete = entityManager.getCriteriaBuilder().createCriteriaDelete(entity);
-            int rowsDeleted = entityManager.createQuery(criteriaDelete).executeUpdate();
+            int rowsDeleted = em.createQuery(em.getCriteriaBuilder().createCriteriaDelete(entity)).executeUpdate();
             txn.commit();
             LOGGER.info("deleteAll: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
@@ -189,47 +186,47 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error("Exception while deleting all Entities!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> T findById(Class<T> entity, Object primaryKey) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            return entityManager.find(entity, primaryKey);
+            return em.find(entity, primaryKey);
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while finding by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> namedParams) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entity);
             cq.where(cb.and(this.predicates(namedParams, cb, cq.from(entity)).toArray(new Predicate[0])));
-            return entityManager.createQuery(cq).getResultList();
+            return em.createQuery(cq).getResultList();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while finding by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> namedParams, int startPos, int maxResult) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entity);
             cq.where(cb.and(this.predicates(namedParams, cb, cq.from(entity)).toArray(new Predicate[0])));
-            TypedQuery<T> typedQuery = entityManager.createQuery(cq);
+            TypedQuery<T> typedQuery = em.createQuery(cq);
             typedQuery.setFirstResult(startPos);
             typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
@@ -237,46 +234,46 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error("Exception while findByCriteria with limiting results!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findByNamedQuery(Class<T> entity, String namedQuery, List<Object> posParams) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<T> query = entityManager.createNamedQuery(namedQuery, entity);
+            TypedQuery<T> query = em.createNamedQuery(namedQuery, entity);
             this.setQueryParameters(query, posParams);
             return query.getResultList();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while finding entity by named query!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findAll(Class<T> entity) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            CriteriaQuery<T> cq = entityManager.getCriteriaBuilder().createQuery(entity);
-            return entityManager.createQuery(cq.select(cq.from(entity))).getResultList();
+            CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
+            return em.createQuery(cq.select(cq.from(entity))).getResultList();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while finding entities!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findAll(Class<T> entity, int startPos, int maxResult) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            CriteriaQuery<T> cq = entityManager.getCriteriaBuilder().createQuery(entity);
+            CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             cq.select(cq.from(entity));
-            TypedQuery<T> typedQuery = entityManager.createQuery(cq);
+            TypedQuery<T> typedQuery = em.createQuery(cq);
             typedQuery.setMaxResults(maxResult);
             typedQuery.setFirstResult(startPos);
             return typedQuery.getResultList();
@@ -284,28 +281,28 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error("Exception while finding all Entities!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findByQuery(String jpaQuery, Class<T> entity) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            return entityManager.createQuery(jpaQuery, entity).getResultList();
+            return em.createQuery(jpaQuery, entity).getResultList();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while findByQuery!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findByQuery(String jpaQuery, Class<T> entity, int startPos, int maxResult) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<T> typedQuery = entityManager.createQuery(jpaQuery, entity);
+            TypedQuery<T> typedQuery = em.createQuery(jpaQuery, entity);
             typedQuery.setFirstResult(startPos);
             typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
@@ -313,80 +310,80 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error("Exception while findByQuery with limiting results!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> List<T> findByCriteriaWithINParams(Map<String, List<Object>> inParams, Class<T> entity) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
             String entityAttr = inParams.keySet().iterator().next();
-            CriteriaQuery<T> cq = entityManager.getCriteriaBuilder().createQuery(entity);
+            CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             Root<T> root = cq.from(entity);
             cq.select(root).where(root.get(entityAttr).in(inParams.entrySet().iterator().next().getValue()));
-            return entityManager.createQuery(cq).getResultList();
+            return em.createQuery(cq).getResultList();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while findByCriteriaWithINParams!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <E> E getScalarResultByNamedQuery(Class<E> entity, String namedQuery, List<Object> posParams) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<E> typedQuery = entityManager.createNamedQuery(namedQuery, entity);
+            TypedQuery<E> typedQuery = em.createNamedQuery(namedQuery, entity);
             this.setQueryParameters(typedQuery, posParams);
             return typedQuery.getSingleResult();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while getting ScalarResult!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> Long count(Class<T> entity) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             cq.select(cb.count(cq.from(entity)));
-            return entityManager.createQuery(cq).getSingleResult();
+            return em.createQuery(cq).getSingleResult();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while count query!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
     @Override
     public <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> namedParams) {
-        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        EntityManager em = this.emf.createEntityManager();
         try {
-            CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             Root<T> from = cq.from(entity);
             cq.select(cb.count(from));
             cq.where(cb.and(this.predicates(namedParams, cb, from).toArray(new Predicate[0])));
-            return entityManager.createQuery(cq).getSingleResult();
+            return em.createQuery(cq).getSingleResult();
         } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
             LOGGER.error("Exception while countByCriteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(entityManager);
+            this.closeEntityManager(em);
         }
     }
 
-    private void closeEntityManager(EntityManager entityManager) {
+    private void closeEntityManager(EntityManager em) {
         try {
-            if (entityManager.isOpen()) {
-                entityManager.close();
+            if (em.isOpen()) {
+                em.close();
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while closing EntityManager!!", ex);
@@ -396,6 +393,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     private void rollbackTxn(EntityTransaction txn) {
         try {
             if (txn.isActive()) {
+                LOGGER.warn("Rolling back txn!!");
                 txn.rollback();
             }
         } catch (Exception ex) { // NOSONAR
