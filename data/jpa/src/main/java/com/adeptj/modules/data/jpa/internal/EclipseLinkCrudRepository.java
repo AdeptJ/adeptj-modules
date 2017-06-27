@@ -3,14 +3,12 @@ package com.adeptj.modules.data.jpa.internal;
 import com.adeptj.modules.data.jpa.JpaSystemException;
 import com.adeptj.modules.data.jpa.api.BaseEntity;
 import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -60,11 +58,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.begin();
             em.persist(entity);
             txn.commit();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
-            this.rollbackTxn(txn);
+        } catch (RuntimeException ex) {
+            this.setRollbackOnly(txn);
             LOGGER.error("Exception while inserting entity!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
+            this.rollbackTxn(txn);
             this.closeEntityManager(em);
         }
     }
@@ -78,11 +77,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.begin();
             updated = em.merge(entity);
             txn.commit();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
-            this.rollbackTxn(txn);
+        } catch (RuntimeException ex) {
+            this.setRollbackOnly(txn);
             LOGGER.error("Exception while updating entity!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
+            this.rollbackTxn(txn);
             this.closeEntityManager(em);
         }
         return updated;
@@ -102,11 +102,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
-            this.rollbackTxn(txn);
+        } catch (RuntimeException ex) {
+            this.setRollbackOnly(txn);
             LOGGER.error("Exception while updating by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
+            this.rollbackTxn(txn);
             this.closeEntityManager(em);
         }
     }
@@ -119,11 +120,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.begin();
             em.remove(em.merge(entity));
             txn.commit();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
-            this.rollbackTxn(txn);
+        } catch (RuntimeException ex) {
+            this.setRollbackOnly(txn);
             LOGGER.error("Exception while deleting entity!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
+            this.rollbackTxn(txn);
             this.closeEntityManager(em);
         }
     }
@@ -140,11 +142,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("deleteByNamedQuery: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
-            this.rollbackTxn(txn);
+        } catch (RuntimeException ex) {
+            this.setRollbackOnly(txn);
             LOGGER.error("Exception while deleting by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
+            this.rollbackTxn(txn);
             this.closeEntityManager(em);
         }
     }
@@ -162,11 +165,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("deleteByCriteria: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
-            this.rollbackTxn(txn);
+        } catch (RuntimeException ex) {
+            this.setRollbackOnly(txn);
             LOGGER.error("Exception while deleting entity by criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
+            this.rollbackTxn(txn);
             this.closeEntityManager(em);
         }
     }
@@ -181,11 +185,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.commit();
             LOGGER.info("deleteAll: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
-            this.rollbackTxn(txn);
+        } catch (RuntimeException ex) {
+            this.setRollbackOnly(txn);
             LOGGER.error("Exception while deleting all Entities!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
+            this.rollbackTxn(txn);
             this.closeEntityManager(em);
         }
     }
@@ -195,7 +200,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             return em.find(entity, primaryKey);
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -211,7 +216,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<T> cq = cb.createQuery(entity);
             cq.where(cb.and(this.predicates(namedParams, cb, cq.from(entity)).toArray(new Predicate[0])));
             return em.createQuery(cq).getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding by Criteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -230,7 +235,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             typedQuery.setFirstResult(startPos);
             typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while findByCriteria with limiting results!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -245,7 +250,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             TypedQuery<T> query = em.createNamedQuery(namedQuery, entity);
             this.setQueryParameters(query, posParams);
             return query.getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding entity by named query!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -259,7 +264,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             return em.createQuery(cq.select(cq.from(entity))).getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding entities!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -277,7 +282,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             typedQuery.setMaxResults(maxResult);
             typedQuery.setFirstResult(startPos);
             return typedQuery.getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding all Entities!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -290,7 +295,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             return em.createQuery(jpaQuery, entity).getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while findByQuery!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -306,7 +311,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             typedQuery.setFirstResult(startPos);
             typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while findByQuery with limiting results!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -323,7 +328,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             Root<T> root = cq.from(entity);
             cq.select(root).where(root.get(entityAttr).in(inParams.entrySet().iterator().next().getValue()));
             return em.createQuery(cq).getResultList();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while findByCriteriaWithINParams!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -338,7 +343,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             TypedQuery<E> typedQuery = em.createNamedQuery(namedQuery, entity);
             this.setQueryParameters(typedQuery, posParams);
             return typedQuery.getSingleResult();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while getting ScalarResult!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -354,7 +359,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             cq.select(cb.count(cq.from(entity)));
             return em.createQuery(cq).getSingleResult();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while count query!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -372,7 +377,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             cq.select(cb.count(from));
             cq.where(cb.and(this.predicates(namedParams, cb, from).toArray(new Predicate[0])));
             return em.createQuery(cq).getSingleResult();
-        } catch (PersistenceException | EclipseLinkException | IllegalStateException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while countByCriteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
@@ -385,19 +390,25 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             if (em.isOpen()) {
                 em.close();
             }
-        } catch (Exception ex) { // NOSONAR
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while closing EntityManager!!", ex);
+        }
+    }
+
+    private void setRollbackOnly(EntityTransaction txn) {
+        if (txn != null && !txn.getRollbackOnly()) {
+            txn.setRollbackOnly();
         }
     }
 
     private void rollbackTxn(EntityTransaction txn) {
         try {
-            if (txn.isActive()) {
-                LOGGER.warn("Rolling back txn!!");
+            if (txn != null && txn.isActive() && txn.getRollbackOnly()) {
+                LOGGER.warn("Rolling back transaction!!");
                 txn.rollback();
             }
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error("Exception while rolling back txn!!", ex);
+        } catch (RuntimeException ex) {
+            LOGGER.error("Exception while rolling back transaction!!", ex);
         }
     }
 

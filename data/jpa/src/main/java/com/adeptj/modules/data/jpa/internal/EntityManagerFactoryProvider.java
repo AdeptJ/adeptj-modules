@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.commons.ds.api.DataSourceProvider;
+import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.osgi.service.cm.ConfigurationException;
@@ -52,6 +53,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENER
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON_STARTUP;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_FILE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
@@ -126,7 +128,7 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
         jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, (String) configs.get("persistenceXmlLocation"));
         jpaProperties.put(SHARED_CACHE_MODE, (String) configs.get("sharedCacheMode"));
         jpaProperties.put(PERSISTENCE_PROVIDER, (String) configs.get("persistenceProviderClassName"));
-        // jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
+        jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
         jpaProperties.put(VALIDATION_MODE, (String) configs.get("validationMode"));
         jpaProperties.putAll(Arrays.stream((String[]) configs.get("jpaProperties")).filter(StringUtils::isNotBlank)
@@ -142,7 +144,9 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
                 this.pidToUnitNameMapping.put(pid, unitName);
                 this.unitNameToEMFMapping.put(unitName, emf);
                 this.repositoryManager.registerJpaCrudRepository(unitName, emf);
-                // emf.getMetamodel().getEntities().forEach(type -> LOGGER.info("EntityType Registered: [{}]", type));
+                if (LOGGER.isDebugEnabled()) {
+                    emf.getMetamodel().getEntities().forEach(type -> LOGGER.debug("EntityType: [{}]", type));
+                }
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);

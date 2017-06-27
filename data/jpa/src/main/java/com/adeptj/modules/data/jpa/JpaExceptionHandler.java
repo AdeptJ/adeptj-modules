@@ -39,8 +39,8 @@ public class JpaExceptionHandler implements ExceptionHandler {
 
     @Override
     public Object handleException(RuntimeException exception) {
-        LOGGER.error("Handling Exception:", exception);
-        // wrap this in a JpaSystemException and re-throw. Perform any other task if needed.
-        throw new JpaSystemException(exception);
+        // Log it as of now, perform any other task on passed Exception if needed.
+        LOGGER.error("Handling Exception via JpaExceptionHandler!!", exception);
+        throw exception;
     }
 }
