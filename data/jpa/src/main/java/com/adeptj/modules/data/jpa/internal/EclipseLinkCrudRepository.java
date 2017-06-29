@@ -320,7 +320,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> findByCriteriaWithINParams(Map<String, List<Object>> inParams, Class<T> entity) {
+    public <T extends BaseEntity> List<T> findByINOperator(Map<String, List<Object>> inParams, Class<T> entity) {
         EntityManager em = this.emf.createEntityManager();
         try {
             String entityAttr = inParams.keySet().iterator().next();
@@ -329,7 +329,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             cq.select(root).where(root.get(entityAttr).in(inParams.entrySet().iterator().next().getValue()));
             return em.createQuery(cq).getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while findByCriteriaWithINParams!!", ex);
+            LOGGER.error("Exception while findByINOperator!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);

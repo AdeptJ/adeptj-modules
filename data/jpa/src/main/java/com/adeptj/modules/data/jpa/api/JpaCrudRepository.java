@@ -65,7 +65,7 @@ public interface JpaCrudRepository {
 
     <T extends BaseEntity> List<T> findByQuery(String jpaQuery, Class<T> entity, int startPos, int maxResult);
 
-    <T extends BaseEntity> List<T> findByCriteriaWithINParams(Map<String, List<Object>> inParams, Class<T> entity);
+    <T extends BaseEntity> List<T> findByINOperator(Map<String, List<Object>> inParams, Class<T> entity);
 
     <E> E getScalarResultByNamedQuery(Class<E> entity, String namedQuery, List<Object> posParams);
 
