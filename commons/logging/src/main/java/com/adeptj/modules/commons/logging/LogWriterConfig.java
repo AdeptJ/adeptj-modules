@@ -18,8 +18,11 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.log.factory;
+package com.adeptj.modules.commons.logging;
 
-public enum Writers {
-	
+public class LogWriterConfig {
+
+    private String file;
+
+    private long logMaxSize;
 }

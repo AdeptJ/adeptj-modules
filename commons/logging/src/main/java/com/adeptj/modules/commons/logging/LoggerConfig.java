@@ -18,21 +18,17 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.log.factory;
+package com.adeptj.modules.commons.logging;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+public class LoggerConfig {
 
-public class LoggingActivator implements BundleActivator {
-	
-	
-	@Override
-	public void start(BundleContext context) throws Exception {
-	}
+    private String level;
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		
-	}
+    private String file;
 
+    private String pattern;
+
+    private String[] names;
+
+    private boolean additivity;
 }
