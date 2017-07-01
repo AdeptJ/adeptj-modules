@@ -48,7 +48,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AWSMessagingService for sending Email or SMS.
+ * AWSMessagingService for sending Email/SMS asynchronously.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
@@ -71,7 +71,6 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
      *
      * @param type {@link MessageType} either EMAIL or SMS
      * @param data Message data Map required by the system
-     * @return a status if the Message has been sent or not.
      */
     @Override
     public void sendMessage(MessageType type, Map<String, String> data) {
@@ -89,8 +88,11 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
 
     private void sendSMS(Map<String, String> data) {
         try {
-            this.asyncSNS.publishAsync(new PublishRequest().withMessage(data.get("message")).
-                    withPhoneNumber(data.get("mobNo")).withMessageAttributes(this.smsAttributes));
+            LOGGER.info("Sending SMS to: [{}]", data.get("mobNo"));
+            this.asyncSNS.publishAsync(new PublishRequest()
+                    .withMessage(data.get("message"))
+                    .withPhoneNumber(data.get("mobNo"))
+                    .withMessageAttributes(this.smsAttributes));
         } catch (Exception ex) {
             LOGGER.error("Exception while sending sms!!", ex);
         }
@@ -99,12 +101,13 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
 
     private void sendEmail(Map<String, String> data) {
         try {
-            Destination destination = new Destination().withToAddresses(data.get("recipient"));
-            Content subject = new Content().withData(data.get("subject"));
-            Content textBody = new Content().withData(data.get("message"));
-            Message message = new Message().withSubject(subject).withBody(new Body().withHtml(textBody));
-            this.asyncSES.sendEmailAsync(new
-                    SendEmailRequest().withSource(this.config.from()).withDestination(destination).withMessage(message));
+            LOGGER.info("Sending Email to: [{}]", data.get("recipient"));
+            this.asyncSES.sendEmailAsync(new SendEmailRequest()
+                    .withSource(this.config.from())
+                    .withDestination(new Destination().withToAddresses(data.get("recipient")))
+                    .withMessage(new Message()
+                            .withSubject(new Content().withData(data.get("subject")))
+                            .withBody(new Body().withHtml(new Content().withData(data.get("message"))))));
         } catch (Exception ex) {
             LOGGER.error("Exception while sending email!!", ex);
         }
@@ -113,24 +116,54 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
     // Lifecycle Methods
 
     @Activate
-    protected void activate(AWSMessagingConfig config) {
+    protected void start(AWSMessagingConfig config) {
         this.config = config;
         this.smsAttributes = new HashMap<>();
-        this.smsAttributes.put("AWS.SNS.SMS.SenderID", new MessageAttributeValue().withStringValue(config.senderId())
+        this.smsAttributes.put("AWS.SNS.SMS.SenderID", new MessageAttributeValue()
+                .withStringValue(config.senderId())
                 .withDataType("String"));
-        this.smsAttributes.put("AWS.SNS.SMS.SMSType", new MessageAttributeValue().withStringValue(config.smsType())
+        this.smsAttributes.put("AWS.SNS.SMS.SMSType", new MessageAttributeValue()
+                .withStringValue(config.smsType())
                 .withDataType("String"));
-        this.asyncSNS = AmazonSNSAsyncClientBuilder.standard().withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
-                .snsServiceEndpoint(), config.snsSigningRegion())).withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).build();
-        this.asyncSES = AmazonSimpleEmailServiceAsyncClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
-                .sesServiceEndpoint(), config.sesSigningRegion())).build();
+        AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(
+                config.accessKeyId(), config.secretKey()));
+        try {
+            this.asyncSNS = AmazonSNSAsyncClientBuilder.standard()
+                    .withEndpointConfiguration(getEndpointConfiguration(config.snsServiceEndpoint(), config.snsSigningRegion()))
+                    .withCredentials(credentialsProvider)
+                    .build();
+            this.asyncSES = AmazonSimpleEmailServiceAsyncClientBuilder.standard()
+                    .withEndpointConfiguration(getEndpointConfiguration(config.sesServiceEndpoint(), config.sesSigningRegion()))
+                    .withCredentials(credentialsProvider)
+                    .build();
+        } catch (Exception ex) {
+            LOGGER.error("Exception while starting AWSMessagingService!!", ex);
+        }
+    }
+
+    private AwsClientBuilder.EndpointConfiguration getEndpointConfiguration(String serviceEndpoint, String signingRegion) {
+        return new AwsClientBuilder.EndpointConfiguration(serviceEndpoint, signingRegion);
     }
 
     @Deactivate
-    protected void deactivate() {
-        this.asyncSNS.shutdown();
-        this.asyncSES.shutdown();
+    protected void stop() {
+        this.shutdownSNS();
+        this.shutdownSES();
+    }
+
+    private void shutdownSNS() {
+        try {
+            this.asyncSNS.shutdown();
+        } catch (Exception ex) {
+            LOGGER.error("Exception while SNS client shutdown!!", ex);
+        }
+    }
+
+    private void shutdownSES() {
+        try {
+            this.asyncSES.shutdown();
+        } catch (Exception ex) {
+            LOGGER.error("Exception while SES client shutdown!!", ex);
+        }
     }
 }

@@ -20,7 +20,9 @@
 package com.adeptj.modules.commons.aws.messaging;
 
 /**
- * @author Rakesh.Kumar, AdeptJ.
+ * Message type for AWS notification services.
+ *
+ * @author Rakesh.Kumar, AdeptJ
  */
 public enum MessageType {
 

@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -25,7 +25,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
 /**
- * @author Rakesh.Kumar, AdeptJ.
+ * OSGi configurations for AWS messaging service.
+ *
+ * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(name = "AdeptJ AWS Notification Services Configuration", description = "Configuration for AWS SES/SNS")
 public @interface AWSMessagingConfig {
@@ -41,8 +43,10 @@ public @interface AWSMessagingConfig {
     @AttributeDefinition(name = "senderId", description = "AWS SNS SenderID, check your country if SenderID is supported or not")
     String senderId();
 
-    @AttributeDefinition(name = "SMSType", options = {@Option(label = "TRANSACTIONAL", value = "Transactional"),
-            @Option(label = "PROMOTIONAL", value = "Promotional")})
+    @AttributeDefinition(name = "SMSType", description = "SMS priority", options = {
+            @Option(label = "TRANSACTIONAL", value = "Transactional"),
+            @Option(label = "PROMOTIONAL", value = "Promotional")
+    })
     String smsType();
 
     // SES Configs
