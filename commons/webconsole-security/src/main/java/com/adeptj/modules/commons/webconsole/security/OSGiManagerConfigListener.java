@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,31 +17,31 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.commons.webconsole.security;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.util.Dictionary;
-
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationEvent;
 import org.osgi.service.cm.ConfigurationListener;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.Dictionary;
+
+import static java.lang.invoke.MethodType.methodType;
+
 /**
- * OSGiManagerConfigListener.
+ * ConfigurationListener for Felix {@link org.apache.felix.webconsole.internal.servlet.OsgiManager}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Service(ConfigurationListener.class)
 @Component(immediate = true)
 public class OSGiManagerConfigListener implements ConfigurationListener {
 
@@ -111,10 +111,13 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 		if (this.setPwdMethodHandle == null) {
 			try {
 				// Load from Application class loader which in fact is the parent of OSGi Framework.
-				Class<?> klazz = this.getClass().getClassLoader().getParent().loadClass(WEBCONSOLE_PWD_UPDATE_AWARE_CLASS);
+				Class<?> cls = this.getClass()
+                        .getClassLoader()
+                        .getParent()
+                        .loadClass(WEBCONSOLE_PWD_UPDATE_AWARE_CLASS);
 				MethodHandles.Lookup lookup = MethodHandles.lookup();
-				this.setPwdMethodHandle = lookup.findVirtual(klazz, METHOD_SET_PASSWORD, MethodType.methodType(void.class, char[].class))
-						.bindTo(lookup.findStatic(klazz, METHOD_GET_INSTANCE, MethodType.methodType(klazz)).invoke());
+				this.setPwdMethodHandle = lookup.findVirtual(cls, METHOD_SET_PASSWORD, methodType(void.class, char[].class))
+						.bindTo(lookup.findStatic(cls, METHOD_GET_INSTANCE, methodType(cls)).invoke());
 			} catch (Throwable th) { // NOSONAR
 				LOGGER.error("Exception!!", th);
 			}	

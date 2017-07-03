@@ -1,7 +1,7 @@
-/** 
+/*
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,23 +17,24 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.commons.webconsole.security;
+
+import org.apache.felix.webconsole.WebConsoleSecurityProvider;
+import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
+import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.webconsole.WebConsoleSecurityProvider;
-import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
+import static javax.servlet.http.HttpServletResponse.SC_FOUND;
 
 /**
- * OSGiConsoleSecurityProvider.
+ * Felix {@link WebConsoleSecurityProvider} implementation.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Service(WebConsoleSecurityProvider.class)
-@Component(immediate = true)
+@Component(immediate = true, service = WebConsoleSecurityProvider.class)
 public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
 
 	private static final String URL_TOOLS_LOGOUT = "/tools/logout";
@@ -77,7 +78,7 @@ public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 
 		// Not using response.sendRedirect due to exception handling we need to do, avoiding that.
 		// Set the status to [302] and location header to [/tools/logout] so that browser could redirect there.
 		// ProxyServlet will take care of Session invalidation later.
-		response.setStatus(HttpServletResponse.SC_FOUND); 
+		response.setStatus(SC_FOUND);
 		response.setHeader(HEADER_LOC, URL_TOOLS_LOGOUT);
 	}
 

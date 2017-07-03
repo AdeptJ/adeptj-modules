@@ -24,18 +24,17 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.0.Final</version>
+        <version>1.0.2.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-commons-webconsole-security</artifactId>
     <version>1.0.1.Final</version>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Felix WebConsole Security</name>
     <description>AdeptJ Modules :: Commons :: Felix WebConsole Security</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <felix.webconsole.version>4.2.16</felix.webconsole.version>
     </properties>
 
     <!-- Project Information -->
@@ -66,7 +65,7 @@
             </roles>
             <timezone>+5:30</timezone>
             <properties>
-                <picUrl>https://media.licdn.com/mpr/mpr/shrinknp_200_200/p/6/005/0b5/282/397d47f.jpg</picUrl>
+                <picUrl>https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg</picUrl>
             </properties>
         </developer>
     </developers>
@@ -94,31 +93,33 @@
     </scm>
 
     <build>
+
+        <!-- Below BND plugin is required to process the OSGi Annotation-->
         <plugins>
+
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Category>AdeptJ Commons</Bundle-Category>
-                        <!-- <Bundle-Activator>com.adeptj.modules.commons.webconsole.security.Activator</Bundle-Activator> -->
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>generate-scr-scrdescriptor</id>
                         <goals>
-                            <goal>scr</goal>
+                            <goal>bnd-process</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -128,7 +129,9 @@
                     <target>${jdk.version}</target>
                 </configuration>
             </plugin>
+
         </plugins>
+
     </build>
 
     <dependencies>
@@ -155,12 +158,6 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.webconsole</artifactId>
             <version>${felix.webconsole.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
             <scope>provided</scope>
         </dependency>
 

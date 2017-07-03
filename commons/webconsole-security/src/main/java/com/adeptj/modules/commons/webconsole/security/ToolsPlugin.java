@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,33 +16,42 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-parent</artifactId>
-        <version>1.0.6.Final</version>
-    </parent>
-    <artifactId>adeptj-modules-builder</artifactId>
-    <version>1.0.1.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Builder</name>
-    <description>Pseudo project to build the complete AdeptJ Modules project</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.commons.webconsole.security;
 
-        <module>parent</module>
-        <module>commons</module>
-        <module>cache</module>
-        <module>websecurity</module>
-        <module>data</module>
-        <module>search</module>
-        <module>viewengine</module>
+import org.apache.felix.webconsole.SimpleWebConsolePlugin;
+import org.osgi.service.component.annotations.Component;
 
-    </modules>
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-</project>
+import static org.apache.felix.webconsole.WebConsoleConstants.PLUGIN_LABEL;
+import static org.apache.felix.webconsole.WebConsoleConstants.PLUGIN_TITLE;
+
+/**
+ * AdeptJ Tools Plugin.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@Component(immediate = true, service = Servlet.class, property = {
+        PLUGIN_LABEL + "=tools",
+        PLUGIN_TITLE + "=AdeptJ Tools"
+})
+public class ToolsPlugin extends SimpleWebConsolePlugin {
+
+	private static final long serialVersionUID = 8041033223220201144L;
+
+	public ToolsPlugin() {
+		super("tools", "AdeptJ Tools", "Main", (String[]) null);
+	}
+
+	@Override
+	protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		res.sendRedirect("/tools/dashboard");
+	}
+
+}
