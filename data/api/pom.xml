@@ -28,6 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-data-api</artifactId>
+    <version>1.0.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Data :: API</name>
     <description>AdeptJ Modules :: Data :: API</description>
