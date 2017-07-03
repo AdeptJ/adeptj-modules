@@ -62,6 +62,10 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
 
     private AmazonSimpleEmailServiceAsync asyncSES;
 
+    private AWSSnsAsyncHandler awsSnsAsyncHandler;
+
+    private AWSSesAsyncHandler awsSesAsyncHandler;
+
     private Map<String, MessageAttributeValue> smsAttributes;
 
     private AWSMessagingConfig config;
@@ -92,7 +96,7 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
             this.asyncSNS.publishAsync(new PublishRequest()
                     .withMessage(data.get("message"))
                     .withPhoneNumber(data.get("mobNo"))
-                    .withMessageAttributes(this.smsAttributes));
+                    .withMessageAttributes(this.smsAttributes), this.awsSnsAsyncHandler);
         } catch (Exception ex) {
             LOGGER.error("Exception while sending sms!!", ex);
         }
@@ -107,7 +111,8 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
                     .withDestination(new Destination().withToAddresses(data.get("recipient")))
                     .withMessage(new Message()
                             .withSubject(new Content().withData(data.get("subject")))
-                            .withBody(new Body().withHtml(new Content().withData(data.get("message"))))));
+                            .withBody(new Body().withHtml(new Content().withData(data.get("message"))))),
+                    this.awsSesAsyncHandler);
         } catch (Exception ex) {
             LOGGER.error("Exception while sending email!!", ex);
         }
@@ -136,6 +141,8 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
                     .withEndpointConfiguration(getEndpointConfiguration(config.sesServiceEndpoint(), config.sesSigningRegion()))
                     .withCredentials(credentialsProvider)
                     .build();
+            this.awsSnsAsyncHandler = new AWSSnsAsyncHandler();
+            this.awsSesAsyncHandler = new AWSSesAsyncHandler();
         } catch (Exception ex) {
             LOGGER.error("Exception while starting AWSMessagingService!!", ex);
         }
