@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-commons-webconsole-security</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.2.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Felix WebConsole Security</name>
     <description>AdeptJ Modules :: Commons :: Felix WebConsole Security</description>
