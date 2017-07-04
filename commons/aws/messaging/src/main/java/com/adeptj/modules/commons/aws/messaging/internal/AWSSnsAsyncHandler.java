@@ -42,7 +42,9 @@ public class AWSSnsAsyncHandler implements AsyncHandler<PublishRequest, PublishR
 
     @Override
     public void onSuccess(PublishRequest request, PublishResult result) {
-        LOGGER.info("SNS PublishRequest: {}", request);
-        LOGGER.info("SNS PublishResult: {}", result);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("SMS sent successfully to: {}", request.getPhoneNumber());
+            LOGGER.debug("SNS PublishResult messageId: {}", result.getMessageId());
+        }
     }
 }
