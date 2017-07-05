@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -47,6 +46,7 @@ import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
 import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
 import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.FACTORY_NAME;
 import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.SERVICE_PID_PROPERTY;
+import static java.util.Objects.requireNonNull;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
@@ -92,7 +92,7 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
 
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-        // If there is an update to existing PID, removes all the mappings against that PID.
+        // If there is an update to existing PID, remove the mapping against that PID.
         // Close corresponding EntityManagerFactory as well.
         this.handleConfigChange(pid);
         // Recreate the EntityManagerFactory.
@@ -113,12 +113,8 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
     }
 
     private void createEntityManagerFactory(String pid, Dictionary<String, ?> configs) {
-        String dataSourceName = Objects.requireNonNull((String) configs.get("dataSourceName"),
-                "Property [dataSourceName] cannot be null!!");
-        DataSource dataSource = Objects.requireNonNull(this.dsProvider.getDataSource(dataSourceName),
-                "DataSource cannot be null!!");
         Map<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put(NON_JTA_DATASOURCE, dataSource);
+        jpaProperties.put(NON_JTA_DATASOURCE, this.getDataSource(configs));
         jpaProperties.put(DDL_GENERATION, configs.get("ddlGeneration"));
         jpaProperties.put(DDL_GENERATION_MODE, configs.get("ddlGenerationOutputMode"));
         jpaProperties.put(DEPLOY_ON_STARTUP, Boolean.toString((Boolean) configs.get("deployOnStartup")));
@@ -154,5 +150,11 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);
         }
+    }
+
+    private DataSource getDataSource(Dictionary<String, ?> configs) {
+        return requireNonNull(this.dsProvider.getDataSource(requireNonNull((String) configs.get("dataSourceName"),
+                "Property [dataSourceName] cannot be null!!")),
+                "DataSource cannot be null!!");
     }
 }
