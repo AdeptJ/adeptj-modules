@@ -52,7 +52,7 @@ public @interface EntityManagerFactoryConfig {
 
     static final int CARDINALITY = 100;
 
-    @AttributeDefinition(name = "PersistenceUnit Name", description = "Name of the PersistenceUnit.")
+    @AttributeDefinition(name = "PersistenceUnit Name", description = "Note: Must be same as in persistence.xml")
     String unitName();
 
     @AttributeDefinition(name = "Persistence XML Location", description = "Location of the persistence.xml file")
@@ -65,7 +65,7 @@ public @interface EntityManagerFactoryConfig {
     String persistenceProviderClassName() default "org.eclipse.persistence.jpa.PersistenceProvider";
 
     @AttributeDefinition(name = "EclipseLink LoggingFile", description = "EclipseLink Logging File")
-    String loggingFile() default "jpa.log";
+    String loggingFile() default "adeptj-runtime/deployment/logs/jpa.log";
 
     @AttributeDefinition(name = "JPA Properties", description = "JPA Properties(key=value)", cardinality = CARDINALITY)
     String[] jpaProperties();
@@ -80,8 +80,8 @@ public @interface EntityManagerFactoryConfig {
     String persistenceUnitTransactionType();
 
     @AttributeDefinition(name = "L2 Cache Mode", description = "JPA Caching Strategy", options = {
-            @Option(label = "NONE", value = "NONE"),
             @Option(label = "ENABLE_SELECTIVE", value = "ENABLE_SELECTIVE"),
+            @Option(label = "NONE", value = "NONE"),
             @Option(label = "DISABLE_SELECTIVE", value = "DISABLE_SELECTIVE"),
             @Option(label = "ALL", value = "ALL"),
             @Option(label = "UNSPECIFIED", value = "UNSPECIFIED")
@@ -96,12 +96,12 @@ public @interface EntityManagerFactoryConfig {
     String validationMode();
 
     @AttributeDefinition(name = "EclipseLink LoggingLevel", description = "EclipseLink Logging Level", options = {
+            @Option(label = FINE, value = FINE),
             @Option(label = FINEST, value = FINEST),
             @Option(label = SEVERE, value = SEVERE),
             @Option(label = WARNING, value = WARNING),
             @Option(label = INFO, value = INFO),
             @Option(label = CONFIG, value = CONFIG),
-            @Option(label = FINE, value = FINE),
             @Option(label = FINER, value = FINER),
             @Option(label = OFF, value = OFF),
             @Option(label = ALL, value = ALL)
@@ -113,7 +113,7 @@ public @interface EntityManagerFactoryConfig {
             @Option(label = "DATABASE", value = DDL_DATABASE_GENERATION),
             @Option(label = "SQL_SCRIPT", value = DDL_SQL_SCRIPT_GENERATION),
     })
-    String ddlGenerationMode();
+    String ddlGenerationOutputMode();
 
     @AttributeDefinition(name = "DDL Generation Strategy", description = "Specifies how the DDL runs", options = {
             @Option(label = "CREATE_OR_EXTEND", value = CREATE_OR_EXTEND),

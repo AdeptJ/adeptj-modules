@@ -27,7 +27,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +49,9 @@ import static com.adeptj.modules.commons.ds.DataSourceConstants.MIN_IDLE;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.POOL_NAME;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.PWD;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.USERNAME;
-import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.NAME;
-import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.SERVICE_PID;
+import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.FACTORY_NAME;
+import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.SERVICE_PID_PROPERTY;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
 /**
  * JDBC DataSource implementation HikariDataSource is being configured and returned to the callers.
@@ -61,18 +61,18 @@ import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.SE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = DataSourceConfig.class)
-@Component(immediate = true, name = NAME, property = SERVICE_PID, configurationPolicy = ConfigurationPolicy.IGNORE)
+@Component(immediate = true, name = FACTORY_NAME, property = SERVICE_PID_PROPERTY, configurationPolicy = IGNORE)
 public class HikariDataSourceProvider implements DataSourceProvider, ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HikariDataSourceProvider.class);
 
-    static final String NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
+    static final String FACTORY_NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
 
-    static final String SERVICE_PID = "service.pid=com.adeptj.modules.commons.ds.DataSourceProvider.factory";
+    static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.commons.ds.DataSourceProvider.factory";
 
     private Map<String, HikariDataSource> dataSources = new ConcurrentHashMap<>();
 
-    private Map<String, String> pidToDSNameMapping = new ConcurrentHashMap<>();
+    private Map<String, String> pidVsDSNameMapping = new ConcurrentHashMap<>();
 
     @Override
     public DataSource getDataSource(String dataSourceName) {
@@ -81,25 +81,25 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
 
     @Override
     public String getName() {
-        return NAME;
+        return FACTORY_NAME;
     }
 
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-        this.handleUpdateDelete(pid);
+        this.handleConfigChange(pid);
         this.createDataSource(pid, properties);
     }
 
     @Override
     public void deleted(String pid) {
-        this.handleUpdateDelete(pid);
+        this.handleConfigChange(pid);
     }
 
-    private void handleUpdateDelete(String pid) {
-        Optional.ofNullable(this.pidToDSNameMapping.remove(pid)).ifPresent(dsName -> {
-            LOGGER.info("Closing HikariDataSource against PoolName: [{}]", dsName);
+    private void handleConfigChange(String pid) {
+        Optional.ofNullable(this.pidVsDSNameMapping.remove(pid)).ifPresent((String dataSourceName) -> {
+            LOGGER.info("Closing HikariDataSource against PoolName: [{}]", dataSourceName);
             try {
-                this.dataSources.remove(dsName).close();
+                this.dataSources.remove(dataSourceName).close();
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while closing HikariDataSource!!", ex);
             }
@@ -123,7 +123,7 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
             properties.put(MAX_POOL_SIZE, configs.get(MAX_POOL_SIZE));
             LOGGER.info("Initializing JDBC ConnectionPool: [{}]", poolName);
             this.dataSources.put(poolName, new HikariDataSource(new HikariConfig(properties)));
-            this.pidToDSNameMapping.put(pid, poolName);
+            this.pidVsDSNameMapping.put(pid, poolName);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while creating HikariDataSource!!", ex);
         }
