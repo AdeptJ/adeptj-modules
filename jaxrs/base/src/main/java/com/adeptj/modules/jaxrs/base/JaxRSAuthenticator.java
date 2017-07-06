@@ -19,8 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.base;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -30,9 +29,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -48,39 +44,35 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 public class JaxRSAuthenticator {
 
     @Reference
-    private JaxRSAuthRepository authRepository;
+    private JaxRSAuthenticationRepository authenticationRepository;
+
+    @Reference
+    private JwtService jwtService;
 
     @POST
     @Path("token/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response issueToken(@FormParam("username") String username, @FormParam("pwd") String pwd) {
+    public Response issueToken(@FormParam("subject") String subject, @FormParam("password") String password) {
+        Response response;
         try {
-            // First authenticate the user using the credentials provided but from where?
-            JaxRSAuthConfig authConfig = this.authRepository.getAuthConfig(username);
-            if (authConfig == null) {
-                return Response.status(UNAUTHORIZED).build();
+            // First authenticate the user using the credentials provided.
+            JaxRSAuthenticationInfo authenticationInfo = this.authenticationRepository.getAuthenticationInfo(subject);
+            if (authenticationInfo == null) {
+                response = Response.status(UNAUTHORIZED).build();
+            } else {
+                // All well here, now issue a token for the Subject
+                response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(subject)).build();
             }
-            // Now issue a token for the user
-            return Response.ok().header(AUTHORIZATION, this.issueToken(username)).build();
         } catch (Exception e) {
             return Response.status(UNAUTHORIZED).build();
         }
+        return response;
     }
 
     @GET
     @Path("token/check")
-    @ValidateJWT
+    @RequiresJwtCheck
     public Response withAuth() {
         return Response.ok("JWT is valid!!").build();
-    }
-
-    private String issueToken(String subject) {
-        return "Bearer " + Jwts.builder()
-                .setSubject(subject)
-                .setIssuer("AdeptJ Runtime REST API")
-                .setIssuedAt(new Date())
-                .setExpiration(Date.from(LocalDateTime.now().plusMinutes(30L).atZone(ZoneId.systemDefault()).toInstant()))
-                .signWith(SignatureAlgorithm.HS256, this.authRepository.getAuthConfig(subject).getSigningKey())
-                .compact();
     }
 }

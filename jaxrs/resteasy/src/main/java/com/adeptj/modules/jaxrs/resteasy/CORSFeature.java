@@ -73,7 +73,7 @@ public class CORSFeature implements Feature {
         corsFilter.setExposedHeaders(Arrays.stream(this.config.exposedHeaders()).collect(joining(JOIN_DELIMITER)));
         corsFilter.getAllowedOrigins().addAll(Arrays.stream(this.config.allowedOrigins()).collect(toSet()));
         context.register(corsFilter);
-        LoggerFactory.getLogger(this.getClass()).info("RESTEasy CorsFilter Configured Successfully!!");
+        LoggerFactory.getLogger(CORSFeature.class).info("RESTEasy CorsFilter Configured Successfully!!");
         // Must return true to get this Feature enabled.
         return true;
     }

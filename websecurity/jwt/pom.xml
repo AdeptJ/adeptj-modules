@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  
+<!--
 ###############################################################################
-#                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#                                                                             #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -27,14 +27,15 @@
         <version>1.0.3.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-jaxrs-base</artifactId>
-    <version>1.0.1.Final</version>
+    <artifactId>adeptj-modules-websecurity-jwt</artifactId>
+    <version>1.0.0.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: JAX-RS :: Base</name>
-    <description>AdeptJ Modules :: JAX-RS :: Base</description>
+    <name>AdeptJ Modules :: WebSecurity :: JWT</name>
+    <description>AdeptJ Modules :: WebSecurity :: JWT</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jjwt.version>0.7.0</jjwt.version>
     </properties>
 
     <!-- Project Information -->
@@ -149,8 +150,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -161,30 +162,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.spec.javax.annotation</groupId>
-            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
-            <version>1.0.0.Final</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>0.7.0</version>
+            <version>${jjwt.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -194,13 +180,5 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-websecurity-jwt</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
-
 </project>

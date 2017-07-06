@@ -19,11 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.base;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import com.adeptj.modules.security.jwt.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,39 +36,28 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.substring;
 
 /**
- * Gets the HTTP Authorization header from the request and checks for the JSon Web Token (the Bearer string).
+ * Gets the HTTP Authorization header from the request and checks for the JWT (the Bearer string).
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Provider
-@ValidateJWT
+@RequiresJwtCheck
 @Priority(AUTHENTICATION)
-public class ValidateJWTFilter implements ContainerRequestFilter {
+public class JwtCheckFilter implements ContainerRequestFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValidateJWTFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtCheckFilter.class);
 
     private static final int LEN = "Bearer".length();
 
-    private JaxRSAuthRepository authRepository;
+    private JwtService jwtService;
 
-    public ValidateJWTFilter(JaxRSAuthRepository authRepository) {
-        this.authRepository = authRepository;
+    public JwtCheckFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        try {
-            String subject = requestContext.getHeaderString("subject");
-            JaxRSAuthConfig authConfig = this.authRepository.getAuthConfig(subject);
-            if (authConfig == null) {
-                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-            } else {
-                Jwts.parser()
-                        .setSigningKey(authConfig.getSigningKey())
-                        .parseClaimsJws(substring(requestContext.getHeaderString(AUTHORIZATION), LEN));
-            }
-        } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException ex) {
-            LOGGER.error("Invalid JWT!!", ex);
+        if(!this.jwtService.parseToken(substring(requestContext.getHeaderString(AUTHORIZATION), LEN))) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         }
     }

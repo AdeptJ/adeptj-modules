@@ -20,8 +20,8 @@
 
 package com.adeptj.modules.jaxrs.resteasy;
 
-import com.adeptj.modules.jaxrs.base.JaxRSAuthRepository;
-import com.adeptj.modules.jaxrs.base.ValidateJWTFilter;
+import com.adeptj.modules.jaxrs.base.JwtCheckFilter;
+import com.adeptj.modules.security.jwt.JwtService;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -74,6 +74,8 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
 
     private static final String JAXRS_SERVICE_FILTER = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
 
+    private static final String INIT_MSG = "RESTEasyServlet initialized in [{}] ms!!";
+
     private ServiceTracker<Object, Object> resourceTracker;
 
     private BundleContext context;
@@ -81,26 +83,30 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
     private RESTEasyConfig config;
 
     @Reference
-    private JaxRSAuthRepository authRepository;
+    private JwtService jwtService;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         long startTime = System.nanoTime();
         LOGGER.info("Initializing RESTEasyServlet!!");
+        // Set Bundle ClassLoader as the context ClassLoader because we need to find the providers specified
+        // in the file META-INF/services/javax.ws.rs.Providers which will not be visible to the original
+        // context ClassLoader which is the application class loader in actual.
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         try {
+            // First bootstrap RESTEasy in super.init()
             super.init(servletConfig);
             Dispatcher dispatcher = this.getDispatcher();
             ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
-            providerFactory.register(new ValidateJWTFilter(this.authRepository));
+            providerFactory.register(new JwtCheckFilter(this.jwtService));
             providerFactory.register(new CORSFeature(this.config));
             this.removeDefaultGeneralValidator(providerFactory);
             providerFactory.registerProvider(GeneralValidatorContextResolver.class);
             this.resourceTracker = new ServiceTracker<>(this.context, this.context.createFilter(JAXRS_SERVICE_FILTER),
                     new JaxRSResources(this.context, dispatcher.getRegistry()));
             this.resourceTracker.open();
-            LOGGER.info("RESTEasyServlet initialized in [{}] ms!!", NANOSECONDS.toMillis(System.nanoTime() - startTime));
+            LOGGER.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while initializing RESTEasy HttpServletDispatcher!!", ex);
             throw new JaxRSInitializationException(ex.getMessage(), ex);
@@ -117,7 +123,7 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
                     .remove(GeneralValidator.class);
             LOGGER.info("Removed RESTEasy GeneralValidator: [{}]", validator);
         } catch (IllegalArgumentException | IllegalAccessException ex) {
-            LOGGER.error("Exception while adding ContextResolver", ex);
+            LOGGER.error("Exception while removing GeneralValidator", ex);
         }
     }
 

@@ -19,21 +19,27 @@
 */
 package com.adeptj.modules.jaxrs.base;
 
-import javax.ws.rs.NameBinding;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 /**
- * Annotation for use by JAX-RS resources wherever a JWT auth required.
+ * AuthenticationInfo holding subject and password for JAX-RS resource authorization.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-@NameBinding
-@Retention(RUNTIME)
-@Target({TYPE, METHOD})
-public @interface ValidateJWT {
+class JaxRSAuthenticationInfo {
+
+    private String subject;
+
+    private char[] password;
+
+    JaxRSAuthenticationInfo(String subject, String password) {
+        this.subject = subject;
+        this.password = password.toCharArray();
+    }
+
+    String getSubject() {
+        return subject;
+    }
+
+    char[] getPassword() {
+        return password;
+    }
 }

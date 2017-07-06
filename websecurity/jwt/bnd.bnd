@@ -20,31 +20,10 @@
 
 -dsannotations: *
 
-Include-Resource: resteasy-*.jar, apache-mime4j-*.jar
+Export-Package: com.adeptj.modules.security.jwt
 
-Bundle-ClassPath: ., resteasy-jaxrs-3.1.3.Final.jar, resteasy-cdi-3.1.3.Final.jar, resteasy-validator-provider-11-3.1.3.Final.jar,\
-    resteasy-jackson2-provider-3.1.3.Final.jar, resteasy-jaxb-provider-3.1.3.Final.jar, resteasy-multipart-provider-3.1.3.Final.jar,\
-    apache-mime4j-0.6.1.jar
+Bundle-Name: ${project.name}
 
-Export-Package: \
-  com.adeptj.modules.jaxrs.resteasy
+Bundle-Category: AdeptJ Security
 
-Import-Package: \
-  com.fasterxml.jackson.jaxrs.xml;version="2.8.8",\
-  javax.mail;version="1.5",\
-  javax.servlet;\
-  javax.servlet.http;\
-  javax.servlet.descriptor;\
-  javax.servlet.annotation;version="3.1.0",\
-  com.sun.el.parser;\
-  com.sun.el.lang;\
-  com.sun.el.stream;\
-  com.sun.el.util;\
-  com.sun.el;version="3.0.0",\
-  com.adeptj.modules.jaxrs.base,\
-  com.adeptj.modules.security.jwt,\
-  *
-  
-Bundle-Name: AdeptJ Modules :: JAX-RS :: RESTEasy
-Bundle-Category: AdeptJ REST
 Bundle-Vendor: AdeptJ

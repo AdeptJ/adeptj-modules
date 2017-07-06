@@ -19,27 +19,22 @@
 */
 package com.adeptj.modules.jaxrs.base;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
- * JaxRSAuthRepository.
+ * JaxRSAuthenticationConfig.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Component(immediate = true, service = JaxRSAuthRepository.class)
-public class JaxRSAuthRepository {
+@ObjectClassDefinition(name = "AdeptJ REST API Authentication Configuration", description = "AdeptJ REST API Auth Config")
+public @interface JaxRSAuthenticationConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthRepository.class);
+    @AttributeDefinition(name = "JWT Subject", description = "Subject for JWT issuance")
+    String subject();
 
-    @Reference
-    private JaxRSAuthConfigFactory authConfigFactory;
-
-    JaxRSAuthConfig getAuthConfig(String subject) {
-        LOGGER.info("Getting JaxRSAuthConfig for Subject: [{}]", subject);
-        return this.authConfigFactory.getJaxRSAuthConfig(subject);
-    }
-
+    @AttributeDefinition(name = "JWT Password", description = "Password of the Subject for JWT issuance", type = PASSWORD)
+    String password();
 }

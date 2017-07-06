@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-jaxrs-resteasy</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.2.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: RESTEasy</name>
     <description>RESTEasy as JAX-RS implementation</description>
@@ -175,16 +175,10 @@
         </dependency>
 
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.7.0</version>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-websecurity-jwt</artifactId>
+            <version>1.0.0.Final</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

@@ -26,36 +26,36 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.FACTORY_NAME;
-import static com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.SERVICE_PID_PROPERTY;
+import static com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.FACTORY_NAME;
+import static com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.SERVICE_PID_PROPERTY;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
 /**
- * JaxRSAuthConfigFactory.
+ * JaxRSAuthenticationInfoFactory.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Designate(ocd = JaxRSAuthConfigOCD.class)
+@Designate(ocd = JaxRSAuthenticationConfig.class)
 @Component(immediate = true, name = FACTORY_NAME, property = SERVICE_PID_PROPERTY, configurationPolicy = IGNORE,
-        service = {JaxRSAuthConfigFactory.class, ManagedServiceFactory.class})
-public class JaxRSAuthConfigFactory implements ManagedServiceFactory {
+        service = {JaxRSAuthenticationInfoFactory.class, ManagedServiceFactory.class})
+public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthConfigFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthenticationInfoFactory.class);
 
     private static final String UTF8 = "UTF-8";
 
-    static final String FACTORY_NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
+    static final String FACTORY_NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";
 
-    static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
+    static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";
 
-    private Map<String, JaxRSAuthConfig> jaxRSAuthConfigs = new ConcurrentHashMap<>();
+    private Map<String, JaxRSAuthenticationInfo> authenticationInfoMap = new ConcurrentHashMap<>();
+
+    private Map<String, String> pidVsSubjectMappings = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {
@@ -64,38 +64,21 @@ public class JaxRSAuthConfigFactory implements ManagedServiceFactory {
 
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-        LOGGER.info("pid: [{}]", pid);
-        this.jaxRSAuthConfigs.put(pid, this.toJaxRSAuthConfig(properties));
-    }
-
-    private JaxRSAuthConfig toJaxRSAuthConfig(Dictionary<String, ?> properties) {
-        return new JaxRSAuthConfig.Builder()
-                .subject((String) properties.get("subject"))
-                .password((String) properties.get("password"))
-                .signingKey(this.encode((String) properties.get("signingKey")))
-                .origins(Arrays.asList((String[]) properties.get("origins")))
-                .userAgents(Arrays.asList((String[]) properties.get("userAgents")))
-                .build();
-    }
-
-    private String encode(String signingKey) {
-        try {
-            return new String(Base64.getEncoder().encode(signingKey.getBytes(UTF8)));
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex); // NOSONAR
-        }
+        String subject = (String) properties.get("subject");
+        LOGGER.info("Crating JaxRSAuthenticationInfo for Subject: [{}]", subject);
+        this.pidVsSubjectMappings.put(pid, subject);
+        this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, (String) properties.get("password")));
     }
 
     @Override
     public void deleted(String pid) {
-        this.jaxRSAuthConfigs.remove(pid);
+        Optional.ofNullable(this.pidVsSubjectMappings.remove(pid)).ifPresent(subject -> {
+            LOGGER.info("JaxRSAuthenticationInfo removed for Subject: [{}]", subject);
+            this.authenticationInfoMap.remove(subject);
+        });
     }
 
-    public Map<String, JaxRSAuthConfig> getJaxRSAuthConfigs() {
-        return this.jaxRSAuthConfigs;
-    }
-
-    JaxRSAuthConfig getJaxRSAuthConfig(String subject) {
-        return this.jaxRSAuthConfigs.get(subject);
+    JaxRSAuthenticationInfo getAuthenticationInfo(String subject) {
+        return this.authenticationInfoMap.get(subject);
     }
 }

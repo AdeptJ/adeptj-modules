@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,30 +16,18 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-modules</artifactId>
-        <version>1.0.2.Final</version>
-        <relativePath/>
-    </parent>
-    <artifactId>adeptj-modules-websecurity</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: WebSecurity :: Builder</name>
-    <description>AdeptJ Modules :: WebSecurity :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.security.jwt;
 
-        <!-- <module>shiro</module> -->
-        <module>esapi</module>
-        <module>jwt</module>
+/**
+ * Service for signing and parsing JWT.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+public interface JwtService {
 
-    </modules>
+    String issueToken(String subject);
 
-</project>
+    boolean parseToken(String jwt);
+}

@@ -19,30 +19,21 @@
 */
 package com.adeptj.modules.jaxrs.base;
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.AttributeType;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import javax.ws.rs.NameBinding;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * JaxRSAuthConfigOCD.
+ * Annotation for use by JAX-RS resources wherever a JWT check required.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@ObjectClassDefinition(name = "AdeptJ REST API Auth Config", description = "AdeptJ REST API Auth Config")
-public @interface JaxRSAuthConfigOCD {
-
-    @AttributeDefinition(name = "subject", description = "Subject for JWT issuance")
-    String subject();
-
-    @AttributeDefinition(name = "password", description = "Password of the Subject for JWT issuance", type = AttributeType.PASSWORD)
-    String password();
-
-    @AttributeDefinition(name = "signingKey", description = "SigningKey for JWT/S signing")
-    String signingKey();
-
-    @AttributeDefinition(name = "origins", description = "Origin(s) of the caller", cardinality = Integer.MAX_VALUE)
-    String origins();
-
-    @AttributeDefinition(name = "userAgents", description = "User Agents", cardinality = Integer.MAX_VALUE)
-    String userAgents();
+@NameBinding
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+public @interface RequiresJwtCheck {
 }
