@@ -36,11 +36,16 @@ public enum ValidatorFactoryProvider {
 
     INSTANCE;
 
+    private volatile ValidatorFactory validatorFactory;
+
     public ValidatorFactory getValidatorFactory() {
-        HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
-        // ValidatorFactory Provided by RESTEasy does not give the parameter names of validated fields.
-        config.parameterNameProvider(new ReflectionParameterNameProvider());
-        LoggerFactory.getLogger(ValidatorFactoryProvider.class).info("Hibernate Validator Initialized!!");
-        return config.buildValidatorFactory();
+        if (this.validatorFactory == null) {
+            HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
+            // ValidatorFactory Provided by RESTEasy does not give the parameter names of validated fields.
+            config.parameterNameProvider(new ReflectionParameterNameProvider());
+            this.validatorFactory = config.buildValidatorFactory();
+            LoggerFactory.getLogger(ValidatorFactoryProvider.class).info("Hibernate Validator Initialized!!");
+        }
+        return this.validatorFactory;
     }
 }

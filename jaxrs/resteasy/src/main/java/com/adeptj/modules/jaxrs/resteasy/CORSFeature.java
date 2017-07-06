@@ -26,6 +26,10 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
+import java.util.Arrays;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * CORSFeature for configuring RESTEasy {@link CorsFilter}.
@@ -35,7 +39,13 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class CORSFeature implements Feature {
 
-    private static final String ALLOWED_ORIGINS = "*";
+    private static final String JOIN_DELIMITER = ", ";
+
+    private RESTEasyConfig config;
+
+    CORSFeature(RESTEasyConfig config) {
+        this.config = config;
+    }
 
     /**
      * A call-back method called when the feature is to be enabled in a given
@@ -56,10 +66,15 @@ public class CORSFeature implements Feature {
     @Override
     public boolean configure(FeatureContext context) {
         CorsFilter corsFilter = new CorsFilter();
-        corsFilter.getAllowedOrigins().add(ALLOWED_ORIGINS);
+        corsFilter.setAllowCredentials(this.config.allowCredentials());
+        corsFilter.setAllowedMethods(this.config.allowedMethods());
+        corsFilter.setCorsMaxAge(this.config.corsMaxAge());
+        corsFilter.setAllowedHeaders(Arrays.stream(this.config.allowedHeaders()).collect(joining(JOIN_DELIMITER)));
+        corsFilter.setExposedHeaders(Arrays.stream(this.config.exposedHeaders()).collect(joining(JOIN_DELIMITER)));
+        corsFilter.getAllowedOrigins().addAll(Arrays.stream(this.config.allowedOrigins()).collect(toSet()));
         context.register(corsFilter);
-        // Must return true to get this Feature enabled.
         LoggerFactory.getLogger(this.getClass()).info("RESTEasy CorsFilter Configured Successfully!!");
+        // Must return true to get this Feature enabled.
         return true;
     }
 }

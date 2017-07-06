@@ -20,43 +20,34 @@
 
 package com.adeptj.modules.jaxrs.resteasy;
 
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+
 /**
- * Class loading related utilities.
+ * RESTEasy configurations.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class ClassLoaders {
+@ObjectClassDefinition(name = "AdeptJ REST API Core Configurations", description = "Configurations for RESTEasy Framework")
+public @interface RESTEasyConfig {
 
-    /**
-     * Deny direct instantiation.
-     */
-    private ClassLoaders() {
-    }
+    // CorsFilter configs
 
-    /**
-     * Defines a callback processor for an action which will be executed using the provided class loader.
-     *
-     * @author Rakesh.Kumar, AdeptJ
-     */
-    @FunctionalInterface
-    public interface Callback {
-        void execute();
-    }
+    @AttributeDefinition(name = "CORS Preflight Max Age", description = "Max age of preflight CORS response")
+    int corsMaxAge() default 86400; // Indicates that preflight response is good for 86400 seconds or 1 day
 
-    /**
-     * Executes the provided callback within the context of the specified class loader.
-     *
-     * @param cl the class loader to use as a context class loader for the execution
-     * @param callback the execution callback handler
-     */
-    public static void executeWith(ClassLoader cl, Callback callback) {
-        ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(cl);
-            callback.execute();
-        } finally {
-            Thread.currentThread().setContextClassLoader(contextCL);
-        }
-    }
+    @AttributeDefinition(name = "CORS Allow Credentials", description = "Whether to allow credentials for CORS request")
+    boolean allowCredentials() default true;
 
+    @AttributeDefinition(name = "CORS Allowed Methods", description = "Allowed methods in a CORS request")
+    String allowedMethods() default "GET, POST, PUT, OPTIONS, HEAD, DELETE";
+
+    @AttributeDefinition(name = "CORS Allowed Headers", description = "Allowed headers in a CORS request")
+    String[] allowedHeaders();
+
+    @AttributeDefinition(name = "CORS Exposed Headers", description = "Exposed headers in a CORS request")
+    String[] exposedHeaders();
+
+    @AttributeDefinition(name = "CORS Allowed Origins", description = "Allowed origins for CORS request")
+    String[] allowedOrigins() default {"*"};
 }

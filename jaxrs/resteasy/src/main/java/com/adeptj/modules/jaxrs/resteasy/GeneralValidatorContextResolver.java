@@ -24,38 +24,38 @@ import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 import javax.validation.ValidationException;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
+
+import static java.util.Collections.unmodifiableSet;
+import static java.util.EnumSet.complementOf;
+import static java.util.EnumSet.of;
+import static javax.validation.executable.ExecutableType.ALL;
+import static javax.validation.executable.ExecutableType.IMPLICIT;
+import static javax.validation.executable.ExecutableType.NONE;
 
 /**
  * GeneralValidatorContextResolver used to provide the ValidatorFactory that gives the parameter names of validated fields.
- *
+ * <p>
  * RESTEasy does not provide that.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
 @Provider
 public class GeneralValidatorContextResolver implements ContextResolver<GeneralValidator> {
 
-	private volatile ValidatorFactory validatorFactory;
+    private volatile GeneralValidator validator;
 
-	private static final Set<ExecutableType> ALL_VALIDATED_EXECUTABLE_TYPES = Collections.unmodifiableSet(
-			EnumSet.complementOf(EnumSet.of(ExecutableType.ALL, ExecutableType.NONE, ExecutableType.IMPLICIT)));
-
-	@Override
-	public GeneralValidator getContext(Class<?> type) {
-		try {
-			if (this.validatorFactory == null) {
-				this.validatorFactory = ValidatorFactoryProvider.INSTANCE.getValidatorFactory();
-			}
-			return new GeneralValidatorImpl(this.validatorFactory, true, ALL_VALIDATED_EXECUTABLE_TYPES);
-		} catch (Exception ex) {
-			throw new ValidationException(Messages.MESSAGES.unableToLoadValidationSupport(), ex);
-		}
-	}
+    @Override
+    public GeneralValidator getContext(Class<?> type) {
+        if (this.validator == null) {
+            try {
+                this.validator = new GeneralValidatorImpl(ValidatorFactoryProvider.INSTANCE.getValidatorFactory(),
+                        true, unmodifiableSet(complementOf(of(ALL, NONE, IMPLICIT))));
+            } catch (Exception ex) {
+                throw new ValidationException(Messages.MESSAGES.unableToLoadValidationSupport(), ex);
+            }
+        }
+        return this.validator;
+    }
 }

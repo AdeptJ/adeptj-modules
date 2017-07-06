@@ -29,22 +29,22 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 /**
- * JaxRSResourceManager is an OSGi ServiceTrackerCustomizer which registers the services annotated with JAX-RS @Path
- * annotation with RESTEasy resource registry.
+ * JaxRSResources is an OSGi ServiceTrackerCustomizer which registers the services annotated with JAX-RS
+ * Path annotation with RESTEasy resource registry.
  *
  * Note: All the registered JAX-RS resources are Singleton by default.
  * 
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-class JaxRSResourceManager implements ServiceTrackerCustomizer<Object, Object> {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResourceManager.class);
+class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResources.class);
 
 	private Registry registry;
 
 	private BundleContext context;
     
-	JaxRSResourceManager(BundleContext context, Registry registry) {
+	JaxRSResources(BundleContext context, Registry registry) {
 	    this.context = context;
 		this.registry = registry;
 	}
@@ -59,11 +59,14 @@ class JaxRSResourceManager implements ServiceTrackerCustomizer<Object, Object> {
 
     /**
      * Removes the given Resource from RESTEasy Registry and registers again the modified service.
+     *
+     * @param reference the OSGi service reference of JAX-RS resource.
+     * @param service the OSGi service of JAX-RS resource.
      */
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
         LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
-        Optional.ofNullable(service).ifPresent(consumer -> this.registry.removeRegistrations(service.getClass()));
+        Optional.ofNullable(service).ifPresent(resource -> this.registry.removeRegistrations(resource.getClass()));
         LOGGER.info("Adding JAX-RS Resource again: [{}]", service);
         this.addJaxRSResource(service);
     }
@@ -75,7 +78,7 @@ class JaxRSResourceManager implements ServiceTrackerCustomizer<Object, Object> {
 		this.registry.removeRegistrations(service.getClass());
 	}
 
-	private void addJaxRSResource(Object resource) {
-        Optional.ofNullable(resource).ifPresent(consumer -> this.registry.addSingletonResource(resource));
+	private void addJaxRSResource(Object service) {
+        Optional.ofNullable(service).ifPresent(resource -> this.registry.addSingletonResource(resource));
     }
 }
