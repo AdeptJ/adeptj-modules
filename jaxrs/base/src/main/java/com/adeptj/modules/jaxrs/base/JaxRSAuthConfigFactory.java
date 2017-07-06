@@ -22,7 +22,6 @@ package com.adeptj.modules.jaxrs.base;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +33,9 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.NAME;
-import static com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.SERVICE_PID;
+import static com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.FACTORY_NAME;
+import static com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.SERVICE_PID_PROPERTY;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
 /**
  * JaxRSAuthConfigFactory.
@@ -43,23 +43,23 @@ import static com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.SERVICE_PID;
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Designate(ocd = JaxRSAuthConfigOCD.class)
-@Component(name = NAME, property = SERVICE_PID, service = {JaxRSAuthConfigFactory.class, ManagedServiceFactory.class},
-        configurationPolicy = ConfigurationPolicy.IGNORE)
+@Component(immediate = true, name = FACTORY_NAME, property = SERVICE_PID_PROPERTY, configurationPolicy = IGNORE,
+        service = {JaxRSAuthConfigFactory.class, ManagedServiceFactory.class})
 public class JaxRSAuthConfigFactory implements ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthConfigFactory.class);
 
     private static final String UTF8 = "UTF-8";
 
-    static final String NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
+    static final String FACTORY_NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
 
-    static final String SERVICE_PID = "service.pid=com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
+    static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.jaxrs.base.JaxRSAuthConfigFactory.factory";
 
     private Map<String, JaxRSAuthConfig> jaxRSAuthConfigs = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {
-        return NAME;
+        return FACTORY_NAME;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class JaxRSAuthConfigFactory implements ManagedServiceFactory {
         return this.jaxRSAuthConfigs;
     }
 
-    public JaxRSAuthConfig getJaxRSAuthConfig(String subject) {
+    JaxRSAuthConfig getJaxRSAuthConfig(String subject) {
         return this.jaxRSAuthConfigs.get(subject);
     }
 }

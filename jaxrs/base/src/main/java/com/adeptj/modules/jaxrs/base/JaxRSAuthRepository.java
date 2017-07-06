@@ -37,7 +37,7 @@ public class JaxRSAuthRepository {
     @Reference
     private JaxRSAuthConfigFactory authConfigFactory;
 
-    public JaxRSAuthConfig getAuthConfig(String subject) {
+    JaxRSAuthConfig getAuthConfig(String subject) {
         LOGGER.info("Getting JaxRSAuthConfig for Subject: [{}]", subject);
         return this.authConfigFactory.getJaxRSAuthConfig(subject);
     }

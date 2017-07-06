@@ -52,7 +52,7 @@ public class JaxRSAuthConfig {
         return password;
     }
 
-    public String getSigningKey() {
+    String getSigningKey() {
         return signingKey;
     }
 
@@ -85,32 +85,32 @@ public class JaxRSAuthConfig {
 
         private List<String> userAgents;
 
-        public Builder subject(String subject) {
+        Builder subject(String subject) {
             this.subject = subject;
             return this;
         }
 
-        public Builder password(String password) {
+        Builder password(String password) {
             this.password = password.toCharArray();
             return this;
         }
 
-        public Builder signingKey(String signingKey) {
+        Builder signingKey(String signingKey) {
             this.signingKey = signingKey;
             return this;
         }
 
-        public Builder origins(List<String> origins) {
+        Builder origins(List<String> origins) {
             this.origins = origins;
             return this;
         }
 
-        public Builder userAgents(List<String> userAgents) {
+        Builder userAgents(List<String> userAgents) {
             this.userAgents = userAgents;
             return this;
         }
 
-        public JaxRSAuthConfig build() {
+        JaxRSAuthConfig build() {
             JaxRSAuthConfig config = new JaxRSAuthConfig(this.subject, this.password, this.signingKey);
             config.origins = this.origins;
             config.userAgents = this.userAgents;

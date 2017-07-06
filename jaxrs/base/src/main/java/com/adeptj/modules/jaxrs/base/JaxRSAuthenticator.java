@@ -71,11 +71,14 @@ public class JaxRSAuthenticator {
     @Path("token/check")
     @ValidateJWT
     public Response withAuth() {
-        return Response.ok().build();
+        return Response.ok("JWT is valid!!").build();
     }
 
     private String issueToken(String subject) {
-        return "Bearer " + Jwts.builder().setSubject(subject).setIssuer("AdeptJ Runtime REST API").setIssuedAt(new Date())
+        return "Bearer " + Jwts.builder()
+                .setSubject(subject)
+                .setIssuer("AdeptJ Runtime REST API")
+                .setIssuedAt(new Date())
                 .setExpiration(Date.from(LocalDateTime.now().plusMinutes(30L).atZone(ZoneId.systemDefault()).toInstant()))
                 .signWith(SignatureAlgorithm.HS256, this.authRepository.getAuthConfig(subject).getSigningKey())
                 .compact();
