@@ -23,12 +23,15 @@ import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+
+import java.util.Arrays;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -50,9 +53,9 @@ public class JaxRSAuthenticator {
     private JwtService jwtService;
 
     @POST
-    @Path("token/issue")
+    @Path("jwt/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response issueToken(@FormParam("subject") String subject, @FormParam("password") String password) {
+    public Response issueToken(@NotNull @FormParam("subject") String subject, @NotNull @FormParam("password") String password) {
         Response response;
         try {
             // First authenticate the user using the credentials provided.
@@ -60,8 +63,13 @@ public class JaxRSAuthenticator {
             if (authenticationInfo == null) {
                 response = Response.status(UNAUTHORIZED).build();
             } else {
-                // All well here, now issue a token for the Subject
-                response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(subject)).build();
+                if (authenticationInfo.getSubject().equals(subject)
+                        && Arrays.equals(authenticationInfo.getPassword(), password.toCharArray())) {
+                    // All well here, now issue a token for the Subject
+                    response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(subject)).build();
+                } else {
+                    response = Response.status(UNAUTHORIZED).build();
+                }
             }
         } catch (Exception e) {
             return Response.status(UNAUTHORIZED).build();
@@ -70,9 +78,9 @@ public class JaxRSAuthenticator {
     }
 
     @GET
-    @Path("token/check")
+    @Path("jwt/check")
     @RequiresJwtCheck
-    public Response withAuth() {
+    public Response checkJwt() {
         return Response.ok("JWT is valid!!").build();
     }
 }
