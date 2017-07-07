@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.3.Final</version>
+        <version>1.0.4.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-websecurity-jwt</artifactId>
@@ -35,7 +35,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jjwt.version>0.7.0</jjwt.version>
     </properties>
 
     <!-- Project Information -->
@@ -170,7 +169,6 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
-            <version>${jjwt.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
