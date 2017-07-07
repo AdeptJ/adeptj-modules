@@ -38,12 +38,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
+import static io.jsonwebtoken.Header.JWT_TYPE;
+import static io.jsonwebtoken.Header.TYPE;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -68,9 +71,10 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String issueToken(String subject) {
         return BEARER + Jwts.builder()
+                .setHeaderParam(TYPE, JWT_TYPE)
                 .setSubject(subject)
                 .setIssuer(this.config.issuer())
-                .setIssuedAt(new Date())
+                .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(LocalDateTime
                         .now()
                         .plusMinutes(this.config.expirationTime())

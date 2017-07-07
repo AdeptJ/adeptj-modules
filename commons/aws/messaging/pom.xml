@@ -35,7 +35,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.messaging.version>1.11.144</aws.messaging.version>
+        <aws.messaging.version>1.11.159</aws.messaging.version>
+        <aws.sdk.core.version>1.11.159</aws.sdk.core.version>
     </properties>
 
     <build>
@@ -103,7 +104,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>${aws.messaging.version}</version>
+            <version>${aws.sdk.core.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -139,20 +140,6 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-ses</artifactId>
             <version>${aws.messaging.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>jmespath-java</artifactId>
-            <version>${aws.messaging.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>software.amazon.ion</groupId>
-            <artifactId>ion-java</artifactId>
-            <version>1.0.2</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

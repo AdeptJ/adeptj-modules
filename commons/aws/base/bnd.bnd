@@ -15,79 +15,16 @@
 # limitations under the License.                                           #
 #                                                                          #
 ############################################################################
+-metatypeannotations: *
 
-Export-Package: \
-  com.amazonaws;\
-  com.amazonaws.adapters.types;\
-  com.amazonaws.annotation;\
-  com.amazonaws.auth;\
-  com.amazonaws.auth.internal;\
-  com.amazonaws.auth.policy;\
-  com.amazonaws.auth.policy.conditions;\
-  com.amazonaws.auth.policy.internal;\
-  com.amazonaws.auth.presign;\
-  com.amazonaws.auth.profile;\
-  com.amazonaws.auth.profile.internal;\
-  com.amazonaws.auth.profile.internal.securitytoken;\
-  com.amazonaws.client;\
-  com.amazonaws.client.builder;\
-  com.amazonaws.event;\
-  com.amazonaws.event.request;\
-  com.amazonaws.handlers;\
-  com.amazonaws.http;\
-  com.amazonaws.http.apache;\
-  com.amazonaws.http.apache.client.impl;\
-  com.amazonaws.http.apache.request.impl;\
-  com.amazonaws.http.apache.utils;\
-  com.amazonaws.http.client;\
-  com.amazonaws.http.conn;\
-  com.amazonaws.http.conn.ssl;\
-  com.amazonaws.http.conn.ssl.privileged;\
-  com.amazonaws.http.exception;\
-  com.amazonaws.http.impl.client;\
-  com.amazonaws.http.protocol;\
-  com.amazonaws.http.request;\
-  com.amazonaws.http.response;\
-  com.amazonaws.http.settings;\
-  com.amazonaws.http.timers;\
-  com.amazonaws.http.timers.client;\
-  com.amazonaws.http.timers.request;\
-  com.amazonaws.internal;\
-  com.amazonaws.internal.auth;\
-  com.amazonaws.internal.config;\
-  com.amazonaws.internal.http;\
-  com.amazonaws.jmx;\
-  com.amazonaws.jmx.spi;\
-  com.amazonaws.log;\
-  com.amazonaws.metrics;\
-  com.amazonaws.metrics.internal;\
-  com.amazonaws.partitions;\
-  com.amazonaws.partitions.model;\
-  com.amazonaws.profile.path;\
-  com.amazonaws.profile.path.config;\
-  com.amazonaws.profile.path.cred;\
-  com.amazonaws.protocol;\
-  com.amazonaws.protocol.json;\
-  com.amazonaws.protocol.json.internal;\
-  com.amazonaws.regions;\
-  com.amazonaws.retry;\
-  com.amazonaws.retry.internal;\
-  com.amazonaws.retry.v2;\
-  com.amazonaws.sdk;\
-  com.amazonaws.transform;\
-  com.amazonaws.util;\
-  com.amazonaws.util.json;\
-  com.amazonaws.waiters;\
-  com.amazonaws.auth.policy.actions;\
-  com.amazonaws.jmespath;version="1.11.144",\
-  software.amazon.ion;\
-  software.amazon.ion.apps;\
-  software.amazon.ion.impl;\
-  software.amazon.ion.impl.bin;\
-  software.amazon.ion.impl.lite;\
-  software.amazon.ion.system;\
-  software.amazon.ion.util;\
-  software.amazon.ion.facet;version="1.0.2"
+-dsannotations: *
+
+Include-Resource: aws-java-sdk-*.jar, jmespath-java*.jar
+
+Bundle-ClassPath: ., aws-java-sdk-core-1.11.159.jar,\
+                     jmespath-java-1.11.159.jar
+
+-exportcontents: *
 
 Bundle-Name: AdeptJ Modules :: Commons :: AWS Base
 Bundle-Category: AdeptJ Commons
