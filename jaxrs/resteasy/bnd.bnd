@@ -22,9 +22,13 @@
 
 Include-Resource: resteasy-*.jar, apache-mime4j-*.jar
 
-Bundle-ClassPath: ., resteasy-jaxrs-3.1.3.Final.jar, resteasy-cdi-3.1.3.Final.jar, resteasy-validator-provider-11-3.1.3.Final.jar,\
-    resteasy-jackson2-provider-3.1.3.Final.jar, resteasy-jaxb-provider-3.1.3.Final.jar, resteasy-multipart-provider-3.1.3.Final.jar,\
-    apache-mime4j-0.6.1.jar
+Bundle-ClassPath: ., resteasy-jaxrs-3.1.3.Final.jar,\
+                     resteasy-cdi-3.1.3.Final.jar,\
+                     resteasy-validator-provider-11-3.1.3.Final.jar,\
+                     resteasy-jackson2-provider-3.1.3.Final.jar,\
+                     resteasy-jaxb-provider-3.1.3.Final.jar,\
+                     resteasy-multipart-provider-3.1.3.Final.jar,\
+                     apache-mime4j-0.6.1.jar
 
 Export-Package: \
   com.adeptj.modules.jaxrs.resteasy
@@ -41,8 +45,8 @@ Import-Package: \
   com.sun.el.stream;\
   com.sun.el.util;\
   com.sun.el;version="3.0.0",\
-  com.adeptj.modules.jaxrs.base,\
-  com.adeptj.modules.security.jwt,\
+  com.adeptj.modules.jaxrs.base;version="1.0.1",\
+  com.adeptj.modules.security.jwt;version="1.0.0",\
   *
   
 Bundle-Name: AdeptJ Modules :: JAX-RS :: RESTEasy
