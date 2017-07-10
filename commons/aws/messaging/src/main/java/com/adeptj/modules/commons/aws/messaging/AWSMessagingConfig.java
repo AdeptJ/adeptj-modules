@@ -35,10 +35,10 @@ public @interface AWSMessagingConfig {
     // SNS Configs
 
     @AttributeDefinition(name = "snsServiceEndpoint", description = "AWS SNS Service Endpoint")
-    String snsServiceEndpoint() default "sns.ap-northeast-1.amazonaws.com";
+    String snsServiceEndpoint() default "sns.us-west-2.amazonaws.com";
 
     @AttributeDefinition(name = "snsSigningRegion", description = "AWS SNS Signing Region used for SigV4 signing of requests")
-    String snsSigningRegion() default "ap-northeast-1";
+    String snsSigningRegion() default "us-west-2";
 
     @AttributeDefinition(name = "senderId", description = "AWS SNS SenderID, check your country if SenderID is supported or not")
     String senderId();

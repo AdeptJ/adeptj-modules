@@ -26,8 +26,7 @@ Include-Resource: aws-java-sdk-s3-1.11.159.jar,\
 Bundle-ClassPath: ., aws-java-sdk-s3-1.11.159.jar,\
                      aws-java-sdk-kms-1.11.159.jar
 
-Export-Package: \
-	com.adeptj.modules.commons.aws.s3
+-exportcontents: *
 
 Bundle-Name: AdeptJ Modules :: Commons :: AWS S3 APIs
 
