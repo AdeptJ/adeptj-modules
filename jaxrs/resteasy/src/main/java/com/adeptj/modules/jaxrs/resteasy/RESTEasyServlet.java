@@ -52,7 +52,7 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
 
 /**
  * RESTEasyServlet extends RESTEasy HttpServlet30Dispatcher so that Servlet 3.0 Async behaviour can be leveraged.
- * It also registers the JAX-RS resource ServiceTracker and GeneralValidatorContextResolver.
+ * It also registers the JAX-RS resource ServiceTracker, GeneralValidatorContextResolver and other providers.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -72,7 +72,7 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
 
     private static final String FIELD_CTX_RESOLVERS = "contextResolvers";
 
-    private static final String JAXRS_SERVICE_FILTER = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
+    private static final String JAXRS_RESOURCE_SERVICE_FILTER = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
 
     private static final String INIT_MSG = "RESTEasyServlet initialized in [{}] ms!!";
 
@@ -103,7 +103,8 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
             providerFactory.register(new CORSFeature(this.config));
             this.removeDefaultGeneralValidator(providerFactory);
             providerFactory.registerProvider(GeneralValidatorContextResolver.class);
-            this.resourceTracker = new ServiceTracker<>(this.context, this.context.createFilter(JAXRS_SERVICE_FILTER),
+            this.resourceTracker = new ServiceTracker<>(this.context,
+                    this.context.createFilter(JAXRS_RESOURCE_SERVICE_FILTER),
                     new JaxRSResources(this.context, dispatcher.getRegistry()));
             this.resourceTracker.open();
             LOGGER.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
@@ -115,11 +116,12 @@ public class RESTEasyServlet extends HttpServlet30Dispatcher {
         }
     }
 
-    private void removeDefaultGeneralValidator(ResteasyProviderFactory factory) {
+    private void removeDefaultGeneralValidator(ResteasyProviderFactory providerFactory) {
         try {
             // First remove the default RESTEasy GeneralValidator so that we can register ours.
-            Object validator = Map.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
-                    .get(factory))
+            Object validator = Map.class
+                    .cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
+                    .get(providerFactory))
                     .remove(GeneralValidator.class);
             LOGGER.info("Removed RESTEasy GeneralValidator: [{}]", validator);
         } catch (IllegalArgumentException | IllegalAccessException ex) {
