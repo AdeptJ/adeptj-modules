@@ -42,7 +42,9 @@ public class AWSSesAsyncHandler implements AsyncHandler<SendEmailRequest, SendEm
 
     @Override
     public void onSuccess(SendEmailRequest request, SendEmailResult result) {
-        LOGGER.info("Email sent to: [{}]", request.getDestination().getToAddresses());
-        LOGGER.info("SNS SendEmailResult messageId: [{}]", result.getMessageId());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Email sent to: {}", request.getDestination().getToAddresses());
+            LOGGER.debug("SES SendEmailResult messageId: [{}]", result.getMessageId());
+        }
     }
 }
