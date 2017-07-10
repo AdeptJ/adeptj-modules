@@ -19,8 +19,8 @@
 */
 package com.adeptj.modules.commons.aws.messaging.internal;
 
-import com.adeptj.modules.commons.aws.messaging.AWSMessagingConfig;
-import com.adeptj.modules.commons.aws.messaging.AWSMessagingService;
+import com.adeptj.modules.commons.aws.messaging.AwsMessagingConfig;
+import com.adeptj.modules.commons.aws.messaging.AwsMessagingService;
 import com.adeptj.modules.commons.aws.messaging.MessageType;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -48,27 +48,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AWSMessagingService for sending Email/SMS asynchronously.
+ * AwsMessagingService for sending Email/SMS asynchronously.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Designate(ocd = AWSMessagingConfig.class)
+@Designate(ocd = AwsMessagingConfig.class)
 @Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class AWSMessagingServiceImpl implements AWSMessagingService {
+public class AwsMessagingServiceImpl implements AwsMessagingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AWSMessagingServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AwsMessagingServiceImpl.class);
 
     private AmazonSNSAsync asyncSNS;
 
     private AmazonSimpleEmailServiceAsync asyncSES;
 
-    private AWSSnsAsyncHandler awsSnsAsyncHandler;
+    private AwsSnsAsyncHandler awsSnsAsyncHandler;
 
-    private AWSSesAsyncHandler awsSesAsyncHandler;
+    private AwsSesAsyncHandler awsSesAsyncHandler;
 
     private Map<String, MessageAttributeValue> smsAttributes;
 
-    private AWSMessagingConfig config;
+    private AwsMessagingConfig config;
 
     /**
      * Send the given message(either EMAIL or SMS)
@@ -121,7 +121,7 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
     // Lifecycle Methods
 
     @Activate
-    protected void start(AWSMessagingConfig config) {
+    protected void start(AwsMessagingConfig config) {
         this.config = config;
         this.smsAttributes = new HashMap<>();
         this.smsAttributes.put("AWS.SNS.SMS.SenderID", new MessageAttributeValue()
@@ -141,10 +141,10 @@ public class AWSMessagingServiceImpl implements AWSMessagingService {
                     .withEndpointConfiguration(getEndpointConfiguration(config.sesServiceEndpoint(), config.sesSigningRegion()))
                     .withCredentials(credentialsProvider)
                     .build();
-            this.awsSnsAsyncHandler = new AWSSnsAsyncHandler();
-            this.awsSesAsyncHandler = new AWSSesAsyncHandler();
+            this.awsSnsAsyncHandler = new AwsSnsAsyncHandler();
+            this.awsSesAsyncHandler = new AwsSesAsyncHandler();
         } catch (Exception ex) {
-            LOGGER.error("Exception while starting AWSMessagingService!!", ex);
+            LOGGER.error("Exception while starting AwsMessagingService!!", ex);
         }
     }
 

@@ -39,11 +39,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Path("/aws")
-@Component(immediate = true, service = AWSMessagingController.class, property = "osgi.jaxrs.resource.base=aws")
-public class AWSMessagingController {
+@Component(immediate = true, service = AwsMessagingController.class, property = "osgi.jaxrs.resource.base=aws")
+public class AwsMessagingController {
 
     @Reference
-    private AWSMessagingService messagingService;
+    private AwsMessagingService messagingService;
 
     @POST
     @Path("/msg/sms")

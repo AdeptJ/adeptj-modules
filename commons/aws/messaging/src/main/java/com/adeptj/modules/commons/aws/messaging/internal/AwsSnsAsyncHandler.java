@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,22 +17,34 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.commons.aws.messaging;
 
-import java.util.Map;
+package com.adeptj.modules.commons.aws.messaging.internal;
+
+import com.amazonaws.handlers.AsyncHandler;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * API for sending Email or SMS.
+ * AWS {@link AsyncHandler} for SNS async calls.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface AWSMessagingService {
+public class AwsSnsAsyncHandler implements AsyncHandler<PublishRequest, PublishResult> {
 
-    /**
-     * Sends the given message(either EMAIL or SMS)
-     *
-     * @param type {@link MessageType} either EMAIL or SMS
-     * @param data Message data required by the system
-     */
-    void sendMessage(MessageType type, Map<String, String> data);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AwsSnsAsyncHandler.class);
+
+    @Override
+    public void onError(Exception exception) {
+        LOGGER.error("Exception while sending SMS asynchronously!!", exception);
+    }
+
+    @Override
+    public void onSuccess(PublishRequest request, PublishResult result) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("SMS sent to: [{}]", request.getPhoneNumber());
+            LOGGER.debug("SNS PublishResult messageId: [{}]", result.getMessageId());
+        }
+    }
 }
