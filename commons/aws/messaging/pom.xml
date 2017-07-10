@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-commons-aws-messaging</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: AWS Notification Services</name>
     <description>AdeptJ Modules :: Commons :: AWS Email and SMS APIs Provider Bundle</description>
