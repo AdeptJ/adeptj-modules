@@ -24,7 +24,8 @@ Include-Resource: aws-java-sdk-*.jar, jmespath-java*.jar
 Bundle-ClassPath: ., aws-java-sdk-core-1.11.159.jar,\
                      jmespath-java-1.11.159.jar
 
--exportcontents: *
+-exportcontents: com.adeptj.modules.commons.aws.base,\
+                 *
 
 Bundle-Name: AdeptJ Modules :: Commons :: AWS Base
 Bundle-Category: AdeptJ Commons

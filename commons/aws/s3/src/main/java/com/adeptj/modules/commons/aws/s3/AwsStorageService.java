@@ -20,7 +20,6 @@
 package com.adeptj.modules.commons.aws.s3;
 
 import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 
@@ -31,7 +30,7 @@ import java.io.InputStream;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public interface AWSStorageService {
+public interface AwsStorageService {
 
     /**
      * Create a new bucket on S3.

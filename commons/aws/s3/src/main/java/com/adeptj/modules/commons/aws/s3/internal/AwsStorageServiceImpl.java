@@ -20,7 +20,7 @@
 package com.adeptj.modules.commons.aws.s3.internal;
 
 import com.adeptj.modules.commons.aws.s3.AwsStorageConfig;
-import com.adeptj.modules.commons.aws.s3.AWSStorageService;
+import com.adeptj.modules.commons.aws.s3.AwsStorageService;
 import com.adeptj.modules.commons.aws.s3.RecordACL;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -43,13 +43,13 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
 /**
- * AWSStorageService for storing data in AWS S3 buckets.
+ * AwsStorageService for storing data in AWS S3 buckets.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Designate(ocd = AwsStorageConfig.class)
 @Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class AwsStorageServiceImpl implements AWSStorageService {
+public class AwsStorageServiceImpl implements AwsStorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsStorageServiceImpl.class);
 
