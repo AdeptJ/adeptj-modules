@@ -28,7 +28,7 @@ Bundle-ClassPath: ., aws-java-sdk-s3-1.11.159.jar,\
 
 -exportcontents: *
 
-Bundle-Name: AdeptJ Modules :: Commons :: AWS S3 APIs
+Bundle-Name: AdeptJ Modules :: Commons :: AWS S3
 
 Bundle-Category: AdeptJ Commons
 

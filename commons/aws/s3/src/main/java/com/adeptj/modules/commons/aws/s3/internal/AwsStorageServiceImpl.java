@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.commons.aws.s3.internal;
 
-import com.adeptj.modules.commons.aws.s3.AWSStorageConfig;
+import com.adeptj.modules.commons.aws.s3.AwsStorageConfig;
 import com.adeptj.modules.commons.aws.s3.AWSStorageService;
 import com.adeptj.modules.commons.aws.s3.RecordACL;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -47,11 +47,11 @@ import java.io.InputStream;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Designate(ocd = AWSStorageConfig.class)
+@Designate(ocd = AwsStorageConfig.class)
 @Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class AWSStorageServiceImpl implements AWSStorageService {
+public class AwsStorageServiceImpl implements AWSStorageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AWSStorageServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AwsStorageServiceImpl.class);
 
     private AmazonS3 s3Client;
 
@@ -111,12 +111,12 @@ public class AWSStorageServiceImpl implements AWSStorageService {
     // Lifecycle Methods
 
     @Activate
-    protected void activate(AWSStorageConfig config) {
+    protected void activate(AwsStorageConfig config) {
         try {
             this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                     new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
                     .serviceEndpoint(), config.signingRegion())).build();
-        } catch (Exception ex) {
+        } catch (Throwable ex) { //NOSONAR
             LOGGER.error("Exception while creating S3 client!!", ex);
         }
     }

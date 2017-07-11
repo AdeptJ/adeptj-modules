@@ -29,6 +29,6 @@ Bundle-ClassPath: ., aws-java-sdk-sns-1.11.159.jar,\
 Export-Package: \
   com.adeptj.modules.commons.aws.messaging
   
-Bundle-Name: AdeptJ Modules :: Commons :: AWS Messaging APIs
+Bundle-Name: AdeptJ Modules :: Commons :: AWS Messaging
 Bundle-Category: AdeptJ Commons
 Bundle-Vendor: AdeptJ

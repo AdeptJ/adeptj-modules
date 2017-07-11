@@ -31,11 +31,12 @@
     <version>1.0.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: AWS S3</name>
-    <description>AdeptJ Modules :: Commons :: AWS S3 APIs Provider Bundle</description>
+    <description>AdeptJ Modules :: Commons :: AWS S3 API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aws.s3.version>1.11.159</aws.s3.version>
+        <aws.sdk.core.version>1.11.159</aws.sdk.core.version>
     </properties>
 
     <build>
@@ -101,7 +102,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>${aws.s3.version}</version>
+            <version>${aws.sdk.core.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
