@@ -65,7 +65,7 @@ public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
         String subject = (String) properties.get("subject");
-        LOGGER.info("Crating JaxRSAuthenticationInfo for Subject: [{}]", subject);
+        LOGGER.info("Creating JaxRSAuthenticationInfo for Subject: [{}]", subject);
         this.pidVsSubjectMappings.put(pid, subject);
         this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, (String) properties.get("password")));
     }

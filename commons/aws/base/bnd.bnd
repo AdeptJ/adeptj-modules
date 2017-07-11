@@ -15,13 +15,16 @@
 # limitations under the License.                                           #
 #                                                                          #
 ############################################################################
+
 -metatypeannotations: *
 
 -dsannotations: *
 
-Include-Resource: aws-java-sdk-*.jar, jmespath-java*.jar
+Include-Resource: aws-java-sdk-*.jar,\
+                  jmespath-java*.jar
 
 Bundle-ClassPath: ., aws-java-sdk-core-1.11.159.jar,\
+                     aws-java-sdk-s3-1.11.159.jar,\
                      jmespath-java-1.11.159.jar
 
 -exportcontents: com.adeptj.modules.commons.aws.base,\

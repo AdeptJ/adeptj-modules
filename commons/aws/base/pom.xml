@@ -37,6 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aws.base.version>1.11.159</aws.base.version>
         <ion.java.version>1.0.2</ion.java.version>
+        <aws.s3.version>1.11.159</aws.s3.version>
     </properties>
 
     <build>
@@ -115,6 +116,12 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>jmespath-java</artifactId>
             <version>${aws.base.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws.s3.version}</version>
         </dependency>
 
     </dependencies>
