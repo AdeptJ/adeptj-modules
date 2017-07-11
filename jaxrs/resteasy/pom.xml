@@ -176,6 +176,20 @@
 
         <dependency>
             <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-utils</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-jaxrs-base</artifactId>
+            <version>1.0.1.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-websecurity-jwt</artifactId>
             <version>1.0.0.Final</version>
             <scope>provided</scope>
@@ -222,13 +236,6 @@
             <groupId>org.apache.james</groupId>
             <artifactId>apache-mime4j</artifactId>
             <version>0.6.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-jaxrs-base</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

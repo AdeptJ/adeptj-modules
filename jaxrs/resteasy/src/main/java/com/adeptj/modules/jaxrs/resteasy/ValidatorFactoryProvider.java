@@ -19,6 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.resteasy;
 
+import com.adeptj.modules.commons.utils.ClassLoaders;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.parameternameprovider.ReflectionParameterNameProvider;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
+
 
 /**
  * ValidatorFactoryProvider, initializes the HibernateValidatorFactory.
@@ -40,10 +42,12 @@ public enum ValidatorFactoryProvider {
 
     public ValidatorFactory getValidatorFactory() {
         if (this.validatorFactory == null) {
-            HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
-            // ValidatorFactory Provided by RESTEasy does not give the parameter names of validated fields.
-            config.parameterNameProvider(new ReflectionParameterNameProvider());
-            this.validatorFactory = config.buildValidatorFactory();
+            this.validatorFactory = ClassLoaders.executeWith(ValidatorFactoryProvider.class.getClassLoader(), () -> {
+                HibernateValidatorConfiguration config = Validation.byProvider(HibernateValidator.class).configure();
+                // ValidatorFactory Provided by RESTEasy does not give the parameter names of validated fields.
+                config.parameterNameProvider(new ReflectionParameterNameProvider());
+                return config.buildValidatorFactory();
+            });
             LoggerFactory.getLogger(ValidatorFactoryProvider.class).info("Hibernate Validator Initialized!!");
         }
         return this.validatorFactory;

@@ -195,6 +195,13 @@
 
         <dependency>
             <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-utils</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-websecurity-jwt</artifactId>
             <version>1.0.0.Final</version>
             <scope>provided</scope>

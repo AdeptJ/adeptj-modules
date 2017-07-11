@@ -31,37 +31,41 @@ import java.util.Optional;
 /**
  * JaxRSResources is an OSGi ServiceTrackerCustomizer which registers the services annotated with JAX-RS
  * Path annotation with RESTEasy resource registry.
- *
+ * <p>
  * Note: All the registered JAX-RS resources are Singleton by default.
- * 
+ *
  * @author Rakesh.Kumar, AdeptJ
  */
 class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResources.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResources.class);
 
-	private Registry registry;
+    private Registry registry;
 
-	private BundleContext context;
-    
-	JaxRSResources(BundleContext context, Registry registry) {
-	    this.context = context;
-		this.registry = registry;
-	}
+    private BundleContext context;
 
-	@Override
-	public Object addingService(ServiceReference<Object> reference) {
-		Object resource = this.context.getService(reference);
-		LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
-        this.addJaxRSResource(resource);
-		return resource;
-	}
+    JaxRSResources(BundleContext context, Registry registry) {
+        this.context = context;
+        this.registry = registry;
+    }
+
+    @Override
+    public Object addingService(ServiceReference<Object> reference) {
+        Object resource = this.context.getService(reference);
+        if (resource == null) {
+            LOGGER.warn("JAX-RS Resource is null for ServiceReference: [{}]", reference);
+        } else {
+            LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
+            this.addJaxRSResource(resource);
+        }
+        return resource;
+    }
 
     /**
      * Removes the given Resource from RESTEasy Registry and registers again the modified service.
      *
      * @param reference the OSGi service reference of JAX-RS resource.
-     * @param service the OSGi service of JAX-RS resource.
+     * @param service   the OSGi service of JAX-RS resource.
      */
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
@@ -72,13 +76,13 @@ class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> {
     }
 
     @Override
-	public void removedService(ServiceReference<Object> reference, Object service) {
+    public void removedService(ServiceReference<Object> reference, Object service) {
         this.context.ungetService(reference);
-		LOGGER.info("Removing JAX-RS Resource: [{}]", service);
-		this.registry.removeRegistrations(service.getClass());
-	}
+        LOGGER.info("Removing JAX-RS Resource: [{}]", service);
+        this.registry.removeRegistrations(service.getClass());
+    }
 
-	private void addJaxRSResource(Object service) {
-        Optional.ofNullable(service).ifPresent(resource -> this.registry.addSingletonResource(resource));
+    private void addJaxRSResource(Object service) {
+        this.registry.addSingletonResource(service);
     }
 }

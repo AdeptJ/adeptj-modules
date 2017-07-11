@@ -24,12 +24,12 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * RESTEasy configurations.
+ * JAX-RS(RESTEasy) configurations.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@ObjectClassDefinition(name = "AdeptJ REST API Core Configurations", description = "Configurations for RESTEasy Framework")
-public @interface RESTEasyConfig {
+@ObjectClassDefinition(name = "AdeptJ JAX-RS Core Configuration", description = "Configuration for RESTEasy Framework")
+public @interface JaxRSCoreConfig {
 
     // CorsFilter configs
 

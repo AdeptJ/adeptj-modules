@@ -47,8 +47,6 @@ public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthenticationInfoFactory.class);
 
-    private static final String UTF8 = "UTF-8";
-
     static final String FACTORY_NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";
 
     static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";

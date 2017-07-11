@@ -20,8 +20,6 @@
 package com.adeptj.modules.jaxrs.base;
 
 import com.adeptj.modules.security.jwt.JwtService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -44,8 +42,6 @@ import static org.apache.commons.lang3.StringUtils.substring;
 @RequiresJwtCheck
 @Priority(AUTHENTICATION)
 public class JwtCheckFilter implements ContainerRequestFilter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtCheckFilter.class);
 
     private static final int LEN = "Bearer".length();
 

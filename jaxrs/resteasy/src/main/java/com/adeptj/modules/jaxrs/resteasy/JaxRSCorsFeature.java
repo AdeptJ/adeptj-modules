@@ -32,18 +32,18 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * CORSFeature for configuring RESTEasy {@link CorsFilter}.
+ * JaxRSCorsFeature for configuring RESTEasy {@link CorsFilter}.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Provider
-public class CORSFeature implements Feature {
+public class JaxRSCorsFeature implements Feature {
 
     private static final String JOIN_DELIMITER = ", ";
 
-    private RESTEasyConfig config;
+    private JaxRSCoreConfig config;
 
-    CORSFeature(RESTEasyConfig config) {
+    JaxRSCorsFeature(JaxRSCoreConfig config) {
         this.config = config;
     }
 
@@ -73,7 +73,7 @@ public class CORSFeature implements Feature {
         corsFilter.setExposedHeaders(Arrays.stream(this.config.exposedHeaders()).collect(joining(JOIN_DELIMITER)));
         corsFilter.getAllowedOrigins().addAll(Arrays.stream(this.config.allowedOrigins()).collect(toSet()));
         context.register(corsFilter);
-        LoggerFactory.getLogger(CORSFeature.class).info("RESTEasy CorsFilter Configured Successfully!!");
+        LoggerFactory.getLogger(JaxRSCorsFeature.class).info("RESTEasy CorsFilter Configured Successfully!!");
         // Must return true to get this Feature enabled.
         return true;
     }

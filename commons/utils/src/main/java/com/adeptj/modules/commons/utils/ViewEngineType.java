@@ -18,17 +18,41 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy;
+package com.adeptj.modules.commons.utils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static com.adeptj.modules.commons.utils.ViewEngineType.Type.THYMELEAF;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Exception to be thrown on RESTEasy initialization.
- *
- * @author Rakesh.Kumar, AdeptJ.
+ * ViewEngineType Annotation, Fields annotated with this will be injected with the required
+ * ViewEngine service, e.g fields in JAX-RS resources.
+ * 
+ * @author Rakesh.Kumar, AdeptJ
  */
-class JaxRSInitializationException extends RuntimeException {
+@Target(FIELD)
+@Retention(RUNTIME)
+public @interface ViewEngineType {
 
-    JaxRSInitializationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+	Type type() default THYMELEAF;
+	
+	String extn() default "html";
+	
+	String name() default "";
+	
+	enum Type {
+		
+		THYMELEAF,
+		
+		JSP,
+		
+		FREEMARKER,
+		
+		VELOCITY,
 
+		TRIMOU
+	}
 }
