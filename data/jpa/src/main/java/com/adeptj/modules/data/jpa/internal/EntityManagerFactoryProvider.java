@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -46,7 +47,6 @@ import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
 import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
 import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.FACTORY_NAME;
 import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.SERVICE_PID_PROPERTY;
-import static java.util.Objects.requireNonNull;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
@@ -113,6 +113,27 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
     }
 
     private void createEntityManagerFactory(String pid, Dictionary<String, ?> configs) {
+        try {
+            String unitName = (String) configs.get("unitName");
+            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
+            EntityManagerFactory emf = new PersistenceProvider().createEntityManagerFactory(unitName, this.jpaProperties(configs));
+            if (emf == null) {
+                LOGGER.warn("Could not initialize EntityManagerFactory, Most probably persistence.xml not found!!");
+            } else {
+                LOGGER.info("EntityManagerFactory [{}] created for PersistenceUnit: [{}]", emf, unitName);
+                this.pidVsUnitNameMapping.put(pid, unitName);
+                this.unitNameVsEMFMapping.put(unitName, emf);
+                this.repositoryManager.registerJpaCrudRepository(unitName, emf);
+                if (LOGGER.isDebugEnabled()) {
+                    emf.getMetamodel().getEntities().forEach(type -> LOGGER.debug("EntityType: [{}]", type.getName()));
+                }
+            }
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);
+        }
+    }
+
+    private Map<String, Object> jpaProperties(Dictionary<String, ?> configs) {
         Map<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put(NON_JTA_DATASOURCE, this.getDataSource(configs));
         jpaProperties.put(DDL_GENERATION, configs.get("ddlGeneration"));
@@ -132,29 +153,11 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
                 .filter(StringUtils::isNotBlank)
                 .map(prop -> prop.split("="))
                 .collect(Collectors.toMap(elem -> elem[0], elem -> elem[1])));
-        try {
-            String unitName = (String) configs.get("unitName");
-            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-            EntityManagerFactory emf = new PersistenceProvider().createEntityManagerFactory(unitName, jpaProperties);
-            if (emf == null) {
-                LOGGER.warn("Could not initialize EntityManagerFactory, Most probably persistence.xml not found!!");
-            } else {
-                LOGGER.info("EntityManagerFactory [{}] created for PersistenceUnit: [{}]", emf, unitName);
-                this.pidVsUnitNameMapping.put(pid, unitName);
-                this.unitNameVsEMFMapping.put(unitName, emf);
-                this.repositoryManager.registerJpaCrudRepository(unitName, emf);
-                if (LOGGER.isDebugEnabled()) {
-                    emf.getMetamodel().getEntities().forEach(type -> LOGGER.debug("EntityType: [{}]", type.getName()));
-                }
-            }
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);
-        }
+        return jpaProperties;
     }
 
     private DataSource getDataSource(Dictionary<String, ?> configs) {
-        return requireNonNull(this.dsProvider.getDataSource(requireNonNull((String) configs.get("dataSourceName"),
-                "Property [dataSourceName] cannot be null!!")),
+        return Objects.requireNonNull(this.dsProvider.getDataSource((String) configs.get("dataSourceName")),
                 "DataSource cannot be null!!");
     }
 }
