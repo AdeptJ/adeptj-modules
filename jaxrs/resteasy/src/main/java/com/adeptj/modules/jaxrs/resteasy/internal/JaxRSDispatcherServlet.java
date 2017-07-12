@@ -159,7 +159,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                     .cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
                             .get(providerFactory))
                     .remove(GeneralValidator.class);
-            LOGGER.info("Removed RESTEasy GeneralValidator: [{}]", validator);
+            LOGGER.info("Removed RESTEasy GeneralValidator!!");
         } catch (IllegalArgumentException | IllegalAccessException ex) {
             LOGGER.error("Exception while removing RESTEasy GeneralValidator", ex);
         }

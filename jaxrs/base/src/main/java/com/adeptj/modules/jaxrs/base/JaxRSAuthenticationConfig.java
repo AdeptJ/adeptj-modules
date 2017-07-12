@@ -29,7 +29,7 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@ObjectClassDefinition(name = "AdeptJ REST API Authentication Configuration", description = "AdeptJ REST API Auth Config")
+@ObjectClassDefinition(name = "AdeptJ JAX-RS Authentication Configuration", description = "AdeptJ JAX-RS Auth Config")
 public @interface JaxRSAuthenticationConfig {
 
     @AttributeDefinition(name = "JWT Subject", description = "Subject for JWT issuance")
