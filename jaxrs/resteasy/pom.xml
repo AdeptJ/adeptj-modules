@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-jaxrs-resteasy</artifactId>
-    <version>1.0.2.Final</version>
+    <version>1.0.3.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: RESTEasy</name>
     <description>RESTEasy as JAX-RS implementation</description>
