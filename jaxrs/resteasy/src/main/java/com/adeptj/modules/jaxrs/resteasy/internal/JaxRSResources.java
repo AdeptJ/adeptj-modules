@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.resteasy;
+package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.jboss.resteasy.spi.Registry;
 import org.osgi.framework.BundleContext;
@@ -32,11 +32,11 @@ import java.util.Optional;
  * JaxRSResources is an OSGi ServiceTrackerCustomizer which registers the services annotated with JAX-RS
  * Path annotation with RESTEasy resource registry.
  * <p>
- * Note: All the registered JAX-RS resources are Singleton by default.
+ * Note: As of now all the registered JAX-RS resources are singleton by default.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> {
+public class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResources.class);
 

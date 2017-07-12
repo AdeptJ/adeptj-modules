@@ -17,8 +17,9 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.resteasy;
+package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import com.adeptj.modules.jaxrs.resteasy.ValidatorFactoryProvider;
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.validation.GeneralValidator;

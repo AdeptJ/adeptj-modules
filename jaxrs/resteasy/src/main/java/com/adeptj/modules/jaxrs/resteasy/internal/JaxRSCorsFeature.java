@@ -18,8 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy;
+package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.slf4j.LoggerFactory;
 

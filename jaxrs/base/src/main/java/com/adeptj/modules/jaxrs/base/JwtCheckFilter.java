@@ -20,6 +20,8 @@
 package com.adeptj.modules.jaxrs.base;
 
 import com.adeptj.modules.security.jwt.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -43,18 +45,22 @@ import static org.apache.commons.lang3.StringUtils.substring;
 @Priority(AUTHENTICATION)
 public class JwtCheckFilter implements ContainerRequestFilter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtCheckFilter.class);
+
     private static final int LEN = "Bearer".length();
 
-    private JwtService jwtService;
-
-    public JwtCheckFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
+    private volatile JwtService jwtService;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if(!this.jwtService.parseToken(substring(requestContext.getHeaderString(AUTHORIZATION), LEN))) {
+        if (this.jwtService == null) {
+            LOGGER.warn("JwtService not available!");
+        } else if(!this.jwtService.parseToken(substring(requestContext.getHeaderString(AUTHORIZATION), LEN))) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         }
+    }
+
+    public void setJwtService(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 }

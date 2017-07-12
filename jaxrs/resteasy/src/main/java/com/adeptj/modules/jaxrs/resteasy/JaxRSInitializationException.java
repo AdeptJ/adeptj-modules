@@ -25,9 +25,9 @@ package com.adeptj.modules.jaxrs.resteasy;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-class JaxRSInitializationException extends RuntimeException {
+public class JaxRSInitializationException extends RuntimeException {
 
-    JaxRSInitializationException(String message, Throwable cause) {
+    public JaxRSInitializationException(String message, Throwable cause) {
         super(message, cause);
     }
 
