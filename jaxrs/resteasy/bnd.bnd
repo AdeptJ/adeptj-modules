@@ -30,8 +30,7 @@ Bundle-ClassPath: ., resteasy-jaxrs-3.1.3.Final.jar,\
                      resteasy-multipart-provider-3.1.3.Final.jar,\
                      apache-mime4j-0.6.1.jar
 
-Export-Package: \
-  com.adeptj.modules.jaxrs.resteasy
+-exportcontents: com.adeptj.modules.jaxrs.resteasy, *
 
 Import-Package: \
   com.fasterxml.jackson.jaxrs.xml;version="2.8.8",\
