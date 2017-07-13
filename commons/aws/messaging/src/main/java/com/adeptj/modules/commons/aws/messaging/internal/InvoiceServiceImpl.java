@@ -53,92 +53,75 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private static final Font COMMON_FONT = new Font(HELVETICA, FONT_SIZE, NORMAL);
 
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
+
+    private static final float WIDTH_PERCENTAGE = 100.0f;
+
+    private static final int TWO_COL = 2;
+
+    private static final int ONE_COL = 1;
+
     //@Reference(target = "(osgi.unit.name=QCI)")
     // private JpaCrudRepository crudRepository;
 
     @Override
-    public ByteArrayOutputStream generateInvoice(String userId, String txnId) {
+    public byte[] generateInvoice(String userId, String txnId) {
         LOGGER.info("Generating invoice for user: [{}] with txnId: [{}]", userId, txnId);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4096);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
         try {
             Document document = new Document();
-
-            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+            PdfWriter.getInstance(document, outputStream);
             document.open();
-
             // Add invoice heading
             this.addInvoiceHeading(document);
-
             PdfPTable mainTable = this.mainTable();
-
             // Add Date and Invoice Number
             this.addDateAndInvoiceNumber(mainTable);
-
             // Add BilledBy Cell
             this.billedByCell(mainTable);
-
             // Add BilledByDetails Cell
             this.billedByDetailsCell(mainTable);
-
             // Add BilledTo Cell
             this.billedToCell(mainTable);
-
             // Add BilledToDetails Cell
             this.billedToDetailsCell(mainTable);
-
             // Add main Table
             document.add(mainTable);
-
             // Create 2 column Table for Description and Amount heading
-            mainTable = new PdfPTable(2);
-            mainTable.setWidthPercentage(100f);
-
+            mainTable = new PdfPTable(TWO_COL);
+            mainTable.setWidthPercentage(WIDTH_PERCENTAGE);
             // Add Description cell.
             this.descriptionCell(mainTable);
-
             // Add Amount cell.
             this.amountCell(mainTable);
-
             // Now add 2 column main Table to the document.
             document.add(mainTable);
-
             // Create 2 column Table for Description and Amount details
-            mainTable = new PdfPTable(2);
-            mainTable.setWidthPercentage(100f);
-
+            mainTable = new PdfPTable(TWO_COL);
+            mainTable.setWidthPercentage(WIDTH_PERCENTAGE);
             // Add Tax Details cell.
             this.taxDetailsCell(mainTable);
-
             // Add Amount Details cell.
             this.amountDetailsCell(mainTable);
-
             // Now add 2 column main Table to the document.
             document.add(mainTable);
-
             // Create 2 column Table for total amount
-            mainTable = new PdfPTable(2);
-            mainTable.setWidthPercentage(100f);
-
+            mainTable = new PdfPTable(TWO_COL);
+            mainTable.setWidthPercentage(WIDTH_PERCENTAGE);
             this.totalAmountCell(mainTable);
-
             this.finalAmountCell(mainTable);
-
             document.add(mainTable);
-
-            mainTable = new PdfPTable(1);
-            mainTable.setWidthPercentage(100f);
-
+            mainTable = new PdfPTable(ONE_COL);
+            mainTable.setWidthPercentage(WIDTH_PERCENTAGE);
             this.finalDescCell(mainTable);
-
             // Finally add the last table
             document.add(mainTable);
-
-            // Return the PDF bytes
             document.close();
         } catch (Exception ex) {
             LOGGER.error("Exception while generating invoice!!", ex);
         }
-        return outputStream;
+        // Return the PDF bytes
+        return outputStream.toByteArray();
     }
 
     private void addInvoiceHeading(Document document) throws DocumentException {

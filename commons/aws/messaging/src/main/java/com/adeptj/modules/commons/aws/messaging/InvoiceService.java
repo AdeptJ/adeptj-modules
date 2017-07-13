@@ -1,7 +1,5 @@
 package com.adeptj.modules.commons.aws.messaging;
 
-import java.io.ByteArrayOutputStream;
-
 /**
  * Generate payment invoice.
  *
@@ -9,5 +7,5 @@ import java.io.ByteArrayOutputStream;
  */
 public interface InvoiceService {
 
-    ByteArrayOutputStream generateInvoice(String userId, String txnId);
+    byte[] generateInvoice(String userId, String txnId);
 }

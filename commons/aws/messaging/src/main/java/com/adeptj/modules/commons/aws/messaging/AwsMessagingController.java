@@ -34,7 +34,9 @@ import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 
 /**
  * REST Endpoint for testing AWS Sms and Email service.
@@ -82,10 +84,11 @@ public class AwsMessagingController {
 
     @GET
     @Path("/invoice/{userId}/{txnId}")
-    @Produces("application/pdf")
+    @Produces(APPLICATION_OCTET_STREAM)
     public Response generateInvoice(@PathParam("userId") String userId, @PathParam("txnId") String txnId) {
-        Response.ResponseBuilder response = Response.ok(this.invoiceService.generateInvoice(userId, txnId).toByteArray());
-        response.header("Content-Disposition", "attachment; filename=" + txnId + ".pdf");
-        return response.build();
+        return Response
+                .ok(this.invoiceService.generateInvoice(userId, txnId))
+                .header(CONTENT_DISPOSITION, "attachment;filename=" + txnId + ".pdf")
+                .build();
     }
 }
