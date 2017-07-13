@@ -25,8 +25,11 @@ import org.osgi.service.component.annotations.Reference;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +47,9 @@ public class AwsMessagingController {
 
     @Reference
     private AwsMessagingService messagingService;
+
+    @Reference
+    private InvoiceService invoiceService;
 
     @POST
     @Path("/msg/sms")
@@ -72,5 +78,14 @@ public class AwsMessagingController {
         data.put("message", msg);
         this.messagingService.sendMessage(MessageType.EMAIL, data);
         return Response.ok("Email sent!!").build();
+    }
+
+    @GET
+    @Path("/invoice/{userId}/{txnId}")
+    @Produces("application/pdf")
+    public Response generateInvoice(@PathParam("userId") String userId, @PathParam("txnId") String txnId) {
+        Response.ResponseBuilder response = Response.ok(this.invoiceService.generateInvoice(userId, txnId).toByteArray());
+        response.header("Content-Disposition", "attachment; filename=" + txnId + ".pdf");
+        return response.build();
     }
 }
