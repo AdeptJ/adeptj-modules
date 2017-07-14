@@ -101,4 +101,18 @@ public interface AwsStorageService {
      *                      Record Key.
      */
     void deleteRecord(String bucketName, String key);
+
+    /**
+     * get Server End point.
+     *
+     * @return
+     */
+    String getServiceEndpoint();
+
+    /**
+     * Get Signing Region.
+     *
+     * @return
+     */
+    String getSigningRegion();
 }

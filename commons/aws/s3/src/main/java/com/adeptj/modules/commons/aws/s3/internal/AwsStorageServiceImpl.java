@@ -167,10 +167,10 @@ public class AwsStorageServiceImpl implements AwsStorageService {
     }
 
     public String getServiceEndpoint() {
-        return serviceEndpoint;
+        return this.serviceEndpoint;
     }
 
     public String getSigningRegion() {
-        return signingRegion;
+        return this.signingRegion;
     }
 }
