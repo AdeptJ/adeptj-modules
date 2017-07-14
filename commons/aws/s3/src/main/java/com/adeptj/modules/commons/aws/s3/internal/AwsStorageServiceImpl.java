@@ -55,6 +55,10 @@ public class AwsStorageServiceImpl implements AwsStorageService {
 
     private AmazonS3 s3Client;
 
+    private String serviceEndpoint;
+
+    private String signingRegion;
+
     /**
      * {@inheritDoc}
      */
@@ -116,6 +120,8 @@ public class AwsStorageServiceImpl implements AwsStorageService {
             this.s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                     new BasicAWSCredentials(config.accessKeyId(), config.secretKey()))).withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config
                     .serviceEndpoint(), config.signingRegion())).build();
+            this.serviceEndpoint = config.serviceEndpoint();
+            this.signingRegion = config.signingRegion();
         } catch (Throwable ex) { //NOSONAR
             LOGGER.error("Exception while creating S3 client!!", ex);
         }
@@ -158,5 +164,13 @@ public class AwsStorageServiceImpl implements AwsStorageService {
     @Deactivate
     protected void deactivate() {
         this.s3Client.shutdown();
+    }
+
+    public String getServiceEndpoint() {
+        return serviceEndpoint;
+    }
+
+    public String getSigningRegion() {
+        return signingRegion;
     }
 }
