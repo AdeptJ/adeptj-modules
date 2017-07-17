@@ -1,7 +1,7 @@
-/** 
+/*
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,16 +17,16 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.cache.internal;
 
 import com.adeptj.modules.cache.api.CacheProvider;
 import com.adeptj.modules.cache.common.CacheProviderType;
 import com.adeptj.modules.cache.spi.CacheProviderFactory;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.Service;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,33 +36,37 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * CacheProviderFactorySupport.
- * 
+ *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(immediate = true)
-@Service(CacheProviderFactory.class)
 public class CacheProviderFactorySupport implements CacheProviderFactory {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(CacheProviderFactorySupport.class);
 
-	/**
-	 * Collect all of the CacheProvider services as and when they become available.
-	 */
-	@Reference(referenceInterface = CacheProvider.class, cardinality = ReferenceCardinality.OPTIONAL_MULTIPLE, policy = ReferencePolicy.DYNAMIC)
-	private final Map<String, CacheProvider> cacheProviders = new ConcurrentHashMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheProviderFactorySupport.class);
 
-	@Override
-	public Optional<CacheProvider> getCacheProvider(CacheProviderType providerType) {
-		return Optional.ofNullable(this.cacheProviders.get(providerType.toString()));
-	}
+    /**
+     * Collect all of the CacheProvider services as and when they become available.
+     */
+    @Reference(
+            service = CacheProvider.class,
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC,
+            bind = "bindCacheProvider",
+            unbind = "unbindCacheProvider")
+    private final Map<String, CacheProvider> cacheProviders = new ConcurrentHashMap<>();
 
-	protected void bindCacheProvider(CacheProvider provider) {
-		LOGGER.info("Binding CacheProvider: [{}]", provider.getName());
-		this.cacheProviders.put(provider.getName(), provider);
-	}
+    @Override
+    public Optional<CacheProvider> getCacheProvider(CacheProviderType providerType) {
+        return Optional.ofNullable(this.cacheProviders.get(providerType.toString()));
+    }
 
-	protected void unbindCacheProvider(CacheProvider provider) {
-		LOGGER.info("Unbinding CacheProvider: [{}]", provider.getName());
-		this.cacheProviders.remove(provider.getName());
-	}
+    protected void bindCacheProvider(CacheProvider provider) {
+        LOGGER.info("Binding CacheProvider: [{}]", provider.getName());
+        this.cacheProviders.put(provider.getName(), provider);
+    }
+
+    protected void unbindCacheProvider(CacheProvider provider) {
+        LOGGER.info("Unbinding CacheProvider: [{}]", provider.getName());
+        this.cacheProviders.remove(provider.getName());
+    }
 }

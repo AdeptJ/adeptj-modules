@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-parent</artifactId>
-        <version>1.0.8.Final</version>
+        <version>1.0.9.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules</artifactId>
-    <version>1.0.4.Final</version>
+    <version>1.0.5.Final</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Parent</name>
     <description>Parent for AdeptJ Modules Project</description>
@@ -37,7 +37,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jjwt.version>0.7.0</jjwt.version>
+        <adeptj-maven-plugin.version>1.0.0.Final</adeptj-maven-plugin.version>
     </properties>
 
     <!-- Project Information -->
@@ -113,17 +113,23 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${maven.bundle.plugin.version}</version>
-                    <extensions>true</extensions>
+                    <groupId>biz.aQute.bnd</groupId>
+                    <artifactId>bnd-maven-plugin</artifactId>
+                    <version>${bnd-maven-plugin.version}</version>
                 </plugin>
 
-                <!-- Apache Felix SCR Plugin -->
+                <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
                 <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-scr-plugin</artifactId>
-                    <version>${maven.scr.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+
+                <!-- AdeptJ maven plugin for bundle installation etc -->
+                <plugin>
+                    <groupId>com.adeptj</groupId>
+                    <artifactId>adeptj-maven-plugin</artifactId>
+                    <version>${adeptj-maven-plugin.version}</version>
                 </plugin>
 
             </plugins>
@@ -155,30 +161,6 @@
                 <version>${javax.servlet-api.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.scr.annotations</artifactId>
-                <version>1.11.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
-                <version>1.2.8</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.jaas</artifactId>
-                <version>1.0.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.http.base</artifactId>
-                <version>${felix.http.base.version}</version>
-            </dependency>
-
             <!-- OSGi annotations for DS and metatype -->
 
             <dependency>
@@ -191,12 +173,14 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.service.component.annotations</artifactId>
+                <version>${org.osgi.cmp.annotations.version}</version>
                 <scope>provided</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.service.metatype.annotations</artifactId>
+                <version>${org.osgi.meta.annotations.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -210,7 +194,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
-                <version>4.1</version>
+                <version>${commons-collections4.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -262,7 +246,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -277,7 +261,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>${maven-source-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -291,7 +275,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.4</version>
+                        <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
                             <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>

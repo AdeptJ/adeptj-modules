@@ -1,7 +1,7 @@
-/** 
+/*
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,6 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.cache.common;
 
 import java.util.Collection;
@@ -24,22 +25,22 @@ import java.util.Set;
 
 /**
  * A Cache managed by the cache manager.
- * 
+ *
  * @author Rakesh.Kumar, AdeptJ
  */
 public interface Cache<K, V> {
 
-	V get(K key);
+    V get(K key);
 
-	V put(K key, V value);
+    V put(K key, V value);
 
-	V remove(K key);
+    V remove(K key);
 
-	void clear();
+    void clear();
 
-	int size();
+    int size();
 
-	Set<K> keys();
+    Set<K> keys();
 
-	Collection<V> values();
+    Collection<V> values();
 }

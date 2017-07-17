@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.4.Final</version>
+        <version>1.0.5.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-data-jpa</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.1.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Data :: JPA</name>
     <description>AdeptJ Modules :: Data :: JPA(EclipseLink)</description>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-datasource</artifactId>
-            <version>1.0.0.Final</version>
+            <version>1.0.1.Final</version>
             <scope>provided</scope>
         </dependency>
 

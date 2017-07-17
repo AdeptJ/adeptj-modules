@@ -24,13 +24,13 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-parent</artifactId>
-        <version>1.0.7.Final</version>
+        <version>1.0.9.Final</version>
     </parent>
     <artifactId>adeptj-modules-builder</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.0.Final</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Builder</name>
-    <description>Pseudo project to build the complete AdeptJ Modules project</description>
+    <description>Pseudo project to build complete AdeptJ Modules</description>
     <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
@@ -38,11 +38,14 @@
 
         <module>parent</module>
         <module>commons</module>
+        <module>webconsole</module>
         <module>cache</module>
         <module>websecurity</module>
+        <module>jaxrs</module>
+        <module>aws</module>
         <module>data</module>
+        <module>mvc</module>
         <module>search</module>
-        <module>viewengine</module>
 
     </modules>
 

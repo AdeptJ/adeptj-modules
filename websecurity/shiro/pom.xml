@@ -24,11 +24,12 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.1.Final</version>
+        <version>1.0.5.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-websecurity-shiro-modular</artifactId>
-    <packaging>bundle</packaging>
+    <artifactId>adeptj-modules-websecurity-shiro</artifactId>
+    <version>1.0.0.Final</version>
+    <packaging>jar</packaging>
     <name>AdeptJ Modules :: WebSecurity :: Shiro</name>
     <description>AdeptJ Modules :: WebSecurity :: Shiro</description>
 
@@ -37,50 +38,31 @@
     </properties>
 
     <build>
+        
+        <!-- Below BND plugin is required to process the OSGi Annotation-->
         <plugins>
 
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Category>AdeptJ Security</Bundle-Category>
-                        <Import-Package>
-                            org.apache.shiro.web.config,
-                            org.apache.shiro.web.env,
-                            org.apache.shiro.web.filter,
-                            org.apache.shiro.web.filter.authc,
-                            org.apache.shiro.web.filter.authz,
-                            org.apache.shiro.web.filter.mgt,
-                            org.apache.shiro.web.filter.session,
-                            org.apache.shiro.web.mgt,
-                            org.apache.shiro.web.servlet,
-                            org.apache.shiro.web.session,
-                            org.apache.shiro.web.session.mgt,
-                            org.apache.shiro.web.subject,
-                            org.apache.shiro.web.subject.support,
-                            org.apache.shiro.web.tags,
-                            org.apache.shiro.web.util,
-                            *
-                        </Import-Package>
-                        <Bundle-Activator>ShiroActivator</Bundle-Activator>
-                    </instructions>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>generate-scr-scrdescriptor</id>
                         <goals>
-                            <goal>scr</goal>
+                            <goal>bnd-process</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -88,12 +70,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <compilerArgument>-parameters</compilerArgument>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
             </plugin>
 
         </plugins>
+        
     </build>
 
     <dependencies>
@@ -113,12 +96,6 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
             <scope>provided</scope>
         </dependency>
 

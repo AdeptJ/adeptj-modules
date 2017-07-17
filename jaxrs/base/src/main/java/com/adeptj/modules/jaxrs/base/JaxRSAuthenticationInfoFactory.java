@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.FACTORY_NAME;
-import static com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.SERVICE_PID_PROPERTY;
+import static com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.COMPONENT_NAME;
+import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
 /**
@@ -40,16 +40,24 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Designate(ocd = JaxRSAuthenticationConfig.class)
-@Component(immediate = true, name = FACTORY_NAME, property = SERVICE_PID_PROPERTY, configurationPolicy = IGNORE,
-        service = {JaxRSAuthenticationInfoFactory.class, ManagedServiceFactory.class})
+@Designate(ocd = JaxRSAuthenticationConfig.class, factory = true)
+@Component(
+        immediate = true,
+        name = COMPONENT_NAME,
+        property = SERVICE_PID + "=" + COMPONENT_NAME,
+        configurationPolicy = IGNORE,
+        service = {
+                JaxRSAuthenticationInfoFactory.class,
+                ManagedServiceFactory.class
+        }
+)
 public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthenticationInfoFactory.class);
 
-    static final String FACTORY_NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";
+    static final String COMPONENT_NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";
 
-    static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";
+    private static final String FACTORY_NAME = "AdeptJ JAX-RS AuthenticationInfo Factory";
 
     private Map<String, JaxRSAuthenticationInfo> authenticationInfoMap = new ConcurrentHashMap<>();
 

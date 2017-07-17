@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,6 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.commons.ds;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
@@ -24,11 +25,13 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * DataSourceConfig.
+ * HikariDataSorce configurations, few configurations defaults to MySql DB.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(name = "AdeptJ HikariDataSource Configurations", description = "Configurations of HikariDataSource.")
+@ObjectClassDefinition(
+        name = "AdeptJ HikariDataSource Configurations",
+        description = "Configurations of HikariDataSource.")
 public @interface DataSourceConfig {
 
     @AttributeDefinition(name = "poolName", description = "DataSource Pool Name")
@@ -50,7 +53,7 @@ public @interface DataSourceConfig {
     boolean autoCommit() default true;
 
     @AttributeDefinition(name = "connectionTimeout", description = "Maximum number of milliseconds that a client will wait for a connection from the pool")
-    long connectionTimeout() default 60000; // 60 Seconds
+    long connectionTimeout() default 30000; // 30 Seconds
 
     @AttributeDefinition(name = "idleTimeout", description = "Maximum amount of time that a connection is allowed to sit idle in the pool")
     long idleTimeout() default 600000; // 10 Minutes
@@ -58,6 +61,7 @@ public @interface DataSourceConfig {
     @AttributeDefinition(name = "maxLifetime", description = "Maximum lifetime of a connection in the pool")
     long maxLifetime() default 1800000; // 30 Minutes
 
+    // Configure HikariDataSource as a fixed size pool.
     @AttributeDefinition(name = "minimumIdle", description = "Minimum number of idle connections that HikariCP tries to maintain in the pool")
     int minimumIdle() default 32; // 32 Connections;
 

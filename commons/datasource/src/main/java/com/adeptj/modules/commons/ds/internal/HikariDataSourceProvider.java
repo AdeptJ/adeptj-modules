@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -49,26 +49,30 @@ import static com.adeptj.modules.commons.ds.DataSourceConstants.MIN_IDLE;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.POOL_NAME;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.PWD;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.USERNAME;
-import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.FACTORY_NAME;
-import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.SERVICE_PID_PROPERTY;
+import static com.adeptj.modules.commons.ds.internal.HikariDataSourceProvider.COMPONENT_NAME;
+import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
 /**
  * JDBC DataSource implementation HikariDataSource is being configured and returned to the callers.
  * <p>
- * NOTE: ConfigurationPolicy.REQUIRE makes sure that this component will only be active when the configurations are provided.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = DataSourceConfig.class)
-@Component(immediate = true, name = FACTORY_NAME, property = SERVICE_PID_PROPERTY, configurationPolicy = IGNORE)
+@Designate(ocd = DataSourceConfig.class, factory = true)
+@Component(
+        immediate = true,
+        name = COMPONENT_NAME,
+        property = SERVICE_PID + "=" + COMPONENT_NAME,
+        configurationPolicy = IGNORE
+)
 public class HikariDataSourceProvider implements DataSourceProvider, ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HikariDataSourceProvider.class);
 
-    static final String FACTORY_NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
+    static final String COMPONENT_NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
 
-    static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.commons.ds.DataSourceProvider.factory";
+    private static final String FACTORY_NAME = "AdeptJ JDBC DataSource Factory";
 
     private Map<String, HikariDataSource> dataSources = new ConcurrentHashMap<>();
 
@@ -108,21 +112,21 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
 
     private void createDataSource(String pid, Dictionary<String, ?> configs) {
         try {
-            Properties properties = new Properties();
+            Properties dsProperties = new Properties();
             String poolName = (String) configs.get(POOL_NAME);
-            properties.put(POOL_NAME, poolName);
-            properties.put(JDBC_URL, configs.get(JDBC_URL));
-            properties.put(DRIVER_CLASS_NAME, configs.get(DRIVER_CLASS_NAME));
-            properties.put(USERNAME, configs.get(USERNAME));
-            properties.put(PWD, configs.get(PWD));
-            properties.put(AUTO_COMMIT, configs.get(AUTO_COMMIT));
-            properties.put(CONN_TIMEOUT, configs.get(CONN_TIMEOUT));
-            properties.put(IDLE_TIMEOUT, configs.get(IDLE_TIMEOUT));
-            properties.put(MAX_LIFETIME, configs.get(MAX_LIFETIME));
-            properties.put(MIN_IDLE, configs.get(MIN_IDLE));
-            properties.put(MAX_POOL_SIZE, configs.get(MAX_POOL_SIZE));
+            dsProperties.put(POOL_NAME, poolName);
+            dsProperties.put(JDBC_URL, configs.get(JDBC_URL));
+            dsProperties.put(DRIVER_CLASS_NAME, configs.get(DRIVER_CLASS_NAME));
+            dsProperties.put(USERNAME, configs.get(USERNAME));
+            dsProperties.put(PWD, configs.get(PWD));
+            dsProperties.put(AUTO_COMMIT, configs.get(AUTO_COMMIT));
+            dsProperties.put(CONN_TIMEOUT, configs.get(CONN_TIMEOUT));
+            dsProperties.put(IDLE_TIMEOUT, configs.get(IDLE_TIMEOUT));
+            dsProperties.put(MAX_LIFETIME, configs.get(MAX_LIFETIME));
+            dsProperties.put(MIN_IDLE, configs.get(MIN_IDLE));
+            dsProperties.put(MAX_POOL_SIZE, configs.get(MAX_POOL_SIZE));
             LOGGER.info("Initializing JDBC ConnectionPool: [{}]", poolName);
-            this.dataSources.put(poolName, new HikariDataSource(new HikariConfig(properties)));
+            this.dataSources.put(poolName, new HikariDataSource(new HikariConfig(dsProperties)));
             this.pidVsDSNameMapping.put(pid, poolName);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while creating HikariDataSource!!", ex);

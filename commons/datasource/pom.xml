@@ -25,18 +25,17 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.4.Final</version>
+        <version>1.0.5.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-commons-datasource</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.1.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: JDBC DataSource</name>
     <description>AdeptJ Modules :: Commons :: JDBC DataSource(HikariDS)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hikaricp.version>2.6.3</hikaricp.version>
     </properties>
 
     <build>

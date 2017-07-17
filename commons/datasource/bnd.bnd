@@ -23,6 +23,7 @@
 Export-Package: \
 	com.adeptj.modules.commons.ds,\
 	com.adeptj.modules.commons.ds.api
-Bundle-Name: AdeptJ Modules :: Commons :: JDBC DataSource
+
+Bundle-Name: ${project.name}
 Bundle-Category: AdeptJ Commons
 Bundle-Vendor: AdeptJ

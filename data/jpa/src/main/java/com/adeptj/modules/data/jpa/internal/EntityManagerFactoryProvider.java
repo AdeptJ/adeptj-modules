@@ -45,8 +45,7 @@ import java.util.stream.Collectors;
 
 import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
 import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
-import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.FACTORY_NAME;
-import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.SERVICE_PID_PROPERTY;
+import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.COMPONENT_NAME;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
@@ -58,6 +57,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_L
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
+import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
 /**
@@ -65,15 +65,20 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = EntityManagerFactoryConfig.class)
-@Component(immediate = true, name = FACTORY_NAME, property = SERVICE_PID_PROPERTY, configurationPolicy = IGNORE)
+@Designate(ocd = EntityManagerFactoryConfig.class, factory = true)
+@Component(
+        immediate = true,
+        name = COMPONENT_NAME,
+        property = SERVICE_PID + "=" + COMPONENT_NAME,
+        configurationPolicy = IGNORE
+)
 public class EntityManagerFactoryProvider implements ManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManagerFactoryProvider.class);
 
-    static final String FACTORY_NAME = "com.adeptj.modules.data.jpa.EntityManagerFactoryProvider.factory";
+    static final String COMPONENT_NAME = "com.adeptj.modules.data.jpa.EntityManagerFactoryProvider.factory";
 
-    static final String SERVICE_PID_PROPERTY = "service.pid=com.adeptj.modules.data.jpa.EntityManagerFactoryProvider.factory";
+    private static final String FACTORY_NAME = "AdeptJ EntityManagerFactoryProvider";
 
     private Map<String, EntityManagerFactory> unitNameVsEMFMapping = new ConcurrentHashMap<>();
 

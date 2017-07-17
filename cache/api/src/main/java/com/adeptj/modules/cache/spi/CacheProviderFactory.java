@@ -1,7 +1,7 @@
-/** 
+/*
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,6 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.cache.spi;
 
 import com.adeptj.modules.cache.api.CacheProvider;
@@ -26,10 +27,10 @@ import java.util.Optional;
 
 /**
  * The CacheProviderFactory.
- * 
+ *
  * @author Rakesh.Kumar, AdeptJ
  */
 public interface CacheProviderFactory {
 
-	Optional<CacheProvider> getCacheProvider(CacheProviderType providerType);
+    Optional<CacheProvider> getCacheProvider(CacheProviderType providerType);
 }

@@ -2,7 +2,6 @@ package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -16,6 +15,10 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_PID;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 
 /**
  * Manager for JpaCrudRepository which will register the repository with OSGi service registry whenever
@@ -34,9 +37,9 @@ public class JpaCrudRepositoryManager {
 
     void registerJpaCrudRepository(String unitName, EntityManagerFactory emf) {
         Dictionary<String , String> properties = new Hashtable<>();
-        properties.put(Constants.SERVICE_VENDOR, "AdeptJ");
-        properties.put(Constants.SERVICE_PID, EclipseLinkCrudRepository.class.getName());
-        properties.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules JpaCrudRepository(EclipseLink)");
+        properties.put(SERVICE_VENDOR, "AdeptJ");
+        properties.put(SERVICE_PID, EclipseLinkCrudRepository.class.getName());
+        properties.put(SERVICE_DESCRIPTION, "AdeptJ Modules JpaCrudRepository(EclipseLink)");
         properties.put(EntityManagerFactoryBuilder.JPA_UNIT_NAME, unitName);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
         this.jpaCrudRepositoryRegistrations.put(unitName, this.context.registerService(JpaCrudRepository.class,
@@ -49,11 +52,11 @@ public class JpaCrudRepositoryManager {
             if (svcReg == null) {
                 LOGGER.info("No JpaCrudRepository found for PersistenceUnit: [{}]", unitName);
             } else {
-                LOGGER.info("Un-registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
+                LOGGER.info("un-registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
                 svcReg.unregister();
             }
         } catch (Exception ex) { // NOSONAR
-            LOGGER.error("Exception while unregistering JpaCrudRepository service!!", ex);
+            LOGGER.error("Exception while un-registering JpaCrudRepository service!!", ex);
         }
     }
 
@@ -70,7 +73,7 @@ public class JpaCrudRepositoryManager {
         try {
             this.jpaCrudRepositoryRegistrations.forEach((unitName, svcReg) -> svcReg.unregister());
         } catch (Exception ex) { // NOSONAR
-            LOGGER.error("Exception while unregistering JpaCrudRepository services!!", ex);
+            LOGGER.error("Exception while un-registering JpaCrudRepository services!!", ex);
         }
     }
 }
