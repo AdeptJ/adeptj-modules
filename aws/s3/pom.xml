@@ -35,8 +35,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.s3.version>1.11.159</aws.s3.version>
-        <aws.sdk.core.version>1.11.159</aws.sdk.core.version>
+        <aws.s3.version>1.11.163</aws.s3.version>
+        <aws.sdk.core.version>1.11.163</aws.sdk.core.version>
     </properties>
 
     <build>
@@ -139,6 +139,13 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-kms</artifactId>
             <version>${aws.s3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-aws-base</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

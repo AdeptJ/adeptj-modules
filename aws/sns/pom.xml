@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.messaging.version>1.11.163</aws.messaging.version>
+        <aws.sns.version>1.11.163</aws.sns.version>
         <aws.sdk.core.version>1.11.163</aws.sdk.core.version>
     </properties>
 
@@ -133,7 +133,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sns</artifactId>
-            <version>${aws.messaging.version}</version>
+            <version>${aws.sns.version}</version>
         </dependency>
 
         <dependency>

@@ -19,8 +19,10 @@
 */
 package com.adeptj.modules.aws.s3.internal;
 
+import com.adeptj.modules.aws.base.AwsException;
 import com.adeptj.modules.aws.s3.S3Config;
 import com.adeptj.modules.aws.s3.api.StorageService;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -29,6 +31,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,8 +40,10 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import static com.amazonaws.services.s3.model.CannedAccessControlList.PublicRead;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -52,6 +57,8 @@ public class AwsS3Service implements StorageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsS3Service.class);
 
+    private static final String PATH_SEPARATOR = "/";
+
     private AmazonS3 s3Client;
 
     /**
@@ -59,8 +66,28 @@ public class AwsS3Service implements StorageService {
      */
     @Override
     public Bucket createBucket(String bucketName) {
-        LOGGER.info("Creating Bucket: [{}]", bucketName);
-        return this.s3Client.createBucket(bucketName);
+        try {
+            return this.s3Client.createBucket(bucketName);
+        } catch (SdkClientException ex) {
+            LOGGER.error("Exception while creating bucket!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PutObjectResult createFolder(String bucketName, String folderName) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(0);
+        try {
+            return this.s3Client.putObject(new PutObjectRequest(bucketName,
+                    folderName + PATH_SEPARATOR, new ByteArrayInputStream(new byte[0]), objectMetadata));
+        } catch (SdkClientException ex) {
+            LOGGER.error("Exception while creating folder!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -68,27 +95,42 @@ public class AwsS3Service implements StorageService {
      */
     @Override
     public void deleteBucket(String bucketName) {
-        this.s3Client.deleteBucket(bucketName);
+        try {
+            this.s3Client.deleteBucket(bucketName);
+        } catch (SdkClientException ex) {
+            LOGGER.error("Exception while deleting bucket!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void createRecord(String bucketName, String key, InputStream data) {
-        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, key, data, new ObjectMetadata());
-        objectRequest.setCannedAcl(null);
-        this.s3Client.putObject(objectRequest);
+    public PutObjectResult createRecord(String bucketName, String key, InputStream data, long contentLength) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentLength(contentLength);
+        try {
+            return this.s3Client.putObject(new PutObjectRequest(bucketName, key, data, objectMetadata)
+                    .withCannedAcl(PublicRead));
+        } catch (SdkClientException ex) {
+            LOGGER.error("Exception while creating file!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void createRecord(String bucketName, String key, ObjectMetadata metadata, InputStream data) {
-        PutObjectRequest objectRequest = new PutObjectRequest(bucketName, key, data, metadata);
-        objectRequest.setCannedAcl(null);
-        this.s3Client.putObject(objectRequest);
+    public PutObjectResult createRecord(String bucketName, String key, ObjectMetadata metadata, InputStream data) {
+        try {
+            return this.s3Client.putObject(new PutObjectRequest(bucketName, key, data, metadata)
+                    .withCannedAcl(PublicRead));
+        } catch (SdkClientException ex) {
+            LOGGER.error("Exception while creating file!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -96,7 +138,12 @@ public class AwsS3Service implements StorageService {
      */
     @Override
     public S3Object getRecord(String bucketName, String key) {
-        return this.s3Client.getObject(bucketName, key);
+        try {
+            return this.s3Client.getObject(bucketName, key);
+        } catch (SdkClientException ex) {
+            LOGGER.error("Exception while getting file!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -104,7 +151,12 @@ public class AwsS3Service implements StorageService {
      */
     @Override
     public void deleteRecord(String bucketName, String key) {
-        this.s3Client.deleteObject(bucketName, key);
+        try {
+            this.s3Client.deleteObject(bucketName, key);
+        } catch (SdkClientException ex) {
+            LOGGER.error("Exception while deleting file!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
     }
 
     // Lifecycle Methods

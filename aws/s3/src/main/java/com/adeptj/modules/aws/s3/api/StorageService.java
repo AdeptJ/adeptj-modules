@@ -21,6 +21,7 @@ package com.adeptj.modules.aws.s3.api;
 
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 
 import java.io.InputStream;
@@ -34,11 +35,13 @@ public interface StorageService {
 
     Bucket createBucket(String bucketName);
 
+    PutObjectResult createFolder(String bucketName, String folderName);
+
     void deleteBucket(String bucketName);
 
-    void createRecord(String bucketName, String key, InputStream data);
+    PutObjectResult createRecord(String bucketName, String key, InputStream data, long contentLength);
 
-    void createRecord(String bucketName, String key, ObjectMetadata metadata, InputStream data);
+    PutObjectResult createRecord(String bucketName, String key, ObjectMetadata metadata, InputStream data);
 
     S3Object getRecord(String bucketName, String key);
 
