@@ -21,14 +21,15 @@ package com.adeptj.modules.aws.s3.internal;
 
 import com.adeptj.modules.aws.base.AwsException;
 import com.adeptj.modules.aws.s3.S3Config;
+import com.adeptj.modules.aws.s3.UploadRequest;
 import com.adeptj.modules.aws.s3.api.StorageService;
-import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -42,12 +43,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Objects;
 
-import static com.amazonaws.services.s3.model.CannedAccessControlList.PublicRead;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * StorageService for storing files in AWS S3 buckets.
+ * StorageService implementation for various operations on AWS S3.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -59,6 +60,12 @@ public class AwsS3Service implements StorageService {
 
     private static final String PATH_SEPARATOR = "/";
 
+    private static final String ACL_NULL_MSG = "CannedAccessControlList can't be null!!";
+
+    private static final String OBJ_METADATA_NULL_MSG = "ObjectMetadata can't be null!!";
+
+    private static final String DATA_NULL_MSG = "Data can't be null!!";
+
     private AmazonS3 s3Client;
 
     /**
@@ -68,8 +75,21 @@ public class AwsS3Service implements StorageService {
     public Bucket createBucket(String bucketName) {
         try {
             return this.s3Client.createBucket(bucketName);
-        } catch (SdkClientException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while creating bucket!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteBucket(String bucketName) {
+        try {
+            this.s3Client.deleteBucket(bucketName);
+        } catch (RuntimeException ex) {
+            LOGGER.error("Exception while deleting bucket!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
     }
@@ -84,7 +104,7 @@ public class AwsS3Service implements StorageService {
         try {
             return this.s3Client.putObject(new PutObjectRequest(bucketName,
                     folderName + PATH_SEPARATOR, new ByteArrayInputStream(new byte[0]), objectMetadata));
-        } catch (SdkClientException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while creating folder!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
@@ -94,26 +114,15 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteBucket(String bucketName) {
+    public PutObjectResult uploadFile(UploadRequest request) {
+        InputStream data = Objects.requireNonNull(request.getData(), () -> DATA_NULL_MSG);
+        ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), () -> OBJ_METADATA_NULL_MSG);
+        CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), () -> ACL_NULL_MSG);
         try {
-            this.s3Client.deleteBucket(bucketName);
-        } catch (SdkClientException ex) {
-            LOGGER.error("Exception while deleting bucket!!", ex);
-            throw new AwsException(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PutObjectResult createRecord(String bucketName, String key, InputStream data, long contentLength) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(contentLength);
-        try {
-            return this.s3Client.putObject(new PutObjectRequest(bucketName, key, data, objectMetadata)
-                    .withCannedAcl(PublicRead));
-        } catch (SdkClientException ex) {
+            return this.s3Client.putObject(new PutObjectRequest(request.getBucketName(), request.getKey(),
+                    data, objectMetadata)
+                    .withCannedAcl(cannedACL));
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while creating file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
@@ -123,24 +132,10 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public PutObjectResult createRecord(String bucketName, String key, ObjectMetadata metadata, InputStream data) {
-        try {
-            return this.s3Client.putObject(new PutObjectRequest(bucketName, key, data, metadata)
-                    .withCannedAcl(PublicRead));
-        } catch (SdkClientException ex) {
-            LOGGER.error("Exception while creating file!!", ex);
-            throw new AwsException(ex.getMessage(), ex);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public S3Object getRecord(String bucketName, String key) {
+    public S3Object getFile(String bucketName, String key) {
         try {
             return this.s3Client.getObject(bucketName, key);
-        } catch (SdkClientException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while getting file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
@@ -150,10 +145,10 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public void deleteRecord(String bucketName, String key) {
+    public void deleteFile(String bucketName, String key) {
         try {
             this.s3Client.deleteObject(bucketName, key);
-        } catch (SdkClientException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Exception while deleting file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }

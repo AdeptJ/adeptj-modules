@@ -19,15 +19,13 @@
 */
 package com.adeptj.modules.aws.s3.api;
 
+import com.adeptj.modules.aws.s3.UploadRequest;
 import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 
-import java.io.InputStream;
-
 /**
- * API for storing data in AWS S3 buckets.
+ * Service for various operations on AWS S3.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
@@ -35,15 +33,13 @@ public interface StorageService {
 
     Bucket createBucket(String bucketName);
 
-    PutObjectResult createFolder(String bucketName, String folderName);
-
     void deleteBucket(String bucketName);
 
-    PutObjectResult createRecord(String bucketName, String key, InputStream data, long contentLength);
+    PutObjectResult createFolder(String bucketName, String folderName);
 
-    PutObjectResult createRecord(String bucketName, String key, ObjectMetadata metadata, InputStream data);
+    PutObjectResult uploadFile(UploadRequest request);
 
-    S3Object getRecord(String bucketName, String key);
+    S3Object getFile(String bucketName, String key);
 
-    void deleteRecord(String bucketName, String key);
+    void deleteFile(String bucketName, String key);
 }
