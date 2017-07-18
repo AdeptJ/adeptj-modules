@@ -24,17 +24,20 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.4.Final</version>
+        <version>1.0.5.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-commons-utils</artifactId>
+    <artifactId>adeptj-modules-aws-core</artifactId>
     <version>1.0.0.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Commons :: Utils</name>
-    <description>AdeptJ Modules :: Commons :: Services And Utilities</description>
+    <name>AdeptJ Modules :: AWS :: Core</name>
+    <description>AdeptJ Modules :: AWS Core</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <aws.sdk.core.version>1.11.163</aws.sdk.core.version>
+        <ion.java.version>1.0.2</ion.java.version>
+        <aws.s3.version>1.11.163</aws.s3.version>
     </properties>
 
     <build>
@@ -75,12 +78,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>com.adeptj</groupId>
-                <artifactId>adeptj-maven-plugin</artifactId>
-                <version>${adeptj-maven-plugin.version}</version>
-            </plugin>
-
         </plugins>
 
     </build>
@@ -88,30 +85,45 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-            <scope>provided</scope>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>${aws.sdk.core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.dataformat</groupId>
+                    <artifactId>jackson-dataformat-cbor</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>joda-time</groupId>
+                    <artifactId>joda-time</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
-            <scope>provided</scope>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>jmespath-java</artifactId>
+            <version>${aws.sdk.core.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws.s3.version}</version>
         </dependency>
 
     </dependencies>
-
 
 </project>

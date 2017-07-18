@@ -17,40 +17,24 @@
 #                                                                             #
 ###############################################################################
 */
-
-package com.adeptj.modules.security.jwt;
+package com.adeptj.modules.jaxrs.core;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.osgi.service.metatype.annotations.Option;
+
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
- * JWT Configurations.
+ * JaxRSAuthenticationConfig.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh.Kumar, AdeptJ.
  */
-@ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for JWT Service")
-public @interface JwtConfig {
+@ObjectClassDefinition(name = "AdeptJ JAX-RS Authentication Configurations", description = "AdeptJ JAX-RS Auth Configs")
+public @interface JaxRSAuthenticationConfig {
 
-    @AttributeDefinition(name = "JWT Signing Key", description = "Signing Key for JWT")
-    String signingKey();
+    @AttributeDefinition(name = "JWT Subject", description = "Subject for JWT issuance")
+    String subject();
 
-    @AttributeDefinition(name = "PEM File Location", description = "Location of PEM file for JWT signing")
-    String pemFileLocation() default "adeptj-runtime/deployment/default.pem";
-
-    @AttributeDefinition(name = "JWT Signature Algorithm", description = "Signature Algorithm for JWT", options = {
-            @Option(label = "HS256", value = "HS256"),
-            @Option(label = "HS384", value = "HS384"),
-            @Option(label = "HS512", value = "HS512"),
-            @Option(label = "RS256", value = "RS256"),
-            @Option(label = "RS384", value = "RS384"),
-            @Option(label = "RS512", value = "RS512"),
-    })
-    String signatureAlgo();
-
-    @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
-    String issuer() default "AdeptJ Runtime JWT Issuer";
-
-    @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
-    long expirationTime() default 30L;
+    @AttributeDefinition(name = "JWT Password", description = "Password of the Subject for JWT issuance", type = PASSWORD)
+    String password();
 }

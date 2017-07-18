@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.aws.s3.internal;
 
-import com.adeptj.modules.aws.base.AwsException;
+import com.adeptj.modules.aws.core.AwsException;
 import com.adeptj.modules.aws.s3.S3Config;
 import com.adeptj.modules.aws.s3.UploadRequest;
 import com.adeptj.modules.aws.s3.api.StorageService;
@@ -115,9 +115,9 @@ public class AwsS3Service implements StorageService {
      */
     @Override
     public PutObjectResult uploadFile(UploadRequest request) {
-        InputStream data = Objects.requireNonNull(request.getData(), () -> DATA_NULL_MSG);
-        ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), () -> OBJ_METADATA_NULL_MSG);
-        CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), () -> ACL_NULL_MSG);
+        InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);
+        ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), OBJ_METADATA_NULL_MSG);
+        CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), ACL_NULL_MSG);
         try {
             return this.s3Client.putObject(new PutObjectRequest(request.getBucketName(), request.getKey(),
                     data, objectMetadata)

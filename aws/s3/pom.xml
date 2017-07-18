@@ -37,7 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aws.s3.version>1.11.163</aws.s3.version>
         <aws.sdk.core.version>1.11.163</aws.sdk.core.version>
-        <aws.base.version>1.0.0.Final</aws.base.version>
+        <adeptj.aws.core.version>1.0.0.Final</adeptj.aws.core.version>
     </properties>
 
     <build>
@@ -172,8 +172,8 @@
 
         <dependency>
             <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-aws-base</artifactId>
-            <version>${aws.base.version}</version>
+            <artifactId>adeptj-modules-aws-core</artifactId>
+            <version>${adeptj.aws.core.version}</version>
             <scope>provided</scope>
         </dependency>
 

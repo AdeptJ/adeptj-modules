@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.aws.sns.internal;
 
-import com.adeptj.modules.aws.base.AwsException;
+import com.adeptj.modules.aws.core.AwsException;
 import com.adeptj.modules.aws.sns.SmsConfig;
 import com.adeptj.modules.aws.sns.SmsRequest;
 import com.adeptj.modules.aws.sns.SmsResponse;

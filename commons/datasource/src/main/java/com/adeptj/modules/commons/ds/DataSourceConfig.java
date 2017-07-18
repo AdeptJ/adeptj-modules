@@ -31,7 +31,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  */
 @ObjectClassDefinition(
         name = "AdeptJ HikariDataSource Configurations",
-        description = "Configurations of HikariDataSource.")
+        description = "Configurations of HikariDataSource."
+)
 public @interface DataSourceConfig {
 
     @AttributeDefinition(name = "poolName", description = "DataSource Pool Name")
@@ -46,25 +47,40 @@ public @interface DataSourceConfig {
     @AttributeDefinition(name = "username", description = "JDBC default authentication username")
     String username() default "root";
 
-    @AttributeDefinition(name = "password", description = "JDBC default authentication password", type = AttributeType.PASSWORD)
+    @AttributeDefinition(
+            name = "password",
+            description = "JDBC default authentication password",
+            type = AttributeType.PASSWORD
+    )
     String password();
 
     @AttributeDefinition(name = "autoCommit", description = "JDBC auto-commit behavior of connections")
     boolean autoCommit() default true;
 
-    @AttributeDefinition(name = "connectionTimeout", description = "Maximum number of milliseconds that a client will wait for a connection from the pool")
+    @AttributeDefinition(
+            name = "connectionTimeout",
+            description = "Maximum number of milliseconds that a client will wait for a connection from the pool"
+    )
     long connectionTimeout() default 30000; // 30 Seconds
 
-    @AttributeDefinition(name = "idleTimeout", description = "Maximum amount of time that a connection is allowed to sit idle in the pool")
+    @AttributeDefinition(
+            name = "idleTimeout",
+            description = "Maximum amount of time that a connection is allowed to sit idle in the pool"
+    )
     long idleTimeout() default 600000; // 10 Minutes
 
     @AttributeDefinition(name = "maxLifetime", description = "Maximum lifetime of a connection in the pool")
     long maxLifetime() default 1800000; // 30 Minutes
 
     // Configure HikariDataSource as a fixed size pool.
-    @AttributeDefinition(name = "minimumIdle", description = "Minimum number of idle connections that HikariCP tries to maintain in the pool")
+    @AttributeDefinition(
+            name = "minimumIdle",
+            description = "Minimum number of idle connections that HikariCP tries to maintain in the pool")
     int minimumIdle() default 32; // 32 Connections;
 
-    @AttributeDefinition(name = "maximumPoolSize", description = "Maximum size that the pool is allowed to reach, including both idle and in-use connections")
+    @AttributeDefinition(
+            name = "maximumPoolSize",
+            description = "Maximum size that the pool is allowed to reach, including both idle and in-use connections"
+    )
     int maximumPoolSize() default 32; // 32 Connections;
 }

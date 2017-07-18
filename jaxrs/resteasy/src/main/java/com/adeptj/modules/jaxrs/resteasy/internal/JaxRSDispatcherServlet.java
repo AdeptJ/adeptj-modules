@@ -21,7 +21,7 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
-import com.adeptj.modules.jaxrs.base.JwtCheckFilter;
+import com.adeptj.modules.jaxrs.core.JwtCheckFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
 import com.adeptj.modules.security.jwt.JwtService;

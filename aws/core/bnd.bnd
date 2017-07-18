@@ -20,36 +20,16 @@
 
 -dsannotations: *
 
-Include-Resource: resteasy-*.jar, apache-mime4j-*.jar
+Include-Resource: aws-java-sdk-*.jar,\
+                  jmespath-java*.jar
 
-Bundle-ClassPath: ., resteasy-jaxrs-3.1.3.Final.jar,\
-                     resteasy-cdi-3.1.3.Final.jar,\
-                     resteasy-validator-provider-11-3.1.3.Final.jar,\
-                     resteasy-jackson2-provider-3.1.3.Final.jar,\
-                     resteasy-jaxb-provider-3.1.3.Final.jar,\
-                     resteasy-multipart-provider-3.1.3.Final.jar,\
-                     apache-mime4j-0.6.1.jar
+Bundle-ClassPath: ., aws-java-sdk-core-1.11.163.jar,\
+                     aws-java-sdk-s3-1.11.163.jar,\
+                     jmespath-java-1.11.163.jar
 
--exportcontents: com.adeptj.modules.jaxrs.resteasy, *
+-exportcontents: com.adeptj.modules.aws.core,\
+                 *
 
-Import-Package: \
-  com.fasterxml.jackson.jaxrs.xml;version="2.8.8",\
-  javax.mail;version="1.5",\
-  javax.servlet;\
-  javax.servlet.http;\
-  javax.servlet.descriptor;\
-  javax.servlet.annotation;version="3.1.0",\
-  com.sun.el.parser;\
-  com.sun.el.lang;\
-  com.sun.el.stream;\
-  com.sun.el.util;\
-  com.sun.el;version="3.0.0",\
-  com.adeptj.modules.jaxrs.core;version="1.0.0",\
-  com.adeptj.modules.security.jwt;version="1.0.0",\
-  *
-  
 Bundle-Name: ${project.name}
-
-Bundle-Category: AdeptJ JAX-RS
-
+Bundle-Category: AdeptJ AWS
 Bundle-Vendor: AdeptJ

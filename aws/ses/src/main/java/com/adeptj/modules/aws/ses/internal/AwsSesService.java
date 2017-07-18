@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.aws.ses.internal;
 
-import com.adeptj.modules.aws.base.AwsException;
+import com.adeptj.modules.aws.core.AwsException;
 import com.adeptj.modules.aws.ses.EmailConfig;
 import com.adeptj.modules.aws.ses.EmailRequest;
 import com.adeptj.modules.aws.ses.EmailResponse;
