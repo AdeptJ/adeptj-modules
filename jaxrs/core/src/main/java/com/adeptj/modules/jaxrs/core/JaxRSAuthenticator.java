@@ -35,6 +35,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -84,7 +86,9 @@ public class JaxRSAuthenticator {
                 if (authenticationInfo.getSubject().equals(subject)
                         && Arrays.equals(authenticationInfo.getPassword(), password.toCharArray())) {
                     // All well here, now issue a token for the Subject
-                    response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(subject)).build();
+                    Map<String, String> payload = new HashMap<>();
+                    payload.put("subject", subject);
+                    response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(payload)).build();
                 } else {
                     response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
                 }

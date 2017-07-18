@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.security.jwt;
 
+import java.util.Map;
+
 /**
  * Service for signing and parsing JWT.
  *
@@ -27,7 +29,7 @@ package com.adeptj.modules.security.jwt;
  */
 public interface JwtService {
 
-    String issueToken(String subject);
+    String issueToken(Map<String, String> payload);
 
     boolean parseToken(String claimsJws);
 }

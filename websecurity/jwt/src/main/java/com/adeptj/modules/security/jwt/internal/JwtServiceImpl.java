@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -48,6 +47,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -84,8 +84,6 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String DEFAULT_KEY_FILE = "/default.pem";
 
-    private static final String EXTN_PEM = ".pem";
-
     private static final String KEY_NULL_MSG = "Key must not be null!!";
 
     private JwtConfig config;
@@ -97,10 +95,10 @@ public class JwtServiceImpl implements JwtService {
     private Key signingKey;
 
     @Override
-    public String issueToken(String subject) {
+    public String issueToken(Map<String, String> payload) {
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
-                .setSubject(subject)
+                .setSubject(payload.get("subject"))
                 .setIssuer(this.config.issuer())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(LocalDateTime
@@ -170,30 +168,40 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Key resolveSigningKey() throws Exception {
-        Key key = null;
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
         // 1. try the config location
         String keyFileLocation = System.getProperty(CURR_DIR) + File.separator + this.config.keyFileLocation();
-        LOGGER.info("Using Key file from location: [{}]", keyFileLocation);
-        if (StringUtils.endsWith(keyFileLocation, EXTN_PEM)) {
-            try (FileInputStream inputStream = new FileInputStream(keyFileLocation)) {
-                key = this.createKey(keyFactory, inputStream);
-            } catch (FileNotFoundException ex) {
-                //It's ok if pem file is not found. Will try the default.pem next.
-            }
-        }
+        LOGGER.info("Loading Key file from location: [{}]", keyFileLocation);
+        Key key = this.loadFromLocation(keyFactory, keyFileLocation);
         if (key == null) {
-            LOGGER.warn("Couldn't pick Key file from location [{}], using the default one!!", keyFileLocation);
-            try (InputStream inputStream = JwtServiceImpl.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
-                key = this.createKey(keyFactory, inputStream);
-            } catch (Exception ex) {
-                LOGGER.error(ex.getMessage(), ex);
-            }
+            LOGGER.warn("Couldn't load Key file from location [{}], using the default one!!", keyFileLocation);
+            // 2. Use the default one that is embedded with this module.
+            key = this.loadDefault(keyFactory);
         }
         return key;
     }
 
-    private Key createKey(KeyFactory keyFactory, InputStream inputStream) throws Exception {
+    private Key loadDefault(KeyFactory keyFactory) {
+        Key key = null;
+        try (InputStream inputStream = JwtServiceImpl.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
+            key = this.generatePrivateKey(keyFactory, inputStream);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        return key;
+    }
+
+    private Key loadFromLocation(KeyFactory keyFactory, String keyFileLocation) throws Exception {
+        Key key = null;
+        try (FileInputStream inputStream = new FileInputStream(keyFileLocation)) {
+            key = this.generatePrivateKey(keyFactory, inputStream);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        return key;
+    }
+
+    private Key generatePrivateKey(KeyFactory keyFactory, InputStream inputStream) throws Exception {
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder()
                 .decode(IOUtils.toString(inputStream, UTF8)
                         .replace(KEY_HEADER, EMPTY)
