@@ -40,6 +40,61 @@
         <aws.s3.version>1.11.163</aws.s3.version>
     </properties>
 
+    <!-- Project Information -->
+    <organization>
+        <name>AdeptJ</name>
+        <url>http://www.adeptj.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>rakeshk15</id>
+            <name>Rakesh Kumar</name>
+            <email>irakeshk@outlook.com</email>
+            <url>https://www.linkedin.com/in/iamrakesh</url>
+            <organization>AdeptJ</organization>
+            <organizationUrl>http://www.adeptj.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+5:30</timezone>
+            <properties>
+                <picUrl>https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <url>https://github.com/AdeptJ/adeptj-modules/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh-adeptj</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh-adeptj</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/AdeptJ/adeptj-modules</url>
+        <connection>scm:git:git@github.com:AdeptJ/adeptj-modules.git</connection>
+        <developerConnection>scm:git:git@github.com:AdeptJ/adeptj-modules.git</developerConnection>
+    </scm>
+
     <build>
 
         <!-- Below BND plugin is required to process the OSGi Annotation-->

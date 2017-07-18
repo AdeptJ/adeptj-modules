@@ -38,7 +38,7 @@ import java.util.Dictionary;
 import static java.lang.invoke.MethodType.methodType;
 
 /**
- * ConfigurationListener for Felix {@link org.apache.felix.webconsole.internal.servlet.OsgiManager}
+ * ConfigurationListener for Felix OsgiManager
  *
  * @author Rakesh.Kumar, AdeptJ
  */
