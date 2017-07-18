@@ -37,16 +37,16 @@
 
     <modules>
 
-        <module>api</module>
-        <module>core</module>
+        <!--<module>api</module>-->
+        <!--<module>core</module>-->
         <module>jpa</module>
-        <module>aerospike</module>
-        <module>couchdb</module>
-        <module>mongodb</module>
-        <module>redis</module>
-        <module>cockroachdb</module>
-        <module>couchbase</module>
-        <module>cassandra</module>
+        <!--<module>aerospike</module>-->
+        <!--<module>couchdb</module>-->
+        <!--<module>mongodb</module>-->
+        <!--<module>redis</module>-->
+        <!--<module>cockroachdb</module>-->
+        <!--<module>couchbase</module>-->
+        <!--<module>cassandra</module>-->
 
     </modules>
 

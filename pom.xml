@@ -39,13 +39,13 @@
         <module>parent</module>
         <module>commons</module>
         <module>webconsole</module>
-        <module>cache</module>
+        <!--<module>cache</module>-->
         <module>websecurity</module>
         <module>jaxrs</module>
         <module>aws</module>
         <module>data</module>
-        <module>mvc</module>
-        <module>search</module>
+        <!--<module>mvc</module>-->
+        <!--<module>search</module>-->
 
     </modules>
 

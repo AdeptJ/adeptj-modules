@@ -58,7 +58,7 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * Service for signing and parsing JWT.
+ * Service for signing and parsing JWT
  *
  * @author Rakesh.Kumar, AdeptJ
  */

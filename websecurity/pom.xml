@@ -37,10 +37,10 @@
 
     <modules>
 
-        <module>shiro</module>
-        <module>esapi</module>
+        <!--<module>shiro</module>-->
+        <!--<module>esapi</module>-->
         <module>jwt</module>
-        <module>oauth2</module>
+        <!--<module>oauth2</module>-->
 
     </modules>
 

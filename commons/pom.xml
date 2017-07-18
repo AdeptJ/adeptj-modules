@@ -38,12 +38,12 @@
     <modules>
 
         <module>utils</module>
-        <module>beanvalidation</module>
+        <!--<module>beanvalidation</module>-->
         <module>datasource</module>
-        <module>javamail</module>
-        <module>logging</module>
-        <module>i18n</module>
-        <module>scheduler</module>
+        <!--<module>javamail</module>-->
+        <!--<module>logging</module>-->
+        <!--<module>i18n</module>-->
+        <!--<module>scheduler</module>-->
 
     </modules>
 
