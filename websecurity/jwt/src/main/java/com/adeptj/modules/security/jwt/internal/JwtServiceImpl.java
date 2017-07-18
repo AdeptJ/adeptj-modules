@@ -54,6 +54,7 @@ import java.util.UUID;
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -67,7 +68,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
 
-    private static final String BEARER_SCHEMA = "Bearer ";
+    private static final String BEARER_SCHEMA = "Bearer";
 
     private static final String UTF8 = "UTF-8";
 
@@ -109,7 +110,7 @@ public class JwtServiceImpl implements JwtService {
                         .toInstant()))
                 .setId(UUID.randomUUID().toString());
         this.signWith(jwtBuilder);
-        return BEARER_SCHEMA + jwtBuilder.compact();
+        return BEARER_SCHEMA + SPACE + jwtBuilder.compact();
     }
 
     private void signWith(JwtBuilder jwtBuilder) {
