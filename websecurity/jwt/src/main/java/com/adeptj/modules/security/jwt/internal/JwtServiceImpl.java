@@ -23,15 +23,11 @@ package com.adeptj.modules.security.jwt.internal;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
@@ -52,6 +48,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
@@ -70,7 +67,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
 
-    private static final String BEARER = "Bearer ";
+    private static final String BEARER_SCHEMA = "Bearer ";
 
     private static final String UTF8 = "UTF-8";
 
@@ -87,6 +84,8 @@ public class JwtServiceImpl implements JwtService {
     private static final String DEFAULT_KEY_FILE = "/default.pem";
 
     private static final String EXTN_PEM = ".pem";
+
+    private static final String KEY_NULL_MSG = "Key must not be null!!";
 
     private JwtConfig config;
 
@@ -110,37 +109,37 @@ public class JwtServiceImpl implements JwtService {
                         .toInstant()))
                 .setId(UUID.randomUUID().toString());
         this.signWith(jwtBuilder);
-        return BEARER + jwtBuilder.compact();
+        return BEARER_SCHEMA + jwtBuilder.compact();
     }
 
     private void signWith(JwtBuilder jwtBuilder) {
-        if (StringUtils.isEmpty(this.base64EncodedSigningKey)) {
-            jwtBuilder.signWith(this.signatureAlgo, this.signingKey);
-        } else {
+        if (this.signingKey == null) {
             jwtBuilder.signWith(this.signatureAlgo, this.base64EncodedSigningKey);
+        } else {
+            jwtBuilder.signWith(this.signatureAlgo, this.signingKey);
         }
     }
 
     @Override
-    public boolean parseToken(String jwt) {
+    public boolean parseToken(String claimsJws) {
         boolean tokenParsed = false;
         try {
             JwtParser parser = Jwts.parser();
             this.setSigningKey(parser);
-            Jws<Claims> claimsJws = parser.parseClaimsJws(jwt);
-            LOGGER.info("Subject [{}] has a valid token!!", claimsJws.getBody().getSubject());
+            Jws<Claims> jws = parser.parseClaimsJws(claimsJws);
+            LOGGER.info("Subject [{}] has a valid token!!", jws.getBody().getSubject());
             tokenParsed = true;
-        } catch (SignatureException | ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             LOGGER.error("Invalid JWT!!", ex);
         }
         return tokenParsed;
     }
 
     private void setSigningKey(JwtParser parser) {
-        if (StringUtils.isEmpty(this.base64EncodedSigningKey)) {
-            parser.setSigningKey(this.signingKey);
-        } else {
+        if (this.signingKey == null) {
             parser.setSigningKey(this.base64EncodedSigningKey);
+        } else {
+            parser.setSigningKey(this.signingKey);
         }
     }
 
@@ -155,13 +154,13 @@ public class JwtServiceImpl implements JwtService {
             if (StringUtils.isNotEmpty(signKey) && this.signatureAlgo.isHmac()) {
                 this.base64EncodedSigningKey = new String(Base64.getEncoder().encode(signKey.getBytes(UTF8)));
             } else if (!this.signatureAlgo.isHmac()) {
-                this.signingKey = this.resolveSigningKey();
+                this.signingKey = Objects.requireNonNull(this.resolveSigningKey(), KEY_NULL_MSG);
             } else {
                 // Default is RS256
                 if (this.signatureAlgo.isHmac()) {
                     this.signatureAlgo = SignatureAlgorithm.RS256;
                 }
-                this.signingKey = this.resolveSigningKey();
+                this.signingKey = Objects.requireNonNull(this.resolveSigningKey(), KEY_NULL_MSG);
             }
         } catch (Exception ex) { // NOSONAR
             // Let the exception be thrown so that SCR would not create a service object of this component.

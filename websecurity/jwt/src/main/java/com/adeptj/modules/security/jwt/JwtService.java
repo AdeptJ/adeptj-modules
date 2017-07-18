@@ -29,5 +29,5 @@ public interface JwtService {
 
     String issueToken(String subject);
 
-    boolean parseToken(String jwt);
+    boolean parseToken(String claimsJws);
 }
