@@ -54,7 +54,8 @@ public class JwtCheckFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (this.jwtService == null) {
-            LOGGER.warn("JwtService not available!");
+            LOGGER.warn("Can't check token as JwtService unavailable!");
+            requestContext.abortWith(Response.status(UNAUTHORIZED).entity("JwtService unavailable!!").build());
         } else if(!this.jwtService.parseToken(substring(requestContext.getHeaderString(AUTHORIZATION), LEN))) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         }

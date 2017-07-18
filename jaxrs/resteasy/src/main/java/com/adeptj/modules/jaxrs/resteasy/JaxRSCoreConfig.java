@@ -49,5 +49,5 @@ public @interface JaxRSCoreConfig {
     String[] exposedHeaders();
 
     @AttributeDefinition(name = "CORS Allowed Origins", description = "Allowed origins for CORS request")
-    String[] allowedOrigins() default {"*"};
+    String[] allowedOrigins() default "*";
 }

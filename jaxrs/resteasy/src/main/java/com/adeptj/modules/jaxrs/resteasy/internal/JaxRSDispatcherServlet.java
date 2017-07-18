@@ -134,7 +134,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
                 this.providerFactory = dispatcher.getProviderFactory();
-                this.providerFactory.register(new JaxRSCorsFeature(this.config));
+                this.providerFactory.registerProviderInstance(new JaxRSCorsFeature(this.config));
                 this.removeDefaultGeneralValidator(providerFactory);
                 this.providerFactory.registerProviderInstance(new GeneralValidatorContextResolver());
                 this.openServiceTracker(dispatcher);
@@ -155,7 +155,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     private void removeDefaultGeneralValidator(ResteasyProviderFactory providerFactory) {
         try {
             // First remove the default RESTEasy GeneralValidator so that we can register ours.
-            Object validator = Map.class
+            Map.class
                     .cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
                             .get(providerFactory))
                     .remove(GeneralValidator.class);
