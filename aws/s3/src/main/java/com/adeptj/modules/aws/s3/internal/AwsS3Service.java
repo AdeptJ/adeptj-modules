@@ -123,7 +123,7 @@ public class AwsS3Service implements StorageService {
                     data, objectMetadata)
                     .withCannedAcl(cannedACL));
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while creating file!!", ex);
+            LOGGER.error("Exception while uploading file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
     }

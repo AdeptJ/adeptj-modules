@@ -37,6 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aws.ses.version>1.11.163</aws.ses.version>
         <aws.sdk.core.version>1.11.163</aws.sdk.core.version>
+        <aws.base.version>1.0.0.Final</aws.base.version>
     </properties>
 
     <build>
@@ -157,7 +158,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
-            <version>3.1.3.Final</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -174,7 +174,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-aws-base</artifactId>
-            <version>1.0.0.Final</version>
+            <version>${aws.base.version}</version>
             <scope>provided</scope>
         </dependency>
 
