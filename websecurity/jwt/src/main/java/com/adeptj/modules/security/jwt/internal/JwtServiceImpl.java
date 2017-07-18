@@ -84,7 +84,9 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String CURR_DIR = "user.dir";
 
-    private static final String DEFAULT_PEM = "/default.pem";
+    private static final String DEFAULT_KEY_FILE = "/default.pem";
+
+    private static final String EXTN_PEM = ".pem";
 
     private JwtConfig config;
 
@@ -155,11 +157,14 @@ public class JwtServiceImpl implements JwtService {
             } else if (!this.signatureAlgo.isHmac()) {
                 this.signingKey = this.resolveSigningKey();
             } else {
-                // Default is RSA
+                // Default is RS256
+                if (this.signatureAlgo.isHmac()) {
+                    this.signatureAlgo = SignatureAlgorithm.RS256;
+                }
                 this.signingKey = this.resolveSigningKey();
             }
         } catch (Exception ex) { // NOSONAR
-            // Let the exception be thrown so that SCR would not create a service object of this.
+            // Let the exception be thrown so that SCR would not create a service object of this component.
             throw new RuntimeException(ex); // NOSONAR
         }
     }
@@ -168,16 +173,18 @@ public class JwtServiceImpl implements JwtService {
         Key key = null;
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
         // 1. try the config location
-        String pemFileLocation = System.getProperty(CURR_DIR) + File.separator + this.config.pemFileLocation();
-        if (StringUtils.isNotEmpty(pemFileLocation)) {
-            try (FileInputStream inputStream = new FileInputStream(pemFileLocation)) {
+        String keyFileLocation = System.getProperty(CURR_DIR) + File.separator + this.config.keyFileLocation();
+        LOGGER.info("Using Key file from location: [{}]", keyFileLocation);
+        if (StringUtils.endsWith(keyFileLocation, EXTN_PEM)) {
+            try (FileInputStream inputStream = new FileInputStream(keyFileLocation)) {
                 key = this.createKey(keyFactory, inputStream);
             } catch (FileNotFoundException ex) {
                 //It's ok if pem file is not found. Will try the default.pem next.
             }
         }
         if (key == null) {
-            try (InputStream inputStream = JwtServiceImpl.class.getResourceAsStream(DEFAULT_PEM)) {
+            LOGGER.warn("Couldn't pick Key file from location [{}], using the default one!!", keyFileLocation);
+            try (InputStream inputStream = JwtServiceImpl.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
                 key = this.createKey(keyFactory, inputStream);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage(), ex);

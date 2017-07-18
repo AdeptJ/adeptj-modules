@@ -35,22 +35,28 @@ public @interface JwtConfig {
     @AttributeDefinition(name = "JWT Signing Key", description = "Signing Key for JWT")
     String signingKey();
 
-    @AttributeDefinition(name = "PEM File Location", description = "Location of PEM file for JWT signing")
-    String pemFileLocation() default "adeptj-runtime/deployment/default.pem";
+    @AttributeDefinition(
+            name = "Key File Location",
+            description = "Location of Key file for JWT signing, relative to current working directory, " +
+                    "Note: Please don't use the default Key file in production environment!")
+    String keyFileLocation() default "adeptj-runtime/deployment/default.pem";
 
-    @AttributeDefinition(name = "JWT Signature Algorithm", description = "Signature Algorithm for JWT", options = {
-            @Option(label = "HS256", value = "HS256"),
-            @Option(label = "HS384", value = "HS384"),
-            @Option(label = "HS512", value = "HS512"),
-            @Option(label = "RS256", value = "RS256"),
-            @Option(label = "RS384", value = "RS384"),
-            @Option(label = "RS512", value = "RS512"),
-    })
+    @AttributeDefinition(
+            name = "JWT Signature Algorithm",
+            description = "Signature Algorithm for JWT",
+            options = {
+                    @Option(label = "RS256", value = "RS256"),
+                    @Option(label = "RS384", value = "RS384"),
+                    @Option(label = "RS512", value = "RS512"),
+                    @Option(label = "HS256", value = "HS256"),
+                    @Option(label = "HS384", value = "HS384"),
+                    @Option(label = "HS512", value = "HS512"),
+            })
     String signatureAlgo();
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime JWT Issuer";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
-    long expirationTime() default 30L;
+    long expirationTime() default 60L;
 }
