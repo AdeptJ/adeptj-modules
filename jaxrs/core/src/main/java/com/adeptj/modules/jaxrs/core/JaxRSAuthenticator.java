@@ -36,11 +36,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -83,27 +79,26 @@ public class JaxRSAuthenticator {
     @POST
     @Path("/jwt/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response issueToken(@NotNull @FormParam("subject") String subject, @NotNull @FormParam("password") String password) {
+    public Response handleSecurity(@NotNull @FormParam("subject") String subject, @NotNull @FormParam("password") String password) {
+        Response response;
         if (this.jwtService == null) {
             LOGGER.warn("Can't issue token as JwtService unavailable!");
-            return Response.status(UNAUTHORIZED).entity("JwtService unavailable!!").build();
-        }
-        Response response;
-        try {
-            // First authenticate the user using the credentials provided.
-            Optional<JaxRSAuthenticationInfo> authenticationInfo = this.handleSecurity(subject, password);
-            if (authenticationInfo.isPresent()) {
-                // All well here, now issue a token for the Subject
-                Map<String, String> payload = new HashMap<>();
-                payload.putAll(authenticationInfo.get().getData());
-                payload.put(SUBJECT, subject);
-                response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(payload)).build();
-            } else {
-                response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
+            response = Response.status(UNAUTHORIZED).entity("JwtService unavailable!!").build();
+        } else {
+            try {
+                JaxRSAuthenticationInfo authInfo = this.getAuthenticationInfo(subject, password);
+                if (authInfo == null) {
+                    response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
+                } else {
+                    // All well here, now issue a token for the Subject
+                    authInfo.putValue(SUBJECT, subject);
+                    response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(authInfo.getData()))
+                            .build();
+                }
+            } catch (Exception ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                return Response.status(UNAUTHORIZED).build();
             }
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            return Response.status(UNAUTHORIZED).build();
         }
         return response;
     }
@@ -115,12 +110,14 @@ public class JaxRSAuthenticator {
         return Response.ok("JWT is valid!!").build();
     }
 
-    private Optional<JaxRSAuthenticationInfo> handleSecurity(String subject, String password) {
-        return this.authRealms
-                .stream()
-                .map((realm) -> realm.getAuthenticationInfo(subject, password))
-                .filter(Objects::nonNull)
-                .findAny();
+    private JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
+        for (JaxRSAuthenticationRealm realm : this.authRealms) {
+            JaxRSAuthenticationInfo authInfo = realm.getAuthenticationInfo(subject, password);
+            if (authInfo != null) {
+                return authInfo;
+            }
+        }
+        return null;
     }
 
     // LifeCycle Methods
