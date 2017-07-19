@@ -66,14 +66,10 @@ public class JaxRSAuthenticator {
 
     @Reference(
             service = JaxRSAuthenticationRepository.class,
-            bind = BIND_AUTH_SERVICE,
-            unbind = UNBIND_AUTH_SERVICE,
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC
     )
     private volatile List<JaxRSAuthenticationRepository> authRepositories = new ArrayList<>();
-
-    private volatile Map<String, JaxRSAuthenticationRepository> authRepositoryMap = new HashMap<>();
 
     @Reference(
             bind = BIND_JWT_SERVICE,
@@ -123,8 +119,8 @@ public class JaxRSAuthenticator {
     }
 
     private JaxRSAuthenticationInfo handleSecurity(String subject, String password) {
-        for (Map.Entry<String, JaxRSAuthenticationRepository> entry : this.authRepositoryMap.entrySet()) {
-            JaxRSAuthenticationInfo authenticationInfo = entry.getValue().getAuthenticationInfo(subject, password);
+        for (JaxRSAuthenticationRepository authRepository : this.authRepositories) {
+            JaxRSAuthenticationInfo authenticationInfo = authRepository.getAuthenticationInfo(subject, password);
             if (authenticationInfo != null) {
                 return authenticationInfo;
             }
@@ -133,18 +129,6 @@ public class JaxRSAuthenticator {
     }
 
     // LifeCycle Methods
-
-    protected void bindJaxRSAuthenticationRepository(JaxRSAuthenticationRepository authRepository) {
-        LOGGER.info("Binding JaxRSAuthenticationRepository: [{}]", authRepository);
-        this.authRepositoryMap.put(authRepository.getName(), authRepository);
-        this.authRepositories.add(authRepository);
-    }
-
-    protected void unbindJaxRSAuthenticationRepository(JaxRSAuthenticationRepository authRepository) {
-        LOGGER.info("Unbinding JaxRSAuthenticationRepository: [{}]", authRepository);
-        this.authRepositoryMap.remove(authRepository.getName());
-        this.authRepositories.remove(authRepository);
-    }
 
     protected void bindJwtService(JwtService jwtService) {
         LOGGER.info("Binding JwtService: [{}]", jwtService);
