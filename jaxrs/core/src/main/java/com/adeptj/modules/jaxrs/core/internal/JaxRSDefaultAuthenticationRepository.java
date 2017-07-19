@@ -17,30 +17,43 @@
 #                                                                             #
 ###############################################################################
 */
+package com.adeptj.modules.jaxrs.core.internal;
 
-package com.adeptj.modules.jaxrs.core;
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfoFactory;
+import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRepository;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * AuthenticationInfo holding subject and password for JAX-RS resource authorization.
+ * Default implementation of JaxRSAuthenticationRepository.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh.Kumar, AdeptJ.
  */
-public class JaxRSAuthenticationInfo {
+@Component(immediate = true)
+public class JaxRSDefaultAuthenticationRepository implements JaxRSAuthenticationRepository {
 
-    private String subject;
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDefaultAuthenticationRepository.class);
 
-    private char[] password;
+    private static final String DEFAULT_NAME = "Default JaxRSAuthenticationRepository";
 
-    public JaxRSAuthenticationInfo(String subject, String password) {
-        this.subject = subject;
-        this.password = password.toCharArray();
+    @Reference
+    private JaxRSAuthenticationInfoFactory authenticationInfoFactory;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return DEFAULT_NAME;
     }
 
-    public String getSubject() {
-        return subject;
+    @Override
+    public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
+        LOGGER.info("Getting JaxRSAuthenticationInfo for Subject: [{}]", subject);
+        return this.authenticationInfoFactory.getAuthenticationInfo(subject, password);
     }
 
-    public char[] getPassword() {
-        return password;
-    }
 }

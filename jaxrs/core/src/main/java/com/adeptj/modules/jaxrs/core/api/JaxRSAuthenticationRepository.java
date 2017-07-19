@@ -17,29 +17,24 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.adeptj.modules.jaxrs.core.api;
+
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 
 /**
- * JaxRSAuthenticationRepository.
+ * Authentication repository to be implemented by clients for providing JaxRSAuthenticationInfo.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@Component(immediate = true, service = JaxRSAuthenticationRepository.class)
-public class JaxRSAuthenticationRepository {
+public interface JaxRSAuthenticationRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthenticationRepository.class);
+    /**
+     * Provides a meaningful name to this AuthenticationRepository.
+     *
+     * @return a meaningful name to this AuthenticationRepository.
+     */
+    String getName();
 
-    @Reference
-    private JaxRSAuthenticationInfoFactory authenticationInfoFactory;
-
-    JaxRSAuthenticationInfo getAuthenticationInfo(String subject) {
-        LOGGER.info("Getting JaxRSAuthenticationInfo for Subject: [{}]", subject);
-        return this.authenticationInfoFactory.getAuthenticationInfo(subject);
-    }
-
+    JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password);
 }

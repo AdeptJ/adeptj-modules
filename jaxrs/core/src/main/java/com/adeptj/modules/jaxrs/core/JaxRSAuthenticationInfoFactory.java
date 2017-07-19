@@ -84,7 +84,7 @@ public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
         });
     }
 
-    JaxRSAuthenticationInfo getAuthenticationInfo(String subject) {
+    public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
         return this.authenticationInfoMap.get(subject);
     }
 }

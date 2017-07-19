@@ -20,12 +20,14 @@
 package com.adeptj.modules.jaxrs.core;
 
 import com.adeptj.modules.security.jwt.JwtService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
@@ -33,7 +35,6 @@ import java.io.IOException;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-import static org.apache.commons.lang3.StringUtils.substring;
 
 /**
  * Gets the HTTP Authorization header from the request and checks for the JWT (the Bearer string).
@@ -47,7 +48,12 @@ public class JwtCheckFilter implements ContainerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtCheckFilter.class);
 
-    private static final int LEN = "Bearer".length();
+    /**
+     * Bearer schema string length + 1
+     */
+    private static final int LEN = 7;
+
+    private static final String TOKEN_COOKIE_NAME = "token";
 
     private volatile JwtService jwtService;
 
@@ -55,10 +61,33 @@ public class JwtCheckFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (this.jwtService == null) {
             LOGGER.warn("Can't check token as JwtService unavailable!");
-            requestContext.abortWith(Response.status(UNAUTHORIZED).entity("JwtService unavailable!!").build());
-        } else if(!this.jwtService.parseToken(substring(requestContext.getHeaderString(AUTHORIZATION), LEN))) {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            this.handleJwtServiceUnavailability(requestContext);
+        } else {
+            String token = this.resolveToken(requestContext);
+            if (StringUtils.isBlank(token) || !this.jwtService.parseToken(token)) {
+                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            }
         }
+    }
+
+    private String resolveToken(ContainerRequestContext requestContext) {
+        String token = StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), LEN);
+        if (StringUtils.isBlank(token)) {
+            Cookie tokenCookie = requestContext.getCookies().get(TOKEN_COOKIE_NAME);
+            if (tokenCookie == null) {
+                LOGGER.warn("Exhausted all options to extract token!!");
+            } else {
+                token = tokenCookie.getValue();
+            }
+        }
+        return token;
+    }
+
+    private void handleJwtServiceUnavailability(ContainerRequestContext requestContext) {
+        requestContext.abortWith(Response
+                .status(UNAUTHORIZED)
+                .entity("JwtService unavailable!!")
+                .build());
     }
 
     public void setJwtService(JwtService jwtService) {

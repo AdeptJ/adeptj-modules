@@ -111,14 +111,6 @@ public class JwtServiceImpl implements JwtService {
         return BEARER_SCHEMA + SPACE + jwtBuilder.compact();
     }
 
-    private void signWith(JwtBuilder jwtBuilder) {
-        if (this.signingKey == null) {
-            jwtBuilder.signWith(this.signatureAlgo, this.base64EncodedSigningKey);
-        } else {
-            jwtBuilder.signWith(this.signatureAlgo, this.signingKey);
-        }
-    }
-
     @Override
     public boolean parseToken(String claimsJws) {
         boolean tokenParsed = false;
@@ -134,14 +126,6 @@ public class JwtServiceImpl implements JwtService {
         return tokenParsed;
     }
 
-    private void setSigningKey(JwtParser parser) {
-        if (this.signingKey == null) {
-            parser.setSigningKey(this.base64EncodedSigningKey);
-        } else {
-            parser.setSigningKey(this.signingKey);
-        }
-    }
-
     // LifeCycle Methods
 
     @Activate
@@ -152,7 +136,8 @@ public class JwtServiceImpl implements JwtService {
             String signKey = config.signingKey();
             if (StringUtils.isNotEmpty(signKey) && this.signatureAlgo.isHmac()) {
                 this.base64EncodedSigningKey = new String(Base64.getEncoder().encode(signKey.getBytes(UTF8)));
-            } else if (!this.signatureAlgo.isHmac()) {
+            } else if (StringUtils.isEmpty(signKey) && this.signatureAlgo.isHmac()) {
+                this.signatureAlgo = SignatureAlgorithm.RS256;
                 this.signingKey = Objects.requireNonNull(this.resolveSigningKey(), KEY_NULL_MSG);
             } else {
                 // Default is RS256
@@ -209,5 +194,19 @@ public class JwtServiceImpl implements JwtService {
                         .replaceAll(REGEX_SPACE, EMPTY))));
     }
 
+    private void signWith(JwtBuilder jwtBuilder) {
+        if (this.signingKey == null) {
+            jwtBuilder.signWith(this.signatureAlgo, this.base64EncodedSigningKey);
+        } else {
+            jwtBuilder.signWith(this.signatureAlgo, this.signingKey);
+        }
+    }
 
+    private void setSigningKey(JwtParser parser) {
+        if (this.signingKey == null) {
+            parser.setSigningKey(this.base64EncodedSigningKey);
+        } else {
+            parser.setSigningKey(this.signingKey);
+        }
+    }
 }

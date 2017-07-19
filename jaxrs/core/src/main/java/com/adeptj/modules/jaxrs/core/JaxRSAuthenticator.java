@@ -19,6 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.core;
 
+import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRepository;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,8 +35,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -57,8 +60,20 @@ public class JaxRSAuthenticator {
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
-    @Reference
-    private JaxRSAuthenticationRepository authenticationRepository;
+    private static final String BIND_AUTH_SERVICE = "bindJaxRSAuthenticationRepository";
+
+    private static final String UNBIND_AUTH_SERVICE = "unbindJaxRSAuthenticationRepository";
+
+    @Reference(
+            service = JaxRSAuthenticationRepository.class,
+            bind = BIND_AUTH_SERVICE,
+            unbind = UNBIND_AUTH_SERVICE,
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC
+    )
+    private volatile List<JaxRSAuthenticationRepository> authRepositories = new ArrayList<>();
+
+    private volatile Map<String, JaxRSAuthenticationRepository> authRepositoryMap = new HashMap<>();
 
     @Reference(
             bind = BIND_JWT_SERVICE,
@@ -79,9 +94,9 @@ public class JaxRSAuthenticator {
         Response response;
         try {
             // First authenticate the user using the credentials provided.
-            JaxRSAuthenticationInfo authenticationInfo = this.authenticationRepository.getAuthenticationInfo(subject);
+            JaxRSAuthenticationInfo authenticationInfo = this.handleSecurity(subject, password);
             if (authenticationInfo == null) {
-                response = Response.status(UNAUTHORIZED).entity("Unknown credentials!!").build();
+                response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
             } else {
                 if (authenticationInfo.getSubject().equals(subject)
                         && Arrays.equals(authenticationInfo.getPassword(), password.toCharArray())) {
@@ -107,7 +122,29 @@ public class JaxRSAuthenticator {
         return Response.ok("JWT is valid!!").build();
     }
 
+    private JaxRSAuthenticationInfo handleSecurity(String subject, String password) {
+        for (Map.Entry<String, JaxRSAuthenticationRepository> entry : this.authRepositoryMap.entrySet()) {
+            JaxRSAuthenticationInfo authenticationInfo = entry.getValue().getAuthenticationInfo(subject, password);
+            if (authenticationInfo != null) {
+                return authenticationInfo;
+            }
+        }
+        return null;
+    }
+
     // LifeCycle Methods
+
+    protected void bindJaxRSAuthenticationRepository(JaxRSAuthenticationRepository authRepository) {
+        LOGGER.info("Binding JaxRSAuthenticationRepository: [{}]", authRepository);
+        this.authRepositoryMap.put(authRepository.getName(), authRepository);
+        this.authRepositories.add(authRepository);
+    }
+
+    protected void unbindJaxRSAuthenticationRepository(JaxRSAuthenticationRepository authRepository) {
+        LOGGER.info("Unbinding JaxRSAuthenticationRepository: [{}]", authRepository);
+        this.authRepositoryMap.remove(authRepository.getName());
+        this.authRepositories.remove(authRepository);
+    }
 
     protected void bindJwtService(JwtService jwtService) {
         LOGGER.info("Binding JwtService: [{}]", jwtService);
