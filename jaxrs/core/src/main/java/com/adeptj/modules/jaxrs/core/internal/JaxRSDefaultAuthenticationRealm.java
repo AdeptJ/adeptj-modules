@@ -23,6 +23,7 @@ package com.adeptj.modules.jaxrs.core.internal;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationConfig;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
@@ -30,6 +31,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Objects;
@@ -72,7 +74,16 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
     @Override
     public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
         LOGGER.info("Getting JaxRSAuthenticationInfo for Subject: [{}]", subject);
-        return this.authenticationInfoMap.get(subject);
+        JaxRSAuthenticationInfo authenticationInfo = this.authenticationInfoMap.get(subject);
+        if (authenticationInfo == null || authenticationInfo.getPassword() == null ||
+                authenticationInfo.getPassword().length == 0) {
+            return null;
+        }
+        if (StringUtils.equals(authenticationInfo.getSubject(), subject) && Arrays.equals(subject.toCharArray(),
+                authenticationInfo.getPassword())) {
+            return authenticationInfo;
+        }
+        return null;
     }
 
     @Override
@@ -85,14 +96,14 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
         String subject = Objects.requireNonNull((String) properties.get("subject"), SUB_NULL_MSG);
         String password = Objects.requireNonNull((String) properties.get("password"), PWD_NULL_MSG);
         LOGGER.info("Creating JaxRSAuthenticationInfo for Subject: [{}]", subject);
-        if (this.pidVsSubjectMappings.containsValue(subject)) {
-            LOGGER.warn("Subject: [{}] already present, ignoring this config!!");
-        } else {
+        if (this.pidVsSubjectMappings.containsKey(pid)) {
+            // This is an update
             this.pidVsSubjectMappings.put(pid, subject);
-        }
-        if (this.authenticationInfoMap.containsKey(subject)) {
+            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password));
+        } else if (!this.pidVsSubjectMappings.containsKey(pid) && this.pidVsSubjectMappings.containsValue(subject)) {
             LOGGER.warn("Subject: [{}] already present, ignoring this config!!");
-        } else {
+        } else if (!this.pidVsSubjectMappings.containsKey(pid) && !this.pidVsSubjectMappings.containsValue(subject)) {
+            this.pidVsSubjectMappings.put(pid, subject);
             this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password));
         }
     }

@@ -123,12 +123,10 @@ public class JaxRSAuthenticator {
     // LifeCycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
-        LOGGER.info("Binding JwtService: [{}]", jwtService);
         this.jwtService = jwtService;
     }
 
     protected void unbindJwtService(JwtService jwtService) {
-        LOGGER.info("Unbinding JwtService: [{}]", jwtService);
         this.jwtService = null;
     }
 
