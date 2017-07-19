@@ -21,7 +21,7 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
-import com.adeptj.modules.jaxrs.core.JwtCheckFilter;
+import com.adeptj.modules.jaxrs.core.JwtFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
 import com.adeptj.modules.security.jwt.JwtService;
@@ -105,12 +105,12 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private ResteasyProviderFactory providerFactory;
 
-    private JwtCheckFilter jwtCheckFilter;
+    private JwtFilter jwtFilter;
 
     private JaxRSCoreConfig config;
 
     /**
-     * The {@link JwtService} is optionally referenced, if available then it is bind and {@link JwtCheckFilter}
+     * The {@link JwtService} is optionally referenced, if available then it is bind and {@link JwtFilter}
      * is registered with the {@link ResteasyProviderFactory}
      */
     @Reference(
@@ -155,8 +155,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     private void removeDefaultGeneralValidator(ResteasyProviderFactory providerFactory) {
         try {
             // First remove the default RESTEasy GeneralValidator so that we can register ours.
-            Map.class
-                    .cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
+            Map.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
                             .get(providerFactory))
                     .remove(GeneralValidator.class);
             LOGGER.info("Removed RESTEasy GeneralValidator!!");
@@ -168,24 +167,22 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     // LifeCycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
-        LOGGER.info("Binding JwtService: [{}]", jwtService);
         this.jwtService = jwtService;
-        this.registerJwtCheckFilter();
-        this.jwtCheckFilter.setJwtService(this.jwtService);
-    }
-
-    private void registerJwtCheckFilter() {
-        if (this.jwtCheckFilter == null) {
-            this.jwtCheckFilter = new JwtCheckFilter();
-            // Register the JwtCheckFilter only once.
-            this.providerFactory.registerProviderInstance(this.jwtCheckFilter);
-        }
+        this.registerJwtFilter();
+        this.jwtFilter.setJwtService(this.jwtService);
     }
 
     protected void unbindJwtService(JwtService jwtService) {
-        LOGGER.info("Unbinding JwtService: [{}]", jwtService);
         this.jwtService = null;
-        this.jwtCheckFilter.setJwtService(null);
+        this.jwtFilter.setJwtService(null);
+    }
+
+    private void registerJwtFilter() {
+        if (this.jwtFilter == null) {
+            this.jwtFilter = new JwtFilter();
+            // Register the JwtFilter only once.
+            this.providerFactory.registerProviderInstance(this.jwtFilter);
+        }
     }
 
     @Activate

@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.core;
 
-import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRepository;
+import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -36,10 +36,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -51,7 +52,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Path("/auth")
-@Component(immediate = true, service = JaxRSAuthenticator.class, property = "osgi.jaxrs.resource.base=auth")
+@Component(immediate = true, service = JaxRSAuthenticator.class, property = JaxRSAuthenticator.RESOURCE_BASE)
 public class JaxRSAuthenticator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthenticator.class);
@@ -60,16 +61,16 @@ public class JaxRSAuthenticator {
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
-    private static final String BIND_AUTH_SERVICE = "bindJaxRSAuthenticationRepository";
+    private static final String SUBJECT = "subject";
 
-    private static final String UNBIND_AUTH_SERVICE = "unbindJaxRSAuthenticationRepository";
+    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=auth";
 
     @Reference(
-            service = JaxRSAuthenticationRepository.class,
+            service = JaxRSAuthenticationRealm.class,
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC
     )
-    private volatile List<JaxRSAuthenticationRepository> authRepositories = new ArrayList<>();
+    private volatile List<JaxRSAuthenticationRealm> authRealms = new ArrayList<>();
 
     @Reference(
             bind = BIND_JWT_SERVICE,
@@ -80,7 +81,7 @@ public class JaxRSAuthenticator {
     private JwtService jwtService;
 
     @POST
-    @Path("jwt/issue")
+    @Path("/jwt/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response issueToken(@NotNull @FormParam("subject") String subject, @NotNull @FormParam("password") String password) {
         if (this.jwtService == null) {
@@ -90,19 +91,15 @@ public class JaxRSAuthenticator {
         Response response;
         try {
             // First authenticate the user using the credentials provided.
-            JaxRSAuthenticationInfo authenticationInfo = this.handleSecurity(subject, password);
-            if (authenticationInfo == null) {
-                response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
+            Optional<JaxRSAuthenticationInfo> authenticationInfo = this.handleSecurity(subject, password);
+            if (authenticationInfo.isPresent()) {
+                // All well here, now issue a token for the Subject
+                Map<String, String> payload = new HashMap<>();
+                payload.putAll(authenticationInfo.get().getData());
+                payload.put(SUBJECT, subject);
+                response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(payload)).build();
             } else {
-                if (authenticationInfo.getSubject().equals(subject)
-                        && Arrays.equals(authenticationInfo.getPassword(), password.toCharArray())) {
-                    // All well here, now issue a token for the Subject
-                    Map<String, String> payload = new HashMap<>();
-                    payload.put("subject", subject);
-                    response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(payload)).build();
-                } else {
-                    response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
-                }
+                response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
             }
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -112,20 +109,18 @@ public class JaxRSAuthenticator {
     }
 
     @GET
-    @Path("jwt/check")
-    @RequiresJwtCheck
+    @Path("/jwt/check")
+    @RequiresJwt
     public Response checkJwt() {
         return Response.ok("JWT is valid!!").build();
     }
 
-    private JaxRSAuthenticationInfo handleSecurity(String subject, String password) {
-        for (JaxRSAuthenticationRepository authRepository : this.authRepositories) {
-            JaxRSAuthenticationInfo authenticationInfo = authRepository.getAuthenticationInfo(subject, password);
-            if (authenticationInfo != null) {
-                return authenticationInfo;
-            }
-        }
-        return null;
+    private Optional<JaxRSAuthenticationInfo> handleSecurity(String subject, String password) {
+        return this.authRealms
+                .stream()
+                .map((realm) -> realm.getAuthenticationInfo(subject, password))
+                .filter(Objects::nonNull)
+                .findAny();
     }
 
     // LifeCycle Methods

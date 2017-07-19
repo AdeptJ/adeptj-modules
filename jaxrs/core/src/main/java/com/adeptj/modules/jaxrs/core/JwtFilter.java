@@ -37,16 +37,16 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
- * Gets the HTTP Authorization header from the request and checks for the JWT (the Bearer string).
+ * Gets the HTTP Authorization header/Cookie from the request and checks for the JWT token.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
 @Provider
-@RequiresJwtCheck
+@RequiresJwt
 @Priority(AUTHENTICATION)
-public class JwtCheckFilter implements ContainerRequestFilter {
+public class JwtFilter implements ContainerRequestFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtCheckFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
 
     /**
      * Bearer schema string length + 1

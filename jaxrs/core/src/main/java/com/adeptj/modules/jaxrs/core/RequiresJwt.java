@@ -17,43 +17,23 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core.internal;
+package com.adeptj.modules.jaxrs.core;
 
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfoFactory;
-import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRepository;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.ws.rs.NameBinding;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Default implementation of JaxRSAuthenticationRepository.
+ * Annotation for use by JAX-RS resources wherever a JWT check required.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
-public class JaxRSDefaultAuthenticationRepository implements JaxRSAuthenticationRepository {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDefaultAuthenticationRepository.class);
-
-    private static final String DEFAULT_NAME = "Default JaxRSAuthenticationRepository";
-
-    @Reference
-    private JaxRSAuthenticationInfoFactory authenticationInfoFactory;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getName() {
-        return DEFAULT_NAME;
-    }
-
-    @Override
-    public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
-        LOGGER.info("Getting JaxRSAuthenticationInfo for Subject: [{}]", subject);
-        return this.authenticationInfoFactory.getAuthenticationInfo(subject, password);
-    }
-
+@NameBinding
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+public @interface RequiresJwt {
 }

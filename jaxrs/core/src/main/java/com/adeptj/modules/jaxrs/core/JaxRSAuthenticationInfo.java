@@ -20,6 +20,9 @@
 
 package com.adeptj.modules.jaxrs.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * AuthenticationInfo holding subject and password for JAX-RS resource authorization.
  *
@@ -30,6 +33,8 @@ public class JaxRSAuthenticationInfo {
     private String subject;
 
     private char[] password;
+
+    private Map<String, String> data = new HashMap<>();
 
     public JaxRSAuthenticationInfo(String subject, String password) {
         this.subject = subject;
@@ -42,5 +47,18 @@ public class JaxRSAuthenticationInfo {
 
     public char[] getPassword() {
         return password;
+    }
+
+    public JaxRSAuthenticationInfo putValue(String key, String value) {
+        this.data.put(key, value);
+        return this;
+    }
+
+    public String getValue(String key) {
+        return this.data.get(key);
+    }
+
+    public Map<String, String> getData() {
+        return this.data;
     }
 }

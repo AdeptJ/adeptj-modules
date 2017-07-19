@@ -17,8 +17,12 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core;
 
+package com.adeptj.modules.jaxrs.core.internal;
+
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationConfig;
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
@@ -28,40 +32,48 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfoFactory.COMPONENT_NAME;
+import static com.adeptj.modules.jaxrs.core.internal.JaxRSDefaultAuthenticationRealm.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
 /**
- * JaxRSAuthenticationInfoFactory.
+ * Default implementation of JaxRSAuthenticationRealm, this is also a {@link ManagedServiceFactory} for
+ * creating {@link JaxRSAuthenticationInfo} instances which are stored in a map for querying purpose
+ * in case no other implementation of JaxRSAuthenticationRealm is found.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = JaxRSAuthenticationConfig.class, factory = true)
 @Component(
-        immediate = true,
         name = COMPONENT_NAME,
         property = SERVICE_PID + "=" + COMPONENT_NAME,
-        configurationPolicy = IGNORE,
-        service = {
-                JaxRSAuthenticationInfoFactory.class,
-                ManagedServiceFactory.class
-        }
+        configurationPolicy = IGNORE
 )
-public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
+public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm, ManagedServiceFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthenticationInfoFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDefaultAuthenticationRealm.class);
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.jaxrs.base.JaxRSAuthenticationInfoFactory.factory";
+    static final String COMPONENT_NAME = "com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfoFactory.factory";
 
     private static final String FACTORY_NAME = "AdeptJ JAX-RS AuthenticationInfo Factory";
+
+    private static final String SUB_NULL_MSG = "Subject can't ne null!!";
+
+    private static final String PWD_NULL_MSG = "Password can't ne null!!";
 
     private Map<String, JaxRSAuthenticationInfo> authenticationInfoMap = new ConcurrentHashMap<>();
 
     private Map<String, String> pidVsSubjectMappings = new ConcurrentHashMap<>();
+
+    @Override
+    public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
+        LOGGER.info("Getting JaxRSAuthenticationInfo for Subject: [{}]", subject);
+        return this.authenticationInfoMap.get(subject);
+    }
 
     @Override
     public String getName() {
@@ -70,10 +82,19 @@ public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
 
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-        String subject = (String) properties.get("subject");
+        String subject = Objects.requireNonNull((String) properties.get("subject"), SUB_NULL_MSG);
+        String password = Objects.requireNonNull((String) properties.get("password"), PWD_NULL_MSG);
         LOGGER.info("Creating JaxRSAuthenticationInfo for Subject: [{}]", subject);
-        this.pidVsSubjectMappings.put(pid, subject);
-        this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, (String) properties.get("password")));
+        if (this.pidVsSubjectMappings.containsValue(subject)) {
+            LOGGER.warn("Subject: [{}] already present, ignoring this config!!");
+        } else {
+            this.pidVsSubjectMappings.put(pid, subject);
+        }
+        if (this.authenticationInfoMap.containsKey(subject)) {
+            LOGGER.warn("Subject: [{}] already present, ignoring this config!!");
+        } else {
+            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password));
+        }
     }
 
     @Override
@@ -84,7 +105,4 @@ public class JaxRSAuthenticationInfoFactory implements ManagedServiceFactory {
         });
     }
 
-    public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
-        return this.authenticationInfoMap.get(subject);
-    }
 }

@@ -23,11 +23,11 @@ package com.adeptj.modules.jaxrs.core.api;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 
 /**
- * Authentication repository to be implemented by clients for providing JaxRSAuthenticationInfo.
+ * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-public interface JaxRSAuthenticationRepository {
+public interface JaxRSAuthenticationRealm {
 
     /**
      * Provides a meaningful name to this AuthenticationRepository.
