@@ -79,7 +79,7 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
                 authenticationInfo.getPassword().length == 0) {
             return null;
         }
-        if (StringUtils.equals(authenticationInfo.getSubject(), subject) && Arrays.equals(subject.toCharArray(),
+        if (StringUtils.equals(authenticationInfo.getSubject(), subject) && Arrays.equals(password.toCharArray(),
                 authenticationInfo.getPassword())) {
             return authenticationInfo;
         }
