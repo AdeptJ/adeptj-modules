@@ -98,9 +98,10 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String issueToken(Map<String, Object> payload) {
-        // Lets first set the claims, we don't want caller to act smart and pass the default claims parameters
+        // Lets first set the claims, we don't want callers to act smart and pass the default claims parameters
         // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced with the new ones
-        // provided in the payload which is not the intended behaviour.
+        // provided in the payload which is not the intended behaviour. Default claims parameters should come from
+        // JwtConfig and others can be generated at execution time such as "exp" etc.
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setClaims(payload)
                 .setHeaderParam(TYPE, JWT_TYPE)
