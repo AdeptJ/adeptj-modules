@@ -126,8 +126,8 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         long startTime = System.nanoTime();
         LOGGER.info("Initializing JaxRSDispatcherServlet!!");
         // Use Bundle ClassLoader as the context ClassLoader because we need to find the providers specified
-        // in the file META-INF/services/javax.ws.rs.Providers file which will not be visible to the original
-        // context ClassLoader which is the application class loader in actual.
+        // in the file [META-INF/services/javax.ws.rs.Providers] file which will not be visible to the original
+        // context ClassLoader which is the application class loader in fact.
         ClassLoaders.executeWith(JaxRSDispatcherServlet.class.getClassLoader(), () -> {
             try {
                 // First bootstrap RESTEasy in super.init()
@@ -168,21 +168,17 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     protected void bindJwtService(JwtService jwtService) {
         this.jwtService = jwtService;
-        this.registerJwtFilter();
+        if (this.jwtFilter == null) {
+            this.jwtFilter = new JwtFilter();
+            // Register the JwtFilter only once.
+            this.providerFactory.registerProviderInstance(this.jwtFilter);
+        }
         this.jwtFilter.setJwtService(this.jwtService);
     }
 
     protected void unbindJwtService(JwtService jwtService) {
         this.jwtService = null;
         this.jwtFilter.setJwtService(null);
-    }
-
-    private void registerJwtFilter() {
-        if (this.jwtFilter == null) {
-            this.jwtFilter = new JwtFilter();
-            // Register the JwtFilter only once.
-            this.providerFactory.registerProviderInstance(this.jwtFilter);
-        }
     }
 
     @Activate

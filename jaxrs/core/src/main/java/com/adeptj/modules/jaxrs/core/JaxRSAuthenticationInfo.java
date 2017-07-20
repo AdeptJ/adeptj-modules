@@ -34,7 +34,7 @@ public class JaxRSAuthenticationInfo {
 
     private char[] password;
 
-    private Map<String, String> data = new HashMap<>();
+    private Map<String, Object> data = new HashMap<>();
 
     public JaxRSAuthenticationInfo(String subject, String password) {
         this.subject = subject;
@@ -49,16 +49,16 @@ public class JaxRSAuthenticationInfo {
         return password;
     }
 
-    public JaxRSAuthenticationInfo putValue(String key, String value) {
+    public JaxRSAuthenticationInfo putValue(String key, Object value) {
         this.data.put(key, value);
         return this;
     }
 
-    public String getValue(String key) {
+    public Object getValue(String key) {
         return this.data.get(key);
     }
 
-    public Map<String, String> getData() {
+    public Map<String, Object> getData() {
         return this.data;
     }
 }

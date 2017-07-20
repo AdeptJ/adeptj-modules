@@ -86,7 +86,9 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String KEY_NULL_MSG = "Key must not be null!!";
 
-    private JwtConfig config;
+    private static final String SUBJECT = "subject";
+
+    private JwtConfig jwtConfig;
 
     private String base64EncodedSigningKey;
 
@@ -95,15 +97,18 @@ public class JwtServiceImpl implements JwtService {
     private Key signingKey;
 
     @Override
-    public String issueToken(Map<String, String> payload) {
+    public String issueToken(Map<String, Object> payload) {
+        // Lets first set the claims, we don't want caller to act smart and pass the default claims parameters
+        // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced with the new ones
+        // provided in the payload which is not the intended behaviour.
         JwtBuilder jwtBuilder = Jwts.builder()
+                .setClaims(payload)
                 .setHeaderParam(TYPE, JWT_TYPE)
-                .setSubject(payload.get("subject"))
-                .setIssuer(this.config.issuer())
+                .setSubject((String) payload.get(SUBJECT))
+                .setIssuer(this.jwtConfig.issuer())
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(LocalDateTime
-                        .now()
-                        .plusMinutes(this.config.expirationTime())
+                .setExpiration(Date.from(LocalDateTime.now()
+                        .plusMinutes(this.jwtConfig.expirationTime())
                         .atZone(ZoneId.systemDefault())
                         .toInstant()))
                 .setId(UUID.randomUUID().toString());
@@ -129,11 +134,11 @@ public class JwtServiceImpl implements JwtService {
     // LifeCycle Methods
 
     @Activate
-    protected void start(JwtConfig config) {
-        this.config = config;
+    protected void start(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
         try {
-            this.signatureAlgo = SignatureAlgorithm.forName(config.signatureAlgo());
-            String signKey = config.signingKey();
+            this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
+            String signKey = jwtConfig.signingKey();
             if (StringUtils.isNotEmpty(signKey) && this.signatureAlgo.isHmac()) {
                 this.base64EncodedSigningKey = new String(Base64.getEncoder().encode(signKey.getBytes(UTF8)));
             } else if (StringUtils.isEmpty(signKey) && this.signatureAlgo.isHmac()) {
@@ -154,8 +159,8 @@ public class JwtServiceImpl implements JwtService {
 
     private Key resolveSigningKey() throws Exception {
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
-        // 1. try the config location
-        String keyFileLocation = System.getProperty(CURR_DIR) + File.separator + this.config.keyFileLocation();
+        // 1. try the jwtConfig location
+        String keyFileLocation = System.getProperty(CURR_DIR) + File.separator + this.jwtConfig.keyFileLocation();
         LOGGER.info("Loading Key file from location: [{}]", keyFileLocation);
         Key key = this.loadFromLocation(keyFactory, keyFileLocation);
         if (key == null) {

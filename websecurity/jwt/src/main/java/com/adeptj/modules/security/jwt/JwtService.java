@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public interface JwtService {
 
-    String issueToken(Map<String, String> payload);
+    String issueToken(Map<String, Object> payload);
 
     boolean parseToken(String claimsJws);
 }

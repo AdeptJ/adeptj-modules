@@ -40,7 +40,7 @@ import static java.util.stream.Collectors.toSet;
 @Provider
 public class JaxRSCorsFeature implements Feature {
 
-    private static final String JOIN_DELIMITER = ", ";
+    private static final String DELIMITER = ",";
 
     private JaxRSCoreConfig config;
 
@@ -49,17 +49,7 @@ public class JaxRSCorsFeature implements Feature {
     }
 
     /**
-     * A call-back method called when the feature is to be enabled in a given
-     * runtime configuration scope.
-     * <p>
-     * The responsibility of the feature is to properly update the supplied runtime configuration context
-     * and return {@code true} if the feature was successfully enabled or {@code false} otherwise.
-     * <p>
-     * Note that under some circumstances the feature may decide not to enable itself, which
-     * is indicated by returning {@code false}. In such case the configuration context does
-     * not add the feature to the collection of enabled features and a subsequent call to
-     * {Configuration#isEnabled(Feature)} or {Configuration#isEnabled(Class)} method would return {@code false}.
-     * </p>
+     * This method configures RESTEasy {@link CorsFilter} and registers that with the {@link FeatureContext}
      *
      * @param context configurable context in which the feature should be enabled.
      * @return {@code true} if the feature was successfully enabled, {@code false} otherwise.
@@ -70,8 +60,8 @@ public class JaxRSCorsFeature implements Feature {
         corsFilter.setAllowCredentials(this.config.allowCredentials());
         corsFilter.setAllowedMethods(this.config.allowedMethods());
         corsFilter.setCorsMaxAge(this.config.corsMaxAge());
-        corsFilter.setAllowedHeaders(Arrays.stream(this.config.allowedHeaders()).collect(joining(JOIN_DELIMITER)));
-        corsFilter.setExposedHeaders(Arrays.stream(this.config.exposedHeaders()).collect(joining(JOIN_DELIMITER)));
+        corsFilter.setAllowedHeaders(Arrays.stream(this.config.allowedHeaders()).collect(joining(DELIMITER)));
+        corsFilter.setExposedHeaders(Arrays.stream(this.config.exposedHeaders()).collect(joining(DELIMITER)));
         corsFilter.getAllowedOrigins().addAll(Arrays.stream(this.config.allowedOrigins()).collect(toSet()));
         context.register(corsFilter);
         LoggerFactory.getLogger(JaxRSCorsFeature.class).info("RESTEasy CorsFilter Configured Successfully!!");

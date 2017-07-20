@@ -92,7 +92,8 @@ public class JaxRSAuthenticator {
                 } else {
                     // All well here, now issue a token for the Subject
                     authInfo.putValue(SUBJECT, subject);
-                    response = Response.ok().header(AUTHORIZATION, this.jwtService.issueToken(authInfo.getData()))
+                    response = Response.ok("Token issued successfully!!")
+                            .header(AUTHORIZATION, this.jwtService.issueToken(authInfo.getData()))
                             .build();
                 }
             } catch (Exception ex) {
