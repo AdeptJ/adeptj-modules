@@ -40,6 +40,7 @@ import java.util.List;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
+import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
@@ -83,7 +84,7 @@ public class JaxRSAuthenticator {
         Response response;
         if (this.jwtService == null) {
             LOGGER.warn("Can't issue token as JwtService unavailable!");
-            response = Response.status(UNAUTHORIZED).entity("JwtService unavailable!!").build();
+            response = Response.status(SERVICE_UNAVAILABLE).entity("JwtService unavailable!!").build();
         } else {
             try {
                 JaxRSAuthenticationInfo authInfo = this.getAuthenticationInfo(subject, password);

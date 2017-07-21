@@ -36,5 +36,18 @@ public interface JaxRSAuthenticationRealm {
      */
     String getName();
 
+    /**
+     * Implementations should validate the credentials supplied and return the populated JaxRSAuthenticationInfo
+     * with other useful information.
+     *
+     * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by
+     * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to validate the information
+     * returned by the implementations.
+     *
+     * @param subject the user id
+     * @param password the password of subject supplied
+     *
+     * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
+     */
     JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password);
 }

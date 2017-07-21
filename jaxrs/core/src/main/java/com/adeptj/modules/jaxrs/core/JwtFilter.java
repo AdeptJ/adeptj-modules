@@ -34,7 +34,9 @@ import java.io.IOException;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 
 /**
  * Gets the HTTP Authorization header/Cookie from the request and checks for the JWT token.
@@ -61,13 +63,19 @@ public class JwtFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (this.jwtService == null) {
             LOGGER.warn("Can't check token as JwtService unavailable!");
-            this.handleJwtServiceUnavailability(requestContext);
-        } else {
-            String token = this.resolveToken(requestContext);
-            if (StringUtils.isBlank(token) || !this.jwtService.parseToken(token)) {
-                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-            }
+            this.abort(requestContext, SERVICE_UNAVAILABLE, "JwtService unavailable!!");
+            return;
         }
+        String token = this.resolveToken(requestContext);
+        if (StringUtils.isBlank(token)) {
+            this.abort(requestContext, BAD_REQUEST, "JWT missing from request!!");
+        } else if (!this.jwtService.parseToken(token)) {
+            this.abort(requestContext, FORBIDDEN, "Invalid JWT!!");
+        }
+    }
+
+    public void setJwtService(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 
     private String resolveToken(ContainerRequestContext requestContext) {
@@ -75,7 +83,7 @@ public class JwtFilter implements ContainerRequestFilter {
         if (StringUtils.isBlank(token)) {
             Cookie tokenCookie = requestContext.getCookies().get(TOKEN_COOKIE_NAME);
             if (tokenCookie == null) {
-                LOGGER.warn("Exhausted all options to extract token!!");
+                LOGGER.warn("Exhausted all options to resolve token!!");
             } else {
                 token = tokenCookie.getValue();
             }
@@ -83,14 +91,7 @@ public class JwtFilter implements ContainerRequestFilter {
         return token;
     }
 
-    private void handleJwtServiceUnavailability(ContainerRequestContext requestContext) {
-        requestContext.abortWith(Response
-                .status(UNAUTHORIZED)
-                .entity("JwtService unavailable!!")
-                .build());
-    }
-
-    public void setJwtService(JwtService jwtService) {
-        this.jwtService = jwtService;
+    private void abort(ContainerRequestContext ctx, Response.Status status, Object entity) {
+        ctx.abortWith(Response.status(status).entity(entity).build());
     }
 }

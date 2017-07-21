@@ -135,6 +135,10 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 Dispatcher dispatcher = this.getDispatcher();
                 this.providerFactory = dispatcher.getProviderFactory();
                 this.providerFactory.registerProviderInstance(new JaxRSCorsFeature(this.config));
+                this.jwtFilter = new JwtFilter();
+                this.jwtFilter.setJwtService(this.jwtService);
+                LOGGER.info("Initialized JwtFilter with JwtService: [{}]", this.jwtService);
+                this.providerFactory.registerProviderInstance(this.jwtFilter);
                 this.removeDefaultGeneralValidator(providerFactory);
                 this.providerFactory.registerProviderInstance(new GeneralValidatorContextResolver());
                 this.openServiceTracker(dispatcher);
@@ -167,16 +171,17 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     // LifeCycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
+        LOGGER.info("Bind: [{}]", jwtService);
         this.jwtService = jwtService;
         if (this.jwtFilter == null) {
-            this.jwtFilter = new JwtFilter();
-            // Register the JwtFilter only once.
-            this.providerFactory.registerProviderInstance(this.jwtFilter);
+            LOGGER.warn("Can't inject JwtService as JwtFilter not yet initialized!!");
+        } else {
+            this.jwtFilter.setJwtService(this.jwtService);
         }
-        this.jwtFilter.setJwtService(this.jwtService);
     }
 
     protected void unbindJwtService(JwtService jwtService) {
+        LOGGER.info("Unbind: [{}]", jwtService);
         this.jwtService = null;
         this.jwtFilter.setJwtService(null);
     }
