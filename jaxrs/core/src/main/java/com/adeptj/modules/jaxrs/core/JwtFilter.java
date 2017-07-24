@@ -69,7 +69,7 @@ public class JwtFilter implements ContainerRequestFilter {
         String token = this.resolveToken(requestContext);
         if (StringUtils.isBlank(token)) {
             this.abort(requestContext, BAD_REQUEST, "JWT missing from request!!");
-        } else if (!this.jwtService.parseToken(token)) {
+        } else if (!this.jwtService.parseClaimsJws(token)) {
             this.abort(requestContext, FORBIDDEN, "Invalid JWT!!");
         }
     }

@@ -23,6 +23,8 @@ package com.adeptj.modules.jaxrs.resteasy;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+
 /**
  * JAX-RS(RESTEasy) configurations.
  *
@@ -43,7 +45,7 @@ public @interface JaxRSCoreConfig {
     String allowedMethods() default "GET,POST,PUT,OPTIONS,HEAD,DELETE";
 
     @AttributeDefinition(name = "CORS Allowed Headers", description = "Allowed headers in a CORS request")
-    String[] allowedHeaders();
+    String[] allowedHeaders() default AUTHORIZATION;
 
     @AttributeDefinition(name = "CORS Exposed Headers", description = "Exposed headers in a CORS request")
     String[] exposedHeaders();

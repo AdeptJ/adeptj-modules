@@ -67,6 +67,10 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
 
     private static final String PWD_NULL_MSG = "Password can't ne null!!";
 
+    private static final String KEY_SUBJECT = "subject";
+
+    private static final String KEY_PWD = "password";
+
     private Map<String, JaxRSAuthenticationInfo> authenticationInfoMap = new ConcurrentHashMap<>();
 
     private Map<String, String> pidVsSubjectMappings = new ConcurrentHashMap<>();
@@ -75,12 +79,13 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
     public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
         LOGGER.info("Getting JaxRSAuthenticationInfo for Subject: [{}]", subject);
         JaxRSAuthenticationInfo authenticationInfo = this.authenticationInfoMap.get(subject);
-        if (authenticationInfo == null || authenticationInfo.getPassword() == null ||
-                authenticationInfo.getPassword().length == 0) {
+        if (authenticationInfo == null
+                || authenticationInfo.getPassword() == null
+                || authenticationInfo.getPassword().length == 0) {
             return null;
         }
-        if (StringUtils.equals(authenticationInfo.getSubject(), subject) && Arrays.equals(password.toCharArray(),
-                authenticationInfo.getPassword())) {
+        if (StringUtils.equals(authenticationInfo.getSubject(), subject)
+                && Arrays.equals(password.toCharArray(), authenticationInfo.getPassword())) {
             return authenticationInfo;
         }
         return null;
@@ -93,18 +98,18 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
 
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-        String subject = Objects.requireNonNull((String) properties.get("subject"), SUB_NULL_MSG);
-        String password = Objects.requireNonNull((String) properties.get("password"), PWD_NULL_MSG);
+        String subject = Objects.requireNonNull((String) properties.get(KEY_SUBJECT), SUB_NULL_MSG);
+        String password = Objects.requireNonNull((String) properties.get(KEY_PWD), PWD_NULL_MSG);
         LOGGER.info("Creating JaxRSAuthenticationInfo for Subject: [{}]", subject);
         if (this.pidVsSubjectMappings.containsKey(pid)) {
             // This is an update
             this.pidVsSubjectMappings.put(pid, subject);
-            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password));
+            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
         } else if (!this.pidVsSubjectMappings.containsKey(pid) && this.pidVsSubjectMappings.containsValue(subject)) {
             LOGGER.warn("Subject: [{}] already present, ignoring this config!!");
         } else if (!this.pidVsSubjectMappings.containsKey(pid) && !this.pidVsSubjectMappings.containsValue(subject)) {
             this.pidVsSubjectMappings.put(pid, subject);
-            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password));
+            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
         }
     }
 

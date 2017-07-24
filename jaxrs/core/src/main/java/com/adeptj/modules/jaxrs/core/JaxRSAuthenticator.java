@@ -58,10 +58,11 @@ public class JaxRSAuthenticator {
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
-    private static final String SUBJECT = "subject";
+    private static final String SUBJECT = "sub";
 
-    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=auth";
+    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
+    // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
             service = JaxRSAuthenticationRealm.class,
             cardinality = ReferenceCardinality.MULTIPLE,
@@ -69,18 +70,20 @@ public class JaxRSAuthenticator {
     )
     private volatile List<JaxRSAuthenticationRealm> authRealms = new ArrayList<>();
 
+    // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
             bind = BIND_JWT_SERVICE,
             unbind = UNBIND_JWT_SERVICE,
             cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC
     )
-    private JwtService jwtService;
+    private volatile JwtService jwtService;
 
     @POST
     @Path("/jwt/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response handleSecurity(@NotNull @FormParam("subject") String subject, @NotNull @FormParam("password") String password) {
+    public Response handleSecurity(@NotNull @FormParam("subject") String subject,
+                                   @NotNull @FormParam("password") String password) {
         Response response;
         if (this.jwtService == null) {
             LOGGER.warn("Can't issue token as JwtService unavailable!");
@@ -92,9 +95,8 @@ public class JaxRSAuthenticator {
                     response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
                 } else {
                     // All well here, now issue a token for the Subject
-                    authInfo.putValue(SUBJECT, subject);
                     response = Response.ok("Token issued successfully!!")
-                            .header(AUTHORIZATION, this.jwtService.issueToken(authInfo.getData()))
+                            .header(AUTHORIZATION, this.jwtService.issueJwt(subject, authInfo))
                             .build();
                 }
             } catch (Exception ex) {
@@ -115,7 +117,9 @@ public class JaxRSAuthenticator {
     private JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
         for (JaxRSAuthenticationRealm realm : this.authRealms) {
             JaxRSAuthenticationInfo authInfo = realm.getAuthenticationInfo(subject, password);
-            if (authInfo != null) {
+            if (authInfo == null) {
+                LOGGER.warn("Realm: [{}] couldn't validate credentials!", realm.getName());
+            } else {
                 return authInfo;
             }
         }

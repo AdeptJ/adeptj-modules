@@ -46,8 +46,8 @@ Import-Package: \
   com.sun.el.stream;\
   com.sun.el.util;\
   com.sun.el;version="3.0.0",\
-  com.adeptj.modules.jaxrs.core;version="1.0.0",\
-  com.adeptj.modules.security.jwt;version="1.0.1",\
+  com.adeptj.modules.jaxrs.core,\
+  com.adeptj.modules.security.jwt,\
   *
   
 Bundle-Name: ${project.name}

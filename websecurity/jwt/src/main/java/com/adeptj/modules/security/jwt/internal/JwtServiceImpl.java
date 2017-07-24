@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -190,6 +191,8 @@ public class JwtServiceImpl implements JwtService {
         Key key = null;
         try (FileInputStream inputStream = new FileInputStream(keyFileLocation)) {
             key = this.generatePrivateKey(keyFactory, inputStream);
+        } catch (FileNotFoundException ex) {
+            // Gulp it. Load the embedded one next.
         }
         return key;
     }

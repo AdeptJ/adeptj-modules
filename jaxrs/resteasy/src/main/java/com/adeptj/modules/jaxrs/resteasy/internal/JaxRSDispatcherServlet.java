@@ -112,6 +112,8 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     /**
      * The {@link JwtService} is optionally referenced, if available then it is bind and {@link JwtFilter}
      * is registered with the {@link ResteasyProviderFactory}
+     *
+     * Note: As per Felix SCR, dynamic references should be declared as volatile.
      */
     @Reference(
             bind = BIND_JWT_SERVICE,
@@ -119,7 +121,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
             cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC
     )
-    private JwtService jwtService;
+    private volatile JwtService jwtService;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {

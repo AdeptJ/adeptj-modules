@@ -30,9 +30,9 @@ import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 public interface JaxRSAuthenticationRealm {
 
     /**
-     * Provides a meaningful name to this AuthenticationRepository.
+     * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
      *
-     * @return a meaningful name to this AuthenticationRepository.
+     * @return a meaningful name.
      */
     String getName();
 
