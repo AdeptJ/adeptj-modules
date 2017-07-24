@@ -32,18 +32,21 @@ import org.osgi.service.metatype.annotations.Option;
 @ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for JWT Service")
 public @interface JwtConfig {
 
-    @AttributeDefinition(name = "JWT Signing Key", description = "Signing Key for JWT")
+    @AttributeDefinition(
+            name = "JWT Signing Key",
+            description = "Signing Key for JWT, can be left blank in case private key singing is used"
+    )
     String signingKey();
 
     @AttributeDefinition(
-            name = "Key File Location",
-            description = "Location of Key file for JWT signing, relative to current working directory, " +
+            name = "Private Key File Location",
+            description = "Location of Private Key file for JWT signing, relative to current working directory, " +
                     "Note: Please don't use the default Key file in production environment!")
     String keyFileLocation() default "adeptj-runtime/deployment/default.pem";
 
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
-            description = "Signature Algorithm for JWT",
+            description = "Signature Algorithm for JWT signing",
             options = {
                     @Option(label = "RS256", value = "RS256"),
                     @Option(label = "RS384", value = "RS384"),

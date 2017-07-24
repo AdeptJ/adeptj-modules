@@ -29,7 +29,20 @@ import java.util.Map;
  */
 public interface JwtService {
 
-    String issueToken(Map<String, Object> payload);
+    /**
+     * Issue JWT for given subject using claims information passed as payload.
+     *
+     * @param subject to whom JWT has to be issued.
+     * @param payload claims map
+     * @return JWT signed with the configured key.
+     */
+    String issueJwt(String subject, Map<String, Object> payload);
 
-    boolean parseToken(String claimsJws);
+    /**
+     * Parses the passed claim information using configured key.
+     *
+     * @param claimsJws claims information that has to be parsed by the {@link io.jsonwebtoken.JwtParser}
+     * @return status to indicate the result of parsing the claim passed.
+     */
+    boolean parseClaimsJws(String claimsJws);
 }

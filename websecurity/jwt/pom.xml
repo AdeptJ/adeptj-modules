@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-websecurity-jwt</artifactId>
-    <version>1.0.2.Final</version>
+    <version>1.0.3.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: WebSecurity :: JWT</name>
     <description>AdeptJ Modules :: WebSecurity :: JWT</description>

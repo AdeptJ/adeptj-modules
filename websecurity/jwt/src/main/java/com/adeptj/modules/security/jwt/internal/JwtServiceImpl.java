@@ -86,8 +86,6 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String KEY_NULL_MSG = "Key must not be null!!";
 
-    private static final String SUBJECT = "subject";
-
     private JwtConfig jwtConfig;
 
     private String base64EncodedSigningKey;
@@ -96,8 +94,11 @@ public class JwtServiceImpl implements JwtService {
 
     private Key signingKey;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String issueToken(Map<String, Object> payload) {
+    public String issueJwt(String subject, Map<String, Object> payload) {
         // Lets first set the claims, we don't want callers to act smart and pass the default claims parameters
         // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced with the new ones
         // provided in the payload which is not the intended behaviour. Default claims parameters should come from
@@ -105,7 +106,7 @@ public class JwtServiceImpl implements JwtService {
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setClaims(payload)
                 .setHeaderParam(TYPE, JWT_TYPE)
-                .setSubject((String) payload.get(SUBJECT))
+                .setSubject(subject)
                 .setIssuer(this.jwtConfig.issuer())
                 .setIssuedAt(Date.from(Instant.now()))
                 .setExpiration(Date.from(LocalDateTime.now()
@@ -113,23 +114,26 @@ public class JwtServiceImpl implements JwtService {
                         .atZone(ZoneId.systemDefault())
                         .toInstant()))
                 .setId(UUID.randomUUID().toString());
-        this.signWith(jwtBuilder);
+        this.sign(jwtBuilder);
         return BEARER_SCHEMA + SPACE + jwtBuilder.compact();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean parseToken(String claimsJws) {
-        boolean tokenParsed = false;
+    public boolean parseClaimsJws(String claimsJws) {
+        boolean claimsJwsParsed = false;
         try {
-            JwtParser parser = Jwts.parser();
-            this.setSigningKey(parser);
-            Jws<Claims> jws = parser.parseClaimsJws(claimsJws);
+            JwtParser jwtParser = Jwts.parser();
+            this.setSigningKey(jwtParser);
+            Jws<Claims> jws = jwtParser.parseClaimsJws(claimsJws);
             LOGGER.info("Subject [{}] has a valid token!!", jws.getBody().getSubject());
-            tokenParsed = true;
+            claimsJwsParsed = true;
         } catch (RuntimeException ex) {
             LOGGER.error("Invalid JWT!!", ex);
         }
-        return tokenParsed;
+        return claimsJwsParsed;
     }
 
     // LifeCycle Methods
@@ -186,8 +190,6 @@ public class JwtServiceImpl implements JwtService {
         Key key = null;
         try (FileInputStream inputStream = new FileInputStream(keyFileLocation)) {
             key = this.generatePrivateKey(keyFactory, inputStream);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
         }
         return key;
     }
@@ -200,7 +202,7 @@ public class JwtServiceImpl implements JwtService {
                         .replaceAll(REGEX_SPACE, EMPTY))));
     }
 
-    private void signWith(JwtBuilder jwtBuilder) {
+    private void sign(JwtBuilder jwtBuilder) {
         if (this.signingKey == null) {
             jwtBuilder.signWith(this.signatureAlgo, this.base64EncodedSigningKey);
         } else {
