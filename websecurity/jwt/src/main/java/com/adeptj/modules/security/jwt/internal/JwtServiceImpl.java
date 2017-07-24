@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -170,7 +171,7 @@ public class JwtServiceImpl implements JwtService {
         LOGGER.info("Loading Key file from location: [{}]", keyFileLocation);
         Key key = this.loadFromLocation(keyFactory, keyFileLocation);
         if (key == null) {
-            LOGGER.warn("Couldn't load Key file from location [{}], using the default one!!", keyFileLocation);
+            LOGGER.warn("Couldn't load Key file from location [{}], using the embedded one!!", keyFileLocation);
             // 2. Use the default one that is embedded with this module.
             key = this.loadDefault(keyFactory);
         }
@@ -197,12 +198,15 @@ public class JwtServiceImpl implements JwtService {
         return key;
     }
 
-    private Key generatePrivateKey(KeyFactory keyFactory, InputStream inputStream) throws Exception {
-        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder()
-                .decode(IOUtils.toString(inputStream, UTF8)
-                        .replace(KEY_HEADER, EMPTY)
-                        .replace(KEY_FOOTER, EMPTY)
-                        .replaceAll(REGEX_SPACE, EMPTY))));
+    private Key generatePrivateKey(KeyFactory keyFactory, InputStream is) throws Exception {
+        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder().decode(this.bytes(is))));
+    }
+
+    private byte[] bytes(InputStream is) throws IOException {
+        return IOUtils.toString(is, UTF8)
+                .replace(KEY_HEADER, EMPTY)
+                .replace(KEY_FOOTER, EMPTY)
+                .replaceAll(REGEX_SPACE, EMPTY).getBytes(UTF8);
     }
 
     private void sign(JwtBuilder jwtBuilder) {
