@@ -77,7 +77,7 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
 
     @Override
     public int priority() {
-        return 0; // default realm has least priority.
+        return -1; // default realm has least priority.
     }
 
     @Override

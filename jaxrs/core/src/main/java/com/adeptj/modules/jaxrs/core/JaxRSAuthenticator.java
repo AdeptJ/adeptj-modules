@@ -86,14 +86,19 @@ public class JaxRSAuthenticator {
         Response response;
         if (this.jwtService == null) {
             LOGGER.warn("Can't issue token as JwtService unavailable!");
-            response = Response.status(SERVICE_UNAVAILABLE).entity("JwtService unavailable!!").build();
+            response = Response.status(SERVICE_UNAVAILABLE)
+                    .type(TEXT_PLAIN)
+                    .entity("JwtService unavailable!!")
+                    .build();
         } else {
             try {
                 JaxRSAuthenticationInfo authInfo = this.getAuthenticationInfo(subject, password);
                 if (authInfo == null) {
-                    response = Response.status(UNAUTHORIZED).entity("Invalid credentials!!").build();
+                    response = Response.status(UNAUTHORIZED)
+                            .type(TEXT_PLAIN)
+                            .entity("Invalid credentials!!")
+                            .build();
                 } else {
-                    // All well here, now issue a token for the Subject
                     response = Response.ok("Token issued successfully!!")
                             .type(TEXT_PLAIN)
                             .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
@@ -115,11 +120,12 @@ public class JaxRSAuthenticator {
     }
 
     private JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
+        // Sort the realms according to the priority in descending order.
         this.authRealms.sort(JaxRSAuthenticator::compare);
         for (JaxRSAuthenticationRealm realm : this.authRealms) {
             JaxRSAuthenticationInfo authInfo = realm.getAuthenticationInfo(subject, password);
-            if (authInfo == null) {
-                LOGGER.warn("Realm: [{}] couldn't validate credentials!", realm.getName());
+            if (authInfo == null && LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Realm: [{}] couldn't validate credentials!", realm.getName());
             } else {
                 return authInfo;
             }

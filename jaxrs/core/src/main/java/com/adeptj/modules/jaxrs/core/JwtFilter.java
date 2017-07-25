@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
@@ -86,17 +87,18 @@ public class JwtFilter implements ContainerRequestFilter {
     private String resolveJwt(ContainerRequestContext requestContext) {
         return Optional.ofNullable(StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), LEN))
                 .orElseGet(() -> {
-                    Cookie tokenCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
-                    if (tokenCookie == null) {
+                    Cookie jwtCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
+                    String jwtCookieValue = null;
+                    if (jwtCookie == null) {
                         LOGGER.warn("Exhausted all options to resolve JWT!!");
                     } else {
-                        return tokenCookie.getValue();
+                        jwtCookieValue = jwtCookie.getValue();
                     }
-                    return null;
+                    return jwtCookieValue;
                 });
     }
 
     private void abort(ContainerRequestContext ctx, Response.Status status, Object entity) {
-        ctx.abortWith(Response.status(status).entity(entity).build());
+        ctx.abortWith(Response.status(status).entity(entity).type(TEXT_PLAIN).build());
     }
 }
