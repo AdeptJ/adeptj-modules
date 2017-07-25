@@ -68,7 +68,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Component(configurationPolicy = REQUIRE)
 public class JwtServiceImpl implements JwtService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
 
     private static final String BEARER_SCHEMA = "Bearer";
 
@@ -86,7 +86,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String DEFAULT_KEY_FILE = "/default.pem";
 
-    private static final String KEY_INIT_FAIL_MSG = "Key can't be initialized!!";
+    private static final String KEY_INIT_FAIL_MSG = "Couldn't initialize the SigningKey!!";
 
     private JwtConfig jwtConfig;
 
@@ -152,22 +152,24 @@ public class JwtServiceImpl implements JwtService {
                 this.base64EncodedSigningKey = new String(Base64.getEncoder().encode(signKey.getBytes(UTF8)));
             } else if (StringUtils.isEmpty(signKey) && this.signatureAlgo.isHmac()) {
                 this.signatureAlgo = RS256;
-                if ((this.signingKey = this.resolveSigningKey()) == null) {
-                    throw new IllegalStateException(KEY_INIT_FAIL_MSG);
-                }
             } else {
-                // Default is RS256
+                // This is to safeguard from situation where there was no signingKey provided
+                // and HMAC is chosen from  signatureAlgo dropdown. Configuring RS256 as default.
                 if (this.signatureAlgo.isHmac()) {
                     this.signatureAlgo = RS256;
                 }
-                if ((this.signingKey = this.resolveSigningKey()) == null) {
-                    throw new IllegalStateException(KEY_INIT_FAIL_MSG);
-                }
             }
+            this.initAndValidateSigningKey();
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             // Let the exception be rethrown so that SCR would not create a service object of this component.
             throw new RuntimeException(ex); // NOSONAR
+        }
+    }
+
+    private void initAndValidateSigningKey() throws Exception {
+        if (this.signatureAlgo.isRsa() && (this.signingKey = this.resolveSigningKey()) == null) {
+            throw new IllegalStateException(KEY_INIT_FAIL_MSG);
         }
     }
 
