@@ -30,6 +30,13 @@ import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 public interface JaxRSAuthenticationRealm {
 
     /**
+     * Priority of the realm, higher priority realm is called before other realms.
+     *
+     * @return Priority of JaxRSAuthenticationRealm
+     */
+    int priority();
+
+    /**
      * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
      *
      * @return a meaningful name.

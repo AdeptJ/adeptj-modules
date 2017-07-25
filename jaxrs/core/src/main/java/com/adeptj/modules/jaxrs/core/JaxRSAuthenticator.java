@@ -40,6 +40,7 @@ import java.util.List;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -57,8 +58,6 @@ public class JaxRSAuthenticator {
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
-
-    private static final String SUBJECT = "sub";
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
@@ -96,25 +95,27 @@ public class JaxRSAuthenticator {
                 } else {
                     // All well here, now issue a token for the Subject
                     response = Response.ok("Token issued successfully!!")
-                            .header(AUTHORIZATION, this.jwtService.issueJwt(subject, authInfo))
+                            .type(TEXT_PLAIN)
+                            .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
                             .build();
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage(), ex);
-                return Response.status(UNAUTHORIZED).build();
+                return Response.serverError().build();
             }
         }
         return response;
     }
 
     @GET
-    @Path("/jwt/check")
+    @Path("/jwt/verify")
     @RequiresJwt
     public Response checkJwt() {
         return Response.ok("JWT is valid!!").build();
     }
 
     private JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
+        this.authRealms.sort(JaxRSAuthenticator::compare);
         for (JaxRSAuthenticationRealm realm : this.authRealms) {
             JaxRSAuthenticationInfo authInfo = realm.getAuthenticationInfo(subject, password);
             if (authInfo == null) {
@@ -124,6 +125,10 @@ public class JaxRSAuthenticator {
             }
         }
         return null;
+    }
+
+    private static int compare(JaxRSAuthenticationRealm realmOne, JaxRSAuthenticationRealm realmTwo) {
+        return Integer.compare(realmTwo.priority(), realmOne.priority());
     }
 
     // LifeCycle Methods

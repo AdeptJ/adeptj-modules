@@ -100,13 +100,13 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public String issueJwt(String subject, Map<String, Object> payload) {
+    public String issue(String subject, Map<String, Object> claims) {
         // Lets first set the claims, we don't want callers to act smart and pass the default claims parameters
         // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced with the new ones
         // provided in the payload which is not the intended behaviour. Default claims parameters should come from
-        // JwtConfig and others can be generated at execution time such as "exp" etc.
+        // JwtConfig and others can be generated at execution time such as "iat", "exp", "jti" etc.
         JwtBuilder jwtBuilder = Jwts.builder()
-                .setClaims(payload)
+                .setClaims(claims)
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setSubject(subject)
                 .setIssuer(this.jwtConfig.issuer())
@@ -116,7 +116,7 @@ public class JwtServiceImpl implements JwtService {
                         .atZone(ZoneId.systemDefault())
                         .toInstant()))
                 .setId(UUID.randomUUID().toString());
-        this.sign(jwtBuilder);
+        this.signWith(jwtBuilder);
         return BEARER_SCHEMA + SPACE + jwtBuilder.compact();
     }
 
@@ -124,18 +124,20 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public boolean parseClaimsJws(String claimsJws) {
-        boolean claimsJwsParsed = false;
+    public boolean verify(String jwt) {
+        boolean verified = false;
         try {
-            JwtParser jwtParser = Jwts.parser();
+            JwtParser jwtParser = Jwts.parser().requireIssuer(this.jwtConfig.issuer());
             this.setSigningKey(jwtParser);
-            Jws<Claims> jws = jwtParser.parseClaimsJws(claimsJws);
-            LOGGER.info("Subject [{}] has a valid token!!", jws.getBody().getSubject());
-            claimsJwsParsed = true;
+            Jws<Claims> jws = jwtParser.parseClaimsJws(jwt);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Subject [{}] has a valid token!!", jws.getBody().getSubject());
+            }
+            verified = true;
         } catch (RuntimeException ex) {
             LOGGER.error("Invalid JWT!!", ex);
         }
-        return claimsJwsParsed;
+        return verified;
     }
 
     // LifeCycle Methods
@@ -159,19 +161,20 @@ public class JwtServiceImpl implements JwtService {
                 this.signingKey = Objects.requireNonNull(this.resolveSigningKey(), KEY_NULL_MSG);
             }
         } catch (Exception ex) { // NOSONAR
-            // Let the exception be thrown so that SCR would not create a service object of this component.
+            LOGGER.error(ex.getMessage(), ex);
+            // Let the exception be rethrown so that SCR would not create a service object of this component.
             throw new RuntimeException(ex); // NOSONAR
         }
     }
 
     private Key resolveSigningKey() throws Exception {
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
-        // 1. try the jwtConfig location
+        // 1. try the jwtConfig provided keyFileLocation
         String keyFileLocation = System.getProperty(CURR_DIR) + File.separator + this.jwtConfig.keyFileLocation();
         LOGGER.info("Loading Key file from location: [{}]", keyFileLocation);
         Key key = this.loadFromLocation(keyFactory, keyFileLocation);
-        if (key == null) {
-            LOGGER.warn("Couldn't load Key file from location [{}], using the embedded one!!", keyFileLocation);
+        if (key == null && this.jwtConfig.useDefaultKey()) {
+            LOGGER.warn("Couldn't load Key file from location [{}], using the default one!!", keyFileLocation);
             // 2. Use the default one that is embedded with this module.
             key = this.loadDefault(keyFactory);
         }
@@ -209,7 +212,7 @@ public class JwtServiceImpl implements JwtService {
                 .replaceAll(REGEX_SPACE, EMPTY).getBytes(UTF8);
     }
 
-    private void sign(JwtBuilder jwtBuilder) {
+    private void signWith(JwtBuilder jwtBuilder) {
         if (this.signingKey == null) {
             jwtBuilder.signWith(this.signatureAlgo, this.base64EncodedSigningKey);
         } else {

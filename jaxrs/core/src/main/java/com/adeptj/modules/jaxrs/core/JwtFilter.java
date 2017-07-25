@@ -31,6 +31,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.util.Optional;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -39,7 +40,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 
 /**
- * Gets the HTTP Authorization header/Cookie from the request and checks for the JWT token.
+ * Gets the JWT from HTTP Authorization header or Cookie and verify it using JwtService.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -55,40 +56,44 @@ public class JwtFilter implements ContainerRequestFilter {
      */
     private static final int LEN = 7;
 
-    private static final String TOKEN_COOKIE_NAME = "token";
+    private static final String JWT_COOKIE_NAME = "jwt";
 
     private volatile JwtService jwtService;
-
-    @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
-        if (this.jwtService == null) {
-            LOGGER.warn("Can't check token as JwtService unavailable!");
-            this.abort(requestContext, SERVICE_UNAVAILABLE, "JwtService unavailable!!");
-            return;
-        }
-        String token = this.resolveToken(requestContext);
-        if (StringUtils.isBlank(token)) {
-            this.abort(requestContext, BAD_REQUEST, "JWT missing from request!!");
-        } else if (!this.jwtService.parseClaimsJws(token)) {
-            this.abort(requestContext, FORBIDDEN, "Invalid JWT!!");
-        }
-    }
 
     public void setJwtService(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
-    private String resolveToken(ContainerRequestContext requestContext) {
-        String token = StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), LEN);
-        if (StringUtils.isBlank(token)) {
-            Cookie tokenCookie = requestContext.getCookies().get(TOKEN_COOKIE_NAME);
-            if (tokenCookie == null) {
-                LOGGER.warn("Exhausted all options to resolve token!!");
-            } else {
-                token = tokenCookie.getValue();
-            }
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        if (this.jwtService == null) {
+            LOGGER.warn("Can't verify JWT as JwtService unavailable!");
+            this.abort(requestContext, SERVICE_UNAVAILABLE, "JwtService unavailable!!");
+            return;
         }
-        return token;
+        this.handleSecurity(requestContext);
+    }
+
+    private void handleSecurity(ContainerRequestContext requestContext) {
+        String jwt = this.resolveJwt(requestContext);
+        if (StringUtils.isEmpty(jwt)) {
+            this.abort(requestContext, BAD_REQUEST, "JWT missing from request!!");
+        } else if (!this.jwtService.verify(jwt)) {
+            this.abort(requestContext, FORBIDDEN, "Invalid JWT!!");
+        }
+    }
+
+    private String resolveJwt(ContainerRequestContext requestContext) {
+        return Optional.ofNullable(StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), LEN))
+                .orElseGet(() -> {
+                    Cookie tokenCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
+                    if (tokenCookie == null) {
+                        LOGGER.warn("Exhausted all options to resolve JWT!!");
+                    } else {
+                        return tokenCookie.getValue();
+                    }
+                    return null;
+                });
     }
 
     private void abort(ContainerRequestContext ctx, Response.Status status, Object entity) {

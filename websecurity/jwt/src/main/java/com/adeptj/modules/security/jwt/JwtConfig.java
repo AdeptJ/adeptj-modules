@@ -62,4 +62,7 @@ public @interface JwtConfig {
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
     long expirationTime() default 60L;
+
+    @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key")
+    boolean useDefaultKey();
 }

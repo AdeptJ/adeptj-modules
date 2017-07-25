@@ -76,6 +76,16 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
     private Map<String, String> pidVsSubjectMappings = new ConcurrentHashMap<>();
 
     @Override
+    public int priority() {
+        return 0; // default realm has least priority.
+    }
+
+    @Override
+    public String getName() {
+        return FACTORY_NAME;
+    }
+
+    @Override
     public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
         LOGGER.info("Getting JaxRSAuthenticationInfo for Subject: [{}]", subject);
         JaxRSAuthenticationInfo authenticationInfo = this.authenticationInfoMap.get(subject);
@@ -89,11 +99,6 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
             return authenticationInfo;
         }
         return null;
-    }
-
-    @Override
-    public String getName() {
-        return FACTORY_NAME;
     }
 
     @Override
