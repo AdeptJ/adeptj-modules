@@ -111,7 +111,7 @@ public class JaxRSAuthenticator {
     @Path("/jwt/verify")
     @RequiresJwt
     public Response checkJwt() {
-        return Response.ok("JWT is valid!!").build();
+        return Response.ok("JWT is valid!!").type(TEXT_PLAIN).build();
     }
 
     private JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
