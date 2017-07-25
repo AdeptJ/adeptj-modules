@@ -50,11 +50,11 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
+import static io.jsonwebtoken.SignatureAlgorithm.RS256;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -86,7 +86,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String DEFAULT_KEY_FILE = "/default.pem";
 
-    private static final String KEY_NULL_MSG = "Key must not be null!!";
+    private static final String KEY_INIT_FAIL_MSG = "Key can't be initialized!!";
 
     private JwtConfig jwtConfig;
 
@@ -151,14 +151,18 @@ public class JwtServiceImpl implements JwtService {
             if (StringUtils.isNotEmpty(signKey) && this.signatureAlgo.isHmac()) {
                 this.base64EncodedSigningKey = new String(Base64.getEncoder().encode(signKey.getBytes(UTF8)));
             } else if (StringUtils.isEmpty(signKey) && this.signatureAlgo.isHmac()) {
-                this.signatureAlgo = SignatureAlgorithm.RS256;
-                this.signingKey = Objects.requireNonNull(this.resolveSigningKey(), KEY_NULL_MSG);
+                this.signatureAlgo = RS256;
+                if ((this.signingKey = this.resolveSigningKey()) == null) {
+                    throw new IllegalStateException(KEY_INIT_FAIL_MSG);
+                }
             } else {
                 // Default is RS256
                 if (this.signatureAlgo.isHmac()) {
-                    this.signatureAlgo = SignatureAlgorithm.RS256;
+                    this.signatureAlgo = RS256;
                 }
-                this.signingKey = Objects.requireNonNull(this.resolveSigningKey(), KEY_NULL_MSG);
+                if ((this.signingKey = this.resolveSigningKey()) == null) {
+                    throw new IllegalStateException(KEY_INIT_FAIL_MSG);
+                }
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
