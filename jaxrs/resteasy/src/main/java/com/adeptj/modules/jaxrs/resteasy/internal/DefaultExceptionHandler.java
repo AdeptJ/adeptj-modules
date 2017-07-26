@@ -18,9 +18,11 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.error;
+package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.core.JaxRSException;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -29,30 +31,27 @@ import javax.ws.rs.ext.Provider;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * {@link ExceptionMapper} for JaxRSException.
+ * Handles all the unhandled exceptions coming out of resource method calls.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Provider
-public class JaxRSExceptionHandler implements ExceptionMapper<JaxRSException> {
+public class DefaultExceptionHandler implements ExceptionMapper<ApplicationException> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionHandler.class);
 
     private boolean showException;
 
-    public JaxRSExceptionHandler(boolean showException) {
+    DefaultExceptionHandler(boolean showException) {
         this.showException = showException;
     }
 
     @Override
-    public Response toResponse(JaxRSException exception) {
-        String mediaType = exception.getMediaType();
-        Object entity = exception.getEntity();
-        if (entity == null) {
-            entity = new ErrorResponse("ERROR", exception.getMessage(), this.showException);
-            mediaType = APPLICATION_JSON;
-        }
-        return Response.status(exception.getStatus())
-                .type(mediaType)
-                .entity(entity)
+    public Response toResponse(ApplicationException exception) {
+        LOGGER.error(exception.getMessage(), exception);
+        return Response.serverError()
+                .type(APPLICATION_JSON)
+                .entity(new ErrorResponse("ERROR", exception, this.showException))
                 .build();
     }
 }

@@ -24,8 +24,6 @@ import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.jaxrs.core.JwtFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
-import com.adeptj.modules.jaxrs.resteasy.error.DefaultExceptionHandler;
-import com.adeptj.modules.jaxrs.resteasy.error.JaxRSExceptionHandler;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;

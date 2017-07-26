@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.error;
+package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,20 +29,17 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ErrorResponse {
 
-    private static final String SUB_STR_SEPARATOR = "RESTEASY";
-
     private static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it." +
-            "Please try again later!!";
+            " Please try again later!!";
 
     private String status;
 
     private String message;
 
-    ErrorResponse(String status, String message, boolean showException) {
+    ErrorResponse(String status, Exception ex, boolean showException) {
         this.status = status;
         if (showException) {
-            this.message = StringUtils.substringAfter(message, SUB_STR_SEPARATOR);
-            this.message = StringUtils.isEmpty(this.message) ? DEFAULT_ERROR_MSG : this.message;
+            this.message = StringUtils.isEmpty(ex.getMessage()) ? DEFAULT_ERROR_MSG : ex.getMessage();
         } else {
             this.message = DEFAULT_ERROR_MSG;
         }
