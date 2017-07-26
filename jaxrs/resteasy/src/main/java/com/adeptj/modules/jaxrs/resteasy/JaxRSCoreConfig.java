@@ -55,4 +55,9 @@ public @interface JaxRSCoreConfig {
             description = "Allowed origins for CORS request, Note: Please don't use * on production systems!"
     )
     String[] allowedOrigins() default "*";
+
+    // Common configs
+
+    @AttributeDefinition(name = "Show Exception Message", description = "Whether to show exception message in error response")
+    boolean showException();
 }

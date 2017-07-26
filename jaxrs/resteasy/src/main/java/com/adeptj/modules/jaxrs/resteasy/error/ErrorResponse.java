@@ -38,10 +38,14 @@ public class ErrorResponse {
 
     private String message;
 
-    ErrorResponse(String status, String message) {
+    ErrorResponse(String status, String message, boolean showException) {
         this.status = status;
-        this.message = StringUtils.substringAfter(message, SUB_STR_SEPARATOR);
-        this.message = StringUtils.isEmpty(this.message) ? DEFAULT_ERROR_MSG : this.message;
+        if (showException) {
+            this.message = StringUtils.substringAfter(message, SUB_STR_SEPARATOR);
+            this.message = StringUtils.isEmpty(this.message) ? DEFAULT_ERROR_MSG : this.message;
+        } else {
+            this.message = DEFAULT_ERROR_MSG;
+        }
     }
 
     public String getStatus() {

@@ -31,7 +31,7 @@ import javax.ws.rs.ext.Provider;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Handles all the exceptions coming out of resource method calls.
+ * Handles all the unhandled exceptions coming out of resource method calls.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
@@ -40,12 +40,18 @@ public class DefaultExceptionHandler implements ExceptionMapper<ApplicationExcep
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionHandler.class);
 
+    private boolean showException;
+
+    public DefaultExceptionHandler(boolean showException) {
+        this.showException = showException;
+    }
+
     @Override
     public Response toResponse(ApplicationException exception) {
         LOGGER.error(exception.getMessage(), exception);
         return Response.serverError()
                 .type(APPLICATION_JSON)
-                .entity(new ErrorResponse("ERROR", exception.getMessage()))
+                .entity(new ErrorResponse("ERROR", exception.getMessage(), this.showException))
                 .build();
     }
 }

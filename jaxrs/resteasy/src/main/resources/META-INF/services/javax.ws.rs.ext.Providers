@@ -2,5 +2,3 @@ org.jboss.resteasy.plugins.interceptors.AcceptEncodingGZIPFilter
 org.jboss.resteasy.plugins.interceptors.GZIPDecodingInterceptor
 org.jboss.resteasy.plugins.interceptors.GZIPEncodingInterceptor
 org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature
-com.adeptj.modules.jaxrs.resteasy.error.NotAllowedExceptionHandler
-com.adeptj.modules.jaxrs.resteasy.error.DefaultExceptionHandler

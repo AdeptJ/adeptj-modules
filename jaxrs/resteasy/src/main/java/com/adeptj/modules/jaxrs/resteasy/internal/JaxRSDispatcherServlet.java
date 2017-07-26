@@ -24,6 +24,7 @@ import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.jaxrs.core.JwtFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
+import com.adeptj.modules.jaxrs.resteasy.error.DefaultExceptionHandler;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
@@ -136,13 +137,14 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
                 this.providerFactory = dispatcher.getProviderFactory();
-                this.providerFactory.registerProviderInstance(new JaxRSCorsFeature(this.config));
+                this.providerFactory.register(new JaxRSCorsFeature(this.config));
                 this.jwtFilter = new JwtFilter();
                 this.jwtFilter.setJwtService(this.jwtService);
                 LOGGER.info("Initialized JwtFilter with JwtService: [{}]", this.jwtService);
-                this.providerFactory.registerProviderInstance(this.jwtFilter);
-                this.removeDefaultGeneralValidator(providerFactory);
-                this.providerFactory.registerProviderInstance(new GeneralValidatorContextResolver());
+                this.providerFactory.register(this.jwtFilter);
+                this.removeDefaultGeneralValidator(this.providerFactory);
+                this.providerFactory.register(new GeneralValidatorContextResolver());
+                this.providerFactory.register(new DefaultExceptionHandler(this.config.showException()));
                 this.openServiceTracker(dispatcher);
                 LOGGER.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
