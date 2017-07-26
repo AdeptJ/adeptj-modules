@@ -41,6 +41,7 @@ import java.util.List;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -106,7 +107,11 @@ public class JaxRSAuthenticator {
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage(), ex);
-                return Response.serverError().build();
+                throw new JaxRSException.Builder()
+                        .message(ex.getMessage())
+                        .cause(ex)
+                        .status(INTERNAL_SERVER_ERROR.getStatusCode())
+                        .build();
             }
         }
         return response;

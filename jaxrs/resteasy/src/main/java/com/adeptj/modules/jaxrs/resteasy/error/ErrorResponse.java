@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * ErrorResponse to return in case of exception arise out of resource methods.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
 public class ErrorResponse {
 

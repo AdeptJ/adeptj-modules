@@ -25,6 +25,7 @@ import com.adeptj.modules.jaxrs.core.JwtFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
 import com.adeptj.modules.jaxrs.resteasy.error.DefaultExceptionHandler;
+import com.adeptj.modules.jaxrs.resteasy.error.JaxRSExceptionHandler;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
@@ -145,6 +146,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 this.removeDefaultGeneralValidator(this.providerFactory);
                 this.providerFactory.register(new GeneralValidatorContextResolver());
                 this.providerFactory.register(new DefaultExceptionHandler(this.config.showException()));
+                this.providerFactory.register(new JaxRSExceptionHandler(this.config.showException()));
                 this.openServiceTracker(dispatcher);
                 LOGGER.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
