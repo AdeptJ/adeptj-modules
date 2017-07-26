@@ -31,6 +31,9 @@ public class ErrorResponse {
 
     private static final String SUB_STR_SEPARATOR = "RESTEASY";
 
+    private static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it." +
+            "Please try again later!!";
+
     private String status;
 
     private String message;
@@ -38,6 +41,7 @@ public class ErrorResponse {
     ErrorResponse(String status, String message) {
         this.status = status;
         this.message = StringUtils.substringAfter(message, SUB_STR_SEPARATOR);
+        this.message = StringUtils.isEmpty(this.message) ? DEFAULT_ERROR_MSG : this.message;
     }
 
     public String getStatus() {
