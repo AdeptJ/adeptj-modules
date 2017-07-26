@@ -25,17 +25,17 @@ Export-Package: com.adeptj.modules.jaxrs.core,\
                 !com.adeptj.modules.jaxrs.core.internal
 
 Import-Package: \
-  com.fasterxml.jackson.jaxrs.xml;version="2.8.9",\
-  javax.mail;version="1.5",\
+  com.fasterxml.jackson.jaxrs.xml,\
+  javax.mail,\
   javax.servlet;\
   javax.servlet.http;\
   javax.servlet.descriptor;\
-  javax.servlet.annotation;version="3.1.0",\
+  javax.servlet.annotation,\
   com.sun.el.parser;\
   com.sun.el.lang;\
   com.sun.el.stream;\
   com.sun.el.util;\
-  com.sun.el;version="3.0.0",\
+  com.sun.el,\
   *
   
 Bundle-Name: ${project.name}
