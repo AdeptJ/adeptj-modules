@@ -22,18 +22,24 @@ package com.adeptj.modules.webconsole.security;
 
 import org.apache.felix.webconsole.WebConsoleSecurityProvider;
 import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.Designate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 import static javax.servlet.http.HttpServletResponse.SC_FOUND;
+import static org.osgi.service.http.HttpContext.AUTHORIZATION;
+import static org.osgi.service.http.HttpContext.REMOTE_USER;
 
 /**
  * Felix {@link WebConsoleSecurityProvider} implementation.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@Designate(ocd = WebConsoleSecurityRoleConfig.class)
 @Component(immediate = true, service = WebConsoleSecurityProvider.class)
 public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
 
@@ -43,14 +49,14 @@ public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 
 
 	private static final String ADMIN = "admin";
 	
-	private static final String ROLE_OSGI_ADMIN = "OSGiAdmin";
+	private String[] roles;
 
 	/**
 	 * Role [OSGiAdmin] is already set by Undertow SecurityHandler.
 	 */
 	@Override
 	public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
-		return request.isUserInRole(ROLE_OSGI_ADMIN);
+        return Arrays.stream(this.roles).map(request::isUserInRole).count() != 0;
 	}
 
 	/**
@@ -77,9 +83,18 @@ public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 
 		// Note: Semantics of this method states that Session invalidation should not happen here.
 		// Not using response.sendRedirect due to exception handling we need to do, avoiding that.
 		// Set the status to [302] and location header to [/tools/logout] so that browser could redirect there.
-		// ProxyServlet will take care of Session invalidation later.
+		// AuthServlet will take care of Session invalidation later.
+        request.removeAttribute(REMOTE_USER);
+        request.removeAttribute(AUTHORIZATION);
 		response.setStatus(SC_FOUND);
 		response.setHeader(HEADER_LOC, URL_TOOLS_LOGOUT);
 	}
+
+	// LifeCycle methods
+
+    @Activate
+    protected void start(WebConsoleSecurityRoleConfig config) {
+	    this.roles = config.roles();
+    }
 
 }
