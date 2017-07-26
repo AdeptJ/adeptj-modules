@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-parent</artifactId>
-        <version>1.0.9.Final</version>
+        <version>1.0.10.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules</artifactId>
-    <version>1.0.5.Final</version>
+    <version>1.0.6.Final</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Parent</name>
     <description>Parent for AdeptJ Modules Project</description>
@@ -37,7 +37,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <adeptj-maven-plugin.version>1.0.0.Final</adeptj-maven-plugin.version>
+        <adeptj-maven-plugin.version>1.0.1.Final</adeptj-maven-plugin.version>
+        <adeptj.console.url>http://localhost:9007/system/console</adeptj.console.url>
+        <adeptj.auth.url>http://localhost:9007/auth/j_security_check</adeptj.auth.url>
+        <adeptj.user>admin</adeptj.user>
+        <adeptj.password>admin</adeptj.password>
     </properties>
 
     <!-- Project Information -->
