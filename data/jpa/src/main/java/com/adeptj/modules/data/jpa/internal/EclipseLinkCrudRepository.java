@@ -89,15 +89,15 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> int updateByCriteria(Class<T> entity, Map<String, Object> namedParams, Map<String, Object> updateFields) {
+    public <T extends BaseEntity> int updateByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes, Map<String, Object> updateAttributes) {
         EntityManager em = this.emf.createEntityManager();
         EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<T> cu = cb.createCriteriaUpdate(entity);
-            updateFields.forEach(cu::set);
-            cu.where(cb.and(this.predicates(namedParams, cb, cu.from(entity)).toArray(new Predicate[0])));
+            updateAttributes.forEach(cu::set);
+            cu.where(cb.and(this.predicates(criteriaAttributes, cb, cu.from(entity)).toArray(new Predicate[0])));
             int rowsUpdated = em.createQuery(cu).executeUpdate();
             txn.commit();
             LOGGER.info("No. of rows updated: {}", rowsUpdated);
@@ -131,13 +131,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> int deleteByNamedQuery(Class<T> entity, String namedQuery, List<Object> posParams) {
+    public <T extends BaseEntity> int deleteByNamedQuery(Class<T> entity, String namedQuery, List<Object> ordinalParams) {
         EntityManager em = this.emf.createEntityManager();
         EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
             TypedQuery<T> typedQuery = em.createNamedQuery(namedQuery, entity);
-            this.setQueryParameters(typedQuery, posParams);
+            this.setQueryParameters(typedQuery, ordinalParams);
             int rowsDeleted = typedQuery.executeUpdate();
             txn.commit();
             LOGGER.info("deleteByNamedQuery: No. of rows deleted: {}", rowsDeleted);
@@ -153,14 +153,14 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> int deleteByCriteria(Class<T> entity, Map<String, Object> namedParams) {
+    public <T extends BaseEntity> int deleteByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes) {
         EntityManager em = this.emf.createEntityManager();
         EntityTransaction txn = em.getTransaction();
         try {
             txn.begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaDelete<T> cd = cb.createCriteriaDelete(entity);
-            cd.where(cb.and(this.predicates(namedParams, cb, cd.from(entity)).toArray(new Predicate[0])));
+            cd.where(cb.and(this.predicates(criteriaAttributes, cb, cd.from(entity)).toArray(new Predicate[0])));
             int rowsDeleted = em.createQuery(cd).executeUpdate();
             txn.commit();
             LOGGER.info("deleteByCriteria: No. of rows deleted: {}", rowsDeleted);
@@ -209,12 +209,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> namedParams) {
+    public <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes) {
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entity);
-            cq.where(cb.and(this.predicates(namedParams, cb, cq.from(entity)).toArray(new Predicate[0])));
+            cq.where(cb.and(this.predicates(criteriaAttributes, cb, cq.from(entity)).toArray(new Predicate[0])));
             return em.createQuery(cq).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding by Criteria!!", ex);
@@ -320,13 +320,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> findByINOperator(Map<String, List<Object>> inParams, Class<T> entity) {
+    public <T extends BaseEntity> List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            String entityAttr = inParams.keySet().iterator().next();
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             Root<T> root = cq.from(entity);
-            cq.select(root).where(root.get(entityAttr).in(inParams.entrySet().iterator().next().getValue()));
+            cq.select(root).where(root.get(attributeName).in(values));
             return em.createQuery(cq).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while findByINOperator!!", ex);
@@ -368,14 +367,14 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> namedParams) {
+    public <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes) {
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             Root<T> from = cq.from(entity);
             cq.select(cb.count(from));
-            cq.where(cb.and(this.predicates(namedParams, cb, from).toArray(new Predicate[0])));
+            cq.where(cb.and(this.predicates(criteriaAttributes, cb, from).toArray(new Predicate[0])));
             return em.createQuery(cq).getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while countByCriteria!!", ex);
@@ -413,7 +412,10 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     private <T> List<Predicate> predicates(Map<String, Object> namedParams, CriteriaBuilder cb, Root<T> root) {
-        return namedParams.entrySet().stream().map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
+        return namedParams
+                .entrySet()
+                .stream()
+                .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
                 .collect(Collectors.toList());
     }
 
