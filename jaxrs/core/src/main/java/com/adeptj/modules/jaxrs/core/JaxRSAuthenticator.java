@@ -129,8 +129,10 @@ public class JaxRSAuthenticator {
         this.authRealms.sort(JaxRSAuthenticator::compare);
         for (JaxRSAuthenticationRealm realm : this.authRealms) {
             JaxRSAuthenticationInfo authInfo = realm.getAuthenticationInfo(subject, password);
-            if (authInfo == null && LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Realm: [{}] couldn't validate credentials!", realm.getName());
+            if (authInfo == null) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Realm: [{}] couldn't validate credentials!", realm.getName());
+                }
             } else {
                 return authInfo;
             }
