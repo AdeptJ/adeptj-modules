@@ -99,7 +99,7 @@ public class JwtFilter implements ContainerRequestFilter {
         if (jwtCookie == null) {
             LOGGER.warn("Exhausted all options to resolve JWT!!");
         } else {
-            jwtCookieValue = jwtCookie.getValue();
+            jwtCookieValue = StringUtils.deleteWhitespace(jwtCookie.getValue());
         }
         return jwtCookieValue;
     }
