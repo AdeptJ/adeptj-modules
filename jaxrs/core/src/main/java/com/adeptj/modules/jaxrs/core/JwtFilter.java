@@ -59,6 +59,8 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private static final String JWT_COOKIE_NAME = "jwt";
 
+    private static final String BEARER_SCHEMA = "Bearer";
+
     private volatile JwtService jwtService;
 
     public void setJwtService(JwtService jwtService) {
@@ -97,9 +99,13 @@ public class JwtFilter implements ContainerRequestFilter {
         Cookie jwtCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
         String jwtCookieValue = null;
         if (jwtCookie == null) {
-            LOGGER.warn("Exhausted all options to resolve JWT!!");
+            LOGGER.warn("JWT couldn't be found in cookies!!");
         } else {
-            jwtCookieValue = StringUtils.deleteWhitespace(jwtCookie.getValue());
+            jwtCookieValue = jwtCookie.getValue();
+            if (StringUtils.startsWith(jwtCookieValue, BEARER_SCHEMA)) {
+                jwtCookieValue = StringUtils.substring(jwtCookieValue, BEARER_SCHEMA.length());
+            }
+            jwtCookieValue = StringUtils.deleteWhitespace(jwtCookieValue);
         }
         return jwtCookieValue;
     }
