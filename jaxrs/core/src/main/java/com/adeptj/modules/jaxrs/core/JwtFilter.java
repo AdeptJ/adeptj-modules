@@ -85,17 +85,23 @@ public class JwtFilter implements ContainerRequestFilter {
     }
 
     private String resolveJwt(ContainerRequestContext requestContext) {
-        return Optional.ofNullable(StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), LEN))
-                .orElseGet(() -> {
-                    Cookie jwtCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
-                    String jwtCookieValue = null;
-                    if (jwtCookie == null) {
-                        LOGGER.warn("Exhausted all options to resolve JWT!!");
-                    } else {
-                        jwtCookieValue = jwtCookie.getValue();
-                    }
-                    return jwtCookieValue;
-                });
+        return Optional.ofNullable(this.resolveFromHeaders(requestContext)).orElseGet(() ->
+                this.resolveFromCookies(requestContext));
+    }
+
+    private String resolveFromHeaders(ContainerRequestContext requestContext) {
+        return StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), LEN);
+    }
+
+    private String resolveFromCookies(ContainerRequestContext requestContext) {
+        Cookie jwtCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
+        String jwtCookieValue = null;
+        if (jwtCookie == null) {
+            LOGGER.warn("Exhausted all options to resolve JWT!!");
+        } else {
+            jwtCookieValue = jwtCookie.getValue();
+        }
+        return jwtCookieValue;
     }
 
     private void abort(ContainerRequestContext ctx, Response.Status status, Object entity) {
