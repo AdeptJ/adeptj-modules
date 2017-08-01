@@ -45,7 +45,7 @@ public @interface JaxRSCoreConfig {
     String allowedMethods() default "GET,POST,PUT,OPTIONS,HEAD,DELETE";
 
     @AttributeDefinition(name = "CORS Allowed Headers", description = "Allowed headers in a CORS request")
-    String[] allowedHeaders() default AUTHORIZATION;
+    String[] allowedHeaders() default {AUTHORIZATION};
 
     @AttributeDefinition(name = "CORS Exposed Headers", description = "Exposed headers in a CORS request")
     String[] exposedHeaders();
@@ -54,7 +54,7 @@ public @interface JaxRSCoreConfig {
             name = "CORS Allowed Origins",
             description = "Allowed origins for CORS request, Note: Please don't use * on production systems!"
     )
-    String[] allowedOrigins() default "*";
+    String[] allowedOrigins() default {"*"};
 
     // Common configs
 

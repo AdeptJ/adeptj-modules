@@ -18,44 +18,16 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.api;
-
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
-import com.adeptj.modules.jaxrs.core.jwt.JwtIssuer;
+package com.adeptj.modules.jaxrs.core;
 
 /**
- * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
+ * BaseResource for registering JAX-RS resources with OSGi service registry.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JaxRSAuthenticationRealm {
+public interface BaseResource {
 
-    /**
-     * Priority of the realm, higher priority realm is called before other realms.
-     *
-     * @return Priority of JaxRSAuthenticationRealm
-     */
-    int priority();
+    String path();
 
-    /**
-     * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
-     *
-     * @return a meaningful name.
-     */
-    String getName();
-
-    /**
-     * Implementations should validate the credentials supplied and return the populated JaxRSAuthenticationInfo
-     * with other useful information.
-     *
-     * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by
-     * {@link JwtIssuer} as it has no way to validate the information
-     * returned by the implementations.
-     *
-     * @param subject the user id
-     * @param password the password of subject supplied
-     *
-     * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
-     */
-    JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password);
+    String scope();
 }

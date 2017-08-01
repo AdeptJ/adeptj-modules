@@ -124,21 +124,105 @@ public interface JpaCrudRepository {
      */
     <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
 
-    <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> namedParams, int startPos, int maxResult);
+    /**
+     * Finds the given JPA entity using Criteria API. Helpful wherever pagination is required.
+     * <p>
+     * First the no. of records can be checked using {@link JpaCrudRepository#count(Class)} method
+     * and then the pagination query can be fired.
+     *
+     * @param entity             the JPA entity class object
+     * @param criteriaAttributes the mapping of entity attributes on which criteria has to be applied
+     *                           and the corresponding values using AND operator
+     * @param startPos           position of the first result
+     * @param maxResult          maximum number of results to retrieve
+     * @param <T>                type of the JPA entity
+     * @return returns no. of rows found
+     */
+    <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes, int startPos, int maxResult);
 
-    <T extends BaseEntity> List<T> findByNamedQuery(Class<T> entity, String namedQuery, List<Object> posParams);
+    /**
+     * Finds the given JPA entity using the named JPA query.
+     *
+     * @param entity        the JPA entity class object
+     * @param namedQuery    the name of a query defined in metadata
+     * @param ordinalParams List of parameters to bind to query
+     * @param <T>           type of the JPA entity
+     * @return List of entity found by named query execution
+     */
+    <T extends BaseEntity> List<T> findByNamedQuery(Class<T> entity, String namedQuery, List<Object> ordinalParams);
 
+    /**
+     * Finds all entities of given type.
+     * <p>
+     * Note: Should never be called for large number of rows.
+     *
+     * @param entity the JPA entity class object
+     * @param <T>    type of the JPA entity
+     * @return All of the rows(Entity instances)
+     */
     <T extends BaseEntity> List<T> findAll(Class<T> entity);
 
+    /**
+     * Finds all entities of given type. Helpful wherever pagination is required.
+     * <p>
+     * Note: Should never be called for large number of rows.
+     * <p>
+     * First the no. of records can be checked using {@link JpaCrudRepository#count(Class)} method
+     * and then the pagination query can be fired.
+     *
+     * @param entity    the JPA entity class object
+     * @param startPos  position of the first result
+     * @param maxResult maximum number of results to retrieve
+     * @param <T>       type of the JPA entity
+     * @return All of the rows(Entity instances)
+     */
     <T extends BaseEntity> List<T> findAll(Class<T> entity, int startPos, int maxResult);
 
-    <T extends BaseEntity> List<T> findByQuery(String jpaQuery, Class<T> entity);
+    /**
+     * Finds the entity instances of given type using query specified in JPQL format.
+     *
+     * @param entity        the JPA entity class object
+     * @param jpaQuery      query in JPQL format
+     * @param ordinalParams List of parameters to bind to query
+     * @param <T>           type of the JPA entity
+     * @return List of entity found by JPA query(JPQL format) execution
+     */
+    <T extends BaseEntity> List<T> findByQuery(Class<T> entity, String jpaQuery, List<Object> ordinalParams);
 
-    <T extends BaseEntity> List<T> findByQuery(String jpaQuery, Class<T> entity, int startPos, int maxResult);
+    /**
+     * Finds the entity instances of given type using JPQL with start and max result option.
+     *
+     * @param entity        the JPA entity class object
+     * @param jpaQuery      query in JPQL format
+     * @param ordinalParams List of parameters to bind to query
+     * @param startPos      position of the first result
+     * @param maxResult     maximum number of results to retrieve
+     * @param <T>           type of the JPA entity
+     * @return List of entity found by JPA query(JPQL format) execution
+     */
+    <T extends BaseEntity> List<T> findByQuery(Class<T> entity, String jpaQuery, List<Object> ordinalParams, int startPos, int maxResult);
 
+    /**
+     * Find the given entity using SQL IN operator
+     *
+     * @param entity        the JPA entity class object
+     * @param attributeName entity attribute against which IN has to be applied
+     * @param values        values on which IN has to be applied
+     * @param <T>           type of the JPA entity
+     * @return List of entity found by criteria
+     */
     <T extends BaseEntity> List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values);
 
-    <E> E getScalarResultByNamedQuery(Class<E> entity, String namedQuery, List<Object> posParams);
+    /**
+     * Gets the single result against the named query.
+     *
+     * @param resultClass   the type of the query result
+     * @param namedQuery    the name of a query defined in metadata
+     * @param ordinalParams List of parameters to bind to query
+     * @param <E>           Type of returned instance
+     * @return singular result from query execution
+     */
+    <E> E getScalarResultByNamedQuery(Class<E> resultClass, String namedQuery, List<Object> ordinalParams);
 
     /**
      * Count the no. of rows of given JPA entity.
@@ -159,5 +243,4 @@ public interface JpaCrudRepository {
      * @return count of no. of rows og given JPA entity
      */
     <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
-
 }

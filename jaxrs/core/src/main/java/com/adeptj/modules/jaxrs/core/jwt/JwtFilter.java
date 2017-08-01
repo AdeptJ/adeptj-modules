@@ -17,8 +17,9 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.RequiresJwt;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,7 +42,11 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 
 /**
- * Gets the JWT from HTTP Authorization header or Cookie and verify it using JwtService.
+ * This filter will kick in for any resource method that is annotated with {@link RequiresJwt} annotation.
+ * Filter will try to resolve the Jwt first from HTTP Authorization header and if that resolves to null
+ * then try to resolve from Cookies(a Cookie named jwt should be present in request).
+ * <p>
+ * If a non null Jwt is resolved then verify it using {@link JwtService}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -53,7 +58,7 @@ public class JwtFilter implements ContainerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
 
     /**
-     * Bearer schema string length + 1
+     * Bearer schema string literal length + 1. "Bearer".length() is 6.
      */
     private static final int LEN = 7;
 
@@ -62,6 +67,11 @@ public class JwtFilter implements ContainerRequestFilter {
     private static final String BEARER_SCHEMA = "Bearer";
 
     private volatile JwtService jwtService;
+
+    public JwtFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+        LOGGER.info("Initialized JwtFilter with JwtService: [{}]", this.jwtService);
+    }
 
     public void setJwtService(JwtService jwtService) {
         this.jwtService = jwtService;
@@ -74,10 +84,10 @@ public class JwtFilter implements ContainerRequestFilter {
             this.abort(requestContext, SERVICE_UNAVAILABLE, "JwtService unavailable!!");
             return;
         }
-        this.handleSecurity(requestContext);
+        this.verifyJwt(requestContext);
     }
 
-    private void handleSecurity(ContainerRequestContext requestContext) {
+    private void verifyJwt(ContainerRequestContext requestContext) {
         String jwt = this.resolveJwt(requestContext);
         if (StringUtils.isEmpty(jwt)) {
             this.abort(requestContext, BAD_REQUEST, "JWT missing from request!!");
@@ -98,9 +108,7 @@ public class JwtFilter implements ContainerRequestFilter {
     private String resolveFromCookies(ContainerRequestContext requestContext) {
         Cookie jwtCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
         String jwtCookieValue = null;
-        if (jwtCookie == null) {
-            LOGGER.warn("JWT couldn't be found in cookies!!");
-        } else {
+        if (jwtCookie != null) {
             jwtCookieValue = jwtCookie.getValue();
             if (StringUtils.startsWith(jwtCookieValue, BEARER_SCHEMA)) {
                 jwtCookieValue = StringUtils.substring(jwtCookieValue, BEARER_SCHEMA.length());

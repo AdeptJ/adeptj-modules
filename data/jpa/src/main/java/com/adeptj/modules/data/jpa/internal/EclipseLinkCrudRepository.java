@@ -19,6 +19,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -30,12 +31,12 @@ import java.util.stream.Collectors;
  * Therefore there will be a separate service for each PersistenceUnit.
  * <p>
  * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaCrudRepository}
- *
+ * <p>
  * <code>
- *
- *     &#064;Reference(target="(osgi.unit.name=pu)")
- *     private JpaCrudRepository repository;
- *
+ * <p>
+ * &#064;Reference(target="(osgi.unit.name=pu)")
+ * private JpaCrudRepository repository;
+ * <p>
  * </code>
  *
  * @author Rakesh.Kumar, AdeptJ.
@@ -137,7 +138,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             txn.begin();
             TypedQuery<T> typedQuery = em.createNamedQuery(namedQuery, entity);
-            this.setQueryParameters(typedQuery, ordinalParams);
+            this.setOrdinalParameters(typedQuery, ordinalParams);
             int rowsDeleted = typedQuery.executeUpdate();
             txn.commit();
             LOGGER.info("deleteByNamedQuery: No. of rows deleted: {}", rowsDeleted);
@@ -225,12 +226,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> namedParams, int startPos, int maxResult) {
+    public <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes, int startPos, int maxResult) {
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entity);
-            cq.where(cb.and(this.predicates(namedParams, cb, cq.from(entity)).toArray(new Predicate[0])));
+            cq.where(cb.and(this.predicates(criteriaAttributes, cb, cq.from(entity)).toArray(new Predicate[0])));
             TypedQuery<T> typedQuery = em.createQuery(cq);
             typedQuery.setFirstResult(startPos);
             typedQuery.setMaxResults(maxResult);
@@ -244,11 +245,11 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> findByNamedQuery(Class<T> entity, String namedQuery, List<Object> posParams) {
+    public <T extends BaseEntity> List<T> findByNamedQuery(Class<T> entity, String namedQuery, List<Object> ordinalParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createNamedQuery(namedQuery, entity);
-            this.setQueryParameters(query, posParams);
+            this.setOrdinalParameters(query, ordinalParams);
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding entity by named query!!", ex);
@@ -279,8 +280,8 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             cq.select(cq.from(entity));
             TypedQuery<T> typedQuery = em.createQuery(cq);
-            typedQuery.setMaxResults(maxResult);
             typedQuery.setFirstResult(startPos);
+            typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding all Entities!!", ex);
@@ -291,10 +292,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> findByQuery(String jpaQuery, Class<T> entity) {
+    public <T extends BaseEntity> List<T> findByQuery(Class<T> entity, String jpaQuery, List<Object> ordinalParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            return em.createQuery(jpaQuery, entity).getResultList();
+            TypedQuery<T> query = em.createQuery(jpaQuery, entity);
+            this.setOrdinalParameters(query, ordinalParams);
+            return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while findByQuery!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -304,10 +307,11 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <T extends BaseEntity> List<T> findByQuery(String jpaQuery, Class<T> entity, int startPos, int maxResult) {
+    public <T extends BaseEntity> List<T> findByQuery(Class<T> entity, String jpaQuery, List<Object> ordinalParams, int startPos, int maxResult) {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> typedQuery = em.createQuery(jpaQuery, entity);
+            this.setOrdinalParameters(typedQuery, ordinalParams);
             typedQuery.setFirstResult(startPos);
             typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
@@ -336,11 +340,11 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     @Override
-    public <E> E getScalarResultByNamedQuery(Class<E> entity, String namedQuery, List<Object> posParams) {
+    public <E> E getScalarResultByNamedQuery(Class<E> resultClass, String namedQuery, List<Object> ordinalParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<E> typedQuery = em.createNamedQuery(namedQuery, entity);
-            this.setQueryParameters(typedQuery, posParams);
+            TypedQuery<E> typedQuery = em.createNamedQuery(namedQuery, resultClass);
+            this.setOrdinalParameters(typedQuery, ordinalParams);
             return typedQuery.getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while getting ScalarResult!!", ex);
@@ -411,8 +415,8 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
-    private <T> List<Predicate> predicates(Map<String, Object> namedParams, CriteriaBuilder cb, Root<T> root) {
-        return namedParams
+    private <T> List<Predicate> predicates(Map<String, Object> criteriaAttributes, CriteriaBuilder cb, Root<T> root) {
+        return criteriaAttributes
                 .entrySet()
                 .stream()
                 .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
@@ -422,14 +426,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     /**
      * This method sets the positional query parameters passed by the caller.
      *
-     * @param query       the JPA Query
-     * @param posParams Positional Parameters
+     * @param query         the JPA Query
+     * @param ordinalParams Ordinal Parameters
      */
-    private void setQueryParameters(TypedQuery<?> query, List<Object> posParams) {
-        Objects.requireNonNull(posParams, "Positional Parameters cannot be null!!");
-        for (int i = 0; i < posParams.size(); i++) {
-            // Positional parameters always starts with 1.
-            query.setParameter(i + 1, posParams.get(i));
-        }
+    private void setOrdinalParameters(TypedQuery<?> query, List<Object> ordinalParams) {
+        Objects.requireNonNull(ordinalParams, "Ordinal Parameters cannot be null!!");
+        AtomicInteger ordinalCounter = new AtomicInteger();
+        ordinalParams.forEach(param -> query.setParameter(ordinalCounter.incrementAndGet(), param));
     }
 }

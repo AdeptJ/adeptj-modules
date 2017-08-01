@@ -22,6 +22,7 @@
 
 Export-Package: com.adeptj.modules.jaxrs.core,\
                 com.adeptj.modules.jaxrs.core.api,\
+                com.adeptj.modules.jaxrs.core.jwt,\
                 !com.adeptj.modules.jaxrs.core.internal
 
 Import-Package: \

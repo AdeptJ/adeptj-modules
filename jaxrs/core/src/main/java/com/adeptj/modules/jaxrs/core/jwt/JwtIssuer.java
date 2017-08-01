@@ -17,8 +17,11 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.JaxRSException;
+import com.adeptj.modules.jaxrs.core.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
@@ -46,15 +49,15 @@ import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
- * JaxRSAuthenticator.
+ * JAX-RS resource for issuance and verification of JWT.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
 @Path("/auth")
-@Component(immediate = true, service = JaxRSAuthenticator.class, property = JaxRSAuthenticator.RESOURCE_BASE)
-public class JaxRSAuthenticator {
+@Component(immediate = true, service = JwtIssuer.class, property = JwtIssuer.RESOURCE_BASE)
+public class JwtIssuer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthenticator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtIssuer.class);
 
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
@@ -62,13 +65,15 @@ public class JaxRSAuthenticator {
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
-    // As per Felix SCR, dynamic references should be declared as volatile.
+    // Plan is to query all the registered JaxRSAuthenticationRealm services
+    // for non null JaxRSAuthenticationInfo instance.
+    // Note: As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
             service = JaxRSAuthenticationRealm.class,
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC
     )
-    private volatile List<JaxRSAuthenticationRealm> authRealms = new ArrayList<>();
+    private volatile List<JaxRSAuthenticationRealm> realms = new ArrayList<>();
 
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
@@ -79,11 +84,19 @@ public class JaxRSAuthenticator {
     )
     private volatile JwtService jwtService;
 
+
+    /**
+     * Issue Jwt to the subject with given credentials.
+     *
+     * @param subject  the subject who needs the Jwt
+     * @param password password associated with the subject
+     * @return JAX-RS Response either having a Jwt or Http error 503
+     */
     @POST
     @Path("/jwt/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response handleSecurity(@NotNull @FormParam("subject") String subject,
-                                   @NotNull @FormParam("password") String password) {
+    public Response issueJwt(@NotNull @FormParam("subject") String subject,
+                             @NotNull @FormParam("password") String password) {
         Response response;
         if (this.jwtService == null) {
             LOGGER.warn("Can't issue token as JwtService unavailable!");
@@ -92,42 +105,55 @@ public class JaxRSAuthenticator {
                     .entity("JwtService unavailable!!")
                     .build();
         } else {
-            try {
-                JaxRSAuthenticationInfo authInfo = this.getAuthenticationInfo(subject, password);
-                if (authInfo == null) {
-                    response = Response.status(UNAUTHORIZED)
-                            .type(TEXT_PLAIN)
-                            .entity("Invalid credentials!!")
-                            .build();
-                } else {
-                    response = Response.ok("Token issued successfully!!")
-                            .type(TEXT_PLAIN)
-                            .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
-                            .build();
-                }
-            } catch (Exception ex) {
-                LOGGER.error(ex.getMessage(), ex);
-                throw new JaxRSException.Builder()
-                        .message(ex.getMessage())
-                        .cause(ex)
-                        .status(INTERNAL_SERVER_ERROR.getStatusCode())
-                        .build();
-            }
+            response = this.handleSecurity(subject, password);
         }
         return response;
     }
 
+    /**
+     * This resource method exists to verify the Jwt issued earlier. Should not be called by clients directly.
+     * <p>
+     * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link JwtFilter}
+     *
+     * @return response 200 if {@link JwtFilter} was able to verify the Jwt issued earlier.
+     */
     @GET
     @Path("/jwt/verify")
     @RequiresJwt
-    public Response checkJwt() {
+    public Response verifyJwt() {
         return Response.ok("JWT is valid!!").type(TEXT_PLAIN).build();
+    }
+
+    private Response handleSecurity(String subject, String password) {
+        Response response;
+        try {
+            JaxRSAuthenticationInfo authInfo = this.getAuthenticationInfo(subject, password);
+            if (authInfo == null) {
+                response = Response.status(UNAUTHORIZED)
+                        .type(TEXT_PLAIN)
+                        .entity("Invalid credentials!!")
+                        .build();
+            } else {
+                response = Response.ok("Token issued successfully!!")
+                        .type(TEXT_PLAIN)
+                        .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
+                        .build();
+            }
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new JaxRSException.Builder()
+                    .message(ex.getMessage())
+                    .cause(ex)
+                    .status(INTERNAL_SERVER_ERROR.getStatusCode())
+                    .build();
+        }
+        return response;
     }
 
     private JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
         // Sort the realms according to the priority in descending order.
-        this.authRealms.sort(JaxRSAuthenticator::compare);
-        for (JaxRSAuthenticationRealm realm : this.authRealms) {
+        this.realms.sort(JwtIssuer::compare);
+        for (JaxRSAuthenticationRealm realm : this.realms) {
             JaxRSAuthenticationInfo authInfo = realm.getAuthenticationInfo(subject, password);
             if (authInfo == null) {
                 if (LOGGER.isDebugEnabled()) {

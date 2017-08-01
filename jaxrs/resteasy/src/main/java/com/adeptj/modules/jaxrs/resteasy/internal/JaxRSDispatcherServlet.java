@@ -21,12 +21,13 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
-import com.adeptj.modules.jaxrs.core.JwtFilter;
+import com.adeptj.modules.jaxrs.core.jwt.JwtFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
+import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.osgi.framework.BundleContext;
@@ -85,6 +86,8 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private static final String RES_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
 
+    private static final String PROVIDER_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.provider=*))";
+
     private static final String INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
 
     private static final String BIND_JWT_SERVICE = "bindJwtService";
@@ -101,9 +104,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private ServiceTracker<Object, Object> resourceTracker;
 
-    private BundleContext context;
+    private ServiceTracker<Object, Object> providerTracker;
 
-    private ResteasyProviderFactory providerFactory;
+    private BundleContext context;
 
     private JwtFilter jwtFilter;
 
@@ -112,7 +115,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     /**
      * The {@link JwtService} is optionally referenced, if available then it is bind and {@link JwtFilter}
      * is registered with the {@link ResteasyProviderFactory}
-     *
+     * <p>
      * Note: As per Felix SCR, dynamic references should be declared as volatile.
      */
     @Reference(
@@ -132,20 +135,19 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         // context ClassLoader which is the application class loader in fact.
         ClassLoaders.executeWith(JaxRSDispatcherServlet.class.getClassLoader(), () -> {
             try {
-                // First bootstrap RESTEasy in super.init()
+                // First let the RESTEasy framework bootstrap in super.init()
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
-                this.providerFactory = dispatcher.getProviderFactory();
-                this.providerFactory.register(new JaxRSCorsFeature(this.config));
-                this.jwtFilter = new JwtFilter();
-                this.jwtFilter.setJwtService(this.jwtService);
-                LOGGER.info("Initialized JwtFilter with JwtService: [{}]", this.jwtService);
-                this.providerFactory.register(this.jwtFilter);
-                this.removeDefaultGeneralValidator(this.providerFactory);
-                this.providerFactory.register(new GeneralValidatorContextResolver());
-                this.providerFactory.register(new DefaultExceptionHandler(this.config.showException()));
-                this.providerFactory.register(new JaxRSExceptionHandler(this.config.showException()));
-                this.openServiceTracker(dispatcher);
+                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
+                this.removeDefaultGeneralValidator(providerFactory);
+                this.jwtFilter = new JwtFilter(this.jwtService);
+                providerFactory.register(new JaxRSCorsFeature(this.config))
+                        .register(this.jwtFilter)
+                        .register(new GeneralValidatorContextResolver())
+                        .register(new DefaultExceptionHandler(this.config.showException()))
+                        .register(new JaxRSExceptionHandler(this.config.showException()));
+                this.openProviderServiceTracker(this.context, providerFactory);
+                this.openResourceServiceTracker(this.context, dispatcher.getRegistry());
                 LOGGER.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
@@ -154,17 +156,23 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         });
     }
 
-    private void openServiceTracker(Dispatcher dispatcher) {
-        this.resourceTracker = new ServiceTracker<>(this.context, anyServiceFilter(this.context, RES_FILTER_EXPR),
-                new JaxRSResources(this.context, dispatcher.getRegistry()));
+    private void openResourceServiceTracker(BundleContext context, Registry registry) {
+        this.resourceTracker = new ServiceTracker<>(context, anyServiceFilter(context, RES_FILTER_EXPR),
+                new JaxRSResources(context, registry));
         this.resourceTracker.open();
+    }
+
+    private void openProviderServiceTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
+        this.providerTracker = new ServiceTracker<>(context, anyServiceFilter(context, PROVIDER_FILTER_EXPR),
+                new JaxRSProviders(context, providerFactory));
+        this.providerTracker.open();
     }
 
     private void removeDefaultGeneralValidator(ResteasyProviderFactory providerFactory) {
         try {
             // First remove the default RESTEasy GeneralValidator so that we can register ours.
             Map.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
-                            .get(providerFactory))
+                    .get(providerFactory))
                     .remove(GeneralValidator.class);
             LOGGER.info("Removed RESTEasy GeneralValidator!!");
         } catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -198,6 +206,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     @Deactivate
     protected void stop() {
+        this.providerTracker.close();
         this.resourceTracker.close();
     }
 }
