@@ -21,53 +21,32 @@
 package com.adeptj.modules.data.jpa;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * CrudDTO
+ * Criteria object holding arguments for JpaCrudRepository findAndMapConstructor* methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class CrudDTO<T extends BaseEntity> {
+public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T> {
 
-    private Class<T> entity;
+    private Class<C> constructorClass;
 
-    private String namedQuery;
+    private List<String> selections;
 
-    private String jpaQuery;
-
-    private List<Object> posParams;
-
-    private int startPos;
-
-    private int maxResult;
-
-    private CrudDTO(Class<T> entity) {
-        this.entity = entity;
+    private ConstructorCriteria(Class<T> entity, Class<C> constructorClass) {
+        super(entity);
+        this.constructorClass = constructorClass;
     }
 
-    public Class<T> getEntity() {
-        return entity;
+    public Class<C> getConstructorClass() {
+        return constructorClass;
     }
 
-    public String getNamedQuery() {
-        return namedQuery;
-    }
-
-    public String getJpaQuery() {
-        return jpaQuery;
-    }
-
-    public List<Object> getPosParams() {
-        return posParams;
-    }
-
-    public int getStartPos() {
-        return startPos;
-    }
-
-    public int getMaxResult() {
-        return maxResult;
+    public List<String> getSelections() {
+        return selections;
     }
 
     public static Builder builder() {
@@ -75,7 +54,7 @@ public class CrudDTO<T extends BaseEntity> {
     }
 
     /**
-     * Builder for creating {@link CrudDTO}
+     * Builder for creating {@link ConstructorCriteria}
      */
     public static class Builder {
 
@@ -85,58 +64,45 @@ public class CrudDTO<T extends BaseEntity> {
 
         private Class<? extends BaseEntity> entity;
 
-        private String namedQuery;
+        private Class<?> constructorClass;
 
-        private String jpaQuery;
+        private Map<String, Object> criteriaAttributes;
 
-        private List<Object> posParams;
-
-        private int startPos;
-
-        private int maxResult;
+        private List<String> selections;
 
         public <T extends BaseEntity> Builder entity(Class<T> entity) {
             this.entity = entity;
             return this;
         }
 
-        public Builder namedQuery(String namedQuery) {
-            this.namedQuery = namedQuery;
+        public <T extends BaseEntity> Builder constructorClass(Class<?> constructorClass) {
+            this.constructorClass = constructorClass;
             return this;
         }
 
-        public Builder jpaQuery(String jpaQuery) {
-            this.jpaQuery = jpaQuery;
-            return this;
-        }
-
-        public Builder addPosParam(Object param) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
+        public Builder addCriteriaAttribute(String attributeName, Object value) {
+            if (this.criteriaAttributes == null) {
+                this.criteriaAttributes = new HashMap<>();
             }
-            this.posParams.add(param);
+            this.criteriaAttributes.put(attributeName, value);
             return this;
         }
 
-        public Builder startPos(int startPos) {
-            this.startPos = startPos;
-            return this;
-        }
-
-        public Builder maxResult(int maxResult) {
-            this.maxResult = maxResult;
+        public Builder addSelection(String attributeName) {
+            if (this.selections == null) {
+                this.selections = new ArrayList<>();
+            }
+            this.selections.add(attributeName);
             return this;
         }
 
         @SuppressWarnings("unchecked")
-        public <T extends BaseEntity> CrudDTO<T> build() {
-            CrudDTO<T> crudDTO = new CrudDTO<>((Class<T>) this.entity);
-            crudDTO.namedQuery = this.namedQuery;
-            crudDTO.jpaQuery = this.jpaQuery;
-            crudDTO.posParams = this.posParams;
-            crudDTO.startPos = this.startPos;
-            crudDTO.maxResult = this.maxResult;
-            return crudDTO;
+        public <T extends BaseEntity, C> ConstructorCriteria<T, C> build() {
+            ConstructorCriteria<T, C> criteria = new ConstructorCriteria<>((Class<T>) this.entity,
+                    (Class<C>) this.constructorClass);
+            criteria.criteriaAttributes = this.criteriaAttributes;
+            criteria.selections = this.selections;
+            return criteria;
         }
     }
 }

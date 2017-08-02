@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.api;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.ReadCriteria;
@@ -86,7 +87,7 @@ public interface JpaCrudRepository {
      * Deletes the given JPA entity using the CrudDTO attributes.
      *
      * @param crudDTO DTO holding the JPA entity class object, name of the declared named query
-     *                and parameters to set for ?index in the query a.k.a Ordinal Parameters
+     *                and parameters to set for ?index in the query a.k.a positional parameters
      * @param <T>     type of the JPA entity
      * @return returns how many rows were deleted
      */
@@ -137,7 +138,7 @@ public interface JpaCrudRepository {
      *
      * @param criteria Object composed of the JPA entity class.
      *                 The mapping of entity attributes on which criteria has to be applied using AND operator.
-     *                 List of parameters to bind to query a.k.a Ordinal Parameters
+     *                 List of parameters to bind to query a.k.a positional parameters
      * @param <T>      type of the JPA entity
      * @return returns no. of rows found
      */
@@ -163,7 +164,7 @@ public interface JpaCrudRepository {
      *
      * @param crudDTO DTO holding the JPA entity class object.
      *                The name of a query defined in metadata.
-     *                And list of parameters to bind to query a.k.a Ordinal Parameters
+     *                And list of parameters to bind to query a.k.a positional parameters
      * @param <T>     type of the JPA entity
      * @return List of entity found by named query execution
      */
@@ -172,11 +173,11 @@ public interface JpaCrudRepository {
     /**
      * Finds the entity instances of given type using query specified in JPQL format.
      *
-     * @param namedQuery    named query either JPQL or native
-     * @param ordinalParams List of parameters to bind to query a.k.a Ordinal Parameters
+     * @param namedQuery named query either JPQL or native
+     * @param posParams  List of parameters to bind to query a.k.a positional parameters
      * @return List of entity found by JPA query(JPQL format) execution
      */
-    List<Object[]> findByNamedQuery(String namedQuery, List<Object> ordinalParams);
+    List<Object[]> findByNamedQuery(String namedQuery, List<Object> posParams);
 
     /**
      * Finds all entities of given type.
@@ -210,7 +211,7 @@ public interface JpaCrudRepository {
      *
      * @param crudDTO DTO holding the JPA entity class object.
      *                The query in JPQL format
-     *                The list of parameters to bind to query a.k.a Ordinal Parameters
+     *                The list of parameters to bind to query a.k.a positional parameters
      * @param <T>     type of the JPA entity
      * @return List of entity found by JPA query(JPQL format) execution
      */
@@ -221,7 +222,7 @@ public interface JpaCrudRepository {
      *
      * @param crudDTO DTO holding the JPA entity class object.
      *                The query in JPQL format
-     *                The list of parameters to bind to query a.k.a Ordinal Parameters
+     *                The list of parameters to bind to query a.k.a positional parameters
      *                The position of the first result.
      *                The maximum number of results to retrieve.
      * @param <T>     type of the JPA entity
@@ -243,25 +244,51 @@ public interface JpaCrudRepository {
     /**
      * Finds the entity using given named native query and project in the given result class.
      *
-     * @param resultClass      the type of the query result
-     * @param nativeSql        the native sql
-     * @param resultSetMapping the name of the result set mapping
-     * @param ordinalParams    List of parameters to bind to query a.k.a Ordinal Parameters
-     * @param <T>              Type of returned instance
+     * @param resultClass the type of the query result
+     * @param nativeSql   the native sql
+     * @param mapping     the name of the result set mapping
+     * @param posParams   List of parameters to bind to query a.k.a positional parameters
+     * @param <T>         Type of returned instance
      * @return singular result from query execution
      */
-    <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String resultSetMapping, List<Object> ordinalParams);
+    <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String mapping, List<Object> posParams);
+
+    /**
+     * First find the entity using the given Jpa query and then Map the result to the constructor
+     * of type specified as resultClass.
+     *
+     * @param resultClass the type of the Constructor being mapped
+     * @param jpaQuery    query in JPQL format
+     * @param posParams   List of parameters to bind to query a.k.a positional parameters
+     * @param <T>         Type of returned instance
+     * @return List of instances of type as resultClass
+     */
+    <T> List<T> findAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams);
+
+    /**
+     * First find the entity using the Jpa criteria and then Map the result to the constructor
+     * of type specified by type parameter C.
+     *
+     * @param criteria Object holding the JPA entity class object.
+     *                 Constructor class object.
+     *                 Selection of attributes, same as number of parameters of Constructor.
+     *                 The mapping of entity attributes on which criteria has to be applied using AND operator.
+     * @param <T>      JPA entity type
+     * @param <C>      Constructor type
+     * @return List of instances of type specified by type parameter C
+     */
+    <T extends BaseEntity, C> List<C> findAndMapConstructor(ConstructorCriteria<T, C> criteria);
 
     /**
      * Gets the single result against the named query.
      *
-     * @param resultClass   the type of the query result
-     * @param namedQuery    the name of a query defined in metadata
-     * @param ordinalParams List of parameters to bind to query a.k.a Ordinal Parameters
-     * @param <T>           Type of returned instance
+     * @param resultClass the type of the query result
+     * @param namedQuery  the name of a query defined in metadata
+     * @param posParams   List of parameters to bind to query a.k.a positional parameters
+     * @param <T>         Type of returned instance
      * @return singular result from query execution
      */
-    <T> T getScalarResultByNamedQuery(Class<T> resultClass, String namedQuery, List<Object> ordinalParams);
+    <T> T getScalarResultByNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams);
 
     /**
      * Count the no. of rows of given JPA entity.

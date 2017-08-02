@@ -1,6 +1,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.JpaSystemException;
@@ -75,7 +76,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return entity;
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
-            LOGGER.error("Exception while inserting entity!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
@@ -97,7 +98,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.commit();
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
-            LOGGER.error("Exception while updating entity!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
@@ -125,7 +126,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return rowsUpdated;
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
-            LOGGER.error("Exception while updating by UpdateCriteria!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
@@ -151,7 +152,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             }
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
-            LOGGER.error("Exception while deleting entity!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
@@ -169,14 +170,14 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             txn.begin();
             TypedQuery<T> typedQuery = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
-            this.setOrdinalParameters(typedQuery, crudDTO.getOrdinalParams());
+            this.setPosParams(typedQuery, crudDTO.getPosParams());
             int rowsDeleted = typedQuery.executeUpdate();
             txn.commit();
             LOGGER.info("deleteByJpaNamedQuery: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
-            LOGGER.error("Exception while deleting by UpdateCriteria!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
@@ -203,7 +204,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return rowsDeleted;
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
-            LOGGER.error("Exception while deleting entity by criteria!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
@@ -226,7 +227,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return rowsDeleted;
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
-            LOGGER.error("Exception while deleting all Entities!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
@@ -243,7 +244,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             return em.find(entity, primaryKey);
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while finding by UpdateCriteria!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -262,7 +263,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return em.createQuery(cq.where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb,
                     cq.from(criteria.getEntity())).toArray(new Predicate[LEN_ZERO])))).getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while finding by UpdateCriteria!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -288,7 +289,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                             .toArray(new Predicate[LEN_ZERO]))))
                     .getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while findByCriteria with limiting results!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -310,7 +311,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             typedQuery.setMaxResults(criteria.getMaxResult());
             return typedQuery.getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while findByCriteria with limiting results!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -325,10 +326,10 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
-            this.setOrdinalParameters(query, crudDTO.getOrdinalParams());
+            this.setPosParams(query, crudDTO.getPosParams());
             return query.getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while finding entity by named query!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -340,14 +341,14 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Object[]> findByNamedQuery(String namedQuery, List<Object> ordinalParams) {
+    public List<Object[]> findByNamedQuery(String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
             Query query = em.createNamedQuery(namedQuery);
-            this.setOrdinalParameters(query, ordinalParams);
+            this.setPosParams(query, posParams);
             return (List<Object[]>) query.getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while getting ScalarResult!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -364,7 +365,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             return em.createQuery(cq.select(cq.from(entity))).getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while finding entities!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -384,7 +385,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while finding all Entities!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -399,10 +400,10 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            this.setOrdinalParameters(query, crudDTO.getOrdinalParams());
+            this.setPosParams(query, crudDTO.getPosParams());
             return query.getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while findByJpaQuery!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -417,12 +418,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> typedQuery = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            this.setOrdinalParameters(typedQuery, crudDTO.getOrdinalParams());
+            this.setPosParams(typedQuery, crudDTO.getPosParams());
             typedQuery.setFirstResult(crudDTO.getStartPos());
             typedQuery.setMaxResults(crudDTO.getMaxResult());
             return typedQuery.getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while findByJpaQuery with limiting results!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -443,7 +444,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .where(root.get(attributeName).in(values)))
                     .getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while findByINOperator!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -455,14 +456,14 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String resultSetMapping, List<Object> ordinalParams) {
+    public <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String mapping, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            Query query = em.createNativeQuery(nativeSql, resultSetMapping);
-            this.setOrdinalParameters(query, ordinalParams);
+            Query query = em.createNativeQuery(nativeSql, mapping);
+            this.setPosParams(query, posParams);
             return (List<T>) query.getResultList();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while getting ScalarResult!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -473,14 +474,55 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T> T getScalarResultByNamedQuery(Class<T> resultClass, String namedQuery, List<Object> ordinalParams) {
+    public <T> List<T> findAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            TypedQuery<T> query = em.createQuery(jpaQuery, resultClass);
+            this.setPosParams(query, posParams);
+            return query.getResultList();
+        } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new JpaSystemException(ex.getMessage(), ex);
+        } finally {
+            this.closeEntityManager(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T extends BaseEntity, C> List<C> findAndMapConstructor(ConstructorCriteria<T, C> criteria) {
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<C> cq = cb.createQuery(criteria.getConstructorClass());
+            return em.createQuery(cq.select(cb.construct(criteria.getConstructorClass(), criteria.getSelections()
+                    .stream()
+                    .map(cq.from(criteria.getEntity())::get)
+                    .collect(Collectors.toList())
+                    .toArray(new Selection[LEN_ZERO]))))
+                    .getResultList();
+        } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new JpaSystemException(ex.getMessage(), ex);
+        } finally {
+            this.closeEntityManager(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T getScalarResultByNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> typedQuery = em.createNamedQuery(namedQuery, resultClass);
-            this.setOrdinalParameters(typedQuery, ordinalParams);
+            this.setPosParams(typedQuery, posParams);
             return typedQuery.getSingleResult();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while getting ScalarResult!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -498,7 +540,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             return em.createQuery(cq.select(cb.count(cq.from(entity)))).getSingleResult();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while count query!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -520,7 +562,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .where(cb.and(this.predicates(criteriaAttributes, cb, from).toArray(new Predicate[LEN_ZERO]))))
                     .getSingleResult();
         } catch (RuntimeException ex) {
-            LOGGER.error("Exception while countByCriteria!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -573,12 +615,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     /**
      * This method sets the positional query parameters passed by the caller.
      *
-     * @param query         the JPA Query
-     * @param ordinalParams Ordinal Parameters
+     * @param query     the JPA Query
+     * @param posParams positional parameters
      */
-    private void setOrdinalParameters(Query query, List<Object> ordinalParams) {
-        Objects.requireNonNull(ordinalParams, "Ordinal Parameters cannot be null!!");
-        AtomicInteger ordinalCounter = new AtomicInteger();
-        ordinalParams.forEach(param -> query.setParameter(ordinalCounter.incrementAndGet(), param));
+    private void setPosParams(Query query, List<Object> posParams) {
+        Objects.requireNonNull(posParams, "Positional Parameters cannot be null!!");
+        AtomicInteger posParamCounter = new AtomicInteger();
+        posParams.forEach(param -> query.setParameter(posParamCounter.incrementAndGet(), param));
     }
 }

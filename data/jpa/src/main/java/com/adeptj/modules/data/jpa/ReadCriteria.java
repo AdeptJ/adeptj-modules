@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
-    private List<Object> ordinalParams;
+    private List<Object> posParams;
 
     // For pagination - Start
     private int startPos;
@@ -44,8 +44,8 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         super(entity);
     }
 
-    public List<Object> getOrdinalParams() {
-        return ordinalParams;
+    public List<Object> getPosParams() {
+        return posParams;
     }
 
     public int getStartPos() {
@@ -73,7 +73,7 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
         private Map<String, Object> criteriaAttributes;
 
-        private List<Object> ordinalParams;
+        private List<Object> posParams;
 
         private int startPos;
 
@@ -92,11 +92,11 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder addOrdinalParam(Object param) {
-            if (this.ordinalParams == null) {
-                this.ordinalParams = new ArrayList<>();
+        public Builder addPosParam(Object param) {
+            if (this.posParams == null) {
+                this.posParams = new ArrayList<>();
             }
-            this.ordinalParams.add(param);
+            this.posParams.add(param);
             return this;
         }
 
@@ -114,7 +114,7 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         public <T extends BaseEntity> ReadCriteria<T> build() {
             ReadCriteria<T> criteria = new ReadCriteria<>((Class<T>) this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
-            criteria.ordinalParams = this.ordinalParams;
+            criteria.posParams = this.posParams;
             criteria.startPos = this.startPos;
             criteria.maxResult = this.maxResult;
             return criteria;
