@@ -26,6 +26,7 @@ import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Map;
 
@@ -247,4 +248,15 @@ public interface JpaCrudRepository {
      * @return count of no. of rows og given JPA entity
      */
     <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
+
+    /**
+     * Gets the {@link EntityManager}
+     * <p>
+     * Note: Caller should not maintain a reference of returned EntityManager instance.
+     * And it is the responsibility of caller to close the {@link EntityManager} to prevent
+     * resource leakage to happen.
+     *
+     * @return The {@link EntityManager} instance
+     */
+    EntityManager getEntityManager();
 }

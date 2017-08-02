@@ -57,6 +57,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         this.emf = emf;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> T insert(T entity) {
         EntityManager em = this.emf.createEntityManager();
@@ -78,6 +81,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> T update(T entity) {
         T updated;
@@ -98,6 +104,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         return updated;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> int updateByCriteria(UpdateCriteria<T> criteria) {
         EntityManager em = this.emf.createEntityManager();
@@ -124,6 +133,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> void delete(Class<T> entity, Object primaryKey) {
         EntityManager em = this.emf.createEntityManager();
@@ -147,6 +159,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> int deleteByNamedQuery(CrudDTO<T> crudDTO) {
         EntityManager em = this.emf.createEntityManager();
@@ -169,6 +184,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> int deleteByCriteria(DeleteCriteria<T> criteria) {
         EntityManager em = this.emf.createEntityManager();
@@ -193,6 +211,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> int deleteAll(Class<T> entity) {
         EntityManager em = this.emf.createEntityManager();
@@ -213,6 +234,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> T findById(Class<T> entity, Object primaryKey) {
         EntityManager em = this.emf.createEntityManager();
@@ -226,6 +250,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findByCriteria(ReadCriteria<T> criteria) {
         EntityManager em = this.emf.createEntityManager();
@@ -243,6 +270,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecordsByCriteria(ReadCriteria<T> criteria) {
         EntityManager em = this.emf.createEntityManager();
@@ -263,6 +293,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findByNamedQuery(CrudDTO<T> crudDTO) {
         EntityManager em = this.emf.createEntityManager();
@@ -278,6 +311,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findAll(Class<T> entity) {
         EntityManager em = this.emf.createEntityManager();
@@ -292,6 +328,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecords(Class<T> entity, int startPos, int maxResult) {
         EntityManager em = this.emf.createEntityManager();
@@ -310,6 +349,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findByJpaQuery(CrudDTO<T> crudDTO) {
         EntityManager em = this.emf.createEntityManager();
@@ -325,6 +367,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecordsByJpaQuery(CrudDTO<T> crudDTO) {
         EntityManager em = this.emf.createEntityManager();
@@ -342,6 +387,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values) {
         EntityManager em = this.emf.createEntityManager();
@@ -358,6 +406,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T getScalarResultByNamedQuery(Class<T> resultClass, String namedQuery, List<Object> ordinalParams) {
         EntityManager em = this.emf.createEntityManager();
@@ -373,6 +424,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> Long count(Class<T> entity) {
         EntityManager em = this.emf.createEntityManager();
@@ -389,6 +443,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes) {
         EntityManager em = this.emf.createEntityManager();
@@ -405,6 +462,14 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } finally {
             this.closeEntityManager(em);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EntityManager getEntityManager() {
+        return this.emf.createEntityManager();
     }
 
     private void closeEntityManager(EntityManager em) {
@@ -434,8 +499,8 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
-    private <T> List<Predicate> predicates(Map<String, Object> criteriaAttributes, CriteriaBuilder cb, Root<T> root) {
-        return criteriaAttributes
+    private <T> List<Predicate> predicates(Map<String, Object> attributes, CriteriaBuilder cb, Root<T> root) {
+        return attributes
                 .entrySet()
                 .stream()
                 .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
