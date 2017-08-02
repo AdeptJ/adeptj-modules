@@ -58,7 +58,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
     private EntityManagerFactory emf;
 
-    EclipseLinkCrudRepository(EntityManagerFactory emf) {
+    public EclipseLinkCrudRepository(EntityManagerFactory emf) {
         this.emf = emf;
     }
 

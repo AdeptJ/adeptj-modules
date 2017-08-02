@@ -20,9 +20,7 @@
 
 package com.adeptj.modules.data.jpa;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,14 +30,8 @@ import java.util.Map;
  */
 public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
-    private List<Object> posParams;
-
     private DeleteCriteria(Class<T> entity) {
         super(entity);
-    }
-
-    public List<Object> getPosParams() {
-        return posParams;
     }
 
     public static Builder builder() {
@@ -59,8 +51,6 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
         private Map<String, Object> criteriaAttributes;
 
-        private List<Object> posParams;
-
         public <T extends BaseEntity> Builder entity(Class<T> entity) {
             this.entity = entity;
             return this;
@@ -74,19 +64,10 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder addPosParam(Object param) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
-            }
-            this.posParams.add(param);
-            return this;
-        }
-
         @SuppressWarnings("unchecked")
         public <T extends BaseEntity> DeleteCriteria<T> build() {
             DeleteCriteria<T> criteria = new DeleteCriteria<>((Class<T>) this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
-            criteria.posParams = this.posParams;
             return criteria;
         }
     }
