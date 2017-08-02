@@ -20,28 +20,21 @@
 
 package com.adeptj.modules.data.jpa;
 
-import java.util.Map;
+import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
+
+import java.io.Serializable;
 
 /**
- * Base for all the *Criteria classes.
+ * Marker Interface and super of all the JPA Entities that {@link JpaCrudRepository} will be dealing with.
+ * <p>
+ * This interface denotes that all of its implementations are Serializable.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public abstract class BaseCriteria<T extends BaseEntity> {
+public interface BaseEntity extends Serializable {
 
-    private Class<T> entity;
-
-    Map<String, Object> criteriaAttributes;
-
-    BaseCriteria(Class<T> entity) {
-        this.entity = entity;
-    }
-
-    public Class<T> getEntity() {
-        return entity;
-    }
-
-    public Map<String, Object> getCriteriaAttributes() {
-        return criteriaAttributes;
-    }
+    /**
+     * Most of the sub classes have an Id, can be of type Integer, Long etc. which are Serializable.
+     */
+    Serializable getId();
 }

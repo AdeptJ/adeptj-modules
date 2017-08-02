@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.data.jpa.api;
 
+import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.ReadCriteria;

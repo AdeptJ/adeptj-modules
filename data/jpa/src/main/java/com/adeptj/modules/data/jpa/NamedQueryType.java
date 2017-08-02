@@ -18,21 +18,16 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.api;
-
-import java.io.Serializable;
+package com.adeptj.modules.data.jpa;
 
 /**
- * Marker Interface and super of all the JPA Entities that {@link JpaCrudRepository} will be dealing with.
- * <p>
- * This interface denotes that all of its implementations are Serializable.
+ * To specify if a given named query is either JPA query or native one.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface BaseEntity extends Serializable {
+public enum NamedQueryType {
 
-    /**
-     * Most of the sub classes have an Id, can be of type Integer, Long etc. which are Serializable.
-     */
-    Serializable getId();
+    JPA,
+
+    NATIVE,
 }

@@ -1,11 +1,11 @@
 package com.adeptj.modules.data.jpa.internal;
 
+import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.JpaSystemException;
 import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
-import com.adeptj.modules.data.jpa.api.BaseEntity;
 import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
