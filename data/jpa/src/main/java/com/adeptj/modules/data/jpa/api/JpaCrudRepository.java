@@ -20,6 +20,11 @@
 
 package com.adeptj.modules.data.jpa.api;
 
+import com.adeptj.modules.data.jpa.CrudDTO;
+import com.adeptj.modules.data.jpa.DeleteCriteria;
+import com.adeptj.modules.data.jpa.ReadCriteria;
+import com.adeptj.modules.data.jpa.UpdateCriteria;
+
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +45,9 @@ public interface JpaCrudRepository {
      *
      * @param entity the JPA entity instance
      * @param <T>    type of the JPA entity
+     * @return the entity instance having id assigned from DB
      */
-    <T extends BaseEntity> void insert(T entity);
+    <T extends BaseEntity> T insert(T entity);
 
     /**
      * Updates the given JPA entity in DB.
@@ -55,48 +61,47 @@ public interface JpaCrudRepository {
     /**
      * Updates the given JPA entity using the criteria attributes and setting the update attributes.
      *
-     * @param entity             the JPA entity class
-     * @param criteriaAttributes the mapping of entity attributes on which criteria has to be applied
-     *                           and the corresponding values using AND operator
-     * @param updateAttributes   the mapping of entity attributes which are to be updated with the
-     *                           corresponding values
-     * @param <T>                type of the JPA entity
+     * @param criteria Object composed of the JPA entity class.
+     *                 The mapping of entity attributes on which criteria has to be applied using AND operator.
+     *                 And the mapping of entity attributes which are to be updated.
+     * @param <T>      type of the JPA entity
      * @return returns how many rows were affected by the update query
      */
-    <T extends BaseEntity> int updateByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes, Map<String, Object> updateAttributes);
+    <T extends BaseEntity> int updateByCriteria(UpdateCriteria<T> criteria);
 
     /**
      * Deletes the given JPA entity from DB.
      *
-     * @param entity the JPA entity instance
-     * @param <T>    type of the JPA entity
+     * @param entity     the JPA entity instance
+     * @param primaryKey the primary key of the JPA entity
+     * @param <T>        type of the JPA entity
      */
-    <T extends BaseEntity> void delete(T entity);
+    <T extends BaseEntity> void delete(Class<T> entity, Object primaryKey);
 
     /**
      * Deletes the given JPA entity using the criteria attributes.
      *
-     * @param entity        the JPA entity class object
-     * @param namedQuery    name of the declared named query
-     * @param ordinalParams parameters to set for ?index in the query a.k.a Ordinal Parameters
-     * @param <T>           type of the JPA entity
+     * @param crudDTO DTO holding the JPA entity class object, name of the declared named query
+     *                and parameters to set for ?index in the query a.k.a Ordinal Parameters
+     * @param <T>     type of the JPA entity
      * @return returns how many rows were deleted
      */
-    <T extends BaseEntity> int deleteByNamedQuery(Class<T> entity, String namedQuery, List<Object> ordinalParams);
+    <T extends BaseEntity> int deleteByNamedQuery(CrudDTO<T> crudDTO);
 
     /**
      * Deletes the given JPA entity using Criteria API.
      *
-     * @param entity             the JPA entity class object
-     * @param criteriaAttributes the mapping of entity attributes on which criteria has to be applied
-     *                           and the corresponding values using AND operator
-     * @param <T>                type of the JPA entity
+     * @param criteria Object composed of the JPA entity class.
+     *                 The mapping of entity attributes on which criteria has to be applied using AND operator.
+     * @param <T>      type of the JPA entity
      * @return returns how many rows were deleted
      */
-    <T extends BaseEntity> int deleteByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
+    <T extends BaseEntity> int deleteByCriteria(DeleteCriteria<T> criteria);
 
     /**
      * Deletes all the rows from db of given JPA entity.
+     * <p>
+     * Note: This will delete all the rows from DB, you better know what are you doing.
      *
      * @param entity the JPA entity class object
      * @param <T>    type of the JPA entity
@@ -116,13 +121,12 @@ public interface JpaCrudRepository {
     /**
      * Finds the given JPA entity using Criteria API.
      *
-     * @param entity             the JPA entity class object
-     * @param criteriaAttributes the mapping of entity attributes on which criteria has to be applied
-     *                           and the corresponding values using AND operator
-     * @param <T>                type of the JPA entity
+     * @param criteria Object composed of the JPA entity class.
+     *                 The mapping of entity attributes on which criteria has to be applied using AND operator.
+     * @param <T>      type of the JPA entity
      * @return returns no. of rows found
      */
-    <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
+    <T extends BaseEntity> List<T> findByCriteria(ReadCriteria<T> criteria);
 
     /**
      * Finds the given JPA entity using Criteria API. Helpful wherever pagination is required.
@@ -130,31 +134,30 @@ public interface JpaCrudRepository {
      * First the no. of records can be checked using {@link JpaCrudRepository#count(Class)} method
      * and then the pagination query can be fired.
      *
-     * @param entity             the JPA entity class object
-     * @param criteriaAttributes the mapping of entity attributes on which criteria has to be applied
-     *                           and the corresponding values using AND operator
-     * @param startPos           position of the first result
-     * @param maxResult          maximum number of results to retrieve
-     * @param <T>                type of the JPA entity
+     * @param criteria Object composed of the JPA entity class.
+     *                 The mapping of entity attributes on which criteria has to be applied using AND operator.
+     *                 The position of the first result.
+     *                 The maximum number of results to retrieve.
+     * @param <T>      type of the JPA entity
      * @return returns no. of rows found
      */
-    <T extends BaseEntity> List<T> findByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes, int startPos, int maxResult);
+    <T extends BaseEntity> List<T> findPaginatedRecordsByCriteria(ReadCriteria<T> criteria);
 
     /**
      * Finds the given JPA entity using the named JPA query.
      *
-     * @param entity        the JPA entity class object
-     * @param namedQuery    the name of a query defined in metadata
-     * @param ordinalParams List of parameters to bind to query
-     * @param <T>           type of the JPA entity
+     * @param crudDTO DTO holding the JPA entity class object.
+     *                The name of a query defined in metadata.
+     *                And list of parameters to bind to query a.k.a Ordinal Parameters
+     * @param <T>     type of the JPA entity
      * @return List of entity found by named query execution
      */
-    <T extends BaseEntity> List<T> findByNamedQuery(Class<T> entity, String namedQuery, List<Object> ordinalParams);
+    <T extends BaseEntity> List<T> findByNamedQuery(CrudDTO<T> crudDTO);
 
     /**
      * Finds all entities of given type.
      * <p>
-     * Note: Should never be called for large number of rows.
+     * Note: Should never be called for large number of rows as you don't want millions of row in memory.
      *
      * @param entity the JPA entity class object
      * @param <T>    type of the JPA entity
@@ -176,31 +179,31 @@ public interface JpaCrudRepository {
      * @param <T>       type of the JPA entity
      * @return All of the rows(Entity instances)
      */
-    <T extends BaseEntity> List<T> findAll(Class<T> entity, int startPos, int maxResult);
+    <T extends BaseEntity> List<T> findPaginatedRecords(Class<T> entity, int startPos, int maxResult);
 
     /**
      * Finds the entity instances of given type using query specified in JPQL format.
      *
-     * @param entity        the JPA entity class object
-     * @param jpaQuery      query in JPQL format
-     * @param ordinalParams List of parameters to bind to query
-     * @param <T>           type of the JPA entity
+     * @param crudDTO DTO holding the JPA entity class object.
+     *                The query in JPQL format
+     *                The list of parameters to bind to query a.k.a Ordinal Parameters
+     * @param <T>     type of the JPA entity
      * @return List of entity found by JPA query(JPQL format) execution
      */
-    <T extends BaseEntity> List<T> findByQuery(Class<T> entity, String jpaQuery, List<Object> ordinalParams);
+    <T extends BaseEntity> List<T> findByJpaQuery(CrudDTO<T> crudDTO);
 
     /**
      * Finds the entity instances of given type using JPQL with start and max result option.
      *
-     * @param entity        the JPA entity class object
-     * @param jpaQuery      query in JPQL format
-     * @param ordinalParams List of parameters to bind to query
-     * @param startPos      position of the first result
-     * @param maxResult     maximum number of results to retrieve
-     * @param <T>           type of the JPA entity
+     * @param crudDTO DTO holding the JPA entity class object.
+     *                The query in JPQL format
+     *                The list of parameters to bind to query a.k.a Ordinal Parameters
+     *                The position of the first result.
+     *                The maximum number of results to retrieve.
+     * @param <T>     type of the JPA entity
      * @return List of entity found by JPA query(JPQL format) execution
      */
-    <T extends BaseEntity> List<T> findByQuery(Class<T> entity, String jpaQuery, List<Object> ordinalParams, int startPos, int maxResult);
+    <T extends BaseEntity> List<T> findPaginatedRecordsByJpaQuery(CrudDTO<T> crudDTO);
 
     /**
      * Find the given entity using SQL IN operator
@@ -219,10 +222,10 @@ public interface JpaCrudRepository {
      * @param resultClass   the type of the query result
      * @param namedQuery    the name of a query defined in metadata
      * @param ordinalParams List of parameters to bind to query
-     * @param <E>           Type of returned instance
+     * @param <T>           Type of returned instance
      * @return singular result from query execution
      */
-    <E> E getScalarResultByNamedQuery(Class<E> resultClass, String namedQuery, List<Object> ordinalParams);
+    <T> T getScalarResultByNamedQuery(Class<T> resultClass, String namedQuery, List<Object> ordinalParams);
 
     /**
      * Count the no. of rows of given JPA entity.
@@ -234,7 +237,7 @@ public interface JpaCrudRepository {
     <T extends BaseEntity> Long count(Class<T> entity);
 
     /**
-     * Count the no. of rows of given JPA entity using Criteria.
+     * Count the no. of rows of given JPA entity using UpdateCriteria.
      *
      * @param entity             the JPA entity class object
      * @param criteriaAttributes the mapping of entity attributes on which criteria has to be applied

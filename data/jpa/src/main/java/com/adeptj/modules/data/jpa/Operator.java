@@ -18,21 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.api;
-
-import java.io.Serializable;
+package com.adeptj.modules.data.jpa;
 
 /**
- * Marker Interface and super of all the JPA Entities that {@link JpaCrudRepository} will be dealing with.
- * <p>
- * This interface denotes that all of its implementations are Serializable.
+ * SQL Logical operators.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface BaseEntity extends Serializable {
+public enum Operator {
 
-    /**
-     * Most of the sub classes have an Id, can be of type Integer, Long etc. which are Serializable.
-     */
-    Serializable getId();
+    AND,
+
+    OR,
+
+    NOT,
 }
