@@ -162,22 +162,22 @@ public interface JpaCrudRepository {
     /**
      * Finds the given JPA entity using the named JPA query.
      *
-     * @param crudDTO DTO holding the JPA entity class object.
-     *                The name of a query defined in metadata.
-     *                And list of parameters to bind to query a.k.a positional parameters
-     * @param <T>     type of the JPA entity
+     * @param resultClass DTO holding the JPA entity class object.
+     * @param namedQuery  The name of a query defined in metadata in JPQL format.
+     * @param posParams   And list of parameters to bind to query a.k.a positional parameters
+     * @param <T>         type of the record that is to be return
      * @return List of entity found by named query execution
      */
-    <T extends BaseEntity> List<T> findByJpaNamedQuery(CrudDTO<T> crudDTO);
+    <T> List<T> findByJpaNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams);
 
     /**
      * Finds the entity instances of given type using query specified in JPQL format.
      *
      * @param namedQuery named query either JPQL or native
      * @param posParams  List of parameters to bind to query a.k.a positional parameters
-     * @return List of entity found by JPA query(JPQL format) execution
+     * @return List of entity or Object[] found by JPA query(JPQL format) or native query execution
      */
-    List<Object[]> findByNamedQuery(String namedQuery, List<Object> posParams);
+    <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams);
 
     /**
      * Finds all entities of given type.

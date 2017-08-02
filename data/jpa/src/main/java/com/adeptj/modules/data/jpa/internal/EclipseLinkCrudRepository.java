@@ -322,11 +322,11 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T extends BaseEntity> List<T> findByJpaNamedQuery(CrudDTO<T> crudDTO) {
+    public <T> List<T> findByJpaNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<T> query = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
-            this.setPosParams(query, crudDTO.getPosParams());
+            TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
+            this.setPosParams(query, posParams);
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -341,12 +341,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public List<Object[]> findByNamedQuery(String namedQuery, List<Object> posParams) {
+    public <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
             Query query = em.createNamedQuery(namedQuery);
             this.setPosParams(query, posParams);
-            return (List<Object[]>) query.getResultList();
+            return (List<T>) query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -497,11 +497,14 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<C> cq = cb.createQuery(criteria.getConstructorClass());
+            Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq.select(cb.construct(criteria.getConstructorClass(), criteria.getSelections()
                     .stream()
-                    .map(cq.from(criteria.getEntity())::get)
+                    .map(root::get)
                     .collect(Collectors.toList())
-                    .toArray(new Selection[LEN_ZERO]))))
+                    .toArray(new Selection[LEN_ZERO])))
+                    .where(this.predicates(criteria.getCriteriaAttributes(), cb, root)
+                            .toArray(new Predicate[LEN_ZERO])))
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);

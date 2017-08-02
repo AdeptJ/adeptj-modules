@@ -15,8 +15,8 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/AdeptJ?useSSL=false" />
-            <property name="javax.persistence.jdbc.user" value="root" />
-            <property name="javax.persistence.jdbc.password" value="" />
+            <property name="javax.persistence.jdbc.user" value="adeptj" />
+            <property name="javax.persistence.jdbc.password" value="adeptj" />
             <property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
             <property name="eclipselink.logging.file" value="jpa.log"/>
