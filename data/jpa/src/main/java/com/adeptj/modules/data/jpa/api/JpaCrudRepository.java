@@ -24,9 +24,11 @@ import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.ReadCriteria;
+import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Map;
 
@@ -81,14 +83,14 @@ public interface JpaCrudRepository {
     <T extends BaseEntity> void delete(Class<T> entity, Object primaryKey);
 
     /**
-     * Deletes the given JPA entity using the criteria attributes.
+     * Deletes the given JPA entity using the CrudDTO attributes.
      *
      * @param crudDTO DTO holding the JPA entity class object, name of the declared named query
      *                and parameters to set for ?index in the query a.k.a Ordinal Parameters
      * @param <T>     type of the JPA entity
      * @return returns how many rows were deleted
      */
-    <T extends BaseEntity> int deleteByNamedQuery(CrudDTO<T> crudDTO);
+    <T extends BaseEntity> int deleteByJpaNamedQuery(CrudDTO<T> crudDTO);
 
     /**
      * Deletes the given JPA entity using Criteria API.
@@ -131,6 +133,17 @@ public interface JpaCrudRepository {
     <T extends BaseEntity> List<T> findByCriteria(ReadCriteria<T> criteria);
 
     /**
+     * Finds the given JPA entity using Criteria TupleQuery.
+     *
+     * @param criteria Object composed of the JPA entity class.
+     *                 The mapping of entity attributes on which criteria has to be applied using AND operator.
+     *                 List of parameters to bind to query a.k.a Ordinal Parameters
+     * @param <T>      type of the JPA entity
+     * @return returns no. of rows found
+     */
+    <T extends BaseEntity> List<Tuple> findByTupleQuery(TupleQueryCriteria<T> criteria);
+
+    /**
      * Finds the given JPA entity using Criteria API. Helpful wherever pagination is required.
      * <p>
      * First the no. of records can be checked using {@link JpaCrudRepository#count(Class)} method
@@ -154,7 +167,16 @@ public interface JpaCrudRepository {
      * @param <T>     type of the JPA entity
      * @return List of entity found by named query execution
      */
-    <T extends BaseEntity> List<T> findByNamedQuery(CrudDTO<T> crudDTO);
+    <T extends BaseEntity> List<T> findByJpaNamedQuery(CrudDTO<T> crudDTO);
+
+    /**
+     * Finds the entity instances of given type using query specified in JPQL format.
+     *
+     * @param namedQuery    named query either JPQL or native
+     * @param ordinalParams List of parameters to bind to query a.k.a Ordinal Parameters
+     * @return List of entity found by JPA query(JPQL format) execution
+     */
+    List<Object[]> findByNamedQuery(String namedQuery, List<Object> ordinalParams);
 
     /**
      * Finds all entities of given type.
@@ -219,11 +241,23 @@ public interface JpaCrudRepository {
     <T extends BaseEntity> List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values);
 
     /**
+     * Finds the entity using given named native query and project in the given result class.
+     *
+     * @param resultClass      the type of the query result
+     * @param nativeSql        the native sql
+     * @param resultSetMapping the name of the result set mapping
+     * @param ordinalParams    List of parameters to bind to query a.k.a Ordinal Parameters
+     * @param <T>              Type of returned instance
+     * @return singular result from query execution
+     */
+    <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String resultSetMapping, List<Object> ordinalParams);
+
+    /**
      * Gets the single result against the named query.
      *
      * @param resultClass   the type of the query result
      * @param namedQuery    the name of a query defined in metadata
-     * @param ordinalParams List of parameters to bind to query
+     * @param ordinalParams List of parameters to bind to query a.k.a Ordinal Parameters
      * @param <T>           Type of returned instance
      * @return singular result from query execution
      */

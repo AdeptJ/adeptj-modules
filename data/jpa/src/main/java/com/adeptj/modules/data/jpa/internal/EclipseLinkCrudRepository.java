@@ -5,6 +5,7 @@ import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.JpaSystemException;
 import com.adeptj.modules.data.jpa.ReadCriteria;
+import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
 import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
@@ -20,6 +23,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -49,7 +53,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EclipseLinkCrudRepository.class);
 
-    private static final int DEFAULT_SIZE = 0;
+    private static final int LEN_ZERO = 0;
 
     private EntityManagerFactory emf;
 
@@ -68,8 +72,6 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.begin();
             em.persist(entity);
             txn.commit();
-            // to get the generated id of entity.
-            em.flush();
             return entity;
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
@@ -114,12 +116,10 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             txn.begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            Class<T> entity = criteria.getEntity();
-            CriteriaUpdate<T> cu = cb.createCriteriaUpdate(entity);
+            CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
             criteria.getUpdateAttributes().forEach(cu::set);
-            cu.where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb, cu.from(entity))
-                    .toArray(new Predicate[DEFAULT_SIZE])));
-            int rowsUpdated = em.createQuery(cu).executeUpdate();
+            int rowsUpdated = em.createQuery(cu.where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb,
+                    cu.from(criteria.getEntity())).toArray(new Predicate[LEN_ZERO])))).executeUpdate();
             txn.commit();
             LOGGER.info("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
@@ -163,7 +163,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T extends BaseEntity> int deleteByNamedQuery(CrudDTO<T> crudDTO) {
+    public <T extends BaseEntity> int deleteByJpaNamedQuery(CrudDTO<T> crudDTO) {
         EntityManager em = this.emf.createEntityManager();
         EntityTransaction txn = em.getTransaction();
         try {
@@ -172,7 +172,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             this.setOrdinalParameters(typedQuery, crudDTO.getOrdinalParams());
             int rowsDeleted = typedQuery.executeUpdate();
             txn.commit();
-            LOGGER.info("deleteByNamedQuery: No. of rows deleted: {}", rowsDeleted);
+            LOGGER.info("deleteByJpaNamedQuery: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
@@ -195,9 +195,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn.begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
-            cd.where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb, cd.from(criteria.getEntity()))
-                    .toArray(new Predicate[DEFAULT_SIZE])));
-            int rowsDeleted = em.createQuery(cd).executeUpdate();
+            int rowsDeleted = em.createQuery(cd
+                    .where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb, cd.from(criteria.getEntity()))
+                            .toArray(new Predicate[LEN_ZERO])))).executeUpdate();
             txn.commit();
             LOGGER.info("deleteByCriteria: No. of rows deleted: {}", rowsDeleted);
             return rowsDeleted;
@@ -259,11 +259,36 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
-            cq.where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb, cq.from(criteria.getEntity()))
-                    .toArray(new Predicate[DEFAULT_SIZE])));
-            return em.createQuery(cq).getResultList();
+            return em.createQuery(cq.where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb,
+                    cq.from(criteria.getEntity())).toArray(new Predicate[LEN_ZERO])))).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding by UpdateCriteria!!", ex);
+            throw new JpaSystemException(ex.getMessage(), ex);
+        } finally {
+            this.closeEntityManager(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T extends BaseEntity> List<Tuple> findByTupleQuery(TupleQueryCriteria<T> criteria) {
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+            Root<T> root = cq.from(criteria.getEntity());
+            return em.createQuery(cq.multiselect(criteria.getSelections()
+                    .stream()
+                    .map(root::get)
+                    .collect(Collectors.toList())
+                    .toArray(new Selection[LEN_ZERO]))
+                    .where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb, root)
+                            .toArray(new Predicate[LEN_ZERO]))))
+                    .getResultList();
+        } catch (RuntimeException ex) {
+            LOGGER.error("Exception while findByCriteria with limiting results!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -279,9 +304,8 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
-            cq.where(cb.and(this.predicates(criteria.getCriteriaAttributes(), cb, cq.from(criteria.getEntity()))
-                    .toArray(new Predicate[DEFAULT_SIZE])));
-            TypedQuery<T> typedQuery = em.createQuery(cq);
+            TypedQuery<T> typedQuery = em.createQuery(cq.where(cb.and(this.predicates(criteria.getCriteriaAttributes(),
+                    cb, cq.from(criteria.getEntity())).toArray(new Predicate[LEN_ZERO]))));
             typedQuery.setFirstResult(criteria.getStartPos());
             typedQuery.setMaxResults(criteria.getMaxResult());
             return typedQuery.getResultList();
@@ -297,7 +321,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T extends BaseEntity> List<T> findByNamedQuery(CrudDTO<T> crudDTO) {
+    public <T extends BaseEntity> List<T> findByJpaNamedQuery(CrudDTO<T> crudDTO) {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
@@ -305,6 +329,25 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while finding entity by named query!!", ex);
+            throw new JpaSystemException(ex.getMessage(), ex);
+        } finally {
+            this.closeEntityManager(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Object[]> findByNamedQuery(String namedQuery, List<Object> ordinalParams) {
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            Query query = em.createNamedQuery(namedQuery);
+            this.setOrdinalParameters(query, ordinalParams);
+            return (List<Object[]>) query.getResultList();
+        } catch (RuntimeException ex) {
+            LOGGER.error("Exception while getting ScalarResult!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -336,8 +379,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
-            cq.select(cq.from(entity));
-            TypedQuery<T> typedQuery = em.createQuery(cq);
+            TypedQuery<T> typedQuery = em.createQuery(cq.select(cq.from(entity)));
             typedQuery.setFirstResult(startPos);
             typedQuery.setMaxResults(maxResult);
             return typedQuery.getResultList();
@@ -396,10 +438,31 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             Root<T> root = cq.from(entity);
-            cq.select(root).where(root.get(attributeName).in(values));
-            return em.createQuery(cq).getResultList();
+            return em.createQuery(cq
+                    .select(root)
+                    .where(root.get(attributeName).in(values)))
+                    .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while findByINOperator!!", ex);
+            throw new JpaSystemException(ex.getMessage(), ex);
+        } finally {
+            this.closeEntityManager(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String resultSetMapping, List<Object> ordinalParams) {
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            Query query = em.createNativeQuery(nativeSql, resultSetMapping);
+            this.setOrdinalParameters(query, ordinalParams);
+            return (List<T>) query.getResultList();
+        } catch (RuntimeException ex) {
+            LOGGER.error("Exception while getting ScalarResult!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
@@ -433,8 +496,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-            cq.select(cb.count(cq.from(entity)));
-            return em.createQuery(cq).getSingleResult();
+            return em.createQuery(cq.select(cb.count(cq.from(entity)))).getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while count query!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -453,9 +515,10 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             Root<T> from = cq.from(entity);
-            cq.select(cb.count(from));
-            cq.where(cb.and(this.predicates(criteriaAttributes, cb, from).toArray(new Predicate[DEFAULT_SIZE])));
-            return em.createQuery(cq).getSingleResult();
+            return em.createQuery(cq
+                    .select(cb.count(from))
+                    .where(cb.and(this.predicates(criteriaAttributes, cb, from).toArray(new Predicate[LEN_ZERO]))))
+                    .getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while countByCriteria!!", ex);
             throw new JpaSystemException(ex.getMessage(), ex);
@@ -513,7 +576,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * @param query         the JPA Query
      * @param ordinalParams Ordinal Parameters
      */
-    private void setOrdinalParameters(TypedQuery<?> query, List<Object> ordinalParams) {
+    private void setOrdinalParameters(Query query, List<Object> ordinalParams) {
         Objects.requireNonNull(ordinalParams, "Ordinal Parameters cannot be null!!");
         AtomicInteger ordinalCounter = new AtomicInteger();
         ordinalParams.forEach(param -> query.setParameter(ordinalCounter.incrementAndGet(), param));

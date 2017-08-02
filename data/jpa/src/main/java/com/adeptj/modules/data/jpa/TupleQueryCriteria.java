@@ -26,34 +26,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Criteria object holding arguments for JpaCrudRepository find* methods.
+ * Criteria object holding arguments for JpaCrudRepository findByTuple* methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
+public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
-    private List<Object> ordinalParams;
+    private List<String> selections;
 
-    // For pagination - Start
-    private int startPos;
-
-    private int maxResult;
-    // For pagination - End
-
-    private ReadCriteria(Class<T> entity) {
+    private TupleQueryCriteria(Class<T> entity) {
         super(entity);
     }
 
-    public List<Object> getOrdinalParams() {
-        return ordinalParams;
-    }
-
-    public int getStartPos() {
-        return startPos;
-    }
-
-    public int getMaxResult() {
-        return maxResult;
+    public List<String> getSelections() {
+        return selections;
     }
 
     public static Builder builder() {
@@ -61,7 +47,7 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
     }
 
     /**
-     * Builder for creating {@link ReadCriteria}
+     * Builder for creating {@link TupleQueryCriteria}
      */
     public static class Builder {
 
@@ -73,11 +59,7 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
         private Map<String, Object> criteriaAttributes;
 
-        private List<Object> ordinalParams;
-
-        private int startPos;
-
-        private int maxResult;
+        private List<String> selections;
 
         public <T extends BaseEntity> Builder entity(Class<T> entity) {
             this.entity = entity;
@@ -92,31 +74,19 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder addOrdinalParam(Object param) {
-            if (this.ordinalParams == null) {
-                this.ordinalParams = new ArrayList<>();
+        public Builder addSelection(String attributeName) {
+            if (this.selections == null) {
+                this.selections = new ArrayList<>();
             }
-            this.ordinalParams.add(param);
-            return this;
-        }
-
-        public Builder startPos(int startPos) {
-            this.startPos = startPos;
-            return this;
-        }
-
-        public Builder maxResult(int maxResult) {
-            this.maxResult = maxResult;
+            this.selections.add(attributeName);
             return this;
         }
 
         @SuppressWarnings("unchecked")
-        public <T extends BaseEntity> ReadCriteria<T> build() {
-            ReadCriteria<T> criteria = new ReadCriteria<>((Class<T>) this.entity);
+        public <T extends BaseEntity> TupleQueryCriteria<T> build() {
+            TupleQueryCriteria<T> criteria = new TupleQueryCriteria<>((Class<T>) this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
-            criteria.ordinalParams = this.ordinalParams;
-            criteria.startPos = this.startPos;
-            criteria.maxResult = this.maxResult;
+            criteria.selections = this.selections;
             return criteria;
         }
     }
