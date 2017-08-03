@@ -57,12 +57,10 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testInsert() {
         User user = new User();
-        user.setAadhaar("123456789012");
-        user.setContact("9811454009");
-        user.setFirstName("Rakesh");
-        user.setLastName("Kumar");
-        user.setPan("AWMPK5510F");
-        user.setEmail("kumar_rakesh@live.in");
+        user.setContact("1234567890");
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setEmail("john.doe@johndoe.com");
         user = crudRepository.insert(user);
         System.out.println("User ID: " + user.getId());
     }
@@ -70,23 +68,21 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testUpdate() {
         User user = new User();
-        user.setId(10L);
-        user.setAadhaar("09876543212");
-        user.setContact("9811454009");
-        user.setFirstName("Rakesh");
-        user.setLastName("Kumar");
-        user.setPan("AWMPK5510F");
-        user.setEmail("kumar_rakesh@live.in");
+        user.setId(1L);
+        user.setContact("1234567890");
+        user.setFirstName("John_Updated");
+        user.setLastName("Doe");
+        user.setEmail("john.doe@johndoe.com");
         user = crudRepository.update(user);
-        System.out.println("User's Aadhaar: " + user.getAadhaar());
+        System.out.println("User's Contact No is: " + user.getContact());
     }
 
     @Test
     public void testUpdateByCriteria() {
         int rowsUpdated = crudRepository.updateByCriteria(UpdateCriteria.builder()
                 .entity(User.class)
-                .addCriteriaAttribute("firstName", "Rakesh")
-                .addUpdateAttribute("aadhaar", "123456123456")
+                .addCriteriaAttribute("firstName", "John")
+                .addUpdateAttribute("contact", "1234567891")
                 .build());
         System.out.println("Rows updated: " + rowsUpdated);
     }
@@ -100,7 +96,7 @@ public class JpaCrudRepositoryTest {
     public void testDeleteByCriteria() {
         int rows = crudRepository.deleteByCriteria(DeleteCriteria.builder()
                 .entity(User.class)
-                .addCriteriaAttribute("aadhaar", "123456123457")
+                .addCriteriaAttribute("contact", "1234567890")
                 .build());
         System.out.println("Rows deleted: " + rows);
     }
@@ -109,8 +105,8 @@ public class JpaCrudRepositoryTest {
     public void testDeleteByJpaNamedQuery() {
         int rows = crudRepository.deleteByJpaNamedQuery(CrudDTO.builder()
                 .entity(User.class)
-                .namedQuery("User.deleteUserByAadhaar.JPA")
-                .addPosParam("123456123457")
+                .namedQuery("User.deleteUserByContact.JPA")
+                .addPosParam("1234567890")
                 .build());
         System.out.println("Rows deleted: " + rows);
     }
@@ -119,7 +115,7 @@ public class JpaCrudRepositoryTest {
     public void testFindByCriteria() {
         List<BaseEntity> users = crudRepository.findByCriteria(ReadCriteria.builder()
                 .entity(User.class)
-                .addCriteriaAttribute("aadhaar", "123456123456")
+                .addCriteriaAttribute("contact", "1234567890")
                 .build());
         System.out.println("Rows found: " + users.size());
     }
@@ -130,7 +126,7 @@ public class JpaCrudRepositoryTest {
                 .entity(User.class)
                 .addSelection("firstName")
                 .addSelection("lastName")
-                .addCriteriaAttribute("aadhaar", "123456123456")
+                .addCriteriaAttribute("contact", "1234567890")
                 .build()).forEach(tuple -> {
             System.out.println("FirstName: " + tuple.get(0));
             System.out.println("LastName: " + tuple.get(1));
@@ -140,9 +136,9 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testFindByJpaNamedQueryAsUser() {
         List<Object> posParams = new ArrayList<>();
-        posParams.add("123456123456");
+        posParams.add("1234567890");
         List<User> users = crudRepository.findByJpaNamedQuery(User.class,
-                "User.findUserByAadhaar.JPA.User", posParams);
+                "User.findUserByContact.JPA.User", posParams);
         users.forEach(user -> {
             System.out.println("FirstName: " + user.getFirstName());
             System.out.println("LastName: " + user.getLastName());
@@ -153,10 +149,9 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testFindByJpaNamedQueryAsObjectArray() {
         List<Object> posParams = new ArrayList<>();
-        posParams.add("123456123456");
+        posParams.add("1234567890");
         crudRepository.findByJpaNamedQuery(Object[].class,
-                "User.findUserByAadhaar.JPA.ObjectArray", posParams).forEach(objectArray -> {
-            System.out.println("Object[]!!");
+                "User.findUserByContact.JPA.ObjectArray", posParams).forEach(objectArray -> {
             System.out.println("FirstName: " + objectArray[0]);
             System.out.println("LastName: " + objectArray[1]);
 
@@ -166,8 +161,8 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testFindByNamedQueryJPA() {
         List<Object> posParams = new ArrayList<>();
-        posParams.add("123456123456");
-        crudRepository.findByNamedQuery("User.findUserByAadhaar.JPA", posParams)
+        posParams.add("1234567890");
+        crudRepository.findByNamedQuery("User.findUserByContact.JPA.User", posParams)
                 .forEach(object -> {
                     if (object instanceof User) {
                         System.out.println("User!!");
@@ -186,11 +181,10 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testFindByNamedQueryNative() {
         List<Object> posParams = new ArrayList<>();
-        posParams.add("123456123456");
-        crudRepository.findByNamedQuery("User.findUserByAadhaar.NATIVE", posParams)
+        posParams.add("1234567890");
+        crudRepository.findByNamedQuery("User.findUserByContact.NATIVE", posParams)
                 .forEach(object -> {
                     if (object instanceof Object[]) {
-                        System.out.println("Object[]!!");
                         Object[] objectArray = (Object[]) object;
                         System.out.println("FirstName: " + objectArray[0]);
                         System.out.println("LastName: " + objectArray[1]);
@@ -221,9 +215,9 @@ public class JpaCrudRepositoryTest {
     public void testFindByJpaQuery() {
         List<User> users = crudRepository.findByJpaQuery(CrudDTO.builder()
                 .entity(User.class)
-                .jpaQuery("SELECT u FROM  User u WHERE u.aadhaar = ?1 and u.contact = ?2")
-                .addPosParam("123456123456")
-                .addPosParam("9811459009")
+                .jpaQuery("SELECT u FROM  User u WHERE u.firstName = ?1 and u.contact = ?2")
+                .addPosParam("John")
+                .addPosParam("1234567890")
                 .build());
         users.forEach(user -> {
             System.out.println("FirstName: " + user.getFirstName());
@@ -235,9 +229,9 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testGetScalarResultByNamedQuery() {
         List<Object> posParams = new ArrayList<>();
-        posParams.add("123456123457");
+        posParams.add("1234567891");
         User user = crudRepository
-                .getScalarResultByNamedQuery(User.class, "User.findUserByAadhaar.JPA.ScalarUser",
+                .getScalarResultByNamedQuery(User.class, "User.findUserByContact.JPA.Scalar",
                         posParams);
         if (user != null) {
             System.out.println("FirstName: " + user.getFirstName());
@@ -248,10 +242,10 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testFindAndMapResultSet() {
         List<Object> posParams = new ArrayList<>();
-        posParams.add("123456123457");
+        posParams.add("1234567890");
         crudRepository.findAndMapResultSet(User.class,
-                "SELECT * FROM  Users u WHERE AADHAAR_NUMBER = ?1",
-                "User.findUserByAadhaar.Mapping", posParams).forEach(user -> {
+                "SELECT * FROM  Users u WHERE MOBILE_NO = ?1",
+                "User.findUserByContact.EntityMapping", posParams).forEach(user -> {
             System.out.println("User ID: " + user.getId());
             System.out.println("FirstName: " + user.getFirstName());
             System.out.println("LastName: " + user.getLastName());
@@ -262,9 +256,9 @@ public class JpaCrudRepositoryTest {
     @Test
     public void testFindAndMapConstructorByQuery() {
         String jpaQuery = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) " +
-                "FROM User u WHERE u.aadhaar = ?1";
+                "FROM User u WHERE u.contact = ?1";
         List<Object> posParams = new ArrayList<>();
-        posParams.add("123456123457");
+        posParams.add("1234567890");
         crudRepository.findAndMapConstructor(UserDTO.class, jpaQuery, posParams).forEach(user -> {
             System.out.println("User ID: " + user.getId());
             System.out.println("FirstName: " + user.getFirstName());
@@ -282,7 +276,7 @@ public class JpaCrudRepositoryTest {
                 .addSelection("firstName")
                 .addSelection("lastName")
                 .addSelection("email")
-                .addCriteriaAttribute("aadhaar", "123456123457")
+                .addCriteriaAttribute("contact", "1234567890")
                 .build());
         usersDTOList
                 .forEach((UserDTO dto) -> {

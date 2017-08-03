@@ -21,8 +21,11 @@
 package com.adeptj.modules.data.jpa.entity;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import com.adeptj.modules.data.jpa.UserDTO;
 
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityResult;
 import javax.persistence.FieldResult;
@@ -47,25 +50,25 @@ import java.io.Serializable;
 @Table(schema = "AdeptJ", name = "USERS")
 @NamedQueries({
 
-        @NamedQuery(name = "User.findUserByAadhaar.JPA.ScalarUser",
-                query = "SELECT u FROM  User u WHERE u.aadhaar = ?1"),
+        @NamedQuery(name = "User.findUserByContact.JPA.Scalar",
+                query = "SELECT u FROM  User u WHERE u.contact = ?1"),
 
-        @NamedQuery(name = "User.findUserByAadhaar.JPA.User",
-                query = "SELECT u FROM  User u WHERE u.aadhaar = ?1"),
+        @NamedQuery(name = "User.findUserByContact.JPA.User",
+                query = "SELECT u FROM  User u WHERE u.contact = ?1"),
 
-        @NamedQuery(name = "User.findUserByAadhaar.JPA.ObjectArray",
-                query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.aadhaar = ?1"),
+        @NamedQuery(name = "User.findUserByContact.JPA.ObjectArray",
+                query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.contact = ?1"),
 
-        @NamedQuery(name = "User.deleteUserByAadhaar.JPA",
-                query = "DELETE FROM  User u WHERE u.aadhaar = ?1")
+        @NamedQuery(name = "User.deleteUserByContact.JPA",
+                query = "DELETE FROM  User u WHERE u.contact = ?1")
 })
 @NamedNativeQueries({
-        @NamedNativeQuery(name = "User.findUserByAadhaar.NATIVE",
-                query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM  Users u WHERE AADHAAR_NUMBER = ?1")
+        @NamedNativeQuery(name = "User.findUserByContact.NATIVE",
+                query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM  Users u WHERE MOBILE_NO = ?1")
 })
 @SqlResultSetMappings({
         @SqlResultSetMapping(
-                name = "User.findUserByAadhaar.Mapping",
+                name = "User.findUserByContact.EntityMapping",
                 entities = {
                         @EntityResult(entityClass = User.class, fields = {
                                 @FieldResult(name = "id", column = "ID"),
@@ -73,11 +76,32 @@ import java.io.Serializable;
                                 @FieldResult(name = "lastName", column = "LAST_NAME"),
                                 @FieldResult(name = "email", column = "EMAIL"),
                                 @FieldResult(name = "contact", column = "MOBILE_NO"),
-                                @FieldResult(name = "aadhaar", column = "AADHAAR_NUMBER"),
-                                @FieldResult(name = "pan", column = "PAN_NUMBER"),
                         })
                 }
+        ),
+        @SqlResultSetMapping(
+                name = "User.findUserByContact.ConstructorMapping",
+                classes = {
+                        @ConstructorResult(targetClass = UserDTO.class, columns = {
+                                @ColumnResult(name = "ID"),
+                                @ColumnResult(name = "FIRST_NAME"),
+                                @ColumnResult(name = "LAST_NAME"),
+                                @ColumnResult(name = "EMAIL"),
+                                @ColumnResult(name = "MOBILE_NO"),
+                        })
+                }
+        ),
+        @SqlResultSetMapping(
+                name = "User.findUserByContact.ColumnMapping",
+                columns = {
+                        @ColumnResult(name = "ID"),
+                        @ColumnResult(name = "FIRST_NAME"),
+                        @ColumnResult(name = "LAST_NAME"),
+                        @ColumnResult(name = "EMAIL"),
+                        @ColumnResult(name = "MOBILE_NO"),
+                }
         )
+
 })
 public class User implements BaseEntity {
 
@@ -99,12 +123,6 @@ public class User implements BaseEntity {
 
     @Column(name = "MOBILE_NO", length = 25)
     private String contact;
-
-    @Column(name = "AADHAAR_NUMBER", length = 12)
-    private String aadhaar;
-
-    @Column(name = "PAN_NUMBER", length = 12)
-    private String pan;
 
     @Override
     public Serializable getId() {
@@ -145,21 +163,5 @@ public class User implements BaseEntity {
 
     public void setContact(String contact) {
         this.contact = contact;
-    }
-
-    public String getAadhaar() {
-        return aadhaar;
-    }
-
-    public void setAadhaar(String aadhaar) {
-        this.aadhaar = aadhaar;
-    }
-
-    public String getPan() {
-        return pan;
-    }
-
-    public void setPan(String pan) {
-        this.pan = pan;
     }
 }
