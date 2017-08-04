@@ -38,7 +38,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.adeptj.modules.jaxrs.core.internal.JaxRSDefaultAuthenticationRealm.COMPONENT_NAME;
+import static com.adeptj.modules.jaxrs.core.internal.DefaultJaxRSAuthenticationRealm.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
@@ -55,9 +55,9 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
         property = SERVICE_PID + "=" + COMPONENT_NAME,
         configurationPolicy = IGNORE
 )
-public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm, ManagedServiceFactory {
+public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm, ManagedServiceFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDefaultAuthenticationRealm.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJaxRSAuthenticationRealm.class);
 
     static final String COMPONENT_NAME = "com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfoFactory.factory";
 
@@ -75,16 +75,25 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
 
     private Map<String, String> pidVsSubjectMappings = new ConcurrentHashMap<>();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int priority() {
         return -1; // default realm has least priority.
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return FACTORY_NAME;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
         JaxRSAuthenticationInfo authenticationInfo = this.authenticationInfoMap.get(subject);
@@ -98,6 +107,9 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
         String subject = Objects.requireNonNull((String) properties.get(KEY_SUBJECT), SUB_NULL_MSG);
@@ -115,6 +127,9 @@ public class JaxRSDefaultAuthenticationRealm implements JaxRSAuthenticationRealm
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleted(String pid) {
         Optional.ofNullable(this.pidVsSubjectMappings.remove(pid)).ifPresent(subject -> {

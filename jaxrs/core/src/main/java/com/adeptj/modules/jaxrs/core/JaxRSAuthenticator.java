@@ -18,42 +18,26 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.api;
-
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+package com.adeptj.modules.jaxrs.core;
 
 /**
- * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
+ * Provides {@link JaxRSAuthenticationInfo} by querying all the registered JaxRSAuthenticationRealm.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JaxRSAuthenticationRealm {
+public interface JaxRSAuthenticator {
 
     /**
-     * Priority of the realm, higher priority realm is called before other realms.
-     *
-     * @return Priority of JaxRSAuthenticationRealm
-     */
-    int priority();
-
-    /**
-     * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
-     *
-     * @return a meaningful name.
-     */
-    String getName();
-
-    /**
-     * Implementations should validate the credentials supplied and return the populated JaxRSAuthenticationInfo
-     * with other useful information.
+     * Validates the provided credentials by querying all the registered JaxRSAuthenticationRealm.
+     * If any of the realm return a non null JaxRSAuthenticationInfo then no further realms are queried.
      * <p>
      * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by
-     * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to validate the information
-     * returned by the implementations.
+     * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to further validate the
+     * information returned by the implementations.
      *
-     * @param subject  the user id
-     * @param password the password of subject supplied
-     * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
+     * @param subject  the userId
+     * @param password password of the supplied subject
+     * @return a validated non null JaxRSAuthenticationInfo instance.
      */
-    JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password);
+    JaxRSAuthenticationInfo handleSecurity(String subject, String password);
 }

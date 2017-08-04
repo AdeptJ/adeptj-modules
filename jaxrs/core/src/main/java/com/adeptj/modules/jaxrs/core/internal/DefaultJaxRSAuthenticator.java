@@ -18,42 +18,46 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.api;
+package com.adeptj.modules.jaxrs.core.internal;
+
 
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
+ * Provides {@link JaxRSAuthenticationInfo} by querying all the registered {@link JaxRSAuthenticationRealm}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JaxRSAuthenticationRealm {
+@Component(immediate = true)
+public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
+
+    // As per Felix SCR, dynamic references should be declared as volatile.
+    @Reference(
+            service = JaxRSAuthenticationRealm.class,
+            cardinality = ReferenceCardinality.MULTIPLE,
+            policy = ReferencePolicy.DYNAMIC
+    )
+    private volatile List<JaxRSAuthenticationRealm> realms = new ArrayList<>();
 
     /**
-     * Priority of the realm, higher priority realm is called before other realms.
-     *
-     * @return Priority of JaxRSAuthenticationRealm
+     * {@inheritDoc}
      */
-    int priority();
-
-    /**
-     * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
-     *
-     * @return a meaningful name.
-     */
-    String getName();
-
-    /**
-     * Implementations should validate the credentials supplied and return the populated JaxRSAuthenticationInfo
-     * with other useful information.
-     * <p>
-     * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by
-     * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to validate the information
-     * returned by the implementations.
-     *
-     * @param subject  the user id
-     * @param password the password of subject supplied
-     * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
-     */
-    JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password);
+    public JaxRSAuthenticationInfo handleSecurity(String subject, String password) {
+        return this.realms.stream()
+                .sorted((realmOne, realmTwo) -> Integer.compare(realmTwo.priority(), realmOne.priority()))
+                .map(realm -> realm.getAuthenticationInfo(subject, password))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+    }
 }

@@ -20,9 +20,9 @@
 package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.jaxrs.core.RequiresJwt;
-import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -38,8 +38,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -65,22 +63,15 @@ public class JwtIssuer {
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
-    // Plan is to query all the registered JaxRSAuthenticationRealm services
-    // for non null JaxRSAuthenticationInfo instance.
-    // Note: As per Felix SCR, dynamic references should be declared as volatile.
-    @Reference(
-            service = JaxRSAuthenticationRealm.class,
-            cardinality = ReferenceCardinality.MULTIPLE,
-            policy = ReferencePolicy.DYNAMIC
-    )
-    private volatile List<JaxRSAuthenticationRealm> realms = new ArrayList<>();
+    @Reference
+    private JaxRSAuthenticator authenticator;
 
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
-            bind = BIND_JWT_SERVICE,
-            unbind = UNBIND_JWT_SERVICE,
             cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC
+            policy = ReferencePolicy.DYNAMIC,
+            bind = BIND_JWT_SERVICE,
+            unbind = UNBIND_JWT_SERVICE
     )
     private volatile JwtService jwtService;
 
@@ -105,7 +96,27 @@ public class JwtIssuer {
                     .entity("JwtService unavailable!!")
                     .build();
         } else {
-            response = this.handleSecurity(subject, password);
+            try {
+                JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(subject, password);
+                if (authInfo == null) {
+                    response = Response.status(UNAUTHORIZED)
+                            .type(TEXT_PLAIN)
+                            .entity("Invalid credentials!!")
+                            .build();
+                } else {
+                    response = Response.ok("Token issued successfully!!")
+                            .type(TEXT_PLAIN)
+                            .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
+                            .build();
+                }
+            } catch (Exception ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                throw new JaxRSException.Builder()
+                        .message(ex.getMessage())
+                        .cause(ex)
+                        .status(INTERNAL_SERVER_ERROR.getStatusCode())
+                        .build();
+            }
         }
         return response;
     }
@@ -124,53 +135,7 @@ public class JwtIssuer {
         return Response.ok("JWT is valid!!").type(TEXT_PLAIN).build();
     }
 
-    private Response handleSecurity(String subject, String password) {
-        Response response;
-        try {
-            JaxRSAuthenticationInfo authInfo = this.getAuthenticationInfo(subject, password);
-            if (authInfo == null) {
-                response = Response.status(UNAUTHORIZED)
-                        .type(TEXT_PLAIN)
-                        .entity("Invalid credentials!!")
-                        .build();
-            } else {
-                response = Response.ok("Token issued successfully!!")
-                        .type(TEXT_PLAIN)
-                        .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
-                        .build();
-            }
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new JaxRSException.Builder()
-                    .message(ex.getMessage())
-                    .cause(ex)
-                    .status(INTERNAL_SERVER_ERROR.getStatusCode())
-                    .build();
-        }
-        return response;
-    }
-
-    private JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
-        // Sort the realms according to the priority in descending order.
-        this.realms.sort(JwtIssuer::compare);
-        for (JaxRSAuthenticationRealm realm : this.realms) {
-            JaxRSAuthenticationInfo authInfo = realm.getAuthenticationInfo(subject, password);
-            if (authInfo == null) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Realm: [{}] couldn't validate credentials!", realm.getName());
-                }
-            } else {
-                return authInfo;
-            }
-        }
-        return null;
-    }
-
-    private static int compare(JaxRSAuthenticationRealm realmOne, JaxRSAuthenticationRealm realmTwo) {
-        return Integer.compare(realmTwo.priority(), realmOne.priority());
-    }
-
-    // LifeCycle Methods
+    // Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
         this.jwtService = jwtService;
