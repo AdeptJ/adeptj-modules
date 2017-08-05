@@ -91,21 +91,14 @@ public class JwtIssuer {
         Response response;
         if (this.jwtService == null) {
             LOGGER.warn("Can't issue token as JwtService unavailable!");
-            response = Response.status(SERVICE_UNAVAILABLE)
-                    .type(TEXT_PLAIN)
-                    .entity("JwtService unavailable!!")
-                    .build();
+            response = Response.status(SERVICE_UNAVAILABLE).build();
         } else {
             try {
                 JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(subject, password);
                 if (authInfo == null) {
-                    response = Response.status(UNAUTHORIZED)
-                            .type(TEXT_PLAIN)
-                            .entity("Invalid credentials!!")
-                            .build();
+                    response = Response.status(UNAUTHORIZED).build();
                 } else {
-                    response = Response.ok("Token issued successfully!!")
-                            .type(TEXT_PLAIN)
+                    response = Response.ok()
                             .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
                             .build();
                 }
@@ -132,7 +125,9 @@ public class JwtIssuer {
     @Path("/jwt/verify")
     @RequiresJwt
     public Response verifyJwt() {
-        return Response.ok("JWT is valid!!").type(TEXT_PLAIN).build();
+        return Response.ok("JWT is valid!!")
+                .type(TEXT_PLAIN)
+                .build();
     }
 
     // Lifecycle Methods

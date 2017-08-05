@@ -36,10 +36,9 @@ import java.util.Optional;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * This filter will kick in for any resource method that is annotated with {@link RequiresJwt} annotation.
@@ -81,18 +80,18 @@ public class JwtFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (this.jwtService == null) {
             LOGGER.warn("Can't verify JWT as JwtService unavailable!");
-            this.abort(requestContext, SERVICE_UNAVAILABLE, "JwtService unavailable!!");
-            return;
+            requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
+        } else {
+            this.verifyJwt(requestContext);
         }
-        this.verifyJwt(requestContext);
     }
 
     private void verifyJwt(ContainerRequestContext requestContext) {
         String jwt = this.resolveJwt(requestContext);
         if (StringUtils.isEmpty(jwt)) {
-            this.abort(requestContext, BAD_REQUEST, "JWT missing from request!!");
+            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         } else if (!this.jwtService.verify(jwt)) {
-            this.abort(requestContext, FORBIDDEN, "Invalid JWT!!");
+            requestContext.abortWith(Response.status(FORBIDDEN).build());
         }
     }
 
@@ -106,19 +105,15 @@ public class JwtFilter implements ContainerRequestFilter {
     }
 
     private String resolveFromCookies(ContainerRequestContext requestContext) {
-        Cookie jwtCookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
-        String jwtCookieValue = null;
-        if (jwtCookie != null) {
-            jwtCookieValue = jwtCookie.getValue();
-            if (StringUtils.startsWith(jwtCookieValue, BEARER_SCHEMA)) {
-                jwtCookieValue = StringUtils.substring(jwtCookieValue, BEARER_SCHEMA.length());
+        Cookie cookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
+        String value = null;
+        if (cookie != null) {
+            value = cookie.getValue();
+            if (StringUtils.startsWith(value, BEARER_SCHEMA)) {
+                value = StringUtils.substring(value, BEARER_SCHEMA.length());
             }
-            jwtCookieValue = StringUtils.deleteWhitespace(jwtCookieValue);
+            value = StringUtils.deleteWhitespace(value);
         }
-        return jwtCookieValue;
-    }
-
-    private void abort(ContainerRequestContext ctx, Response.Status status, Object entity) {
-        ctx.abortWith(Response.status(status).entity(entity).type(TEXT_PLAIN).build());
+        return value;
     }
 }

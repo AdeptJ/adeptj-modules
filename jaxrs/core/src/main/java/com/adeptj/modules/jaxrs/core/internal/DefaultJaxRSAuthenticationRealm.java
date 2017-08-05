@@ -71,7 +71,7 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
 
     private static final String KEY_PWD = "password";
 
-    private Map<String, JaxRSAuthenticationInfo> authenticationInfoMap = new ConcurrentHashMap<>();
+    private Map<String, JaxRSAuthenticationInfo> authInfoMap = new ConcurrentHashMap<>();
 
     private Map<String, String> pidVsSubjectMappings = new ConcurrentHashMap<>();
 
@@ -96,13 +96,10 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
-        JaxRSAuthenticationInfo authenticationInfo = this.authenticationInfoMap.get(subject);
-        if (authenticationInfo == null || authenticationInfo.getPassword().length == 0) {
-            return null;
-        }
-        if (StringUtils.equals(authenticationInfo.getSubject(), subject)
-                && Arrays.equals(password.toCharArray(), authenticationInfo.getPassword())) {
-            return authenticationInfo;
+        JaxRSAuthenticationInfo authInfo = this.authInfoMap.get(subject);
+        if (authInfo != null && StringUtils.equals(authInfo.getSubject(), subject)
+                && Arrays.equals(password.toCharArray(), authInfo.getPassword())) {
+            return authInfo;
         }
         return null;
     }
@@ -118,12 +115,12 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
         if (this.pidVsSubjectMappings.containsKey(pid)) {
             // This is an update
             this.pidVsSubjectMappings.put(pid, subject);
-            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
+            this.authInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
         } else if (!this.pidVsSubjectMappings.containsKey(pid) && this.pidVsSubjectMappings.containsValue(subject)) {
             LOGGER.warn("Subject: [{}] already present, ignoring this config!!");
         } else if (!this.pidVsSubjectMappings.containsKey(pid) && !this.pidVsSubjectMappings.containsValue(subject)) {
             this.pidVsSubjectMappings.put(pid, subject);
-            this.authenticationInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
+            this.authInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
         }
     }
 
@@ -134,7 +131,7 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
     public void deleted(String pid) {
         Optional.ofNullable(this.pidVsSubjectMappings.remove(pid)).ifPresent(subject -> {
             LOGGER.info("JaxRSAuthenticationInfo removed for Subject: [{}]", subject);
-            this.authenticationInfoMap.remove(subject);
+            this.authInfoMap.remove(subject);
         });
     }
 
