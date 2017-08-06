@@ -70,7 +70,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
 
-    private static final String BEARER_SCHEMA = "Bearer";
+    private static final String AUTH_SCHEME_BEARER = "Bearer";
 
     private static final String UTF8 = "UTF-8";
 
@@ -117,7 +117,7 @@ public class JwtServiceImpl implements JwtService {
                         .toInstant()))
                 .setId(UUID.randomUUID().toString());
         this.signWith(jwtBuilder);
-        return BEARER_SCHEMA + SPACE + jwtBuilder.compact();
+        return AUTH_SCHEME_BEARER + SPACE + jwtBuilder.compact();
     }
 
     /**

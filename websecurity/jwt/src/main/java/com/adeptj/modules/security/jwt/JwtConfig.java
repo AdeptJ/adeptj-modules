@@ -46,7 +46,7 @@ public @interface JwtConfig {
 
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
-            description = "Signature Algorithm for JWT signing",
+            description = "Signature Algorithm for JWT signing, only RSA and Hmac with SHA are supported at this moment.",
             options = {
                     @Option(label = "RS256", value = "RS256"),
                     @Option(label = "RS384", value = "RS384"),
@@ -61,7 +61,7 @@ public @interface JwtConfig {
     String issuer() default "AdeptJ Runtime JWT Issuer";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
-    long expirationTime() default 60L;
+    long expirationTime() default 30L;
 
     @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key")
     boolean useDefaultKey() default true;

@@ -63,7 +63,7 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private static final String JWT_COOKIE_NAME = "jwt";
 
-    private static final String BEARER_SCHEMA = "Bearer";
+    private static final String AUTH_SCHEME_BEARER = "Bearer";
 
     private volatile JwtService jwtService;
 
@@ -109,8 +109,8 @@ public class JwtFilter implements ContainerRequestFilter {
         String value = null;
         if (cookie != null) {
             value = cookie.getValue();
-            if (StringUtils.startsWith(value, BEARER_SCHEMA)) {
-                value = StringUtils.substring(value, BEARER_SCHEMA.length());
+            if (StringUtils.startsWith(value, AUTH_SCHEME_BEARER)) {
+                value = StringUtils.substring(value, AUTH_SCHEME_BEARER.length());
             }
             value = StringUtils.deleteWhitespace(value);
         }
