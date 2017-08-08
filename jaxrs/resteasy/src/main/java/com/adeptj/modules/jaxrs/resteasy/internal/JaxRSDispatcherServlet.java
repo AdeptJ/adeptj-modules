@@ -46,6 +46,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.adeptj.modules.commons.utils.OSGiUtils.anyServiceFilter;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
@@ -180,22 +181,16 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         }
     }
 
-    // LifeCycle Methods
+    // Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
-        LOGGER.info("Bind: [{}]", jwtService);
         this.jwtService = jwtService;
-        if (this.jwtFilter == null) {
-            LOGGER.warn("Can't inject JwtService as JwtFilter not yet initialized!!");
-        } else {
-            this.jwtFilter.setJwtService(this.jwtService);
-        }
+        Optional.ofNullable(this.jwtFilter).ifPresent(filter -> filter.setJwtService(this.jwtService));
     }
 
     protected void unbindJwtService(JwtService jwtService) {
-        LOGGER.info("Unbind: [{}]", jwtService);
         this.jwtService = null;
-        this.jwtFilter.setJwtService(null);
+        this.jwtFilter.setJwtService(this.jwtService);
     }
 
     @Activate
@@ -206,7 +201,15 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     @Deactivate
     protected void stop() {
-        this.providerTracker.close();
-        this.resourceTracker.close();
+        this.closeServiceTracker(this.providerTracker);
+        this.closeServiceTracker(this.resourceTracker);
+    }
+
+    private void closeServiceTracker(ServiceTracker<Object, Object> tracker) {
+        try {
+            tracker.close();
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+        }
     }
 }

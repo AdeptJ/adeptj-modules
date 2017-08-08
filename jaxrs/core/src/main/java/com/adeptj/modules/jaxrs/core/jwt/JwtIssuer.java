@@ -104,7 +104,7 @@ public class JwtIssuer {
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage(), ex);
-                throw new JaxRSException.Builder()
+                throw JaxRSException.builder()
                         .message(ex.getMessage())
                         .cause(ex)
                         .status(INTERNAL_SERVER_ERROR.getStatusCode())

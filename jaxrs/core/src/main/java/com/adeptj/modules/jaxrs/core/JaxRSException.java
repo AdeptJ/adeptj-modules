@@ -58,6 +58,10 @@ public class JaxRSException extends RuntimeException {
         return entity;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     /**
      * Builder for {@link JaxRSException}
      */
@@ -72,6 +76,9 @@ public class JaxRSException extends RuntimeException {
         private int status;
 
         private Object entity;
+
+        private Builder() {
+        }
 
         public Builder message(String message) {
             this.message = message;
