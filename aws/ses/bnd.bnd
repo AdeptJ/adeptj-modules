@@ -26,7 +26,9 @@ Bundle-ClassPath: ., aws-java-sdk-ses-1.11.163.jar
 
 Export-Package: com.adeptj.modules.aws.ses,\
                 com.adeptj.modules.aws.ses.api
-  
+
+Import-Package: javax.validation.*;version=2.0.0
+
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ AWS

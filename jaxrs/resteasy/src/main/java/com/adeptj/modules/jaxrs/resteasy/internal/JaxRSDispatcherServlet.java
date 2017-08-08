@@ -29,7 +29,6 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.adeptj.modules.commons.utils.OSGiUtils.anyServiceFilter;
@@ -54,7 +52,6 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.MAPPING_PREFIX_VALUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.SERVLET_PATTERN_VALUE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED;
@@ -65,7 +62,7 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
 
 /**
  * JaxRSDispatcherServlet extends RESTEasy HttpServlet30Dispatcher so that Servlet 3.0 Async behaviour can be leveraged.
- * It also registers the JAX-RS resource ServiceTracker, GeneralValidatorContextResolver and other providers.
+ * It also registers the JAX-RS resource/provider ServiceTracker and other providers.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -140,11 +137,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
-                this.removeDefaultGeneralValidator(providerFactory);
                 this.jwtFilter = new JwtFilter(this.jwtService);
                 providerFactory.register(new JaxRSCorsFeature(this.config))
                         .register(this.jwtFilter)
-                        .register(new GeneralValidatorContextResolver())
                         .register(new DefaultExceptionHandler(this.config.showException()))
                         .register(new JaxRSExceptionHandler(this.config.showException()));
                 this.openProviderServiceTracker(this.context, providerFactory);
@@ -169,18 +164,6 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         this.providerTracker.open();
     }
 
-    private void removeDefaultGeneralValidator(ResteasyProviderFactory providerFactory) {
-        try {
-            // First remove the default RESTEasy GeneralValidator so that we can register ours.
-            Map.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true)
-                    .get(providerFactory))
-                    .remove(GeneralValidator.class);
-            LOGGER.info("Removed RESTEasy GeneralValidator!!");
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            LOGGER.error("Exception while removing RESTEasy GeneralValidator", ex);
-        }
-    }
-
     // Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
@@ -201,15 +184,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     @Deactivate
     protected void stop() {
-        this.closeServiceTracker(this.providerTracker);
-        this.closeServiceTracker(this.resourceTracker);
-    }
-
-    private void closeServiceTracker(ServiceTracker<Object, Object> tracker) {
-        try {
-            tracker.close();
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-        }
+        this.providerTracker.close();
+        this.resourceTracker.close();
     }
 }

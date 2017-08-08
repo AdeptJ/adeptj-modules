@@ -27,7 +27,9 @@ Bundle-ClassPath: ., aws-java-sdk-sns-1.11.163.jar,\
 
 Export-Package: com.adeptj.modules.aws.sns,\
                 com.adeptj.modules.aws.sns.api
-  
+
+Import-Package: javax.validation.*;version=2.0.0
+
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ AWS

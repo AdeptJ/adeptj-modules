@@ -28,6 +28,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +56,23 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
     public JaxRSAuthenticationInfo handleSecurity(String subject, String password) {
         return this.realms.stream()
                 .sorted((realmOne, realmTwo) -> Integer.compare(realmTwo.priority(), realmOne.priority()))
-                .map(realm -> realm.getAuthenticationInfo(subject, password))
+                .map(realm -> this.getAuthInfo(realm, subject, password))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private JaxRSAuthenticationInfo getAuthInfo(JaxRSAuthenticationRealm realm, String subject, String password) {
+        JaxRSAuthenticationInfo authInfo = null;
+        try {
+            authInfo = realm.getAuthenticationInfo(subject, password);
+        } catch (Exception ex) {
+            LoggerFactory.getLogger(getClass()).error(ex.getMessage(), ex);
+        }
+        return authInfo;
+    }
+
+    protected void addRealm(JaxRSAuthenticationRealm realm) {
+        this.realms.add(realm);
     }
 }
