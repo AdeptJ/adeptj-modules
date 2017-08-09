@@ -21,23 +21,23 @@
 package com.adeptj.modules.data.jpa;
 
 /**
- * Exception for Persistence related scenarios.
+ * Exception thrown by {@link com.adeptj.modules.data.jpa.api.JpaCrudRepository} methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JpaSystemException extends RuntimeException {
+public class PersistenceException extends RuntimeException {
 
     private static final long serialVersionUID = 7296926130485279382L;
 
-    public JpaSystemException(String msg) {
+    public PersistenceException(String msg) {
         super(msg);
     }
 
-    public JpaSystemException(Throwable throwable) {
+    public PersistenceException(Throwable throwable) {
         super(throwable);
     }
 
-    public JpaSystemException(String msg, Throwable throwable) {
+    public PersistenceException(String msg, Throwable throwable) {
         super(msg, throwable);
     }
 }

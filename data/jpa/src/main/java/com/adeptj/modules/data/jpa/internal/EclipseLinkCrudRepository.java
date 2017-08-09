@@ -4,7 +4,7 @@ import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
-import com.adeptj.modules.data.jpa.JpaSystemException;
+import com.adeptj.modules.data.jpa.PersistenceException;
 import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
@@ -77,7 +77,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
             this.closeEntityManager(em);
@@ -99,7 +99,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
             this.closeEntityManager(em);
@@ -127,7 +127,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
             this.closeEntityManager(em);
@@ -153,7 +153,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
             this.closeEntityManager(em);
@@ -178,7 +178,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
             this.closeEntityManager(em);
@@ -205,7 +205,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
             this.closeEntityManager(em);
@@ -228,7 +228,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         } catch (RuntimeException ex) {
             this.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.rollbackTxn(txn);
             this.closeEntityManager(em);
@@ -245,7 +245,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return em.find(entity, primaryKey);
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -264,7 +264,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     cq.from(criteria.getEntity())).toArray(new Predicate[LEN_ZERO])))).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -290,7 +290,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -312,7 +312,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return typedQuery.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -330,7 +330,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -349,7 +349,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return (List<T>) query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -366,7 +366,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return em.createQuery(cq.select(cq.from(entity))).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -386,7 +386,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return typedQuery.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -404,7 +404,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -424,7 +424,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return typedQuery.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -445,7 +445,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -464,7 +464,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return (List<T>) query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -482,7 +482,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -508,7 +508,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -526,7 +526,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return typedQuery.getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -544,7 +544,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             return em.createQuery(cq.select(cb.count(cq.from(entity)))).getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }
@@ -566,7 +566,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new JpaSystemException(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
         } finally {
             this.closeEntityManager(em);
         }

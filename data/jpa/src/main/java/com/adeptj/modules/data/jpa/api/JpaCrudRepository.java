@@ -35,7 +35,7 @@ import java.util.Map;
 
 /**
  * JPA Repository for CRUD operations to be performed by the application on underlying DB.
- * All the operations defined in the contract throw JpaSystemException which is a wrapped exception
+ * All the operations defined in the contract throw PersistenceException which is a wrapped exception
  * of the actual exception thrown by the PersistenceProvider.
  * <p>
  * <T> is the Entity type which this repository is dealing with. This should always be a subclass of {@link BaseEntity}.

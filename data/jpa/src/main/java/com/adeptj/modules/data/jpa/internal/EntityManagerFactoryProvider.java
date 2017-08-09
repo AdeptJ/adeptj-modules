@@ -153,7 +153,9 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
         jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, configs.get("persistenceXmlLocation"));
         jpaProperties.put(SHARED_CACHE_MODE, configs.get("sharedCacheMode"));
         jpaProperties.put(PERSISTENCE_PROVIDER, configs.get("persistenceProviderClassName"));
-        jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
+        if ((Boolean) configs.get("useExceptionHandler")) {
+            jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
+        }
         jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
         jpaProperties.put(VALIDATION_MODE, configs.get("validationMode"));
         // Extra properties are in [key=value] format, maximum of 100 properties can be provided.

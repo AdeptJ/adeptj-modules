@@ -27,11 +27,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
  * the {@link org.eclipse.persistence.exceptions.ExceptionHandler} interface and provides a default (zero-argument) constructor.
- *
+ * <p>
  * See more at: http://eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_exception_handler.htm
  *
  * @author Rakesh.Kumar, AdeptJ
- *
  */
 public class JpaExceptionHandler implements ExceptionHandler {
 

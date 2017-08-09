@@ -25,9 +25,13 @@ package com.adeptj.modules.data.jpa;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class JpaConstants {
+public final class JpaConstants {
 
     public static final String SHARED_CACHE_MODE = "javax.persistence.sharedCache.mode";
 
     public static final String PERSISTENCE_PROVIDER = "javax.persistence.provider";
+
+    // Class just declaring constants, no instances required.
+    private JpaConstants() {
+    }
 }

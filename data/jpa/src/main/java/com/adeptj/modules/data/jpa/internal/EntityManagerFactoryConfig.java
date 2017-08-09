@@ -47,80 +47,129 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(name = "AdeptJ JPA EntityManagerFactory Configurations", description = "EntityManagerFactory Configurations")
+@ObjectClassDefinition(
+        name = "AdeptJ JPA EntityManagerFactory Configurations",
+        description = "EntityManagerFactory(EclipseLink) Configurations"
+)
 public @interface EntityManagerFactoryConfig {
 
-    static final int CARDINALITY = 100;
+    int CARDINALITY = 100;
 
-    @AttributeDefinition(name = "PersistenceUnit Name", description = "Note: Must be same as in persistence.xml")
+    @AttributeDefinition(
+            name = "PersistenceUnit Name",
+            description = "Note: Must be same as in persistence.xml"
+    )
     String unitName();
 
-    @AttributeDefinition(name = "Persistence XML Location", description = "Location of the persistence.xml file")
+    @AttributeDefinition(
+            name = "Persistence XML Location",
+            description = "Location of the persistence.xml file"
+    )
     String persistenceXmlLocation() default "META-INF/persistence.xml";
 
-    @AttributeDefinition(name = "DataSource Name For Binding", description = "DataSource Name For Binding to this EntityManagerFactory")
+    @AttributeDefinition(
+            name = "JDBC DataSource to Use",
+            description = "DataSource Name For Binding to this EntityManagerFactory"
+    )
     String dataSourceName();
 
-    @AttributeDefinition(name = "Persistence Provider", description = "FQCN of PersistenceProvider")
+    @AttributeDefinition(
+            name = "JPA Provider",
+            description = "Fully qualified class name of PersistenceProvider"
+    )
     String persistenceProviderClassName() default "org.eclipse.persistence.jpa.PersistenceProvider";
 
-    @AttributeDefinition(name = "EclipseLink LoggingFile", description = "EclipseLink Logging File")
+    @AttributeDefinition(
+            name = "EclipseLink LoggingFile",
+            description = "EclipseLink Logging File"
+    )
     String loggingFile() default "adeptj-runtime/deployment/logs/jpa.log";
 
-    @AttributeDefinition(name = "JPA Properties", description = "JPA Properties(key=value)", cardinality = CARDINALITY)
+    @AttributeDefinition(
+            name = "JPA Properties",
+            description = "JPA Properties(key=value) format",
+            cardinality = CARDINALITY
+    )
     String[] jpaProperties();
 
-    @AttributeDefinition(name = "Deploy on Startup", description = "Whether to create PersistenceUnit when the application starts up")
+    @AttributeDefinition(
+            name = "Deploy on Startup",
+            description = "Whether to create PersistenceUnit when the application starts up"
+    )
     boolean deployOnStartup() default true;
 
-    @AttributeDefinition(name = "Transaction Type", description = "JPA Transaction Type", options = {
-            @Option(label = "RESOURCE_LOCAL", value = "RESOURCE_LOCAL"),
-            @Option(label = "JTA", value = "JTA")
-    })
+    @AttributeDefinition(
+            name = "Use ExceptionHandler",
+            description = "Whether to use EclipseLink's ExceptionHandler mechanism"
+    )
+    boolean useExceptionHandler() default true;
+
+    @AttributeDefinition(
+            name = "Transaction Type",
+            description = "JPA Transaction Type",
+            options = {
+                    @Option(label = "RESOURCE_LOCAL", value = "RESOURCE_LOCAL"),
+                    @Option(label = "JTA", value = "JTA")
+            })
     String persistenceUnitTransactionType();
 
-    @AttributeDefinition(name = "L2 Cache Mode", description = "JPA Caching Strategy", options = {
-            @Option(label = "ENABLE_SELECTIVE", value = "ENABLE_SELECTIVE"),
-            @Option(label = "NONE", value = "NONE"),
-            @Option(label = "DISABLE_SELECTIVE", value = "DISABLE_SELECTIVE"),
-            @Option(label = "ALL", value = "ALL"),
-            @Option(label = "UNSPECIFIED", value = "UNSPECIFIED")
-    })
+    @AttributeDefinition(
+            name = "L2 Cache Mode",
+            description = "JPA L2 Caching Strategy",
+            options = {
+                    @Option(label = "ENABLE_SELECTIVE", value = "ENABLE_SELECTIVE"),
+                    @Option(label = "NONE", value = "NONE"),
+                    @Option(label = "DISABLE_SELECTIVE", value = "DISABLE_SELECTIVE"),
+                    @Option(label = "ALL", value = "ALL"),
+                    @Option(label = "UNSPECIFIED", value = "UNSPECIFIED")
+            })
     String sharedCacheMode();
 
-    @AttributeDefinition(name = "Entity Validation Mode", description = "Bean Validation Options", options = {
-            @Option(label = "NONE", value = "NONE"),
-            @Option(label = "AUTO", value = "AUTO"),
-            @Option(label = "CALLBACK", value = "CALLBACK")
-    })
+    @AttributeDefinition(
+            name = "Entity Validation Mode",
+            description = "Bean Validation Options",
+            options = {
+                    @Option(label = "NONE", value = "NONE"),
+                    @Option(label = "AUTO", value = "AUTO"),
+                    @Option(label = "CALLBACK", value = "CALLBACK")
+            })
     String validationMode();
 
-    @AttributeDefinition(name = "EclipseLink LoggingLevel", description = "EclipseLink Logging Level", options = {
-            @Option(label = FINE, value = FINE),
-            @Option(label = FINEST, value = FINEST),
-            @Option(label = SEVERE, value = SEVERE),
-            @Option(label = WARNING, value = WARNING),
-            @Option(label = INFO, value = INFO),
-            @Option(label = CONFIG, value = CONFIG),
-            @Option(label = FINER, value = FINER),
-            @Option(label = OFF, value = OFF),
-            @Option(label = ALL, value = ALL)
-    })
+    @AttributeDefinition(
+            name = "EclipseLink LoggingLevel",
+            description = "EclipseLink Logging Level",
+            options = {
+                    @Option(label = FINE, value = FINE),
+                    @Option(label = FINEST, value = FINEST),
+                    @Option(label = SEVERE, value = SEVERE),
+                    @Option(label = WARNING, value = WARNING),
+                    @Option(label = INFO, value = INFO),
+                    @Option(label = CONFIG, value = CONFIG),
+                    @Option(label = FINER, value = FINER),
+                    @Option(label = OFF, value = OFF),
+                    @Option(label = ALL, value = ALL)
+            })
     String loggingLevel();
 
-    @AttributeDefinition(name = "DDL Generation Mode", description = "Where to run the DDL", options = {
-            @Option(label = "BOTH", value = DDL_BOTH_GENERATION),
-            @Option(label = "DATABASE", value = DDL_DATABASE_GENERATION),
-            @Option(label = "SQL_SCRIPT", value = DDL_SQL_SCRIPT_GENERATION),
-    })
+    @AttributeDefinition(
+            name = "DDL Generation Mode",
+            description = "Where to run the DDL",
+            options = {
+                    @Option(label = "BOTH", value = DDL_BOTH_GENERATION),
+                    @Option(label = "DATABASE", value = DDL_DATABASE_GENERATION),
+                    @Option(label = "SQL_SCRIPT", value = DDL_SQL_SCRIPT_GENERATION),
+            })
     String ddlGenerationOutputMode();
 
-    @AttributeDefinition(name = "DDL Generation Strategy", description = "Specifies how the DDL runs", options = {
-            @Option(label = "CREATE_OR_EXTEND", value = CREATE_OR_EXTEND),
-            @Option(label = "DROP_ONLY", value = DROP_ONLY),
-            @Option(label = "CREATE_ONLY", value = CREATE_ONLY),
-            @Option(label = "DROP_AND_CREATE", value = DROP_AND_CREATE),
-            @Option(label = "NONE", value = NONE),
-    })
+    @AttributeDefinition(
+            name = "DDL Generation Strategy",
+            description = "Specifies how the DDL runs",
+            options = {
+                    @Option(label = "CREATE_OR_EXTEND", value = CREATE_OR_EXTEND),
+                    @Option(label = "DROP_ONLY", value = DROP_ONLY),
+                    @Option(label = "CREATE_ONLY", value = CREATE_ONLY),
+                    @Option(label = "DROP_AND_CREATE", value = DROP_AND_CREATE),
+                    @Option(label = "NONE", value = NONE),
+            })
     String ddlGeneration();
 }
