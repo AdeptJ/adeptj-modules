@@ -25,13 +25,13 @@ import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * HikariDataSorce configurations, few configurations defaults to MySql DB.
+ * HikariDataSorce configurations, few configurations defaults to MySQL DB.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ HikariDataSource Configurations",
-        description = "Configurations of HikariDataSource."
+        name = "AdeptJ JDBC DataSource Configurations",
+        description = "Configurations for JDBC DataSource(HikariDataSorce)."
 )
 public @interface DataSourceConfig {
 

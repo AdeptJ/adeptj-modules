@@ -25,7 +25,7 @@ package com.adeptj.modules.commons.ds;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class DataSourceConstants {
+public final class DataSourceConstants {
 
     public static final String POOL_NAME = "poolName";
 
@@ -49,4 +49,7 @@ public class DataSourceConstants {
 
     public static final String MAX_POOL_SIZE = "maximumPoolSize";
 
+    // Class just declaring constants, no instances required.
+    private DataSourceConstants(){
+    }
 }

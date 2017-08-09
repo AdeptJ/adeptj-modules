@@ -100,7 +100,7 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
 
     private void handleConfigChange(String pid) {
         Optional.ofNullable(this.pidVsDSNameMapping.remove(pid)).ifPresent(dataSourceName -> {
-            LOGGER.info("Closing HikariDataSource against PoolName: [{}]", dataSourceName);
+            LOGGER.info("Closing HikariDataSource named: [{}]", dataSourceName);
             try {
                 DataSources.INSTANCE.closeDataSource(dataSourceName);
             } catch (Exception ex) { // NOSONAR
@@ -124,7 +124,7 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
             dsProperties.put(MAX_LIFETIME, configs.get(MAX_LIFETIME));
             dsProperties.put(MIN_IDLE, configs.get(MIN_IDLE));
             dsProperties.put(MAX_POOL_SIZE, configs.get(MAX_POOL_SIZE));
-            LOGGER.info("Initializing JDBC ConnectionPool: [{}]", poolName);
+            LOGGER.info("Initializing HikariDataSource named: [{}]", poolName);
             DataSources.INSTANCE.addDataSource(poolName, new HikariDataSource(new HikariConfig(dsProperties)));
             this.pidVsDSNameMapping.put(pid, poolName);
         } catch (Exception ex) { // NOSONAR
