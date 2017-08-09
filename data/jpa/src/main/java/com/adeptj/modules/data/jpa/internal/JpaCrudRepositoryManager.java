@@ -60,7 +60,7 @@ public class JpaCrudRepositoryManager {
         }
     }
 
-    // LifeCycle Methods
+    // Lifecycle Methods
 
     @Activate
     protected void activate(BundleContext context) {

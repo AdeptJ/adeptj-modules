@@ -21,6 +21,7 @@
 package com.adeptj.modules.commons.ds.internal;
 
 import com.adeptj.modules.commons.ds.DataSourceConfig;
+import com.adeptj.modules.commons.ds.DataSources;
 import com.adeptj.modules.commons.ds.api.DataSourceProvider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -74,13 +75,11 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
 
     private static final String FACTORY_NAME = "AdeptJ JDBC DataSource Factory";
 
-    private Map<String, HikariDataSource> dataSources = new ConcurrentHashMap<>();
-
     private Map<String, String> pidVsDSNameMapping = new ConcurrentHashMap<>();
 
     @Override
     public DataSource getDataSource(String dataSourceName) {
-        return this.dataSources.get(dataSourceName);
+        return DataSources.INSTANCE.getDataSource(dataSourceName);
     }
 
     @Override
@@ -100,10 +99,10 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
     }
 
     private void handleConfigChange(String pid) {
-        Optional.ofNullable(this.pidVsDSNameMapping.remove(pid)).ifPresent((String dataSourceName) -> {
+        Optional.ofNullable(this.pidVsDSNameMapping.remove(pid)).ifPresent(dataSourceName -> {
             LOGGER.info("Closing HikariDataSource against PoolName: [{}]", dataSourceName);
             try {
-                this.dataSources.remove(dataSourceName).close();
+                DataSources.INSTANCE.closeDataSource(dataSourceName);
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while closing HikariDataSource!!", ex);
             }
@@ -126,7 +125,7 @@ public class HikariDataSourceProvider implements DataSourceProvider, ManagedServ
             dsProperties.put(MIN_IDLE, configs.get(MIN_IDLE));
             dsProperties.put(MAX_POOL_SIZE, configs.get(MAX_POOL_SIZE));
             LOGGER.info("Initializing JDBC ConnectionPool: [{}]", poolName);
-            this.dataSources.put(poolName, new HikariDataSource(new HikariConfig(dsProperties)));
+            DataSources.INSTANCE.addDataSource(poolName, new HikariDataSource(new HikariConfig(dsProperties)));
             this.pidVsDSNameMapping.put(pid, poolName);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while creating HikariDataSource!!", ex);

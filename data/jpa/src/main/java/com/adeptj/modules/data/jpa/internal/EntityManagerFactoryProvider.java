@@ -121,7 +121,8 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
         try {
             String unitName = (String) configs.get("unitName");
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-            EntityManagerFactory emf = new PersistenceProvider().createEntityManagerFactory(unitName, this.jpaProperties(configs));
+            EntityManagerFactory emf = new PersistenceProvider().createEntityManagerFactory(unitName,
+                    this.jpaProperties(configs));
             if (emf == null) {
                 LOGGER.warn("Could not initialize EntityManagerFactory, Most probably persistence.xml not found!!");
             } else {
@@ -130,7 +131,9 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
                 this.unitNameVsEMFMapping.put(unitName, emf);
                 this.repositoryManager.registerJpaCrudRepository(unitName, emf);
                 if (LOGGER.isDebugEnabled()) {
-                    emf.getMetamodel().getEntities().forEach(type -> LOGGER.debug("EntityType: [{}]", type.getName()));
+                    emf.getMetamodel()
+                            .getEntities()
+                            .forEach(type -> LOGGER.debug("EntityType: [{}]", type.getName()));
                 }
             }
         } catch (Exception ex) { // NOSONAR

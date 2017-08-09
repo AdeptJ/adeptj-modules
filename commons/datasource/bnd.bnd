@@ -16,6 +16,8 @@
 #                                                                          #
 ############################################################################
 
+# Look for metatype and ds annotations in all packages by default.
+
 -metatypeannotations: *
 
 -dsannotations: *
@@ -24,6 +26,10 @@ Export-Package: \
 	com.adeptj.modules.commons.ds,\
 	com.adeptj.modules.commons.ds.api
 
+Bundle-Activator: com.adeptj.modules.commons.ds.internal.DataSourceActivator
+
 Bundle-Name: ${project.name}
+
 Bundle-Category: AdeptJ Commons
+
 Bundle-Vendor: AdeptJ
