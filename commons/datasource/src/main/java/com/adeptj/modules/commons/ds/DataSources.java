@@ -24,6 +24,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -46,9 +47,7 @@ public enum DataSources {
     }
 
     public void closeDataSource(String dataSourceName) {
-        if (this.dataSources.containsKey(dataSourceName)) {
-            this.dataSources.remove(dataSourceName).close();
-        }
+        Optional.ofNullable(this.dataSources.remove(dataSourceName)).ifPresent(HikariDataSource::close);
     }
 
     public void closeAll() {
