@@ -39,7 +39,7 @@ public @interface DataSourceConfig {
     String poolName();
 
     @AttributeDefinition(name = "jdbcUrl", description = "JDBC URL for target Database")
-    String jdbcUrl() default "jdbc:mysql://localhost:3306/";
+    String jdbcUrl() default "jdbc:mysql://localhost:3306/adeptJ?useSSL=false&nullNamePatternMatchesAll=true";
 
     @AttributeDefinition(name = "driverClassName", description = "JDBC driver FQCN")
     String driverClassName() default "com.mysql.cj.jdbc.Driver";

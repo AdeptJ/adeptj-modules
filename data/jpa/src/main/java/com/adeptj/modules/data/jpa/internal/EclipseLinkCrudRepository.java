@@ -591,7 +591,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     }
 
     private void setRollbackOnly(EntityTransaction txn) {
-        if (txn != null && !txn.getRollbackOnly()) {
+        if (txn != null && txn.isActive() && !txn.getRollbackOnly()) {
             txn.setRollbackOnly();
         }
     }

@@ -153,7 +153,7 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "DDL Generation Mode",
-            description = "Where to run the DDL",
+            description = "Property to specify where EclipseLink generates and writes the DDL",
             options = {
                     @Option(label = "BOTH", value = DDL_BOTH_GENERATION),
                     @Option(label = "DATABASE", value = DDL_DATABASE_GENERATION),
