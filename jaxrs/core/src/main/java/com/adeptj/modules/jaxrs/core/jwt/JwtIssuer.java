@@ -38,10 +38,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -106,7 +106,7 @@ public class JwtIssuer {
                 throw JaxRSException.builder()
                         .message(ex.getMessage())
                         .cause(ex)
-                        .status(INTERNAL_SERVER_ERROR.getStatusCode())
+                        .status(STATUS_SERVER_ERROR)
                         .build();
             }
         }

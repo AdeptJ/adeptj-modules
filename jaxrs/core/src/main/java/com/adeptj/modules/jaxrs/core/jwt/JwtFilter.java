@@ -48,9 +48,9 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Provider
 @RequiresJwt
 @Priority(AUTHENTICATION)
+@Provider
 public class JwtFilter implements ContainerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);

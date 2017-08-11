@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
@@ -47,7 +48,7 @@ public class JaxRSExceptionHandler implements ExceptionMapper<JaxRSException> {
         String mediaType = exception.getMediaType();
         Object entity = exception.getEntity();
         if (entity == null) {
-            entity = new ErrorResponse("ERROR", exception, this.showException);
+            entity = new ErrorResponse(JSON_KEY_ERROR, exception, this.showException);
             mediaType = APPLICATION_JSON;
         }
         return Response.status(exception.getStatus())

@@ -18,41 +18,20 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
-
-import org.jboss.resteasy.spi.ApplicationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
-
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+package com.adeptj.modules.jaxrs.core;
 
 /**
- * Handles all the unhandled exceptions coming out of resource method calls.
+ * Constants for Jax-RS modules.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Provider
-public class DefaultExceptionHandler implements ExceptionMapper<ApplicationException> {
+public final class JaxRSConstants {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionHandler.class);
+    public static final String JSON_KEY_ERROR = "ERROR";
 
-    private boolean showException;
+    public static final int STATUS_SERVER_ERROR = 500;
 
-    DefaultExceptionHandler(boolean showException) {
-        this.showException = showException;
-    }
-
-    @Override
-    public Response toResponse(ApplicationException exception) {
-        LOGGER.error(exception.getMessage(), exception);
-        return Response.serverError()
-                .type(APPLICATION_JSON)
-                .entity(new ErrorResponse(JSON_KEY_ERROR, exception, this.showException))
-                .build();
+    // Just declaring constants, no instances required.
+    private JaxRSConstants() {
     }
 }
