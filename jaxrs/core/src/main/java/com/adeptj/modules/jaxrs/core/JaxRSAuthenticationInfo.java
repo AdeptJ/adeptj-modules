@@ -23,23 +23,24 @@ package com.adeptj.modules.jaxrs.core;
 import java.util.HashMap;
 
 /**
- * AuthenticationInfo holding subject, password and other arbitrary data for JWT based JAX-RS resource authorization.
+ * AuthenticationInfo holding username, password and other arbitrary data for JWT based JAX-RS resource
+ * authorization.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public class JaxRSAuthenticationInfo extends HashMap<String, Object> {
 
-    private String subject;
+    private String username;
 
     private char[] password;
 
-    public JaxRSAuthenticationInfo(String subject, char[] password) {
-        this.subject = subject;
+    public JaxRSAuthenticationInfo(String username, char[] password) {
+        this.username = username;
         this.password = password;
     }
 
-    public String getSubject() {
-        return subject;
+    public String getUsername() {
+        return username;
     }
 
     public char[] getPassword() {

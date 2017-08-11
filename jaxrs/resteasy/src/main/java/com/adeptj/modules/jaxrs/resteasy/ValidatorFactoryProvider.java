@@ -17,43 +17,35 @@
 #                                                                             #
 ###############################################################################
 */
+package com.adeptj.modules.jaxrs.resteasy;
 
-package com.adeptj.modules.jaxrs.core.api;
+import com.adeptj.modules.commons.utils.ClassLoaders;
+import org.hibernate.validator.HibernateValidator;
+import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
+
 
 /**
- * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
+ * ValidatorFactoryProvider, initializes the HibernateValidatorFactory.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JaxRSAuthenticationRealm {
+public enum ValidatorFactoryProvider {
 
-    /**
-     * Priority of the realm, higher priority realm is called before other realms.
-     *
-     * @return Priority of JaxRSAuthenticationRealm
-     */
-    int priority();
+    INSTANCE;
 
-    /**
-     * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
-     *
-     * @return a meaningful name.
-     */
-    String getName();
+    private volatile ValidatorFactory validatorFactory;
 
-    /**
-     * Implementations should validate the credentials supplied and return the populated JaxRSAuthenticationInfo
-     * with other useful information.
-     * <p>
-     * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by
-     * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to validate the information
-     * returned by the implementations.
-     *
-     * @param username   the username submitted for authentication
-     * @param password   the password string submitted for authentication
-     * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
-     */
-    JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password);
+    public ValidatorFactory getValidatorFactory() {
+        if (this.validatorFactory == null) {
+            this.validatorFactory = ClassLoaders.executeWith(this.getClass().getClassLoader(), () ->
+                    Validation.byProvider(HibernateValidator.class)
+                            .configure()
+                            .buildValidatorFactory());
+            LoggerFactory.getLogger(this.getClass()).info("Hibernate Validator Initialized!!");
+        }
+        return this.validatorFactory;
+    }
 }

@@ -22,7 +22,6 @@ package com.adeptj.modules.jaxrs.core.jwt;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.core.JaxRSException;
-import com.adeptj.modules.jaxrs.core.RequiresJwt;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -77,16 +76,16 @@ public class JwtIssuer {
 
 
     /**
-     * Issue Jwt to the subject with given credentials.
+     * Issue Jwt to the username with given credentials.
      *
-     * @param subject  the subject who needs the Jwt
-     * @param password password associated with the subject
+     * @param username   the username submitted for authentication
+     * @param password   the password string submitted for authentication
      * @return JAX-RS Response either having a Jwt or Http error 503
      */
     @POST
     @Path("/jwt/issue")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response issueJwt(@NotNull @FormParam("subject") String subject,
+    public Response issueJwt(@NotNull @FormParam("username") String username,
                              @NotNull @FormParam("password") String password) {
         Response response;
         if (this.jwtService == null) {
@@ -94,12 +93,12 @@ public class JwtIssuer {
             response = Response.status(SERVICE_UNAVAILABLE).build();
         } else {
             try {
-                JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(subject, password);
+                JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
                 if (authInfo == null) {
                     response = Response.status(UNAUTHORIZED).build();
                 } else {
                     response = Response.ok()
-                            .header(AUTHORIZATION, this.jwtService.issue(subject, authInfo))
+                            .header(AUTHORIZATION, this.jwtService.issue(username, authInfo))
                             .build();
                 }
             } catch (Exception ex) {

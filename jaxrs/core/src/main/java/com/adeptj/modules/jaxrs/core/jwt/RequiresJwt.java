@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.jwt;
 
 import javax.ws.rs.NameBinding;
 import java.lang.annotation.Retention;

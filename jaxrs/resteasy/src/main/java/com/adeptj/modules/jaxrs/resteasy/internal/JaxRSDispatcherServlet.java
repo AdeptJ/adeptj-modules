@@ -29,6 +29,8 @@ import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.adeptj.modules.commons.utils.OSGiUtils.anyServiceFilter;
@@ -52,6 +55,7 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.MAPPING_PREFIX_VALUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.SERVLET_PATTERN_VALUE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED;
@@ -137,8 +141,10 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
+                this.removeValidators(providerFactory);
                 this.jwtFilter = new JwtFilter(this.jwtService);
-                providerFactory.register(new JaxRSCorsFeature(this.config))
+                providerFactory.register(ValidatorContextResolver.class)
+                        .register(new JaxRSCorsFeature(this.config))
                         .register(this.jwtFilter)
                         .register(new DefaultExceptionHandler(this.config.showException()))
                         .register(new JaxRSExceptionHandler(this.config.showException()));
@@ -162,6 +168,20 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         this.providerTracker = new ServiceTracker<>(context, anyServiceFilter(context, PROVIDER_FILTER_EXPR),
                 new JaxRSProviders(context, providerFactory));
         this.providerTracker.open();
+    }
+
+    private void removeValidators(ResteasyProviderFactory providerFactory) {
+        try {
+            // First remove the default RESTEasy GeneralValidator and GeneralValidatorCDI.
+            // After that we will register our ValidatorContextResolver.
+            Map<?, ?> contextResolvers = Map.class.cast(getDeclaredField(ResteasyProviderFactory.class,
+                    FIELD_CTX_RESOLVERS, true).get(providerFactory));
+            contextResolvers.remove(GeneralValidator.class);
+            contextResolvers.remove(GeneralValidatorCDI.class);
+            LOGGER.info("Removed RESTEasy Validators!!");
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            LOGGER.error("Exception while removing RESTEasy Validators", ex);
+        }
     }
 
     // Lifecycle Methods

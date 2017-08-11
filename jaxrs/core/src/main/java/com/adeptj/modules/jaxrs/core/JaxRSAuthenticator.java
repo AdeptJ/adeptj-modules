@@ -35,9 +35,9 @@ public interface JaxRSAuthenticator {
      * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to further validate the
      * information returned by the implementations.
      *
-     * @param subject  the userId
-     * @param password password of the supplied subject
+     * @param username   the username submitted for authentication
+     * @param password   the password string submitted for authentication
      * @return a validated non null JaxRSAuthenticationInfo instance.
      */
-    JaxRSAuthenticationInfo handleSecurity(String subject, String password);
+    JaxRSAuthenticationInfo handleSecurity(String username, String password);
 }

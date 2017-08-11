@@ -63,17 +63,17 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
 
     private static final String FACTORY_NAME = "AdeptJ JAX-RS AuthenticationInfo Factory";
 
-    private static final String SUB_NULL_MSG = "Subject can't ne null!!";
+    private static final String USERNAME_NULL_MSG = "Username can't ne null!!";
 
     private static final String PWD_NULL_MSG = "Password can't ne null!!";
 
-    private static final String KEY_SUBJECT = "subject";
+    private static final String KEY_USERNAME = "username";
 
     private static final String KEY_PWD = "password";
 
     private Map<String, JaxRSAuthenticationInfo> authInfoMap = new ConcurrentHashMap<>();
 
-    private Map<String, String> pidVsSubjectMappings = new ConcurrentHashMap<>();
+    private Map<String, String> pidVsUserMappings = new ConcurrentHashMap<>();
 
     /**
      * {@inheritDoc}
@@ -95,9 +95,9 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      * {@inheritDoc}
      */
     @Override
-    public JaxRSAuthenticationInfo getAuthenticationInfo(String subject, String password) {
-        JaxRSAuthenticationInfo authInfo = this.authInfoMap.get(subject);
-        if (authInfo != null && StringUtils.equals(authInfo.getSubject(), subject)
+    public JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password) {
+        JaxRSAuthenticationInfo authInfo = this.authInfoMap.get(username);
+        if (authInfo != null && StringUtils.equals(authInfo.getUsername(), username)
                 && Arrays.equals(password.toCharArray(), authInfo.getPassword())) {
             return authInfo;
         }
@@ -109,18 +109,19 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-        String subject = Objects.requireNonNull((String) properties.get(KEY_SUBJECT), SUB_NULL_MSG);
+        String username = Objects.requireNonNull((String) properties.get(KEY_USERNAME), USERNAME_NULL_MSG);
         String password = Objects.requireNonNull((String) properties.get(KEY_PWD), PWD_NULL_MSG);
-        LOGGER.info("Creating JaxRSAuthenticationInfo for Subject: [{}]", subject);
-        if (this.pidVsSubjectMappings.containsKey(pid)) {
+        LOGGER.info("Creating JaxRSAuthenticationInfo for User: [{}]", username);
+        if (this.pidVsUserMappings.containsKey(pid)) {
             // This is an update
-            this.pidVsSubjectMappings.put(pid, subject);
-            this.authInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
-        } else if (!this.pidVsSubjectMappings.containsKey(pid) && this.pidVsSubjectMappings.containsValue(subject)) {
-            LOGGER.warn("Subject: [{}] already present, ignoring this config!!");
-        } else if (!this.pidVsSubjectMappings.containsKey(pid) && !this.pidVsSubjectMappings.containsValue(subject)) {
-            this.pidVsSubjectMappings.put(pid, subject);
-            this.authInfoMap.put(subject, new JaxRSAuthenticationInfo(subject, password.toCharArray()));
+            this.pidVsUserMappings.put(pid, username);
+            this.authInfoMap.put(username, new JaxRSAuthenticationInfo(username, password.toCharArray()));
+        } else if (!this.pidVsUserMappings.containsKey(pid) && this.pidVsUserMappings.containsValue(username)) {
+            LOGGER.warn("User: [{}] already present, ignoring this config!!");
+            throw new ConfigurationException(KEY_USERNAME, "User already present!!");
+        } else if (!this.pidVsUserMappings.containsKey(pid) && !this.pidVsUserMappings.containsValue(username)) {
+            this.pidVsUserMappings.put(pid, username);
+            this.authInfoMap.put(username, new JaxRSAuthenticationInfo(username, password.toCharArray()));
         }
     }
 
@@ -129,8 +130,8 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public void deleted(String pid) {
-        Optional.ofNullable(this.pidVsSubjectMappings.remove(pid)).ifPresent(subject -> {
-            LOGGER.info("JaxRSAuthenticationInfo removed for Subject: [{}]", subject);
+        Optional.ofNullable(this.pidVsUserMappings.remove(pid)).ifPresent(subject -> {
+            LOGGER.info("JaxRSAuthenticationInfo removed for User: [{}]", subject);
             this.authInfoMap.remove(subject);
         });
     }

@@ -19,7 +19,6 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.RequiresJwt;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
