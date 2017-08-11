@@ -21,6 +21,7 @@
 package com.adeptj.modules.jaxrs.core.internal;
 
 
+import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
@@ -28,7 +29,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,13 +62,13 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
                 .orElse(null);
     }
 
-    private JaxRSAuthenticationInfo getAuthInfo(JaxRSAuthenticationRealm realm, String subject, String password) {
+    private JaxRSAuthenticationInfo getAuthInfo(JaxRSAuthenticationRealm realm, String username, String password) {
         JaxRSAuthenticationInfo authInfo = null;
         try {
-            authInfo = realm.getAuthenticationInfo(subject, password);
+            authInfo = realm.getAuthenticationInfo(username, password);
         } catch (Exception ex) {
             // Gulping everything so that next realm as well get a chance.
-            LoggerFactory.getLogger(getClass()).error(ex.getMessage(), ex);
+            Loggers.get(getClass()).error(ex.getMessage(), ex);
         }
         return authInfo;
     }

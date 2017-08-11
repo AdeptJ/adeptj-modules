@@ -35,9 +35,9 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 )
 public @interface JaxRSAuthenticationConfig {
 
-    @AttributeDefinition(name = "JWT Subject", description = "Subject for JWT issuance")
-    String subject();
+    @AttributeDefinition(name = "Username", description = "Username for JWT issuance")
+    String username();
 
-    @AttributeDefinition(name = "JWT Password", description = "Subject's pwd for JWT issuance", type = PASSWORD)
+    @AttributeDefinition(name = "Password", description = "Password of username provided", type = PASSWORD)
     String password();
 }

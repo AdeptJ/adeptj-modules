@@ -42,6 +42,7 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -97,7 +98,7 @@ public class JwtIssuer {
                 if (authInfo == null) {
                     response = Response.status(UNAUTHORIZED).build();
                 } else {
-                    response = Response.ok()
+                    response = Response.status(NO_CONTENT)
                             .header(AUTHORIZATION, this.jwtService.issue(username, authInfo))
                             .build();
                 }

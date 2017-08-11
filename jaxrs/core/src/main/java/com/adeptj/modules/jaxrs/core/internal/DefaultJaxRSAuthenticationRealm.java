@@ -130,9 +130,9 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public void deleted(String pid) {
-        Optional.ofNullable(this.pidVsUserMappings.remove(pid)).ifPresent(subject -> {
-            LOGGER.info("JaxRSAuthenticationInfo removed for User: [{}]", subject);
-            this.authInfoMap.remove(subject);
+        Optional.ofNullable(this.pidVsUserMappings.remove(pid)).ifPresent(username -> {
+            LOGGER.info("JaxRSAuthenticationInfo removed for User: [{}]", username);
+            this.authInfoMap.remove(username);
         });
     }
 
