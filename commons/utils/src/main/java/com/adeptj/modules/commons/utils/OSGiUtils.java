@@ -43,10 +43,6 @@ public final class OSGiUtils {
 
     private static final String PARENTHESIS_CLOSE = ")";
 
-    // No instantiation. Utility methods only.
-    private OSGiUtils() {
-    }
-
     public static Filter filter(BundleContext context, Class<?> objectClass, String filterExpr) {
         try {
             return context.createFilter(new StringBuilder(FILTER_AND)
@@ -81,5 +77,9 @@ public final class OSGiUtils {
 
     public static void unregisterService(ServiceRegistration<?> registration) {
         Optional.ofNullable(registration).ifPresent(ServiceRegistration::unregister);
+    }
+
+    // No instantiation. Utility methods only.
+    private OSGiUtils() {
     }
 }

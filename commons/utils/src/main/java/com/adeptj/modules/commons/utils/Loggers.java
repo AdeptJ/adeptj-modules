@@ -17,35 +17,24 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.resteasy;
 
-import com.adeptj.modules.commons.utils.ClassLoaders;
-import com.adeptj.modules.commons.utils.Loggers;
-import org.hibernate.validator.HibernateValidator;
+package com.adeptj.modules.commons.utils;
 
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * ValidatorFactoryProvider, initializes the HibernateValidatorFactory.
+ * Utility for SLF4J {@link org.slf4j.Logger}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public enum ValidatorFactoryProvider {
+public final class Loggers {
 
-    INSTANCE;
+    public static <T> Logger get(Class<T> type) {
+        return LoggerFactory.getLogger(type);
+    }
 
-    private volatile ValidatorFactory validatorFactory;
-
-    public ValidatorFactory getValidatorFactory() {
-        if (this.validatorFactory == null) {
-            this.validatorFactory = ClassLoaders.executeWith(this.getClass().getClassLoader(), () ->
-                    Validation.byProvider(HibernateValidator.class)
-                            .configure()
-                            .buildValidatorFactory());
-            Loggers.get(this.getClass()).info("Hibernate Validator Initialized!!");
-        }
-        return this.validatorFactory;
+    // Static utility methods, no instances required.
+    private Loggers() {
     }
 }

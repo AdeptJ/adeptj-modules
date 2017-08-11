@@ -28,12 +28,6 @@ package com.adeptj.modules.commons.utils;
 public final class ClassLoaders {
 
     /**
-     * Only static access.
-     */
-    private ClassLoaders() {
-    }
-
-    /**
      * Defines a callback processor for an action which will be executed using the provided class loader.
      *
      * @param <T> the return type of the execute method
@@ -88,4 +82,9 @@ public final class ClassLoaders {
         }
     }
 
+    /**
+     * Only static access.
+     */
+    private ClassLoaders() {
+    }
 }
