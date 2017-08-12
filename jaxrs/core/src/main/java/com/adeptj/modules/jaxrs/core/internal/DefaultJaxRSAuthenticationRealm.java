@@ -97,11 +97,10 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
     @Override
     public JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password) {
         JaxRSAuthenticationInfo authInfo = this.authInfoMap.get(username);
-        if (authInfo != null && StringUtils.equals(authInfo.getUsername(), username)
-                && Arrays.equals(password.toCharArray(), authInfo.getPassword())) {
-            return authInfo;
-        }
-        return null;
+        return authInfo != null
+                && StringUtils.equals(authInfo.getUsername(), username)
+                && Arrays.equals(password.toCharArray(), authInfo.getPassword())
+                ? authInfo : null;
     }
 
     /**
