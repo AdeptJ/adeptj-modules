@@ -79,8 +79,8 @@ public class JwtIssuer {
     /**
      * Issue Jwt to the username with given credentials.
      *
-     * @param username   the username submitted for authentication
-     * @param password   the password string submitted for authentication
+     * @param username the username submitted for authentication
+     * @param password the password string submitted for authentication
      * @return JAX-RS Response either having a Jwt or Http error 503
      */
     @POST
@@ -95,19 +95,17 @@ public class JwtIssuer {
         } else {
             try {
                 JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
-                if (authInfo == null) {
-                    response = Response.status(UNAUTHORIZED).build();
-                } else {
-                    response = Response.status(NO_CONTENT)
-                            .header(AUTHORIZATION, this.jwtService.issue(username, authInfo))
-                            .build();
-                }
+                response = authInfo == null ? Response.status(UNAUTHORIZED).build()
+                        : Response.status(NO_CONTENT)
+                        .header(AUTHORIZATION, this.jwtService.issue(username, authInfo))
+                        .build();
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage(), ex);
                 throw JaxRSException.builder()
                         .message(ex.getMessage())
                         .cause(ex)
                         .status(STATUS_SERVER_ERROR)
+                        .logException(true)
                         .build();
             }
         }

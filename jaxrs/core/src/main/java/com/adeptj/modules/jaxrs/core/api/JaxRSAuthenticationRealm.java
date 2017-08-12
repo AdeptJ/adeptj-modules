@@ -51,8 +51,8 @@ public interface JaxRSAuthenticationRealm {
      * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to validate the information
      * returned by the implementations.
      *
-     * @param username   the username submitted for authentication
-     * @param password   the password string submitted for authentication
+     * @param username the username submitted for authentication
+     * @param password the password string submitted for authentication
      * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
      */
     JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password);

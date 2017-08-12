@@ -21,6 +21,8 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.jaxrs.core.JaxRSException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -37,6 +39,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Provider
 public class JaxRSExceptionHandler implements ExceptionMapper<JaxRSException> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSExceptionHandler.class);
+
     private boolean showException;
 
     JaxRSExceptionHandler(boolean showException) {
@@ -45,6 +49,9 @@ public class JaxRSExceptionHandler implements ExceptionMapper<JaxRSException> {
 
     @Override
     public Response toResponse(JaxRSException exception) {
+        if (exception.isLogException()) {
+            LOGGER.error(exception.getMessage(), exception);
+        }
         String mediaType = exception.getMediaType();
         Object entity = exception.getEntity();
         if (entity == null) {

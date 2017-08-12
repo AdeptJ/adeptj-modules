@@ -38,6 +38,8 @@ public class JaxRSException extends RuntimeException {
 
     private Object entity;
 
+    private boolean logException;
+
     private JaxRSException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -58,6 +60,10 @@ public class JaxRSException extends RuntimeException {
         return entity;
     }
 
+    public boolean isLogException() {
+        return logException;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -76,6 +82,8 @@ public class JaxRSException extends RuntimeException {
         private int status;
 
         private Object entity;
+
+        private boolean logException = true;
 
         private Builder() {
         }
@@ -105,11 +113,17 @@ public class JaxRSException extends RuntimeException {
             return this;
         }
 
+        public Builder logException(boolean logException) {
+            this.logException = logException;
+            return this;
+        }
+
         public JaxRSException build() {
             JaxRSException exception = new JaxRSException(this.message, this.cause);
             exception.status = this.status;
             exception.mediaType = this.mediaType;
             exception.entity = this.entity;
+            exception.logException = this.logException;
             return exception;
         }
     }

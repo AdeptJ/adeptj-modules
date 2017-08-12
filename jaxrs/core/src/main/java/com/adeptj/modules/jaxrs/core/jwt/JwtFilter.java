@@ -31,7 +31,6 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import java.util.Optional;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -56,9 +55,9 @@ public class JwtFilter implements ContainerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
 
     /**
-     * Bearer schema string literal length + 1. "Bearer".length() is 6.
+     * Bearer auth scheme string literal length + 1. "Bearer".length() is 6.
      */
-    private static final int LEN = 7;
+    private static final int SUBSTR_START_POS = 7;
 
     private static final String JWT_COOKIE_NAME = "jwt";
 
@@ -95,12 +94,12 @@ public class JwtFilter implements ContainerRequestFilter {
     }
 
     private String resolveJwt(ContainerRequestContext requestContext) {
-        return Optional.ofNullable(this.resolveFromHeaders(requestContext)).orElseGet(() ->
-                this.resolveFromCookies(requestContext));
+        String jwt = this.resolveFromHeaders(requestContext);
+        return StringUtils.isEmpty(jwt) ? this.resolveFromCookies(requestContext) : jwt;
     }
 
     private String resolveFromHeaders(ContainerRequestContext requestContext) {
-        return StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), LEN);
+        return StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), SUBSTR_START_POS);
     }
 
     private String resolveFromCookies(ContainerRequestContext requestContext) {
