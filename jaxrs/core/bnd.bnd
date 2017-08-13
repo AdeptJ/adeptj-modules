@@ -27,6 +27,9 @@ Export-Package: com.adeptj.modules.jaxrs.core,\
 
 Import-Package: \
   com.fasterxml.jackson.jaxrs.xml,\
+  javax.annotation;\
+  javax.annotation.sql;\
+  javax.annotation.security;version=1.2.0,\
   javax.mail,\
   javax.servlet;\
   javax.servlet.http;\

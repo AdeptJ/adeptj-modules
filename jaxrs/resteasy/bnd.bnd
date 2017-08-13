@@ -38,6 +38,9 @@ Bundle-ClassPath: ., resteasy-jaxrs-3.1.4.Final.jar,\
 
 Import-Package: \
   com.fasterxml.jackson.jaxrs.xml,\
+  javax.annotation;\
+  javax.annotation.sql;\
+  javax.annotation.security;version=1.2.0,\
   javax.mail,\
   javax.servlet;\
   javax.servlet.http;\
