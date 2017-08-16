@@ -23,41 +23,81 @@ package com.adeptj.modules.jaxrs.resteasy;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 
 /**
  * JAX-RS(RESTEasy) configurations.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@ObjectClassDefinition(name = "AdeptJ JAX-RS Core Configuration", description = "Configuration for RESTEasy Framework")
+@ObjectClassDefinition(
+        name = "AdeptJ JAX-RS Core Configuration",
+        description = "Configuration for RESTEasy Framework"
+)
 public @interface JaxRSCoreConfig {
 
     // CorsFilter configs
 
-    @AttributeDefinition(name = "CORS Preflight Max Age", description = "Max age of preflight CORS response")
+    @AttributeDefinition(
+            name = "CORS Preflight Max Age",
+            description = "Max age of preflight CORS response(1 day by default)."
+                    + "[Access-Control-Max-Age] header indicates how long the results of a preflight request can be cached."
+    )
     int corsMaxAge() default 86400; // Indicates that preflight response is good for 86400 seconds or 1 day
 
-    @AttributeDefinition(name = "CORS Allow Credentials", description = "Whether to allow credentials for CORS request")
+    @AttributeDefinition(
+            name = "CORS Allow Credentials",
+            description = "Whether to allow credentials for CORS request. "
+                    + "Value of [Access-Control-Allow-Credentials] header. "
+                    + "Note: When responding to a credentialed request, the server must specify an origin "
+                    + "in the value of the [Access-Control-Allow-Origin] header, "
+                    + "instead of specifying the (*) wildcard."
+    )
     boolean allowCredentials() default true;
 
-    @AttributeDefinition(name = "CORS Allowed Methods", description = "Allowed methods in a CORS request")
+    @AttributeDefinition(
+            name = "CORS Allowed Methods",
+            description = "Allowed methods in a CORS request. "
+                    + "Note: The [Access-Control-Allow-Methods] header specifies the method "
+                    + "or methods allowed when accessing the resource. "
+                    + "This is used in response to a preflight request."
+    )
     String allowedMethods() default "GET,POST,PUT,OPTIONS,HEAD,DELETE";
 
-    @AttributeDefinition(name = "CORS Allowed Headers", description = "Allowed headers in a CORS request")
-    String[] allowedHeaders() default {AUTHORIZATION};
+    @AttributeDefinition(
+            name = "CORS Allowed Headers",
+            description = "Allowed headers in a CORS request. "
+                    + "Note: [Access-Control-Allow-Headers] header is used in response to a preflight "
+                    + "request to indicate which HTTP headers "
+                    + "can be used when making the actual request"
+    )
+    String[] allowedHeaders() default {
+            AUTHORIZATION,
+            CONTENT_TYPE,
+            ACCEPT,
+    };
 
-    @AttributeDefinition(name = "CORS Exposed Headers", description = "Exposed headers in a CORS request")
-    String[] exposedHeaders();
+    @AttributeDefinition(
+            name = "CORS Exposed Headers",
+            description = "This header lets a server whitelist headers that browsers are allowed to access "
+                    + "Value of [Access-Control-Expose-Headers] header."
+    )
+    String[] exposedHeaders() default {};
 
     @AttributeDefinition(
             name = "CORS Allowed Origins",
-            description = "Allowed origins for CORS request, Note: Please don't use * on production systems!"
+            description = "Allowed origins for CORS request, Note: Please don't use (*) on production systems! "
+                    + "Value of [Access-Control-Allow-Origin] header."
     )
     String[] allowedOrigins() default {"*"};
 
     // Common configs
 
-    @AttributeDefinition(name = "Show Exception Message", description = "Whether to show exception message in error response")
-    boolean showException();
+    @AttributeDefinition(
+            name = "Show Exception Message",
+            description = "Whether to show exception message in error response"
+    )
+    boolean showException() default true;
 }
