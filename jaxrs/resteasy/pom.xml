@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-jaxrs-resteasy</artifactId>
-    <version>1.0.6.Final</version>
+    <version>1.0.7.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: RESTEasy</name>
     <description>RESTEasy as JAX-RS implementation</description>
@@ -210,7 +210,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.0.1.Final</version>
+            <version>6.0.2.Final</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

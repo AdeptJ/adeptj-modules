@@ -45,84 +45,87 @@ import static java.lang.invoke.MethodType.methodType;
 @Component(immediate = true, property = "adeptj.osgi.config.listener=OSGiManager")
 public class OSGiManagerConfigListener implements ConfigurationListener {
 
-	private static final String CFG_PWD = "password";
+    private static final String CFG_PWD = "password";
 
-	private static final String METHOD_SET_PASSWORD = "setPassword";
+    private static final String METHOD_SET_PASSWORD = "setPassword";
 
-	private static final String METHOD_GET_INSTANCE = "getInstance";
+    private static final String METHOD_GET_INSTANCE = "getInstance";
 
-	private static final String WEBCONSOLE_PWD_UPDATE_AWARE_CLASS = "com.adeptj.runtime.osgi.WebConsolePasswordUpdateAware";
+    private static final String WEBCONSOLE_PWD_UPDATE_AWARE_CLASS = "com.adeptj.runtime.osgi.WebConsolePasswordUpdateAware";
 
-	private static final String OSGI_MGR_PID = "org.apache.felix.webconsole.internal.servlet.OsgiManager";
+    private static final String OSGI_MGR_PID = "org.apache.felix.webconsole.internal.servlet.OsgiManager";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(OSGiManagerConfigListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OSGiManagerConfigListener.class);
 
-	@Reference
-	private ConfigurationAdmin configAdmin;
-	
-	private MethodHandle setPwdMethodHandle;
+    @Reference
+    private ConfigurationAdmin configAdmin;
 
-	@Override
-	public void configurationEvent(ConfigurationEvent event) {
-		switch (event.getType()) {
-		case ConfigurationEvent.CM_DELETED:
-			String deletedPid = event.getPid();
-			if (OSGI_MGR_PID.equals(deletedPid)) {
-				try {
-					LOGGER.info("Deleting pid: [{}]", deletedPid);
-					this.setPwdMethodHandle.invoke((char[]) null);
-				} catch (Throwable th) { // NOSONAR
-					LOGGER.error("Exception!!", th);
-				}
-			}
-			break;
-		case ConfigurationEvent.CM_UPDATED:
-			String updatedPid = event.getPid();
-			if (OSGI_MGR_PID.equals(updatedPid)) {
-				LOGGER.debug("Handling Configuration update event for pid: [{}]", updatedPid);
-				this.handleOSGiManagerPwd(updatedPid);
-			}
-			break;
-		default:
-		}
-	}
+    private MethodHandle setPwdMethodHandle;
 
-	// LifeCycle methods
+    @Override
+    public void configurationEvent(ConfigurationEvent event) {
+        switch (event.getType()) {
+            case ConfigurationEvent.CM_DELETED:
+                if (OSGI_MGR_PID.equals(event.getPid())) {
+                    try {
+                        LOGGER.info("Deleting pid: [{}]", event.getPid());
+                        this.setPwdMethodHandle.invoke((char[]) null);
+                    } catch (Throwable th) { // NOSONAR
+                        LOGGER.error("Exception!!", th);
+                    }
+                }
+                break;
+            case ConfigurationEvent.CM_UPDATED:
+                String updatedPid = event.getPid();
+                if (OSGI_MGR_PID.equals(updatedPid)) {
+                    LOGGER.debug("Handling Configuration update event for pid: [{}]", updatedPid);
+                    this.handleOSGiManagerPwd(updatedPid);
+                }
+                break;
+            default:
+                LOGGER.warn("Ignoring the ConfigurationEvent type: [{}]", event.getType());
+        }
+    }
 
-	@Activate
-	protected void activate(BundleContext context) throws ClassNotFoundException {
-		this.initSetPwdMethodHandle();
-		this.handleOSGiManagerPwd(OSGI_MGR_PID);
-	}
+    // LifeCycle methods
 
-	private void handleOSGiManagerPwd(String pid) {
-		Dictionary<String, Object> configs;
-		try {
-			Configuration cfg = this.configAdmin.getConfiguration(pid, null);
-			if (cfg == null) {
-				LOGGER.warn("Configuration doesn't exist for pid: [{}]", pid);
-			} else if ((configs = cfg.getProperties()) != null && configs.get(CFG_PWD) != null) {
-				this.setPwdMethodHandle.invoke(((String) configs.get(CFG_PWD)).toCharArray());
-			}
-		} catch (Throwable th) { // NOSONAR
-			LOGGER.error("Exception!!", th);
-		}
-	}
-	
-	private void initSetPwdMethodHandle() {
-		if (this.setPwdMethodHandle == null) {
-			try {
-				// Load from Application class loader which in fact is the parent of OSGi Framework.
-				Class<?> cls = this.getClass()
+    @Activate
+    protected void activate(BundleContext context) throws ClassNotFoundException {
+        this.initSetPwdMethodHandle();
+        this.handleOSGiManagerPwd(OSGI_MGR_PID);
+    }
+
+    private void handleOSGiManagerPwd(String pid) {
+        Dictionary<String, Object> configs;
+        try {
+            Configuration cfg = this.configAdmin.getConfiguration(pid, null);
+            if (cfg == null) {
+                LOGGER.warn("Configuration doesn't exist for pid: [{}]", pid);
+            } else if ((configs = cfg.getProperties()) != null && configs.get(CFG_PWD) != null) {
+                this.setPwdMethodHandle.invoke(((String) configs.get(CFG_PWD)).toCharArray());
+            }
+        } catch (Throwable th) { // NOSONAR
+            LOGGER.error("Exception!!", th);
+        }
+    }
+
+    private void initSetPwdMethodHandle() {
+        if (this.setPwdMethodHandle == null) {
+            try {
+                // Load from Application class loader which in fact is the parent of OSGi Framework.
+                Class<?> cls = this.getClass()
                         .getClassLoader()
                         .getParent()
                         .loadClass(WEBCONSOLE_PWD_UPDATE_AWARE_CLASS);
-				MethodHandles.Lookup lookup = MethodHandles.lookup();
-				this.setPwdMethodHandle = lookup.findVirtual(cls, METHOD_SET_PASSWORD, methodType(void.class, char[].class))
-						.bindTo(lookup.findStatic(cls, METHOD_GET_INSTANCE, methodType(cls)).invoke());
-			} catch (Throwable th) { // NOSONAR
-				LOGGER.error("Exception!!", th);
-			}	
-		}
-	}
+                MethodHandles.Lookup lookup = MethodHandles.lookup();
+                this.setPwdMethodHandle = lookup
+                        .findVirtual(cls, METHOD_SET_PASSWORD, methodType(void.class, char[].class))
+                        .bindTo(lookup
+                                .findStatic(cls, METHOD_GET_INSTANCE, methodType(cls))
+                                .invoke());
+            } catch (Throwable th) { // NOSONAR
+                LOGGER.error("Exception!!", th);
+            }
+        }
+    }
 }
