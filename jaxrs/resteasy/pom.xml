@@ -184,7 +184,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-jaxrs-core</artifactId>
-            <version>1.0.3.Final</version>
+            <version>1.0.4.Final</version>
             <scope>provided</scope>
         </dependency>
 
