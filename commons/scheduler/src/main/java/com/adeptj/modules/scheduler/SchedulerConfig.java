@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,34 +16,27 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-modules</artifactId>
-        <version>1.0.6.Final</version>
-        <relativePath/>
-    </parent>
-    <artifactId>adeptj-modules-commons</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Commons :: Builder</name>
-    <description>AdeptJ Modules :: Commons :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.scheduler;
 
-        <module>utils</module>
-        <!--<module>beanvalidation</module>-->
-        <module>datasource</module>
-        <!--<module>javamail</module>-->
-        <!--<module>logging</module>-->
-        <!--<module>i18n</module>-->
-        <module>scheduler</module>
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-    </modules>
+/**
+ * SchedulerConfig
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@ObjectClassDefinition(
+        name = "AdeptJ Scheduler Configuration",
+        description = "Configuration for Quartz based Scheduler"
+)
+public @interface SchedulerConfig {
 
-</project>
+    @AttributeDefinition(
+            name = "Quartz Scheduler MaxThreads",
+            description = "The number of worker threads in the pool"
+    )
+    int maxThreads() default 10;
+}
