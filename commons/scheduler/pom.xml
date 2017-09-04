@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-commons-scheduler</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Scheduler</name>
     <description>AdeptJ Modules :: Commons :: Scheduler</description>
 
