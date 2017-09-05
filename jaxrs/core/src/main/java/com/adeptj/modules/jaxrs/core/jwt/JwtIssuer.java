@@ -23,10 +23,13 @@ import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +39,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
@@ -52,7 +56,13 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Path("/auth")
-@Component(immediate = true, service = JwtIssuer.class, property = JwtIssuer.RESOURCE_BASE)
+@Designate(ocd = JwtCookieConfig.class)
+@Component(
+        immediate = true,
+        service = JwtIssuer.class,
+        property = JwtIssuer.RESOURCE_BASE,
+        configurationPolicy = ConfigurationPolicy.REQUIRE
+)
 public class JwtIssuer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtIssuer.class);
@@ -62,6 +72,8 @@ public class JwtIssuer {
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
+
+    private JwtCookieConfig config;
 
     @Reference
     private JaxRSAuthenticator authenticator;
@@ -96,9 +108,7 @@ public class JwtIssuer {
             try {
                 JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
                 response = authInfo == null ? Response.status(UNAUTHORIZED).build()
-                        : Response.status(NO_CONTENT)
-                        .header(AUTHORIZATION, this.jwtService.issue(username, authInfo))
-                        .build();
+                        : this.createResponse(username, authInfo);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage(), ex);
                 throw JaxRSException.builder()
@@ -128,6 +138,27 @@ public class JwtIssuer {
                 .build();
     }
 
+    private Response createResponse(String username, JaxRSAuthenticationInfo authInfo) {
+        Response.ResponseBuilder builder = Response.status(NO_CONTENT);
+        String jwt = this.jwtService.issue(username, authInfo);
+        if (this.config.issueAsCookie()) {
+            builder.cookie(this.createJwtCookie(jwt));
+        } else {
+            builder.header(AUTHORIZATION, jwt);
+        }
+        return builder.build();
+    }
+
+    private NewCookie createJwtCookie(String jwt) {
+        return new NewCookie(this.config.name(), jwt,
+                this.config.path(),
+                this.config.domain(),
+                this.config.comment(),
+                this.config.maxAge(),
+                this.config.secure(),
+                this.config.httpOnly());
+    }
+
     // Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
@@ -138,4 +169,8 @@ public class JwtIssuer {
         this.jwtService = null;
     }
 
+    @Activate
+    protected void start(JwtCookieConfig config) {
+        this.config = config;
+    }
 }
