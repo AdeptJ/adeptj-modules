@@ -35,7 +35,7 @@ public @interface JwtCookieConfig {
 
     @AttributeDefinition(
             name = "JWT Cookie Name",
-            description = "Name of the JWT cookie sent to client"
+            description = "Name of the JWT cookie to be sent to client"
     )
     String name() default "jwt";
 
@@ -59,7 +59,7 @@ public @interface JwtCookieConfig {
 
     @AttributeDefinition(
             name = "JWT Cookie Max-Age",
-            description = "Max-Age of JWT cookie"
+            description = "Max-Age of JWT cookie in seconds, by default it's a session cookie"
     )
     int maxAge() default DEFAULT_MAX_AGE;
 
@@ -71,13 +71,7 @@ public @interface JwtCookieConfig {
 
     @AttributeDefinition(
             name = "JWT Cookie Secure",
-            description = "Whether to make JWT cookie as secure i.e. make it available only over Https"
+            description = "Whether to make JWT cookie secure i.e. make it available only over Https"
     )
     boolean secure();
-
-    @AttributeDefinition(
-            name = "JWT As a Cookie",
-            description = "Whether JWT should be sent as a cookie, sent as Authorization header by default"
-    )
-    boolean issueAsCookie();
 }

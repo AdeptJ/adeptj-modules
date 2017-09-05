@@ -57,7 +57,7 @@ public class JwtFilter implements ContainerRequestFilter {
     /**
      * Bearer auth scheme string literal length + 1. "Bearer".length() is 6.
      */
-    private static final int SUBSTR_START_POS = 7;
+    private static final int JWT_START_POS = 7;
 
     private static final String JWT_COOKIE_NAME = "jwt";
 
@@ -99,7 +99,7 @@ public class JwtFilter implements ContainerRequestFilter {
     }
 
     private String resolveFromHeaders(ContainerRequestContext requestContext) {
-        return StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), SUBSTR_START_POS);
+        return StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), JWT_START_POS);
     }
 
     private String resolveFromCookies(ContainerRequestContext requestContext) {

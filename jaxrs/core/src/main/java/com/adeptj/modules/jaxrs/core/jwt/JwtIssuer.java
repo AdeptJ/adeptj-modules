@@ -25,7 +25,6 @@ import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -57,12 +56,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  */
 @Path("/auth")
 @Designate(ocd = JwtCookieConfig.class)
-@Component(
-        immediate = true,
-        service = JwtIssuer.class,
-        property = JwtIssuer.RESOURCE_BASE,
-        configurationPolicy = ConfigurationPolicy.REQUIRE
-)
+@Component(immediate = true, service = JwtIssuer.class, property = JwtIssuer.RESOURCE_BASE)
 public class JwtIssuer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtIssuer.class);
@@ -108,7 +102,7 @@ public class JwtIssuer {
             try {
                 JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
                 response = authInfo == null ? Response.status(UNAUTHORIZED).build()
-                        : this.createResponse(username, authInfo);
+                        : this.createResponseWithJwt(username, authInfo);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage(), ex);
                 throw JaxRSException.builder()
@@ -138,28 +132,24 @@ public class JwtIssuer {
                 .build();
     }
 
-    private Response createResponse(String username, JaxRSAuthenticationInfo authInfo) {
+    private Response createResponseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
         Response.ResponseBuilder builder = Response.status(NO_CONTENT);
         String jwt = this.jwtService.issue(username, authInfo);
-        if (this.config.issueAsCookie()) {
-            builder.cookie(this.createJwtCookie(jwt));
-        } else {
+        if (this.config == null) {
             builder.header(AUTHORIZATION, jwt);
+        } else {
+            builder.cookie(new NewCookie(this.config.name(), jwt,
+                    this.config.path(),
+                    this.config.domain(),
+                    this.config.comment(),
+                    this.config.maxAge(),
+                    this.config.secure(),
+                    this.config.httpOnly()));
         }
         return builder.build();
     }
 
-    private NewCookie createJwtCookie(String jwt) {
-        return new NewCookie(this.config.name(), jwt,
-                this.config.path(),
-                this.config.domain(),
-                this.config.comment(),
-                this.config.maxAge(),
-                this.config.secure(),
-                this.config.httpOnly());
-    }
-
-    // Lifecycle Methods
+    // Component Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
         this.jwtService = jwtService;

@@ -53,6 +53,7 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
     /**
      * {@inheritDoc}
      */
+    @Override
     public JaxRSAuthenticationInfo handleSecurity(String username, String password) {
         return this.realms.stream()
                 .sorted((realmOne, realmTwo) -> Integer.compare(realmTwo.priority(), realmOne.priority()))

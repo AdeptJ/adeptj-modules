@@ -184,7 +184,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         }
     }
 
-    // Lifecycle Methods
+    // Component Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
         this.jwtService = jwtService;

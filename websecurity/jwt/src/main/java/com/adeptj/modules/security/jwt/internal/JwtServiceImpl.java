@@ -140,7 +140,7 @@ public class JwtServiceImpl implements JwtService {
         return verified;
     }
 
-    // LifeCycle Methods
+    // Component Lifecycle Methods
 
     @Activate
     protected void start(JwtConfig jwtConfig) {
