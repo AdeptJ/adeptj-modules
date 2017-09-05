@@ -82,8 +82,9 @@ public class QuartzSchedulerService implements SchedulerService {
     @Activate
     protected void start(SchedulerConfig config) {
         try {
-            DirectSchedulerFactory.getInstance().createVolatileScheduler(config.maxThreads());
-            this.scheduler = DirectSchedulerFactory.getInstance().getScheduler();
+            DirectSchedulerFactory schedulerFactory = DirectSchedulerFactory.getInstance();
+            schedulerFactory.createVolatileScheduler(config.maxThreads());
+            this.scheduler = schedulerFactory.getScheduler();
             this.scheduler.start();
         } catch (SchedulerException ex) {
             LOGGER.error(ex.getMessage(), ex);
