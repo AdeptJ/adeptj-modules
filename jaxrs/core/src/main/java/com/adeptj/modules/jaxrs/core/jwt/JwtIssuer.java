@@ -149,6 +149,24 @@ public class JwtIssuer {
         return builder.build();
     }
 
+    /**
+     * Provides the JWT cookie name configured by this component.
+     */
+    enum JwtCookieNameProvider {
+
+        INSTANCE;
+
+        private String jwtCookieName;
+
+        String getJwtCookieName() {
+            return jwtCookieName;
+        }
+
+        void setJwtCookieName(String jwtCookieName) {
+            this.jwtCookieName = jwtCookieName;
+        }
+    }
+
     // Component Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
@@ -163,23 +181,5 @@ public class JwtIssuer {
     protected void start(JwtCookieConfig config) {
         this.config = config;
         JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.config.name());
-    }
-
-    /**
-     * Provides the JWT cookie name configured by this component.
-     */
-    enum JwtCookieNameProvider {
-
-        INSTANCE;
-
-        String jwtCookieName;
-
-        public String getJwtCookieName() {
-            return jwtCookieName;
-        }
-
-        public void setJwtCookieName(String jwtCookieName) {
-            this.jwtCookieName = jwtCookieName;
-        }
     }
 }
