@@ -74,4 +74,10 @@ public @interface JwtCookieConfig {
             description = "Whether to make JWT cookie secure i.e. make it available only over Https"
     )
     boolean secure();
+
+    @AttributeDefinition(
+            name = "JWT Cookie Configuration Enabled",
+            description = "Whether JWT cookie enabled"
+    )
+    boolean enabled();
 }

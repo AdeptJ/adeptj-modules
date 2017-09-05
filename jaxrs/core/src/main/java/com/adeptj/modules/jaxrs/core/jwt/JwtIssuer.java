@@ -135,9 +135,7 @@ public class JwtIssuer {
     private Response createResponseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
         Response.ResponseBuilder builder = Response.status(NO_CONTENT);
         String jwt = this.jwtService.issue(username, authInfo);
-        if (this.config == null) {
-            builder.header(AUTHORIZATION, jwt);
-        } else {
+        if (this.config.enabled()) {
             builder.cookie(new NewCookie(this.config.name(), jwt,
                     this.config.path(),
                     this.config.domain(),
@@ -145,6 +143,8 @@ public class JwtIssuer {
                     this.config.maxAge(),
                     this.config.secure(),
                     this.config.httpOnly()));
+        } else {
+            builder.header(AUTHORIZATION, jwt);
         }
         return builder.build();
     }
@@ -162,5 +162,24 @@ public class JwtIssuer {
     @Activate
     protected void start(JwtCookieConfig config) {
         this.config = config;
+        JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.config.name());
+    }
+
+    /**
+     * Provides the JWT cookie name configured by this component.
+     */
+    enum JwtCookieNameProvider {
+
+        INSTANCE;
+
+        String jwtCookieName;
+
+        public String getJwtCookieName() {
+            return jwtCookieName;
+        }
+
+        public void setJwtCookieName(String jwtCookieName) {
+            this.jwtCookieName = jwtCookieName;
+        }
     }
 }

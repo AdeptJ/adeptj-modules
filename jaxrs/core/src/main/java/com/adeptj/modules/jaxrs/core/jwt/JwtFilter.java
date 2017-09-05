@@ -103,7 +103,9 @@ public class JwtFilter implements ContainerRequestFilter {
     }
 
     private String resolveFromCookies(ContainerRequestContext requestContext) {
-        Cookie cookie = requestContext.getCookies().get(JWT_COOKIE_NAME);
+        Cookie cookie = requestContext
+                .getCookies()
+                .get(JwtIssuer.JwtCookieNameProvider.INSTANCE.getJwtCookieName());
         String value = null;
         if (cookie != null) {
             value = cookie.getValue();
