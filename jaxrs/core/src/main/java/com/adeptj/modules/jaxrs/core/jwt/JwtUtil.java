@@ -81,13 +81,8 @@ final class JwtUtil {
     }
 
     private static String cleanseJwt(String jwt) {
-        String jwtToCleanse = jwt;
-        boolean trimNeeded = true;
-        if (StringUtils.startsWith(jwtToCleanse, AUTH_SCHEME_BEARER)) {
-            jwtToCleanse = StringUtils.substring(jwtToCleanse, JWT_START_POS);
-            trimNeeded = false;
-        }
-        return trimNeeded ? StringUtils.trim(jwtToCleanse) : jwtToCleanse;
+        return StringUtils.startsWith(jwt, AUTH_SCHEME_BEARER) ?
+                StringUtils.substring(jwt, JWT_START_POS) : StringUtils.trim(jwt);
     }
 
     // Just static utilities, no instance needed.
