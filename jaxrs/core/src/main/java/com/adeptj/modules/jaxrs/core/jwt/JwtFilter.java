@@ -19,30 +19,24 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.security.jwt.JwtService;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * This filter will kick in for any resource method that is annotated with {@link RequiresJwt} annotation.
- * Filter will try to resolve the Jwt first from HTTP Authorization header and if that resolves to null
- * then try to resolve from Cookies(a Cookie named jwt should be present in request).
+ * Filter will try to resolveJwt the Jwt first from HTTP Authorization header and if that resolves to null
+ * then try to resolveJwt from Cookies.
+ * A Cookie named (as per configuration or default jwt) should be present in request.
  * <p>
  * If a non null Jwt is resolved then verify it using {@link JwtService}.
  *
@@ -53,24 +47,11 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 @Provider
 public class JwtFilter implements ContainerRequestFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
-
-    /**
-     * Bearer auth scheme string literal length + 1. "Bearer".length() is 6.
-     */
-    private static final int JWT_START_POS = 7;
-
-    private static final String JWT_COOKIE_NAME = "jwt";
-
-    private static final String AUTH_SCHEME_BEARER = "Bearer";
-
-    private static final String HEADER_SUBJECT = "Subject";
-
     private volatile JwtService jwtService;
 
     public JwtFilter(JwtService jwtService) {
         this.jwtService = jwtService;
-        LOGGER.info("Initialized JwtFilter with JwtService: [{}]", this.jwtService);
+        Loggers.get(JwtFilter.class).info("Initialized JwtFilter with JwtService: [{}]", this.jwtService);
     }
 
     public void setJwtService(JwtService jwtService) {
@@ -80,52 +61,10 @@ public class JwtFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (this.jwtService == null) {
-            LOGGER.warn("Can't verify JWT as JwtService unavailable!");
+            Loggers.get(JwtFilter.class).warn("Can't verify JWT as JwtService unavailable!");
             requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
         } else {
-            this.verifyJwt(requestContext);
+            JwtUtil.handleJwt(requestContext, this.jwtService);
         }
-    }
-
-    private void verifyJwt(ContainerRequestContext requestContext) {
-        String subject = requestContext.getHeaderString(HEADER_SUBJECT);
-        if (StringUtils.isEmpty(subject)) {
-            requestContext.abortWith(Response.status(BAD_REQUEST)
-                    .entity("Http Header [Subject] is missing!!")
-                    .build());
-        } else {
-            String jwt = this.resolveJwt(requestContext);
-            if (StringUtils.isEmpty(jwt)) {
-                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-            } else if (!this.jwtService.verify(subject, jwt)) {
-                requestContext.abortWith(Response.status(FORBIDDEN).build());
-            }
-        }
-    }
-
-    private String resolveJwt(ContainerRequestContext requestContext) {
-        String jwt = this.resolveFromHeaders(requestContext);
-        return StringUtils.isEmpty(jwt) ? this.resolveFromCookies(requestContext) : jwt;
-    }
-
-    private String resolveFromHeaders(ContainerRequestContext requestContext) {
-        return StringUtils.substring(requestContext.getHeaderString(AUTHORIZATION), JWT_START_POS);
-    }
-
-    private String resolveFromCookies(ContainerRequestContext requestContext) {
-        String jwtCookieName = JwtIssuer.JwtCookieNameProvider.INSTANCE.getJwtCookieName();
-        if (StringUtils.isEmpty(jwtCookieName)) {
-            jwtCookieName = JWT_COOKIE_NAME;
-        }
-        Cookie cookie = requestContext.getCookies().get(jwtCookieName);
-        String value = null;
-        if (cookie != null) {
-            value = cookie.getValue();
-            if (StringUtils.startsWith(value, AUTH_SCHEME_BEARER)) {
-                value = StringUtils.substring(value, AUTH_SCHEME_BEARER.length());
-            }
-            value = StringUtils.deleteWhitespace(value);
-        }
-        return value;
     }
 }

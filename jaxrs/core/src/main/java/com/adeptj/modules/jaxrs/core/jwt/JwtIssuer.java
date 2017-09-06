@@ -109,7 +109,7 @@ public class JwtIssuer {
                         .message(ex.getMessage())
                         .cause(ex)
                         .status(STATUS_SERVER_ERROR)
-                        .logException(true)
+                        .logException(false)
                         .build();
             }
         }
