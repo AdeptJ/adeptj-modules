@@ -35,18 +35,16 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
- * Resolves Jwt either from request headers or from cookies only if not found in headers.
+ * Utility resolves Jwt either from request headers or from cookies only if not found in headers
+ * and depending upon the outcome further pass the jwt for verification to {@link JwtService}.
+ * <p>
+ * Also sets response headers as per the situation.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 final class JwtUtil {
 
-    /**
-     * Bearer auth scheme string literal length + 1. "Bearer".length() is 6.
-     */
     private static final int JWT_START_POS = 7;
-
-    private static final String JWT_COOKIE_NAME = "jwt";
 
     private static final String AUTH_SCHEME_BEARER = "Bearer";
 
@@ -74,32 +72,22 @@ final class JwtUtil {
     }
 
     private static String resolveFromHeaders(MultivaluedMap<String, String> headers) {
-        return StringUtils.substring(headers.getFirst(AUTHORIZATION), JWT_START_POS);
+        return cleanseJwt(headers.getFirst(AUTHORIZATION));
     }
 
     private static String resolveFromCookies(Map<String, Cookie> cookies) {
-        Cookie cookie = cookies.get(getJwtCookieName());
-        return cookie == null ? null : parseJwtCookie(cookie);
+        Cookie cookie = cookies.get(JwtIssuer.JwtCookieNameProvider.INSTANCE.getJwtCookieName());
+        return cookie == null ? null : cleanseJwt(cookie.getValue());
     }
 
-    private static String getJwtCookieName() {
-        String jwtCookieName = JwtIssuer.JwtCookieNameProvider.INSTANCE.getJwtCookieName();
-        if (StringUtils.isEmpty(jwtCookieName)) {
-            jwtCookieName = JWT_COOKIE_NAME;
+    private static String cleanseJwt(String jwt) {
+        String jwtToCleanse = jwt;
+        boolean trimNeeded = true;
+        if (StringUtils.startsWith(jwtToCleanse, AUTH_SCHEME_BEARER)) {
+            jwtToCleanse = StringUtils.substring(jwtToCleanse, JWT_START_POS);
+            trimNeeded = false;
         }
-        return jwtCookieName;
-    }
-
-    private static String parseJwtCookie(Cookie cookie) {
-        String value = null;
-        if (cookie != null) {
-            value = cookie.getValue();
-            if (StringUtils.startsWith(value, AUTH_SCHEME_BEARER)) {
-                value = StringUtils.substring(value, AUTH_SCHEME_BEARER.length());
-            }
-            value = StringUtils.deleteWhitespace(value);
-        }
-        return value;
+        return trimNeeded ? StringUtils.trim(jwtToCleanse) : jwtToCleanse;
     }
 
     // Just static utilities, no instance needed.
