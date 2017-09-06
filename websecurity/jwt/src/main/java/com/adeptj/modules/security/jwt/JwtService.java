@@ -33,7 +33,7 @@ public interface JwtService {
      * Issue JWT for given subject using claims information passed as claims.
      *
      * @param subject to whom JWT has to be issued.
-     * @param claims claims map
+     * @param claims  claims map
      * @return JWT signed with the configured key.
      */
     String issue(String subject, Map<String, Object> claims);
@@ -45,4 +45,13 @@ public interface JwtService {
      * @return boolean flag to indicate the result of verification of the jwt claim is successful or not.
      */
     boolean verify(String jwt);
+
+    /**
+     * Verify the passed jwt claim information using configured key.
+     *
+     * @param subject to whom JWT has to be issued.
+     * @param jwt     claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
+     * @return boolean flag to indicate the result of verification of the jwt claim is successful or not.
+     */
+    boolean verify(String subject, String jwt);
 }

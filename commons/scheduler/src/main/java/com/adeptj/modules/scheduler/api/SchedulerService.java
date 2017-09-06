@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.scheduler.api;
 
-import java.time.LocalDateTime;
+import com.adeptj.modules.scheduler.JobContext;
 
 /**
  * SchedulerService.
@@ -29,7 +29,9 @@ import java.time.LocalDateTime;
  */
 public interface SchedulerService {
 
-    void schedule(String cronExpr, Runnable job);
+    void addJob(JobContext jobContext);
 
-    void schedule(LocalDateTime dateTime);
+    void addCronTrigger(String triggerName, String jobName, String cronExpression);
+
+    void addSimpleTrigger(String triggerName, String jobName, int repeatCount, long repeatInterval);
 }

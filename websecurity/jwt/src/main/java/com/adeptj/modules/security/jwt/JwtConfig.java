@@ -65,4 +65,7 @@ public @interface JwtConfig {
 
     @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key")
     boolean useDefaultKey() default true;
+
+    @AttributeDefinition(name = "Max Subject in Cache", description = "Max number of Subjects that reside in the Cache")
+    long maxSubjectEntries() default 100000L;
 }

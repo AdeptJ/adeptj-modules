@@ -20,61 +20,46 @@
 
 package com.adeptj.modules.scheduler.internal;
 
+import com.adeptj.modules.scheduler.JobContext;
 import com.adeptj.modules.scheduler.SchedulerConfig;
 import com.adeptj.modules.scheduler.api.SchedulerService;
+import org.knowm.sundial.SundialJobScheduler;
+import org.knowm.sundial.exceptions.SundialSchedulerException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
-import org.quartz.CronExpression;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerBuilder;
-import org.quartz.impl.DirectSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
-
 /**
- * QuartzSchedulerService
+ * Implementation of service interface {@link SchedulerService}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = SchedulerConfig.class)
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class QuartzSchedulerService implements SchedulerService {
+public class SchedulerServiceImpl implements SchedulerService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QuartzSchedulerService.class);
-
-    private Scheduler scheduler;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerServiceImpl.class);
 
     @Override
-    public void schedule(String cronExpr, Runnable job) {
-        if (!CronExpression.isValidExpression(cronExpr)) {
-            throw new IllegalStateException("Cron expression is invalid!!");
-        }
-        try {
-            this.scheduler.scheduleJob(JobBuilder.newJob()
-                    .ofType(Job.class)
-                    .usingJobData(null)
-                    .build(), TriggerBuilder
-                    .newTrigger()
-                    .withSchedule(CronScheduleBuilder.cronSchedule(cronExpr))
-                    .build());
-        } catch (SchedulerException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex.getMessage(), ex);
-        }
+    public void addJob(JobContext jobContext) {
+        SundialJobScheduler.addJob(jobContext.getJobName(),
+                jobContext.getJobClassName(),
+                jobContext.getParams(),
+                jobContext.isConcurrencyAllowed());
     }
 
     @Override
-    public void schedule(LocalDateTime dateTime) {
+    public void addCronTrigger(String triggerName, String jobName, String cronExpression) {
+        SundialJobScheduler.addCronTrigger(triggerName, jobName, cronExpression);
+    }
 
+    @Override
+    public void addSimpleTrigger(String triggerName, String jobName, int repeatCount, long repeatInterval) {
+        SundialJobScheduler.addSimpleTrigger(triggerName, jobName, repeatCount, repeatInterval);
     }
 
     // Component Lifecycle methods.
@@ -82,21 +67,18 @@ public class QuartzSchedulerService implements SchedulerService {
     @Activate
     protected void start(SchedulerConfig config) {
         try {
-            DirectSchedulerFactory schedulerFactory = DirectSchedulerFactory.getInstance();
-            schedulerFactory.createVolatileScheduler(config.maxThreads());
-            this.scheduler = schedulerFactory.getScheduler();
-            this.scheduler.start();
-        } catch (SchedulerException ex) {
+            SundialJobScheduler.startScheduler(config.maxThreads());
+        } catch (SundialSchedulerException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex.getMessage(), ex);
+            throw ex;
         }
     }
 
     @Deactivate
     protected void stop() {
         try {
-            this.scheduler.shutdown(true);
-        } catch (SchedulerException ex) {
+            SundialJobScheduler.shutdown();
+        } catch (SundialSchedulerException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
     }

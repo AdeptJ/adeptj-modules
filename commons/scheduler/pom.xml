@@ -28,6 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-commons-scheduler</artifactId>
+    <version>1.0.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Scheduler</name>
     <description>AdeptJ Modules :: Commons :: Scheduler</description>
@@ -64,7 +65,8 @@
             </roles>
             <timezone>+5:30</timezone>
             <properties>
-                <picUrl>https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg</picUrl>
+                <picUrl>https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg
+                </picUrl>
             </properties>
         </developer>
     </developers>
@@ -147,9 +149,23 @@
         </dependency>
 
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>2.3.0</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.knowm</groupId>
+            <artifactId>sundial</artifactId>
+            <version>2.1.3</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

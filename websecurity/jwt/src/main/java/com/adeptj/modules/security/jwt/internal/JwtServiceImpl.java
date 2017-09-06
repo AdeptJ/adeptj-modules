@@ -22,6 +22,8 @@ package com.adeptj.modules.security.jwt.internal;
 
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
@@ -47,10 +49,13 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
@@ -96,6 +101,8 @@ public class JwtServiceImpl implements JwtService {
 
     private Key signingKey;
 
+    private Cache<String, List<String>> subjectJwtCache;
+
     /**
      * {@inheritDoc}
      */
@@ -117,7 +124,9 @@ public class JwtServiceImpl implements JwtService {
                         .toInstant()))
                 .setId(UUID.randomUUID().toString());
         this.signWith(jwtBuilder);
-        return AUTH_SCHEME_BEARER + SPACE + jwtBuilder.compact();
+        String jwt = jwtBuilder.compact();
+        this.cacheJwt(subject, jwt);
+        return AUTH_SCHEME_BEARER + SPACE + jwt;
     }
 
     /**
@@ -138,6 +147,38 @@ public class JwtServiceImpl implements JwtService {
             LOGGER.error("Invalid JWT!!", ex);
         }
         return verified;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean verify(String subject, String jwt) {
+        boolean verified = false;
+        try {
+            JwtParser jwtParser = Jwts.parser().requireIssuer(this.jwtConfig.issuer());
+            this.setSigningKey(jwtParser);
+            Jws<Claims> jws = jwtParser.parseClaimsJws(jwt);
+            Claims body = jws.getBody();
+            if (StringUtils.equals(subject, body.getSubject())) {
+                List<String> jwts = this.subjectJwtCache.getIfPresent(subject);
+                if (jwts != null && jwts.contains(jwt)) {
+                    verified = true;
+                }
+            }
+        } catch (RuntimeException ex) {
+            LOGGER.error("Invalid JWT!!", ex);
+        }
+        return verified;
+    }
+
+    private void cacheJwt(String subject, String jwt) {
+        List<String> jwts = this.subjectJwtCache.getIfPresent(subject);
+        if (jwts == null) {
+            jwts = new ArrayList<>();
+            this.subjectJwtCache.put(subject, jwts);
+        }
+        jwts.add(jwt);
     }
 
     // Component Lifecycle Methods
@@ -165,6 +206,11 @@ public class JwtServiceImpl implements JwtService {
             // Let the exception be rethrown so that SCR would not create a service object of this component.
             throw new RuntimeException(ex); // NOSONAR
         }
+        // init Caffeine
+        this.subjectJwtCache = Caffeine.newBuilder()
+                .maximumSize(jwtConfig.maxSubjectEntries())
+                .expireAfterWrite(jwtConfig.expirationTime(), TimeUnit.MINUTES)
+                .build();
     }
 
     private void initAndValidateSigningKey() throws Exception {
