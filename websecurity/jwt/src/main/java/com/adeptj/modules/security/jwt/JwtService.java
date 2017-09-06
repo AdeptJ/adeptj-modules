@@ -41,14 +41,6 @@ public interface JwtService {
     /**
      * Verify the passed jwt claim information using configured key.
      *
-     * @param jwt claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
-     * @return boolean flag to indicate the result of verification of the jwt claim is successful or not.
-     */
-    boolean verify(String jwt);
-
-    /**
-     * Verify the passed jwt claim information using configured key.
-     *
      * @param subject to whom JWT has to be issued.
      * @param jwt     claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
      * @return boolean flag to indicate the result of verification of the jwt claim is successful or not.

@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
@@ -63,6 +64,8 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private static final String AUTH_SCHEME_BEARER = "Bearer";
 
+    private static final String HEADER_SUBJECT = "Subject";
+
     private volatile JwtService jwtService;
 
     public JwtFilter(JwtService jwtService) {
@@ -85,11 +88,18 @@ public class JwtFilter implements ContainerRequestFilter {
     }
 
     private void verifyJwt(ContainerRequestContext requestContext) {
-        String jwt = this.resolveJwt(requestContext);
-        if (StringUtils.isEmpty(jwt)) {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-        } else if (!this.jwtService.verify(jwt)) {
-            requestContext.abortWith(Response.status(FORBIDDEN).build());
+        String subject = requestContext.getHeaderString(HEADER_SUBJECT);
+        if (StringUtils.isEmpty(subject)) {
+            requestContext.abortWith(Response.status(BAD_REQUEST)
+                    .entity("Http Header [Subject] is missing!!")
+                    .build());
+        } else {
+            String jwt = this.resolveJwt(requestContext);
+            if (StringUtils.isEmpty(jwt)) {
+                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            } else if (!this.jwtService.verify(subject, jwt)) {
+                requestContext.abortWith(Response.status(FORBIDDEN).build());
+            }
         }
     }
 
