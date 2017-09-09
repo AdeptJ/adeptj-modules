@@ -86,7 +86,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String ALGO_RSA = "RSA";
 
-    private static final String CURR_DIR = "user.dir";
+    private static final String SYS_PROP_CURRENT_DIR = "user.dir";
 
     private static final String DEFAULT_KEY_FILE = "/default.pem";
 
@@ -203,18 +203,20 @@ public class JwtServiceImpl implements JwtService {
     private Key resolveSigningKey() throws Exception {
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
         // 1. try the jwtConfig provided keyFileLocation
-        String keyFileLocation = System.getProperty(CURR_DIR) + File.separator + this.jwtConfig.keyFileLocation();
+        String keyFileLocation = System.getProperty(SYS_PROP_CURRENT_DIR) +
+                File.separator +
+                this.jwtConfig.keyFileLocation();
         LOGGER.info("Loading Key file from location: [{}]", keyFileLocation);
-        Key key = this.loadFromLocation(keyFactory, keyFileLocation);
+        Key key = this.loadKeyFromLocation(keyFactory, keyFileLocation);
         if (key == null && this.jwtConfig.useDefaultKey()) {
             LOGGER.warn("Couldn't load Key file from location [{}], using the default one!!", keyFileLocation);
             // 2. Use the default one that is embedded with this module.
-            key = this.loadDefault(keyFactory);
+            key = this.loadDefaultKey(keyFactory);
         }
         return key;
     }
 
-    private Key loadDefault(KeyFactory keyFactory) {
+    private Key loadDefaultKey(KeyFactory keyFactory) {
         Key key = null;
         try (InputStream inputStream = JwtServiceImpl.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
             key = this.generatePrivateKey(keyFactory, inputStream);
@@ -224,25 +226,26 @@ public class JwtServiceImpl implements JwtService {
         return key;
     }
 
-    private Key loadFromLocation(KeyFactory keyFactory, String keyFileLocation) throws Exception {
+    private Key loadKeyFromLocation(KeyFactory keyFactory, String keyFileLocation) throws Exception {
         Key key = null;
         try (FileInputStream inputStream = new FileInputStream(keyFileLocation)) {
             key = this.generatePrivateKey(keyFactory, inputStream);
         } catch (FileNotFoundException ex) {
-            // Gulp it. Load the embedded one next.
+            // Gulp it. Try to load the embedded one next.
         }
         return key;
     }
 
-    private Key generatePrivateKey(KeyFactory keyFactory, InputStream is) throws Exception {
-        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder().decode(this.bytes(is))));
+    private Key generatePrivateKey(KeyFactory keyFactory, InputStream stream) throws Exception {
+        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(this.encodedKey(stream)));
     }
 
-    private byte[] bytes(InputStream is) throws IOException {
-        return IOUtils.toString(is, UTF8)
+    private byte[] encodedKey(InputStream stream) throws IOException {
+        return Base64.getDecoder().decode(IOUtils.toString(stream, UTF8)
                 .replace(KEY_HEADER, EMPTY)
                 .replace(KEY_FOOTER, EMPTY)
-                .replaceAll(REGEX_SPACE, EMPTY).getBytes(UTF8);
+                .replaceAll(REGEX_SPACE, EMPTY)
+                .getBytes(UTF8));
     }
 
     private void signWith(JwtBuilder jwtBuilder) {

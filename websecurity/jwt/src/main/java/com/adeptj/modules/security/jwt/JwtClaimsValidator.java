@@ -23,10 +23,10 @@ package com.adeptj.modules.security.jwt;
 import java.util.Map;
 
 /**
- * Service interface for validating the JWT payload a.k.a JWT claims(Registered as well as public).
+ * Service interface for validating the JWT claims(Registered as well as public).
  * <p>
  * This is injected as an optional service in {@link JwtService} therefore the claims are only
- * validated if an implementation of {@link JwtClaimsValidator} is provided.
+ * validated if an implementation of {@link JwtClaimsValidator} is available in OSGi service registry.
  * <p>
  * Callers should inspect the claims passed and validate claims values as per their need,
  * if everything is fine then must return true otherwise false.
