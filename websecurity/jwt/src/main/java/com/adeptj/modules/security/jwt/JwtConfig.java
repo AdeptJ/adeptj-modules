@@ -39,7 +39,7 @@ public @interface JwtConfig {
     String signingKey();
 
     @AttributeDefinition(
-            name = "Private Key File Location",
+            name = "RSA Private Key(PEM Format) File Location",
             description = "Location of Private Key file for JWT signing, relative to current working directory, " +
                     "Note: Please don't use the default Key file in production environment!")
     String keyFileLocation() default "adeptj-runtime/deployment/default.pem";
@@ -48,20 +48,20 @@ public @interface JwtConfig {
             name = "JWT Signature Algorithm",
             description = "Signature Algorithm for JWT signing, only RSA and Hmac with SHA are supported at this moment.",
             options = {
-                    @Option(label = "RS256", value = "RS256"),
-                    @Option(label = "RS384", value = "RS384"),
-                    @Option(label = "RS512", value = "RS512"),
-                    @Option(label = "HS256", value = "HS256"),
-                    @Option(label = "HS384", value = "HS384"),
-                    @Option(label = "HS512", value = "HS512"),
+                    @Option(label = "RSA 256", value = "RS256"),
+                    @Option(label = "RSA 384", value = "RS384"),
+                    @Option(label = "RSA 512", value = "RS512"),
+                    @Option(label = "HMAC SHA256", value = "HS256"),
+                    @Option(label = "HMAC SHA384", value = "HS384"),
+                    @Option(label = "HMAC SHA512", value = "HS512"),
             })
     String signatureAlgo();
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
-    String issuer() default "AdeptJ Runtime JWT Issuer";
+    String issuer() default "AdeptJ Runtime";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
-    long expirationTime() default 30L;
+    long expirationTime() default 720L;
 
     @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key")
     boolean useDefaultKey() default true;
