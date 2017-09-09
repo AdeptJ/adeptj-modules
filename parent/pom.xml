@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-parent</artifactId>
-        <version>1.0.10.Final</version>
+        <version>1.0.11.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules</artifactId>
