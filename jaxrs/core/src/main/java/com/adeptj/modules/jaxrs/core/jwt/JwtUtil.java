@@ -25,9 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.util.Map;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -67,17 +65,19 @@ final class JwtUtil {
     }
 
     private static String resolveJwt(ContainerRequestContext requestContext) {
-        String jwt = resolveFromHeaders(requestContext.getHeaders());
-        return StringUtils.isEmpty(jwt) ? resolveFromCookies(requestContext.getCookies()) : jwt;
+        String jwt = resolveFromHeaders(requestContext);
+        return StringUtils.isEmpty(jwt) ? resolveFromCookies(requestContext) : jwt;
     }
 
-    private static String resolveFromHeaders(MultivaluedMap<String, String> headers) {
-        return cleanseJwt(headers.getFirst(AUTHORIZATION));
+    private static String resolveFromHeaders(ContainerRequestContext requestContext) {
+        return cleanseJwt(requestContext.getHeaders().getFirst(AUTHORIZATION));
     }
 
-    private static String resolveFromCookies(Map<String, Cookie> cookies) {
-        Cookie cookie = cookies.get(JwtIssuer.JwtCookieNameProvider.INSTANCE.getJwtCookieName());
-        return cookie == null ? null : cleanseJwt(cookie.getValue());
+    private static String resolveFromCookies(ContainerRequestContext requestContext) {
+        Cookie jwtCookie = requestContext
+                .getCookies()
+                .get(JwtIssuer.JwtCookieNameProvider.INSTANCE.getJwtCookieName());
+        return jwtCookie == null ? null : cleanseJwt(jwtCookie.getValue());
     }
 
     private static String cleanseJwt(String jwt) {
