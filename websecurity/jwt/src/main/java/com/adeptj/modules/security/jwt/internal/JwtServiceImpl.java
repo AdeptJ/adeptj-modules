@@ -20,8 +20,11 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
+import com.adeptj.modules.security.jwt.JwtClaimsValidator;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -30,6 +33,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +92,10 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String KEY_INIT_FAIL_MSG = "Couldn't initialize the SigningKey!!";
 
+    private static final String BIND_JWT_CLAIMS_VALIDATOR_SERVICE = "bindJwtClaimsValidator";
+
+    private static final String UNBIND_JWT_CLAIMS_VALIDATOR_SERVICE = "unbindJwtClaimsValidator";
+
     private JwtConfig jwtConfig;
 
     private String base64EncodedSigningKey;
@@ -94,15 +104,25 @@ public class JwtServiceImpl implements JwtService {
 
     private Key signingKey;
 
+    // As per Felix SCR, dynamic references should be declared as volatile.
+    @Reference(
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            bind = BIND_JWT_CLAIMS_VALIDATOR_SERVICE,
+            unbind = UNBIND_JWT_CLAIMS_VALIDATOR_SERVICE
+    )
+    private volatile JwtClaimsValidator jwtClaimsValidator;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String issue(String subject, Map<String, Object> claims) {
         // Lets first set the claims, we don't want callers to act smart and pass the default claims parameters
-        // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced with the new ones
-        // provided in the payload which is not the intended behaviour. Default claims parameters should come from
-        // JwtConfig and others can be generated at execution time such as "iat", "exp", "jti" etc.
+        // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced when the same ones
+        // provided in the payload which is not the intended behaviour.
+        // Default claims parameters should come from JwtConfig and others can be generated at execution time
+        // such as "iat", "exp", "jti" etc.
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setClaims(claims)
                 .setHeaderParam(TYPE, JWT_TYPE)
@@ -129,8 +149,10 @@ public class JwtServiceImpl implements JwtService {
                     .requireIssuer(this.jwtConfig.issuer())
                     .requireSubject(subject);
             this.setSigningKey(jwtParser);
-            jwtParser.parseClaimsJws(jwt);
-            verified = true;
+            Jws<Claims> claimsJws = jwtParser.parseClaimsJws(jwt);
+            verified = !this.jwtConfig.validateClaims() ||
+                    this.jwtClaimsValidator == null ||
+                    this.jwtClaimsValidator.validate(claimsJws.getBody());
         } catch (RuntimeException ex) {
             LOGGER.error("Invalid JWT!!", ex);
         }
@@ -138,6 +160,14 @@ public class JwtServiceImpl implements JwtService {
     }
 
     // Component Lifecycle Methods
+
+    protected void bindJwtClaimsValidator(JwtClaimsValidator jwtClaimsValidator) {
+        this.jwtClaimsValidator = jwtClaimsValidator;
+    }
+
+    protected void unbindJwtClaimsValidator(JwtClaimsValidator jwtClaimsValidator) {
+        this.jwtClaimsValidator = null;
+    }
 
     @Activate
     protected void start(JwtConfig jwtConfig) {
