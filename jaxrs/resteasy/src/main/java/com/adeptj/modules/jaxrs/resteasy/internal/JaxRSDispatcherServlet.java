@@ -21,6 +21,7 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
+import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.core.jwt.JwtFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
@@ -41,7 +42,6 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -79,8 +79,6 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
                 HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + RESTEASY_SERVLET_MAPPING_PREFIX + MAPPING_PREFIX_VALUE
         })
 public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDispatcherServlet.class);
 
     private static final long serialVersionUID = -4415966373465265279L;
 
@@ -130,8 +128,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        long startTime = System.nanoTime();
-        LOGGER.info("Initializing JaxRSDispatcherServlet!!");
+        final long startTime = System.nanoTime();
+        final Logger logger = Loggers.get(JaxRSDispatcherServlet.class);
+        logger.info("Initializing JaxRSDispatcherServlet!!");
         // Use Bundle ClassLoader as the context ClassLoader because we need to find the providers specified
         // in the file [META-INF/services/javax.ws.rs.Providers] file which will not be visible to the original
         // context ClassLoader which is the application class loader in fact.
@@ -141,7 +140,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
-                this.removeValidators(providerFactory);
+                this.removeDefaultValidators(providerFactory, logger);
                 this.jwtFilter = new JwtFilter(this.jwtService);
                 providerFactory.register(ValidatorContextResolver.class)
                         .register(new JaxRSCorsFeature(this.config))
@@ -150,9 +149,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                         .register(new JaxRSExceptionHandler(this.config.showException()));
                 this.openProviderServiceTracker(this.context, providerFactory);
                 this.openResourceServiceTracker(this.context, dispatcher.getRegistry());
-                LOGGER.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
+                logger.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
-                LOGGER.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
+                logger.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
                 throw new JaxRSInitializationException(ex.getMessage(), ex);
             }
         });
@@ -170,7 +169,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         this.providerTracker.open();
     }
 
-    private void removeValidators(ResteasyProviderFactory providerFactory) {
+    private void removeDefaultValidators(ResteasyProviderFactory providerFactory, Logger logger) {
         try {
             // First remove the default RESTEasy GeneralValidator and GeneralValidatorCDI.
             // After that we will register our ValidatorContextResolver.
@@ -178,9 +177,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                     FIELD_CTX_RESOLVERS, true).get(providerFactory));
             contextResolvers.remove(GeneralValidator.class);
             contextResolvers.remove(GeneralValidatorCDI.class);
-            LOGGER.info("Removed RESTEasy Validators!!");
+            logger.info("Removed RESTEasy Validators!!");
         } catch (IllegalArgumentException | IllegalAccessException ex) {
-            LOGGER.error("Exception while removing RESTEasy Validators", ex);
+            logger.error("Exception while removing RESTEasy Validators", ex);
         }
     }
 

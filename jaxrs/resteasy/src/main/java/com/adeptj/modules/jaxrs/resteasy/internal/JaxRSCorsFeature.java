@@ -20,9 +20,9 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
@@ -64,7 +64,7 @@ public class JaxRSCorsFeature implements Feature {
         corsFilter.setExposedHeaders(Arrays.stream(this.config.exposedHeaders()).collect(joining(DELIMITER)));
         corsFilter.getAllowedOrigins().addAll(Arrays.stream(this.config.allowedOrigins()).collect(toSet()));
         context.register(corsFilter);
-        LoggerFactory.getLogger(JaxRSCorsFeature.class).info("RESTEasy CorsFilter Configured Successfully!!");
+        Loggers.get(JaxRSCorsFeature.class).info("RESTEasy CorsFilter Configured Successfully!!");
         // Must return true to get this Feature enabled.
         return true;
     }
