@@ -29,6 +29,7 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
@@ -118,6 +119,7 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String issue(String subject, Map<String, Object> claims) {
+        Assert.hasText(subject, "Subject can't be null or empty!!");
         // Lets first set the claims, we don't want callers to act smart and pass the default claims parameters
         // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced when the same ones
         // provided in the payload which is not the intended behaviour.
@@ -145,6 +147,8 @@ public class JwtServiceImpl implements JwtService {
     public boolean verify(String subject, String jwt) {
         boolean verified = false;
         try {
+            Assert.hasText(subject, "Subject can't be null or empty!!");
+            Assert.hasText(subject, "JWT can't be null or empty!!");
             JwtParser jwtParser = Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
                     .requireSubject(subject);
@@ -154,7 +158,11 @@ public class JwtServiceImpl implements JwtService {
                     this.jwtClaimsValidator == null ||
                     this.jwtClaimsValidator.validate(claimsJws.getBody());
         } catch (RuntimeException ex) {
-            LOGGER.error("Invalid JWT!!", ex);
+            if (this.jwtConfig.printJwtExceptionTrace()) {
+                LOGGER.error("Invalid JWT!!", ex);
+            } else {
+                LOGGER.error(ex.getMessage());
+            }
         }
         return verified;
     }

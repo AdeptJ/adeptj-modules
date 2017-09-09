@@ -68,4 +68,7 @@ public @interface JwtConfig {
 
     @AttributeDefinition(name = "Validate JWT Claims", description = "Whether to validate the JWT claims")
     boolean validateClaims();
+
+    @AttributeDefinition(name = "Print JwtException Trace", description = "Whether to print JwtException Trace")
+    boolean printJwtExceptionTrace() default true;
 }
