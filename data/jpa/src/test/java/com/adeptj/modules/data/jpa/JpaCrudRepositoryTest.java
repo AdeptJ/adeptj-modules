@@ -25,6 +25,7 @@ import com.adeptj.modules.data.jpa.entity.User;
 import com.adeptj.modules.data.jpa.internal.EclipseLinkCrudRepository;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.persistence.EntityManagerFactory;
@@ -37,6 +38,7 @@ import java.util.List;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@Ignore
 public class JpaCrudRepositoryTest {
 
     private static EntityManagerFactory emf;

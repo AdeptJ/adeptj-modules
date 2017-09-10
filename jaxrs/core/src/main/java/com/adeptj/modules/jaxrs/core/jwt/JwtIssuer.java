@@ -98,7 +98,7 @@ public class JwtIssuer {
                              @NotNull @FormParam("password") String password) {
         Response response;
         if (this.jwtService == null) {
-            LOGGER.warn("Can't issue token as JwtService unavailable!");
+            LOGGER.warn("Can't issue JWT as JwtService unavailable!");
             response = Response.status(SERVICE_UNAVAILABLE).build();
         } else {
             try {
@@ -129,7 +129,7 @@ public class JwtIssuer {
     @Path("/jwt/verify")
     @RequiresJwt
     public Response verifyJwt() {
-        return Response.ok("JWT is valid!!")
+        return Response.ok("JWT verified successfully!!")
                 .type(TEXT_PLAIN)
                 .build();
     }
