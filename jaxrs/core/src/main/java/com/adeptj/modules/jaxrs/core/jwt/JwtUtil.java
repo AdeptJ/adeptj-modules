@@ -49,20 +49,20 @@ final class JwtUtil {
 
     private static final String HEADER_SUBJECT = "Subject";
 
-    static void handleJwt(ContainerRequestContext context, JwtService jwtService) {
-        String subject = context.getHeaderString(HEADER_SUBJECT);
+    static void handleJwt(ContainerRequestContext requestContext, JwtService jwtService) {
+        String subject = requestContext.getHeaderString(HEADER_SUBJECT);
         if (StringUtils.isEmpty(subject)) {
-            context.abortWith(Response.status(BAD_REQUEST)
+            requestContext.abortWith(Response.status(BAD_REQUEST)
                     .entity("Request missing [Subject] header!!")
                     .type(TEXT_PLAIN)
                     .build());
-        } else {
-            String jwt = resolveJwt(context);
-            if (StringUtils.isEmpty(jwt)) {
-                context.abortWith(Response.status(UNAUTHORIZED).build());
-            } else if (!jwtService.verify(subject, jwt)) {
-                context.abortWith(Response.status(FORBIDDEN).build());
-            }
+            return;
+        }
+        String jwt = resolveJwt(requestContext);
+        if (StringUtils.isEmpty(jwt)) {
+            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+        } else if (!jwtService.verify(subject, jwt)) {
+            requestContext.abortWith(Response.status(FORBIDDEN).build());
         }
     }
 
