@@ -91,10 +91,11 @@ public class JaxRSProviders implements ServiceTrackerCustomizer<Object, Object> 
 
     private void removeProvider(Object provider) {
         try {
-            Set.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, true)
+            if (Set.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, true)
                     .get(this.providerFactory))
-                    .remove(provider);
-            LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
+                    .remove(provider)) {
+                LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
+            }
         } catch (IllegalArgumentException | IllegalAccessException ex) {
             LOGGER.error("Exception while removing JAX-RS Provider!!", ex);
         }

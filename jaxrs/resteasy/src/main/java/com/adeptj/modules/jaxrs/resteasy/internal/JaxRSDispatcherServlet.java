@@ -45,6 +45,7 @@ import java.util.Map;
 
 import static com.adeptj.modules.commons.utils.OSGiUtils.anyServiceFilter;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
+import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.EQ;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.JAXRS_DISPATCHER_SERVLET_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.MAPPING_PREFIX_VALUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.SERVLET_PATTERN_VALUE;
@@ -67,10 +68,10 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
 @Designate(ocd = JaxRSCoreConfig.class)
 @Component(immediate = true, service = Servlet.class, configurationPolicy = REQUIRE,
         property = {
-                HTTP_WHITEBOARD_SERVLET_NAME + JAXRS_DISPATCHER_SERVLET_NAME,
-                HTTP_WHITEBOARD_SERVLET_PATTERN + SERVLET_PATTERN_VALUE,
-                HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED + ASYNC_SUPPORTED_TRUE,
-                HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + RESTEASY_SERVLET_MAPPING_PREFIX + MAPPING_PREFIX_VALUE
+                HTTP_WHITEBOARD_SERVLET_NAME + EQ + JAXRS_DISPATCHER_SERVLET_NAME,
+                HTTP_WHITEBOARD_SERVLET_PATTERN + EQ + SERVLET_PATTERN_VALUE,
+                HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED + EQ + ASYNC_SUPPORTED_TRUE,
+                HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + RESTEASY_SERVLET_MAPPING_PREFIX + EQ + MAPPING_PREFIX_VALUE
         })
 public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
@@ -84,13 +85,15 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private static final String INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
 
-    static final String JAXRS_DISPATCHER_SERVLET_NAME = "=AdeptJ JAX-RS DispatcherServlet";
+    static final String EQ = "=";
 
-    static final String SERVLET_PATTERN_VALUE = "=/*";
+    static final String JAXRS_DISPATCHER_SERVLET_NAME = "AdeptJ JAX-RS DispatcherServlet";
 
-    static final String ASYNC_SUPPORTED_TRUE = "=true";
+    static final String SERVLET_PATTERN_VALUE = "/*";
 
-    static final String MAPPING_PREFIX_VALUE = "=/";
+    static final String ASYNC_SUPPORTED_TRUE = "true";
+
+    static final String MAPPING_PREFIX_VALUE = "/";
 
     private ServiceTracker<Object, Object> resourceTracker;
 
