@@ -30,13 +30,13 @@ import java.util.Map;
 public interface JwtService {
 
     /**
-     * Issue JWT for given subject using claims information passed as claims.
+     * Issue JWT for given subject with claims information passed.
      *
      * @param subject to whom JWT has to be issued.
-     * @param claims  claims map
+     * @param claims  Caller supplied JWT claims map
      * @return JWT signed with the configured key.
      */
-    String issue(String subject, Map<String, Object> claims);
+    String issueJwt(String subject, Map<String, Object> claims);
 
     /**
      * Verify the passed jwt claim information using configured key.
@@ -46,5 +46,5 @@ public interface JwtService {
      * @return A boolean indicating {@link JwtService} was able to parse the JWT or not, a false should be treated as
      * an indication of failure so that caller can take action accordingly, such has setting 403 status.
      */
-    boolean verify(String subject, String jwt);
+    boolean verifyJwt(String subject, String jwt);
 }

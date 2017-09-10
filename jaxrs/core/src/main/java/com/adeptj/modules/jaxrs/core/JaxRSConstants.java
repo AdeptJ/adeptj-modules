@@ -31,6 +31,8 @@ public final class JaxRSConstants {
 
     public static final int STATUS_SERVER_ERROR = 500;
 
+    public static final String AUTH_SCHEME_BEARER = "Bearer";
+
     // Just declaring constants, no instances required.
     private JaxRSConstants() {
     }

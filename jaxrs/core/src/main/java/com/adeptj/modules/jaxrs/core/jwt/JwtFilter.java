@@ -39,9 +39,9 @@ import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 
 /**
  * This filter will kick in for any resource method that is annotated with {@link RequiresJwt} annotation.
- * Filter will try to resolveJwt the Jwt first from HTTP Authorization header and if that resolves to null
- * then try to resolveJwt from Cookies.
- * A Cookie named (as per configuration or default jwt) should be present in request.
+ * Filter will try to resolve the Jwt first from HTTP Authorization header and if that resolves to null
+ * then try to resolve from Cookies.
+ * A Cookie named as per configuration should be present in request.
  * <p>
  * If a non null Jwt is resolved then verify it using {@link JwtService}.
  *
@@ -78,9 +78,9 @@ public class JwtFilter implements ContainerRequestFilter {
         if (this.jwtService == null) {
             Loggers.get(JwtFilter.class).warn("Can't verify JWT as JwtService unavailable!");
             requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
-        } else {
-            JwtUtil.handleJwt(requestContext, this.jwtService);
+            return;
         }
+        JwtUtil.handleJwt(requestContext, this.jwtService);
     }
 
     // JwtService lifecycle methods

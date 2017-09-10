@@ -27,6 +27,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -45,8 +46,6 @@ final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
 
-    private static final String AUTH_SCHEME_BEARER = "Bearer";
-
     private static final String HEADER_SUBJECT = "Subject";
 
     static void handleJwt(ContainerRequestContext requestContext, JwtService jwtService) {
@@ -61,7 +60,7 @@ final class JwtUtil {
         String jwt = resolveJwt(requestContext);
         if (StringUtils.isEmpty(jwt)) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-        } else if (!jwtService.verify(subject, jwt)) {
+        } else if (!jwtService.verifyJwt(subject, jwt)) {
             requestContext.abortWith(Response.status(FORBIDDEN).build());
         }
     }

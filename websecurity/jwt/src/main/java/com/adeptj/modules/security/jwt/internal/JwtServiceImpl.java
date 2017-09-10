@@ -61,7 +61,6 @@ import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
 import static io.jsonwebtoken.SignatureAlgorithm.RS256;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -74,8 +73,6 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
-
-    private static final String AUTH_SCHEME_BEARER = "Bearer";
 
     private static final String UTF8 = "UTF-8";
 
@@ -118,7 +115,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public String issue(String subject, Map<String, Object> claims) {
+    public String issueJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be null or empty!!");
         // Lets first set the claims, we don't want callers to act smart and pass the default claims parameters
         // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced when the same ones
@@ -137,14 +134,14 @@ public class JwtServiceImpl implements JwtService {
                         .atZone(ZoneId.systemDefault())
                         .toInstant()));
         this.signWith(jwtBuilder);
-        return AUTH_SCHEME_BEARER + SPACE + jwtBuilder.compact();
+        return jwtBuilder.compact();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean verify(String subject, String jwt) {
+    public boolean verifyJwt(String subject, String jwt) {
         boolean verified = false;
         try {
             Assert.hasText(subject, "Subject can't be null or empty!!");
@@ -158,7 +155,7 @@ public class JwtServiceImpl implements JwtService {
                     this.jwtClaimsValidator != null && this.jwtClaimsValidator.validate(claimsJws.getBody());
         } catch (RuntimeException ex) {
             if (this.jwtConfig.printJwtExceptionTrace()) {
-                LOGGER.error("Invalid JWT!!", ex);
+                LOGGER.error(ex.getMessage(), ex);
             } else {
                 LOGGER.error(ex.getMessage());
             }

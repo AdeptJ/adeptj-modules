@@ -41,6 +41,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -48,6 +49,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
  * JAX-RS resource for issuance and verification of JWT.
@@ -134,7 +136,7 @@ public class JwtIssuer {
 
     private Response createResponseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
         Response.ResponseBuilder builder = Response.status(NO_CONTENT);
-        String jwt = this.jwtService.issue(username, authInfo);
+        String jwt = this.jwtService.issueJwt(username, authInfo);
         if (this.config.enabled()) {
             builder.cookie(new NewCookie(this.config.name(), jwt,
                     this.config.path(),
@@ -144,7 +146,7 @@ public class JwtIssuer {
                     this.config.secure(),
                     this.config.httpOnly()));
         } else {
-            builder.header(AUTHORIZATION, jwt);
+            builder.header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
         }
         return builder.build();
     }
