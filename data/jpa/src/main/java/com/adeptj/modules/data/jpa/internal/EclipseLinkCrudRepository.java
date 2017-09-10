@@ -182,7 +182,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             txn = em.getTransaction();
             txn.begin();
             TypedQuery<T> typedQuery = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
-            this.setPosParams(typedQuery, crudDTO.getPosParams());
+            this.setPositionalParams(typedQuery, crudDTO.getPosParams());
             int rowsDeleted = typedQuery.executeUpdate();
             txn.commit();
             LOGGER.info("deleteByJpaNamedQuery: No. of rows deleted: {}", rowsDeleted);
@@ -345,7 +345,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
-            this.setPosParams(query, posParams);
+            this.setPositionalParams(query, posParams);
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -364,7 +364,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             Query query = em.createNamedQuery(namedQuery);
-            this.setPosParams(query, posParams);
+            this.setPositionalParams(query, posParams);
             return (List<T>) query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -419,7 +419,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            this.setPosParams(query, crudDTO.getPosParams());
+            this.setPositionalParams(query, crudDTO.getPosParams());
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -437,7 +437,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> typedQuery = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            this.setPosParams(typedQuery, crudDTO.getPosParams());
+            this.setPositionalParams(typedQuery, crudDTO.getPosParams());
             typedQuery.setFirstResult(crudDTO.getStartPos());
             typedQuery.setMaxResults(crudDTO.getMaxResult());
             return typedQuery.getResultList();
@@ -479,7 +479,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             Query query = em.createNativeQuery(nativeSql, mapping);
-            this.setPosParams(query, posParams);
+            this.setPositionalParams(query, posParams);
             return (List<T>) query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -497,7 +497,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createQuery(jpaQuery, resultClass);
-            this.setPosParams(query, posParams);
+            this.setPositionalParams(query, posParams);
             return query.getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -540,7 +540,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> typedQuery = em.createNamedQuery(namedQuery, resultClass);
-            this.setPosParams(typedQuery, posParams);
+            this.setPositionalParams(typedQuery, posParams);
             return typedQuery.getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -640,7 +640,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * @param query     the JPA Query
      * @param posParams positional parameters
      */
-    private void setPosParams(Query query, List<Object> posParams) {
+    private void setPositionalParams(Query query, List<Object> posParams) {
         Objects.requireNonNull(posParams, "Positional Parameters cannot be null!!");
         AtomicInteger posParamCounter = new AtomicInteger();
         posParams.forEach(param -> query.setParameter(posParamCounter.incrementAndGet(), param));

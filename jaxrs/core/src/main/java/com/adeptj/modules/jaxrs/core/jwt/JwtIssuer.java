@@ -96,26 +96,23 @@ public class JwtIssuer {
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response issueJwt(@NotNull @FormParam("username") String username,
                              @NotNull @FormParam("password") String password) {
-        Response response;
         if (this.jwtService == null) {
             LOGGER.warn("Can't issue JWT as JwtService unavailable!");
-            response = Response.status(SERVICE_UNAVAILABLE).build();
-        } else {
-            try {
-                JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
-                response = authInfo == null ? Response.status(UNAUTHORIZED).build()
-                        : this.createResponseWithJwt(username, authInfo);
-            } catch (Exception ex) {
-                LOGGER.error(ex.getMessage(), ex);
-                throw JaxRSException.builder()
-                        .message(ex.getMessage())
-                        .cause(ex)
-                        .status(STATUS_SERVER_ERROR)
-                        .logException(false)
-                        .build();
-            }
+            return Response.status(SERVICE_UNAVAILABLE).build();
         }
-        return response;
+        try {
+            JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
+            return authInfo == null ? Response.status(UNAUTHORIZED).build()
+                    : this.createResponseWithJwt(username, authInfo);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw JaxRSException.builder()
+                    .message(ex.getMessage())
+                    .cause(ex)
+                    .status(STATUS_SERVER_ERROR)
+                    .logException(false)
+                    .build();
+        }
     }
 
     /**
