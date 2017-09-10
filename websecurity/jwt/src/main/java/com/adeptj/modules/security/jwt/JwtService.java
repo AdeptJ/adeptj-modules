@@ -43,7 +43,8 @@ public interface JwtService {
      *
      * @param subject to whom JWT has to be issued.
      * @param jwt     claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
-     * @return boolean flag to indicate the result of verification of the jwt claim is successful or not.
+     * @return A boolean indicating {@link JwtService} was able to parse the JWT or not, a false should be treated as
+     * an indication of failure so that caller can take action accordingly, such has setting 403 status.
      */
     boolean verify(String subject, String jwt);
 }

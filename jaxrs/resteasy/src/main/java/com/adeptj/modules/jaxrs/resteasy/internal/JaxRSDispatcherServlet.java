@@ -22,10 +22,8 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.commons.utils.Loggers;
-import com.adeptj.modules.jaxrs.core.jwt.JwtFilter;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
-import com.adeptj.modules.security.jwt.JwtService;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.spi.Registry;
@@ -36,9 +34,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
@@ -47,7 +42,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.adeptj.modules.commons.utils.OSGiUtils.anyServiceFilter;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
@@ -90,10 +84,6 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private static final String INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
 
-    private static final String BIND_JWT_SERVICE = "bindJwtService";
-
-    private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
-
     static final String JAXRS_DISPATCHER_SERVLET_NAME = "=AdeptJ JAX-RS DispatcherServlet";
 
     static final String SERVLET_PATTERN_VALUE = "=/*";
@@ -108,23 +98,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private BundleContext context;
 
-    private JwtFilter jwtFilter;
-
     private JaxRSCoreConfig config;
-
-    /**
-     * The {@link JwtService} is optionally referenced, if available then it is bind and {@link JwtFilter}
-     * is registered with the {@link ResteasyProviderFactory}
-     * <p>
-     * Note: As per Felix SCR, dynamic references should be declared as volatile.
-     */
-    @Reference(
-            bind = BIND_JWT_SERVICE,
-            unbind = UNBIND_JWT_SERVICE,
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC
-    )
-    private volatile JwtService jwtService;
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -141,10 +115,8 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 Dispatcher dispatcher = this.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
                 this.removeDefaultValidators(providerFactory, logger);
-                this.jwtFilter = new JwtFilter(this.jwtService);
                 providerFactory.register(ValidatorContextResolver.class)
                         .register(new JaxRSCorsFeature(this.config))
-                        .register(this.jwtFilter)
                         .register(new DefaultExceptionHandler(this.config.showException()))
                         .register(new JaxRSExceptionHandler(this.config.showException()));
                 this.openProviderServiceTracker(this.context, providerFactory);
@@ -184,16 +156,6 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     }
 
     // Component Lifecycle Methods
-
-    protected void bindJwtService(JwtService jwtService) {
-        this.jwtService = jwtService;
-        Optional.ofNullable(this.jwtFilter).ifPresent(filter -> filter.setJwtService(this.jwtService));
-    }
-
-    protected void unbindJwtService(JwtService jwtService) {
-        this.jwtService = null;
-        this.jwtFilter.setJwtService(this.jwtService);
-    }
 
     @Activate
     protected void start(JaxRSCoreConfig config, BundleContext context) {

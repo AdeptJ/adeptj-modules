@@ -155,8 +155,7 @@ public class JwtServiceImpl implements JwtService {
             this.setSigningKey(jwtParser);
             Jws<Claims> claimsJws = jwtParser.parseClaimsJws(jwt);
             verified = !this.jwtConfig.validateClaims() ||
-                    this.jwtClaimsValidator == null ||
-                    this.jwtClaimsValidator.validate(claimsJws.getBody());
+                    this.jwtClaimsValidator != null && this.jwtClaimsValidator.validate(claimsJws.getBody());
         } catch (RuntimeException ex) {
             if (this.jwtConfig.printJwtExceptionTrace()) {
                 LOGGER.error("Invalid JWT!!", ex);

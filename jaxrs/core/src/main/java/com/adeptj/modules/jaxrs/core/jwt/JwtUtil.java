@@ -28,6 +28,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
@@ -48,18 +49,19 @@ final class JwtUtil {
 
     private static final String HEADER_SUBJECT = "Subject";
 
-    static void handleJwt(ContainerRequestContext requestContext, JwtService jwtService) {
-        String subject = requestContext.getHeaderString(HEADER_SUBJECT);
+    static void handleJwt(ContainerRequestContext context, JwtService jwtService) {
+        String subject = context.getHeaderString(HEADER_SUBJECT);
         if (StringUtils.isEmpty(subject)) {
-            requestContext.abortWith(Response.status(BAD_REQUEST)
+            context.abortWith(Response.status(BAD_REQUEST)
                     .entity("Request missing [Subject] header!!")
+                    .type(TEXT_PLAIN)
                     .build());
         } else {
-            String jwt = resolveJwt(requestContext);
+            String jwt = resolveJwt(context);
             if (StringUtils.isEmpty(jwt)) {
-                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+                context.abortWith(Response.status(UNAUTHORIZED).build());
             } else if (!jwtService.verify(subject, jwt)) {
-                requestContext.abortWith(Response.status(FORBIDDEN).build());
+                context.abortWith(Response.status(FORBIDDEN).build());
             }
         }
     }

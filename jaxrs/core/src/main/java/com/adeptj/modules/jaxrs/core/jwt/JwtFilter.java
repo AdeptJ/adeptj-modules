@@ -21,6 +21,10 @@ package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -29,6 +33,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
+import static com.adeptj.modules.jaxrs.core.jwt.JwtFilter.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 
@@ -45,18 +50,28 @@ import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 @RequiresJwt
 @Priority(AUTHENTICATION)
 @Provider
+@Component(immediate = true, property = PROVIDER_OSGI_PROPERTY)
 public class JwtFilter implements ContainerRequestFilter {
 
+    private static final String BIND_JWT_SERVICE = "bindJwtService";
+
+    private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
+
+    static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
+
+    /**
+     * The {@link JwtService} is optionally referenced, if unavailable this filter
+     * will set a Service Unavailable (503) status.
+     * <p>
+     * Note: As per Felix SCR, dynamic references should be declared as volatile.
+     */
+    @Reference(
+            bind = BIND_JWT_SERVICE,
+            unbind = UNBIND_JWT_SERVICE,
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC
+    )
     private volatile JwtService jwtService;
-
-    public JwtFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-        Loggers.get(JwtFilter.class).info("Initialized JwtFilter with JwtService: [{}]", this.jwtService);
-    }
-
-    public void setJwtService(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -66,5 +81,16 @@ public class JwtFilter implements ContainerRequestFilter {
         } else {
             JwtUtil.handleJwt(requestContext, this.jwtService);
         }
+    }
+
+    // JwtService lifecycle methods
+
+    protected void bindJwtService(JwtService jwtService) {
+        Loggers.get(JwtFilter.class).info("JwtFilter injected with JwtService: [{}]", jwtService);
+        this.jwtService = jwtService;
+    }
+
+    protected void unbindJwtService(JwtService jwtService) {
+        this.jwtService = null;
     }
 }
