@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.6.Final</version>
+        <version>1.0.7.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-jaxrs-core</artifactId>
-    <version>1.0.5.Final</version>
+    <version>1.0.4.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: Core</name>
     <description>AdeptJ Modules :: JAX-RS :: Core</description>
