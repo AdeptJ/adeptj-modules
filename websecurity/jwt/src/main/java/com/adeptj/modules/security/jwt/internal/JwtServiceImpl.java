@@ -141,19 +141,17 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public boolean verifyJwt(String subject, String jwt) {
+    public boolean verifyJwt(String jwt) {
         boolean verified = false;
         try {
-            Assert.hasText(subject, "Subject can't be null or empty!!");
-            Assert.hasText(subject, "JWT can't be null or empty!!");
-            JwtParser jwtParser = Jwts.parser()
-                    .requireIssuer(this.jwtConfig.issuer())
-                    .requireSubject(subject);
+            Assert.hasText(jwt, "JWT can't be null or empty!!");
+            JwtParser jwtParser = Jwts.parser().requireIssuer(this.jwtConfig.issuer());
             this.setSigningKey(jwtParser);
             Jws<Claims> claimsJws = jwtParser.parseClaimsJws(jwt);
             verified = !this.jwtConfig.validateClaims() ||
                     this.jwtClaimsValidator != null && this.jwtClaimsValidator.validate(claimsJws.getBody());
         } catch (RuntimeException ex) {
+            // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {
                 LOGGER.error(ex.getMessage(), ex);
             } else {

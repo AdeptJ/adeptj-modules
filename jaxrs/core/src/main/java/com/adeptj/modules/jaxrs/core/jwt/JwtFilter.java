@@ -41,6 +41,7 @@ import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
  * This filter will kick in for any resource method that is annotated with {@link RequiresJwt} annotation.
  * Filter will try to resolve the Jwt first from HTTP Authorization header and if that resolves to null
  * then try to resolve from Cookies.
+ * <p>
  * A Cookie named as per configuration should be present in request.
  * <p>
  * If a non null Jwt is resolved then verify it using {@link JwtService}.

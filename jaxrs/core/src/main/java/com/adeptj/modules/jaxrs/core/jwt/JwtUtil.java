@@ -29,16 +29,13 @@ import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * Utility resolves Jwt either from request headers or from cookies only if not found in headers
  * and depending upon the outcome further pass the jwt for verification to {@link JwtService}.
  * <p>
- * Also sets response headers as per the situation.
+ * Also sets response header(401) if JWT is null or JwtService finds token to be malformed, expired etc.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -46,22 +43,12 @@ final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
 
-    private static final String HEADER_SUBJECT = "Subject";
-
     static void handleJwt(ContainerRequestContext requestContext, JwtService jwtService) {
-        String subject = requestContext.getHeaderString(HEADER_SUBJECT);
-        if (StringUtils.isEmpty(subject)) {
-            requestContext.abortWith(Response.status(BAD_REQUEST)
-                    .entity("Request missing [Subject] header!!")
-                    .type(TEXT_PLAIN)
-                    .build());
-            return;
-        }
         String jwt = resolveJwt(requestContext);
-        if (StringUtils.isEmpty(jwt)) {
+        // Send Unauthorized if JWT is null or JwtService finds token to be malformed, expired etc.
+        // 401 is better suited for token verification failure.
+        if (StringUtils.isEmpty(jwt) || !jwtService.verifyJwt(jwt)) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-        } else if (!jwtService.verifyJwt(subject, jwt)) {
-            requestContext.abortWith(Response.status(FORBIDDEN).build());
         }
     }
 

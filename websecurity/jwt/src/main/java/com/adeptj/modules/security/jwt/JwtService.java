@@ -39,12 +39,14 @@ public interface JwtService {
     String issueJwt(String subject, Map<String, Object> claims);
 
     /**
-     * Verify the passed jwt claim information using configured key.
+     * Verify the passed jwt claim information using configured signing key.
+     * <p>
+     * If a {@link JwtClaimsValidator} is available then JWT claims map is passed to it for further
+     * validation of claims.
      *
-     * @param subject to whom JWT has to be issued.
-     * @param jwt     claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
+     * @param jwt claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
      * @return A boolean indicating {@link JwtService} was able to parse the JWT or not, a false should be treated as
      * an indication of failure so that caller can take action accordingly, such has setting 403 status.
      */
-    boolean verifyJwt(String subject, String jwt);
+    boolean verifyJwt(String jwt);
 }
