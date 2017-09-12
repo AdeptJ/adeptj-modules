@@ -38,7 +38,6 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
@@ -46,7 +45,6 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -58,10 +56,10 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
  */
 @Path("/auth")
 @Designate(ocd = JwtCookieConfig.class)
-@Component(immediate = true, service = JwtIssuer.class, property = JwtIssuer.RESOURCE_BASE)
-public class JwtIssuer {
+@Component(immediate = true, service = JwtResource.class, property = JwtResource.RESOURCE_BASE)
+public class JwtResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtIssuer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtResource.class);
 
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
@@ -102,8 +100,8 @@ public class JwtIssuer {
         }
         try {
             JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
-            return authInfo == null ? Response.status(UNAUTHORIZED).build()
-                    : this.createResponseWithJwt(username, authInfo);
+            return authInfo == null ? Response.status(UNAUTHORIZED).build() :
+                    this.responseWithJwt(username, authInfo);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw JaxRSException.builder()
@@ -131,21 +129,11 @@ public class JwtIssuer {
                 .build();
     }
 
-    private Response createResponseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
-        Response.ResponseBuilder builder = Response.status(NO_CONTENT);
+    private Response responseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
         String jwt = this.jwtService.issueJwt(username, authInfo);
-        if (this.config.enabled()) {
-            builder.cookie(new NewCookie(this.config.name(), jwt,
-                    this.config.path(),
-                    this.config.domain(),
-                    this.config.comment(),
-                    this.config.maxAge(),
-                    this.config.secure(),
-                    this.config.httpOnly()));
-        } else {
-            builder.header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
-        }
-        return builder.build();
+        return this.config.enabled() ?
+                Response.ok().cookie(JwtUtil.buildJwtCookie(this.config, jwt)).build() :
+                Response.ok().header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt).build();
     }
 
     /**

@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
@@ -42,6 +43,16 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
+
+    static NewCookie buildJwtCookie(JwtCookieConfig config, String jwt) {
+        return new NewCookie(config.name(), jwt,
+                config.path(),
+                config.domain(),
+                config.comment(),
+                config.maxAge(),
+                config.secure(),
+                config.httpOnly());
+    }
 
     static void handleJwt(ContainerRequestContext requestContext, JwtService jwtService) {
         String jwt = resolveJwt(requestContext);
@@ -64,7 +75,7 @@ final class JwtUtil {
     private static String resolveFromCookies(ContainerRequestContext requestContext) {
         Cookie jwtCookie = requestContext
                 .getCookies()
-                .get(JwtIssuer.JwtCookieNameProvider.INSTANCE.getJwtCookieName());
+                .get(JwtResource.JwtCookieNameProvider.INSTANCE.getJwtCookieName());
         return jwtCookie == null ? null : cleanseJwt(jwtCookie.getValue());
     }
 

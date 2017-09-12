@@ -28,7 +28,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation for use by JAX-RS resources wherever a JWT check required.
+ * Annotation to be used by JAX-RS resources which require a JWT check.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
