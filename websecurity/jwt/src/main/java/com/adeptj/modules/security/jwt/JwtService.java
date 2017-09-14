@@ -31,6 +31,13 @@ public interface JwtService {
 
     /**
      * Issue JWT for given subject with claims information passed.
+     * <p>
+     * Note: First set the claims, don't allow callers to pass the default claims parameters in claims map
+     * such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced when the same ones
+     * provided in the payload which is not the intended behaviour.
+     * <p>
+     * Default claims parameters should come from JwtConfig and others can be generated at execution time
+     * such as "iat", "exp", "jti" etc.
      *
      * @param subject to whom JWT has to be issued.
      * @param claims  Caller supplied JWT claims map

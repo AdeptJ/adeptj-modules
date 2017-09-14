@@ -96,11 +96,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String issueJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be null or empty!!");
-        // Lets first set the claims, we don't want callers to act smart and pass the default claims parameters
-        // such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced when the same ones
-        // provided in the payload which is not the intended behaviour.
-        // Default claims parameters should come from JwtConfig and others can be generated at execution time
-        // such as "iat", "exp", "jti" etc.
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setClaims(claims)
                 .setHeaderParam(TYPE, JWT_TYPE)
