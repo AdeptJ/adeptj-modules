@@ -17,27 +17,29 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core;
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+package com.adeptj.modules.jaxrs.core.auth.spi;
 
-import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 
 /**
- * JaxRSAuthenticationConfig.
+ * Provides {@link JaxRSAuthenticationInfo} by querying all the registered JaxRSAuthenticationRealm.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ JAX-RS AuthenticationInfo Configurations",
-        description = "AdeptJ JAX-RS Auth Configs"
-)
-public @interface JaxRSAuthenticationConfig {
+public interface JaxRSAuthenticator {
 
-    @AttributeDefinition(name = "Username", description = "Username for JWT issuance")
-    String username();
-
-    @AttributeDefinition(name = "Password", description = "Password of username provided", type = PASSWORD)
-    String password();
+    /**
+     * Validates the provided credentials by querying all the registered JaxRSAuthenticationRealm.
+     * If any of the realm return a non null JaxRSAuthenticationInfo then no further realms are queried.
+     * <p>
+     * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by
+     * {@link JaxRSAuthenticator} as it has no way to further validate the
+     * information returned by the implementations.
+     *
+     * @param username   the username submitted for authentication
+     * @param password   the password string submitted for authentication
+     * @return a validated non null JaxRSAuthenticationInfo instance.
+     */
+    JaxRSAuthenticationInfo handleSecurity(String username, String password);
 }

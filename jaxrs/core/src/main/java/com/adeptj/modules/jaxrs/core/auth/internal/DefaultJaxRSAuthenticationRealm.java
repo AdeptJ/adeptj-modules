@@ -18,11 +18,11 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.internal;
+package com.adeptj.modules.jaxrs.core.auth.internal;
 
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationConfig;
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
-import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationConfig;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -38,7 +38,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.adeptj.modules.jaxrs.core.internal.DefaultJaxRSAuthenticationRealm.COMPONENT_NAME;
+import static com.adeptj.modules.jaxrs.core.auth.internal.DefaultJaxRSAuthenticationRealm.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 

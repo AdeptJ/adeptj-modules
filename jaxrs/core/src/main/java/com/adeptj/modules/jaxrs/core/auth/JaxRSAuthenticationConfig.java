@@ -17,33 +17,27 @@
 #                                                                             #
 ###############################################################################
 */
+package com.adeptj.modules.jaxrs.core.auth;
 
-package com.adeptj.modules.jaxrs.core;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import java.util.HashMap;
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
- * AuthenticationInfo holding username, password and other arbitrary data for JWT based JAX-RS resource
- * authorization.
+ * JaxRSAuthenticationConfig.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh.Kumar, AdeptJ.
  */
-public class JaxRSAuthenticationInfo extends HashMap<String, Object> {
+@ObjectClassDefinition(
+        name = "AdeptJ JAX-RS AuthenticationInfo Configurations",
+        description = "AdeptJ JAX-RS Auth Configs"
+)
+public @interface JaxRSAuthenticationConfig {
 
-    private String username;
+    @AttributeDefinition(name = "Username", description = "Username for JWT issuance")
+    String username();
 
-    private char[] password;
-
-    public JaxRSAuthenticationInfo(String username, char[] password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public char[] getPassword() {
-        return password;
-    }
+    @AttributeDefinition(name = "Password", description = "Password of username provided", type = PASSWORD)
+    String password();
 }

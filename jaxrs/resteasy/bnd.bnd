@@ -52,8 +52,9 @@ Import-Package: \
   com.sun.el.util;\
   com.sun.el,\
   com.adeptj.modules.jaxrs.core;\
-  com.adeptj.modules.jaxrs.core.jwt;\
-  com.adeptj.modules.security.jwt,\
+  com.adeptj.modules.jaxrs.core.auth;\
+  com.adeptj.modules.jaxrs.core.auth.api;\
+  com.adeptj.modules.jaxrs.core.jwt,\
   *
   
 Bundle-Name: ${project.name}

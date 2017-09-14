@@ -19,8 +19,8 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
@@ -120,9 +120,9 @@ public class JwtResource {
      *
      * @return response 200 if {@link JwtFilter} was able to verify the Jwt issued earlier.
      */
+    @RequiresJwt
     @GET
     @Path("/jwt/verify")
-    @RequiresJwt
     public Response verifyJwt() {
         return Response.ok("JWT verified successfully!!")
                 .type(TEXT_PLAIN)
@@ -160,7 +160,7 @@ public class JwtResource {
         this.jwtService = jwtService;
     }
 
-    protected void unbindJwtService(JwtService jwtService) {
+    protected void unbindJwtService(JwtService jwtService) { // NOSONAR
         this.jwtService = null;
     }
 

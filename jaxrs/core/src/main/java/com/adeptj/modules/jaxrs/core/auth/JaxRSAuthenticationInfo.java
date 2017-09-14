@@ -18,42 +18,32 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.api;
+package com.adeptj.modules.jaxrs.core.auth;
 
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
+import java.util.HashMap;
 
 /**
- * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
+ * AuthenticationInfo holding username, password and other arbitrary data for JWT based JAX-RS resource
+ * authorization.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JaxRSAuthenticationRealm {
+public class JaxRSAuthenticationInfo extends HashMap<String, Object> {
 
-    /**
-     * Priority of the realm, higher priority realm is called before other realms.
-     *
-     * @return Priority of JaxRSAuthenticationRealm
-     */
-    int priority();
+    private String username;
 
-    /**
-     * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
-     *
-     * @return a meaningful name.
-     */
-    String getName();
+    private char[] password;
 
-    /**
-     * Implementations should validate the credentials supplied and return the populated JaxRSAuthenticationInfo
-     * with other useful information.
-     * <p>
-     * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by
-     * {@link com.adeptj.modules.jaxrs.core.JaxRSAuthenticator} as it has no way to validate the information
-     * returned by the implementations.
-     *
-     * @param username the username submitted for authentication
-     * @param password the password string submitted for authentication
-     * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
-     */
-    JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password);
+    public JaxRSAuthenticationInfo(String username, char[] password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public char[] getPassword() {
+        return password;
+    }
 }

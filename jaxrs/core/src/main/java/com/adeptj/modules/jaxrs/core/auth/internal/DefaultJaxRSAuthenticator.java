@@ -18,13 +18,13 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.internal;
+package com.adeptj.modules.jaxrs.core.auth.internal;
 
 
 import com.adeptj.modules.commons.utils.Loggers;
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticationInfo;
-import com.adeptj.modules.jaxrs.core.JaxRSAuthenticator;
-import com.adeptj.modules.jaxrs.core.api.JaxRSAuthenticationRealm;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

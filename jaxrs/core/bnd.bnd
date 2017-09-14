@@ -21,9 +21,10 @@
 -dsannotations: *
 
 Export-Package: com.adeptj.modules.jaxrs.core,\
-                com.adeptj.modules.jaxrs.core.api,\
+                com.adeptj.modules.jaxrs.core.auth,\
+                com.adeptj.modules.jaxrs.core.auth.api,\
                 com.adeptj.modules.jaxrs.core.jwt,\
-                !com.adeptj.modules.jaxrs.core.internal
+                !com.adeptj.modules.jaxrs.core.auth.internal
 
 Import-Package: \
   com.fasterxml.jackson.jaxrs.xml,\
