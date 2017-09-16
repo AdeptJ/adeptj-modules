@@ -69,7 +69,7 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
             authInfo = realm.getAuthenticationInfo(username, password);
         } catch (Exception ex) {
             // Gulping everything so that next realms(if any) get a chance.
-            Loggers.get(getClass()).error(ex.getMessage(), ex);
+            Loggers.get(this.getClass()).error(ex.getMessage(), ex);
         }
         return authInfo;
     }

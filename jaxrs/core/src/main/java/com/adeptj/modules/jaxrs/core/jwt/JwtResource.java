@@ -19,9 +19,9 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
-import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -29,8 +29,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -42,6 +40,7 @@ import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
+import static com.adeptj.modules.jaxrs.core.jwt.JwtResource.RESOURCE_BASE;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -56,10 +55,8 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
  */
 @Path("/auth")
 @Designate(ocd = JwtCookieConfig.class)
-@Component(immediate = true, service = JwtResource.class, property = JwtResource.RESOURCE_BASE)
+@Component(immediate = true, service = JwtResource.class, property = RESOURCE_BASE)
 public class JwtResource {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtResource.class);
 
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
@@ -95,7 +92,6 @@ public class JwtResource {
     public Response issueJwt(@NotNull @FormParam("username") String username,
                              @NotNull @FormParam("password") String password) {
         if (this.jwtService == null) {
-            LOGGER.warn("Can't issue JWT as JwtService unavailable!");
             return Response.status(SERVICE_UNAVAILABLE).build();
         }
         try {
@@ -103,12 +99,11 @@ public class JwtResource {
             return authInfo == null ? Response.status(UNAUTHORIZED).build() :
                     this.responseWithJwt(username, authInfo);
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
             throw JaxRSException.builder()
                     .message(ex.getMessage())
                     .cause(ex)
                     .status(STATUS_SERVER_ERROR)
-                    .logException(false)
+                    .logException(true)
                     .build();
         }
     }

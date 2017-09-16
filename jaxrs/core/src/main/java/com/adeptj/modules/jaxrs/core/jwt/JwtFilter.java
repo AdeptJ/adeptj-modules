@@ -77,7 +77,6 @@ public class JwtFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (this.jwtService == null) {
-            Loggers.get(JwtFilter.class).warn("Can't verify JWT as JwtService unavailable!");
             requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
             return;
         }
