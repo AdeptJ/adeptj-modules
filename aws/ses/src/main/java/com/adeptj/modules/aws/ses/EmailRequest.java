@@ -22,6 +22,8 @@ package com.adeptj.modules.aws.ses;
 
 import com.adeptj.modules.aws.ses.api.EmailService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,20 +33,32 @@ import java.util.Objects;
  */
 public class EmailRequest {
 
-    private String recipient;
+    private List<String> recipientToList;
+
+    private List<String> recipientCcList;
+
+    private List<String> recipientBccList;
 
     private String subject;
 
     private String body;
 
-    public EmailRequest(String recipient, String subject, String body) {
-        this.recipient = Objects.requireNonNull(recipient, () -> "recipient can't be null!!");;
-        this.subject = Objects.requireNonNull(subject, () -> "subject can't be null!!");;
-        this.body = Objects.requireNonNull(body, () -> "body can't be null!!");;
+    public EmailRequest(String subject, String body, List<String> recipientToList) {
+        this.subject = Objects.requireNonNull(subject, "subject can't be null!!");
+        this.body = Objects.requireNonNull(body, "body can't be null!!");
+        this.recipientToList = recipientToList;
     }
 
-    public String getRecipient() {
-        return recipient;
+    public List<String> getRecipientToList() {
+        return recipientToList;
+    }
+
+    public List<String> getRecipientCcList() {
+        return recipientCcList;
+    }
+
+    public List<String> getRecipientBccList() {
+        return recipientBccList;
     }
 
     public String getSubject() {
@@ -53,5 +67,87 @@ public class EmailRequest {
 
     public String getBody() {
         return body;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private List<String> recipientToList;
+
+        private List<String> recipientCcList;
+
+        private List<String> recipientBccList;
+
+        private String subject;
+
+        private String body;
+
+        public Builder addRecipientTo(String recipientTo) {
+            if (this.recipientToList == null) {
+                this.recipientToList = new ArrayList<>();
+            }
+            this.recipientToList.add(recipientTo);
+            return this;
+        }
+
+        public Builder addRecipientToList(List<String> recipientToList) {
+            if (this.recipientToList == null) {
+                this.recipientToList = new ArrayList<>();
+            }
+            this.recipientToList.addAll(recipientToList);
+            return this;
+        }
+
+        public Builder addRecipientCc(String recipientCc) {
+            if (this.recipientCcList == null) {
+                this.recipientCcList = new ArrayList<>();
+            }
+            this.recipientCcList.add(recipientCc);
+            return this;
+        }
+
+        public Builder addRecipientCcList(List<String> recipientCcList) {
+            if (this.recipientCcList == null) {
+                this.recipientCcList = new ArrayList<>();
+            }
+            this.recipientCcList.addAll(recipientCcList);
+            return this;
+        }
+
+        public Builder addRecipientBcc(String recipientBcc) {
+            if (this.recipientBccList == null) {
+                this.recipientBccList = new ArrayList<>();
+            }
+            this.recipientBccList.add(recipientBcc);
+            return this;
+        }
+
+        public Builder addRecipientBccList(List<String> recipientBccList) {
+            if (this.recipientBccList == null) {
+                this.recipientBccList = new ArrayList<>();
+            }
+            this.recipientBccList.addAll(recipientBccList);
+            return this;
+        }
+
+        public Builder subject(String subject) {
+            this.subject = subject;
+            return this;
+        }
+
+        public Builder body(String body) {
+            this.body = body;
+            return this;
+        }
+
+        public EmailRequest build() {
+            EmailRequest request = new EmailRequest(this.subject, this.body, this.recipientToList);
+            request.recipientCcList = this.recipientCcList;
+            request.recipientBccList = this.recipientBccList;
+            return request;
+        }
     }
 }

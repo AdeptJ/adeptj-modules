@@ -21,17 +21,19 @@
 package com.adeptj.modules.aws.ses;
 
 import com.adeptj.modules.aws.ses.api.EmailService;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.annotations.Form;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.adeptj.modules.aws.ses.EmailResource.RESOURCE_BASE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
@@ -46,9 +48,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Component(immediate = true, service = EmailResource.class, property = RESOURCE_BASE)
 public class EmailResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailResource.class);
-
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=aws-ses";
+
+    private static final String REGEX_COMMA = ",";
 
     @Reference
     private EmailService emailService;
@@ -58,9 +60,13 @@ public class EmailResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response sendEmail(@Form EmailForm form) {
-        return Response.ok(this.emailService.sendEmail(new EmailRequest(form.getRecipient(),
-                form.getSubject(),
-                form.getBody())))
+        return Response.ok(this.emailService.sendEmail(EmailRequest.builder()
+                .addRecipientToList(Arrays.asList(form.getRecipientsTo().split(REGEX_COMMA)))
+                .addRecipientCcList(this.getRecipientCcList(form.getRecipientsCc()))
+                .addRecipientBccList(this.getRecipientBccList(form.getRecipientsBcc()))
+                .subject(form.getSubject())
+                .body(form.getBody())
+                .build()))
                 .build();
     }
 
@@ -68,9 +74,29 @@ public class EmailResource {
     @Path("/send-async")
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response sendEmailAsync(@Form EmailForm form) {
-        this.emailService.sendEmailAsync(new EmailRequest(form.getRecipient(),
-                form.getSubject(),
-                form.getBody()));
+        this.emailService.sendEmailAsync(EmailRequest.builder()
+                .addRecipientToList(Arrays.asList(form.getRecipientsTo().split(REGEX_COMMA)))
+                .addRecipientCcList(this.getRecipientCcList(form.getRecipientsCc()))
+                .addRecipientBccList(this.getRecipientBccList(form.getRecipientsBcc()))
+                .subject(form.getSubject())
+                .body(form.getBody())
+                .build());
         return Response.ok("Email sent asynchronously!!").build();
+    }
+
+    private List<String> getRecipientCcList(String recipientsCc) {
+        List<String> recipientCcList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(recipientsCc)) {
+            recipientCcList.addAll(Arrays.asList(recipientsCc.split(REGEX_COMMA)));
+        }
+        return recipientCcList;
+    }
+
+    private List<String> getRecipientBccList(String recipientsBcc) {
+        List<String> recipientBccList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(recipientsBcc)) {
+            recipientBccList.addAll(Arrays.asList(recipientsBcc.split(REGEX_COMMA)));
+        }
+        return recipientBccList;
     }
 }

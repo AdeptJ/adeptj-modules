@@ -53,7 +53,7 @@ public class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> 
     public Object addingService(ServiceReference<Object> reference) {
         Object resource = this.context.getService(reference);
         if (resource == null) {
-            LOGGER.warn("JAX-RS Resource is null for ServiceReference: [{}]", reference);
+            LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
         } else {
             LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
             this.addJaxRSResource(resource);

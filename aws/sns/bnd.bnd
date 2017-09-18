@@ -20,10 +20,10 @@
 
 -dsannotations: *
 
-Include-Resource: aws-java-sdk-s*-*.jar
+Include-Resource: aws-java-sdk-s*s-*.jar
 
-Bundle-ClassPath: ., aws-java-sdk-sns-1.11.163.jar,\
-                     aws-java-sdk-sqs-1.11.163.jar
+Bundle-ClassPath: ., aws-java-sdk-sns-1.11.197.jar,\
+                     aws-java-sdk-sqs-1.11.197.jar
 
 Export-Package: com.adeptj.modules.aws.sns,\
                 com.adeptj.modules.aws.sns.api

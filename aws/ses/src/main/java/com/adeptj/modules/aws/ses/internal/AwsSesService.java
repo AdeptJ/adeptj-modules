@@ -50,7 +50,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  * @author Rakesh.Kumar, AdeptJ.
  */
 @Designate(ocd = EmailConfig.class)
-@Component(immediate = true, configurationPolicy = REQUIRE)
+@Component(configurationPolicy = REQUIRE)
 public class AwsSesService implements EmailService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AwsSesService.class);
@@ -67,10 +67,12 @@ public class AwsSesService implements EmailService {
     @Override
     public EmailResponse sendEmail(EmailRequest emailRequest) {
         try {
-            LOGGER.info("Sending email to: [{}]", emailRequest.getRecipient());
             SendEmailResult result = this.asyncSES.sendEmail(new SendEmailRequest()
                     .withSource(this.emailConfig.from())
-                    .withDestination(new Destination().withToAddresses(emailRequest.getRecipient()))
+                    .withDestination(new Destination()
+                            .withToAddresses(emailRequest.getRecipientToList())
+                            .withCcAddresses(emailRequest.getRecipientCcList())
+                            .withBccAddresses(emailRequest.getRecipientBccList()))
                     .withMessage(new Message()
                             .withSubject(new Content().withData(emailRequest.getSubject()))
                             .withBody(new Body().withHtml(new Content().withData(emailRequest.getBody())))));
@@ -88,11 +90,13 @@ public class AwsSesService implements EmailService {
     @Override
     public void sendEmailAsync(EmailRequest emailRequest) {
         try {
-            LOGGER.info("Sending email asynchronously to: [{}]", emailRequest.getRecipient());
             // Shall we use the Future object returned by async call?
             this.asyncSES.sendEmailAsync(new SendEmailRequest()
                             .withSource(this.emailConfig.from())
-                            .withDestination(new Destination().withToAddresses(emailRequest.getRecipient()))
+                            .withDestination(new Destination()
+                                    .withToAddresses(emailRequest.getRecipientToList())
+                                    .withCcAddresses(emailRequest.getRecipientCcList())
+                                    .withBccAddresses(emailRequest.getRecipientBccList()))
                             .withMessage(new Message()
                                     .withSubject(new Content().withData(emailRequest.getSubject()))
                                     .withBody(new Body().withHtml(new Content().withData(emailRequest.getBody())))),
@@ -105,7 +109,7 @@ public class AwsSesService implements EmailService {
     // Lifecycle Methods
 
     @Activate
-    protected void start(EmailConfig emailConfig) {
+    protected void activate(EmailConfig emailConfig) {
         this.emailConfig = emailConfig;
         try {
             this.asyncSES = AmazonSimpleEmailServiceAsyncClientBuilder.standard()
@@ -121,7 +125,7 @@ public class AwsSesService implements EmailService {
     }
 
     @Deactivate
-    protected void stop() {
+    protected void deactivate() {
         try {
             this.asyncSES.shutdown();
         } catch (Exception ex) {

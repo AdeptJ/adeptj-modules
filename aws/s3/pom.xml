@@ -35,8 +35,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.s3.version>1.11.163</aws.s3.version>
-        <aws.sdk.core.version>1.11.163</aws.sdk.core.version>
+        <aws.s3.version>1.11.197</aws.s3.version>
+        <aws.sdk.core.version>1.11.197</aws.sdk.core.version>
         <adeptj.aws.core.version>1.0.0.Final</adeptj.aws.core.version>
     </properties>
 

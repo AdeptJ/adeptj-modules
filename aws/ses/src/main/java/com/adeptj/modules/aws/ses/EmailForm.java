@@ -30,9 +30,16 @@ import javax.ws.rs.FormParam;
  */
 public class EmailForm {
 
+    // If there are multiple Recipients then add them as comma separated.
     @NotNull
-    @FormParam("recipient")
-    private String recipient;
+    @FormParam("recipientsTo")
+    private String recipientsTo;
+
+    @FormParam("recipientsCc")
+    private String recipientsCc;
+
+    @FormParam("recipientsBcc")
+    private String recipientsBcc;
 
     @NotNull
     @FormParam("subject")
@@ -42,12 +49,28 @@ public class EmailForm {
     @FormParam("body")
     private String body;
 
-    String getRecipient() {
-        return recipient;
+    public String getRecipientsTo() {
+        return recipientsTo;
     }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
+    public void setRecipientsTo(String recipientsTo) {
+        this.recipientsTo = recipientsTo;
+    }
+
+    public String getRecipientsCc() {
+        return recipientsCc;
+    }
+
+    public void setRecipientsCc(String recipientsCc) {
+        this.recipientsCc = recipientsCc;
+    }
+
+    public String getRecipientsBcc() {
+        return recipientsBcc;
+    }
+
+    public void setRecipientsBcc(String recipientsBcc) {
+        this.recipientsBcc = recipientsBcc;
     }
 
     String getSubject() {
