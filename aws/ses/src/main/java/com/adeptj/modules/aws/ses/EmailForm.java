@@ -49,7 +49,7 @@ public class EmailForm {
     @FormParam("body")
     private String body;
 
-    public String getRecipientsTo() {
+    String getRecipientsTo() {
         return recipientsTo;
     }
 
@@ -57,7 +57,7 @@ public class EmailForm {
         this.recipientsTo = recipientsTo;
     }
 
-    public String getRecipientsCc() {
+    String getRecipientsCc() {
         return recipientsCc;
     }
 
@@ -65,7 +65,7 @@ public class EmailForm {
         this.recipientsCc = recipientsCc;
     }
 
-    public String getRecipientsBcc() {
+    String getRecipientsBcc() {
         return recipientsBcc;
     }
 

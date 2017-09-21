@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-aws-core</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.1.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: AWS :: Core</name>
     <description>AdeptJ Modules :: AWS Core</description>

@@ -42,7 +42,7 @@ public class SmsForm {
     @FormParam("message")
     private String message;
 
-    public String getCountryCode() {
+    String getCountryCode() {
         return countryCode;
     }
 
@@ -50,7 +50,7 @@ public class SmsForm {
         this.countryCode = countryCode;
     }
 
-    public String getPhoneNumber() {
+    String getPhoneNumber() {
         return phoneNumber;
     }
 
@@ -58,7 +58,7 @@ public class SmsForm {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getMessage() {
+    String getMessage() {
         return message;
     }
 

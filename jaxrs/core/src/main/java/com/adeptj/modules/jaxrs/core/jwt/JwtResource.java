@@ -64,7 +64,7 @@ public class JwtResource {
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
-    private JwtCookieConfig config;
+    private JwtCookieConfig cookieConfig;
 
     @Reference
     private JaxRSAuthenticator authenticator;
@@ -126,8 +126,8 @@ public class JwtResource {
 
     private Response responseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
         String jwt = this.jwtService.issueJwt(username, authInfo);
-        return this.config.enabled() ?
-                Response.ok().cookie(JwtUtil.buildJwtCookie(this.config, jwt)).build() :
+        return this.cookieConfig.enabled() ?
+                Response.ok().cookie(JwtUtil.buildJwtCookie(this.cookieConfig, jwt)).build() :
                 Response.ok().header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt).build();
     }
 
@@ -160,8 +160,8 @@ public class JwtResource {
     }
 
     @Activate
-    protected void start(JwtCookieConfig config) {
-        this.config = config;
-        JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.config.name());
+    protected void start(JwtCookieConfig cookieConfig) {
+        this.cookieConfig = cookieConfig;
+        JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.cookieConfig.name());
     }
 }

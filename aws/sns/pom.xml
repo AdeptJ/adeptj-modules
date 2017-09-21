@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-aws-sns</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.1.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: AWS :: SNS</name>
     <description>AdeptJ Modules :: AWS Simple Notification Service</description>
@@ -37,7 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <aws.sns.version>1.11.197</aws.sns.version>
         <aws.sdk.core.version>1.11.197</aws.sdk.core.version>
-        <adeptj.aws.core.version>1.0.0.Final</adeptj.aws.core.version>
+        <adeptj.aws.core.version>1.0.1.Final</adeptj.aws.core.version>
     </properties>
 
     <!-- Project Information -->

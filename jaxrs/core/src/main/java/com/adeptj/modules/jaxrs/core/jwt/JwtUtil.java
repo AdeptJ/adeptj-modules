@@ -34,7 +34,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * Utility resolves Jwt either from request headers or from cookies only if not found in headers
- * and depending upon the outcome further pass the jwt for verification to {@link JwtService}.
+ * and depending upon the outcome further pass the jwt to {@link JwtService} for verification.
  * <p>
  * Also sets response header(401) if JWT is null or JwtService finds token to be malformed, expired etc.
  *
