@@ -42,4 +42,6 @@ public interface StorageService {
     S3Object getFile(String bucketName, String key);
 
     void deleteFile(String bucketName, String key);
+
+    String getSigningRegion();
 }

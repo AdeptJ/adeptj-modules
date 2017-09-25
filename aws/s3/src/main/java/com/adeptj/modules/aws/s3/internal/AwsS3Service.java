@@ -154,6 +154,11 @@ public class AwsS3Service implements StorageService {
         }
     }
 
+    @Override
+    public String getSigningRegion() {
+        return this.s3Client.getRegionName();
+    }
+
     // Lifecycle Methods
 
     @Activate
