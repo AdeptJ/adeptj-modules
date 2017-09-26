@@ -245,13 +245,13 @@ public interface JpaCrudRepository {
      * Finds the entity using given named native query and project in the given result class.
      *
      * @param resultClass the type of the query result
-     * @param nativeSql   the native sql
+     * @param nativeQuery   the native query
      * @param mapping     the name of the result set mapping
      * @param posParams   List of parameters to bind to query a.k.a positional parameters
      * @param <T>         Type of returned instance
      * @return singular result from query execution
      */
-    <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String mapping, List<Object> posParams);
+    <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeQuery, String mapping, List<Object> posParams);
 
     /**
      * First find the entity using the given Jpa query and then Map the result to the constructor
@@ -263,7 +263,7 @@ public interface JpaCrudRepository {
      * @param <T>         Type of returned instance
      * @return List of instances of type as resultClass
      */
-    <T> List<T> findAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams);
+    <T> List<T> findAndMapConstructorByQuery(Class<T> resultClass, String jpaQuery, List<Object> posParams);
 
     /**
      * First find the entity using the Jpa criteria and then Map the result to the constructor
@@ -277,7 +277,7 @@ public interface JpaCrudRepository {
      * @param <C>      Constructor type
      * @return List of instances of type specified by type parameter C
      */
-    <T extends BaseEntity, C> List<C> findAndMapConstructor(ConstructorCriteria<T, C> criteria);
+    <T extends BaseEntity, C> List<C> findAndMapConstructorByCriteria(ConstructorCriteria<T, C> criteria);
 
     /**
      * Gets the single result against the named query which must be in JPQL format.
@@ -288,7 +288,16 @@ public interface JpaCrudRepository {
      * @param <T>         Type of returned instance
      * @return singular result from query execution
      */
-    <T extends BaseEntity> T getEntity(Class<T> resultClass, String namedQuery, List<Object> posParams);
+    <T> T getScalarResultOfType(Class<T> resultClass, String namedQuery, List<Object> posParams);
+
+    /**
+     * Gets the single result against the named query which can be JPQL or native.
+     *
+     * @param namedQuery the name of a query defined in metadata
+     * @param posParams  List of parameters to bind to query a.k.a positional parameters
+     * @return singular result from query execution
+     */
+    Object getScalarResult(String namedQuery, List<Object> posParams);
 
     /**
      * Count the no. of rows of given JPA entity.

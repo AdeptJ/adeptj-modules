@@ -4,6 +4,7 @@ import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
+import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.PersistenceException;
 import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
@@ -15,21 +16,19 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static com.adeptj.modules.data.jpa.JpaUtil.LEN_ZERO;
 
 /**
  * Implementation of {@link JpaCrudRepository} based on EclipseLink JPA Reference Implementation
@@ -54,8 +53,6 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EclipseLinkCrudRepository.class);
 
-    private static final int LEN_ZERO = 0;
-
     private EntityManagerFactory emf;
 
     public EclipseLinkCrudRepository(EntityManagerFactory emf) {
@@ -71,18 +68,17 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = em.getTransaction();
-            txn.begin();
+            txn = JpaUtil.getTransaction(em);
             em.persist(entity);
             txn.commit();
             return entity;
         } catch (RuntimeException ex) {
-            this.setRollbackOnly(txn);
+            JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.rollbackTxn(txn);
-            this.closeEntityManager(em);
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -96,17 +92,16 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = em.getTransaction();
-            txn.begin();
+            txn = JpaUtil.getTransaction(em);
             updated = em.merge(entity);
             txn.commit();
         } catch (RuntimeException ex) {
-            this.setRollbackOnly(txn);
+            JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.rollbackTxn(txn);
-            this.closeEntityManager(em);
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
         }
         return updated;
     }
@@ -120,25 +115,24 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = em.getTransaction();
-            txn.begin();
+            txn = JpaUtil.getTransaction(em);
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
             criteria.getUpdateAttributes().forEach(cu::set);
             Root<T> root = cu.from(criteria.getEntity());
             int rowsUpdated = em
-                    .createQuery(cu.where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .createQuery(cu.where(cb.and(JpaUtil.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .executeUpdate();
             txn.commit();
             LOGGER.debug("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
         } catch (RuntimeException ex) {
-            this.setRollbackOnly(txn);
+            JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.rollbackTxn(txn);
-            this.closeEntityManager(em);
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -151,22 +145,21 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = em.getTransaction();
+            txn = JpaUtil.getTransaction(em);
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
                 LOGGER.warn("Entity couldn't be deleted as it doesn't exists in DB: [{}]", entity);
             } else {
-                txn.begin();
                 em.remove(entityToDelete);
                 txn.commit();
             }
         } catch (RuntimeException ex) {
-            this.setRollbackOnly(txn);
+            JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.rollbackTxn(txn);
-            this.closeEntityManager(em);
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -179,21 +172,20 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = em.getTransaction();
-            txn.begin();
+            txn = JpaUtil.getTransaction(em);
             TypedQuery<T> typedQuery = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
-            this.setPositionalParams(typedQuery, crudDTO.getPosParams());
-            int rowsDeleted = typedQuery.executeUpdate();
+            int rowsDeleted = JpaUtil.typedQueryWithParams(typedQuery, crudDTO.getPosParams())
+                    .executeUpdate();
             txn.commit();
             LOGGER.debug("deleteByJpaNamedQuery: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (RuntimeException ex) {
-            this.setRollbackOnly(txn);
+            JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.rollbackTxn(txn);
-            this.closeEntityManager(em);
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -206,24 +198,23 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = em.getTransaction();
-            txn.begin();
+            txn = JpaUtil.getTransaction(em);
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
             Root<T> root = cd.from(criteria.getEntity());
             int rowsDeleted = em
-                    .createQuery(cd.where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .createQuery(cd.where(cb.and(JpaUtil.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .executeUpdate();
             txn.commit();
             LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (RuntimeException ex) {
-            this.setRollbackOnly(txn);
+            JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.rollbackTxn(txn);
-            this.closeEntityManager(em);
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -236,8 +227,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = em.getTransaction();
-            txn.begin();
+            txn = JpaUtil.getTransaction(em);
             int rowsDeleted = em
                     .createQuery(em.getCriteriaBuilder().createCriteriaDelete(entity))
                     .executeUpdate();
@@ -245,12 +235,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.debug("deleteAll: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (RuntimeException ex) {
-            this.setRollbackOnly(txn);
+            JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.rollbackTxn(txn);
-            this.closeEntityManager(em);
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -266,7 +256,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -281,13 +271,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq
-                    .where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(JpaUtil.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -306,13 +296,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .map(root::get)
                     .collect(Collectors.toList())
                     .toArray(new Selection[LEN_ZERO]))
-                    .where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(JpaUtil.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -327,7 +317,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq
-                    .where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(JpaUtil.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .setFirstResult(criteria.getStartPos())
                     .setMaxResults(criteria.getMaxResult())
                     .getResultList();
@@ -335,7 +325,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -346,14 +336,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     public <T> List<T> findByJpaNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
-            this.setPositionalParams(query, posParams);
-            return query.getResultList();
+            return JpaUtil.typedQueryWithParams(em.createNamedQuery(namedQuery, resultClass), posParams)
+                    .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -365,14 +354,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     public <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            Query query = em.createNamedQuery(namedQuery);
-            this.setPositionalParams(query, posParams);
-            return (List<T>) query.getResultList();
+            return (List<T>) JpaUtil.queryWithParams(em.createNamedQuery(namedQuery), posParams)
+                    .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -389,7 +377,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -409,7 +397,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -421,13 +409,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            this.setPositionalParams(query, crudDTO.getPosParams());
-            return query.getResultList();
+            return JpaUtil.typedQueryWithParams(query, crudDTO.getPosParams())
+                    .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -439,15 +427,15 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> typedQuery = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            this.setPositionalParams(typedQuery, crudDTO.getPosParams());
-            return typedQuery.setFirstResult(crudDTO.getStartPos())
+            return JpaUtil.typedQueryWithParams(typedQuery, crudDTO.getPosParams())
+                    .setFirstResult(crudDTO.getStartPos())
                     .setMaxResults(crudDTO.getMaxResult())
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -468,7 +456,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -477,17 +465,16 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeSql, String mapping, List<Object> posParams) {
+    public <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeQuery, String mapping, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            Query query = em.createNativeQuery(nativeSql, mapping);
-            this.setPositionalParams(query, posParams);
-            return (List<T>) query.getResultList();
+            return (List<T>) JpaUtil.queryWithParams(em.createNativeQuery(nativeQuery, mapping), posParams)
+                    .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -495,17 +482,16 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T> List<T> findAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
+    public <T> List<T> findAndMapConstructorByQuery(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<T> query = em.createQuery(jpaQuery, resultClass);
-            this.setPositionalParams(query, posParams);
-            return query.getResultList();
+            return JpaUtil.typedQueryWithParams(em.createQuery(jpaQuery, resultClass), posParams)
+                    .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -513,7 +499,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T extends BaseEntity, C> List<C> findAndMapConstructor(ConstructorCriteria<T, C> criteria) {
+    public <T extends BaseEntity, C> List<C> findAndMapConstructorByCriteria(ConstructorCriteria<T, C> criteria) {
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -524,13 +510,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .map(root::get)
                     .collect(Collectors.toList())
                     .toArray(new Selection[LEN_ZERO])))
-                    .where(this.getPredicates(criteria.getCriteriaAttributes(), cb, root)))
+                    .where(JpaUtil.getPredicates(criteria.getCriteriaAttributes(), cb, root)))
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -538,17 +524,30 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T extends BaseEntity> T getEntity(Class<T> resultClass, String namedQuery, List<Object> posParams) {
+    public <T> T getScalarResultOfType(Class<T> resultClass, String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            TypedQuery<T> typedQuery = em.createNamedQuery(namedQuery, resultClass);
-            this.setPositionalParams(typedQuery, posParams);
-            return typedQuery.getSingleResult();
+            return JpaUtil.typedQueryWithParams(em.createNamedQuery(namedQuery, resultClass), posParams)
+                    .getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @Override
+    public Object getScalarResult(String namedQuery, List<Object> posParams) {
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            return JpaUtil.queryWithParams(em.createNamedQuery(namedQuery), posParams)
+                    .getSingleResult();
+        } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
+        } finally {
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -566,7 +565,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -582,13 +581,13 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             Root<T> from = cq.from(entity);
             return em.createQuery(cq
                     .select(cb.count(from))
-                    .where(cb.and(this.getPredicates(criteriaAttributes, cb, from))))
+                    .where(cb.and(JpaUtil.getPredicates(criteriaAttributes, cb, from))))
                     .getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new PersistenceException(ex.getMessage(), ex);
         } finally {
-            this.closeEntityManager(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -598,53 +597,5 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     @Override
     public EntityManager getEntityManager() {
         return this.emf.createEntityManager();
-    }
-
-    private void closeEntityManager(EntityManager em) {
-        try {
-            if (em.isOpen()) {
-                em.close();
-            }
-        } catch (RuntimeException ex) {
-            LOGGER.error("Exception while closing EntityManager!!", ex);
-        }
-    }
-
-    private void setRollbackOnly(EntityTransaction txn) {
-        if (txn != null && txn.isActive() && !txn.getRollbackOnly()) {
-            txn.setRollbackOnly();
-        }
-    }
-
-    private void rollbackTxn(EntityTransaction txn) {
-        try {
-            if (txn != null && txn.isActive() && txn.getRollbackOnly()) {
-                LOGGER.warn("Rolling back transaction!!");
-                txn.rollback();
-            }
-        } catch (RuntimeException ex) {
-            LOGGER.error("Exception while rolling back transaction!!", ex);
-        }
-    }
-
-    private <T> Predicate[] getPredicates(Map<String, Object> attributes, CriteriaBuilder cb, Root<T> root) {
-        return attributes
-                .entrySet()
-                .stream()
-                .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
-                .collect(Collectors.toList())
-                .toArray(new Predicate[LEN_ZERO]);
-    }
-
-    /**
-     * This method sets the positional query parameters passed by the caller.
-     *
-     * @param query     the JPA Query
-     * @param posParams positional parameters
-     */
-    private void setPositionalParams(Query query, List<Object> posParams) {
-        Objects.requireNonNull(posParams, "Positional Parameters cannot be null!!");
-        AtomicInteger posParamCounter = new AtomicInteger();
-        posParams.forEach(param -> query.setParameter(posParamCounter.incrementAndGet(), param));
     }
 }

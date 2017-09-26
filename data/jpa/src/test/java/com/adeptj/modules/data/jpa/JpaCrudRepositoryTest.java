@@ -233,8 +233,7 @@ public class JpaCrudRepositoryTest {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567891");
         User user = crudRepository
-                .getEntity(User.class, "User.findUserByContact.JPA.Scalar",
-                        posParams);
+                .getScalarResultOfType(User.class, "User.findUserByContact.JPA.Scalar", posParams);
         if (user != null) {
             System.out.println("FirstName: " + user.getFirstName());
             System.out.println("LastName: " + user.getLastName());
@@ -261,7 +260,7 @@ public class JpaCrudRepositoryTest {
                 "FROM User u WHERE u.contact = ?1";
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findAndMapConstructor(UserDTO.class, jpaQuery, posParams).forEach(user -> {
+        crudRepository.findAndMapConstructorByQuery(UserDTO.class, jpaQuery, posParams).forEach(user -> {
             System.out.println("User ID: " + user.getId());
             System.out.println("FirstName: " + user.getFirstName());
             System.out.println("LastName: " + user.getLastName());
@@ -271,7 +270,7 @@ public class JpaCrudRepositoryTest {
 
     @Test
     public void testFindAndMapConstructorByCriteria() {
-        List<UserDTO> usersDTOList = crudRepository.findAndMapConstructor(ConstructorCriteria.builder()
+        List<UserDTO> usersDTOList = crudRepository.findAndMapConstructorByCriteria(ConstructorCriteria.builder()
                 .entity(User.class)
                 .constructorClass(UserDTO.class)
                 .addSelections("id", "firstName", "lastName", "email")

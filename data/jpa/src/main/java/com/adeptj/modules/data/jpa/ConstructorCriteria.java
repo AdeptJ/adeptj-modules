@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Criteria object holding arguments for JpaCrudRepository findAndMapConstructor* methods.
+ * Criteria object holding arguments for JpaCrudRepository findAndMapConstructorByCriteria* methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
