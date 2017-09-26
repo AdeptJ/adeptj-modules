@@ -162,7 +162,7 @@ public interface JpaCrudRepository {
     /**
      * Finds the given JPA entity using the named JPA query.
      *
-     * @param resultClass DTO holding the JPA entity class object.
+     * @param resultClass the type of the query result.
      * @param namedQuery  The name of a query defined in metadata in JPQL format.
      * @param posParams   And list of parameters to bind to query a.k.a positional parameters
      * @param <T>         type of the record that is to be return
@@ -280,7 +280,7 @@ public interface JpaCrudRepository {
     <T extends BaseEntity, C> List<C> findAndMapConstructor(ConstructorCriteria<T, C> criteria);
 
     /**
-     * Gets the single result against the named query.
+     * Gets the single result against the named query which must be in JPQL format.
      *
      * @param resultClass the type of the query result
      * @param namedQuery  the name of a query defined in metadata
@@ -288,7 +288,7 @@ public interface JpaCrudRepository {
      * @param <T>         Type of returned instance
      * @return singular result from query execution
      */
-    <T> T getScalarResultByNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams);
+    <T extends BaseEntity> T getEntity(Class<T> resultClass, String namedQuery, List<Object> posParams);
 
     /**
      * Count the no. of rows of given JPA entity.

@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,14 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
                 this.selections = new ArrayList<>();
             }
             this.selections.add(attributeName);
+            return this;
+        }
+
+        public Builder addSelections(String... attributeNames) {
+            if (this.selections == null) {
+                this.selections = new ArrayList<>();
+            }
+            this.selections.addAll(Arrays.asList(attributeNames));
             return this;
         }
 

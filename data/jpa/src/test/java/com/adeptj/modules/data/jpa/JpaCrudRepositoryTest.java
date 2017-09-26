@@ -126,13 +126,13 @@ public class JpaCrudRepositoryTest {
     public void testFindByTupleQuery() {
         crudRepository.findByTupleQuery(TupleQueryCriteria.builder()
                 .entity(User.class)
-                .addSelection("firstName")
-                .addSelection("lastName")
+                .addSelections("firstName", "lastName")
                 .addCriteriaAttribute("contact", "1234567890")
-                .build()).forEach(tuple -> {
-            System.out.println("FirstName: " + tuple.get(0));
-            System.out.println("LastName: " + tuple.get(1));
-        });
+                .build())
+                .forEach(tuple -> {
+                    System.out.println("FirstName: " + tuple.get(0));
+                    System.out.println("LastName: " + tuple.get(1));
+                });
     }
 
     @Test
@@ -233,7 +233,7 @@ public class JpaCrudRepositoryTest {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567891");
         User user = crudRepository
-                .getScalarResultByNamedQuery(User.class, "User.findUserByContact.JPA.Scalar",
+                .getEntity(User.class, "User.findUserByContact.JPA.Scalar",
                         posParams);
         if (user != null) {
             System.out.println("FirstName: " + user.getFirstName());
@@ -274,10 +274,7 @@ public class JpaCrudRepositoryTest {
         List<UserDTO> usersDTOList = crudRepository.findAndMapConstructor(ConstructorCriteria.builder()
                 .entity(User.class)
                 .constructorClass(UserDTO.class)
-                .addSelection("id")
-                .addSelection("firstName")
-                .addSelection("lastName")
-                .addSelection("email")
+                .addSelections("id", "firstName", "lastName", "email")
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
         usersDTOList
