@@ -33,7 +33,7 @@ public class JpaCrudRepositoryManager {
 
     private BundleContext context;
 
-    private Map<String, ServiceRegistration<JpaCrudRepository>> jpaCrudRepositoryRegistrations;
+    private Map<String, ServiceRegistration<JpaCrudRepository>> jpaCrudRepositories;
 
     private Map<String, EntityManagerFactory> entityManagerFactories;
 
@@ -44,14 +44,14 @@ public class JpaCrudRepositoryManager {
         properties.put(SERVICE_DESCRIPTION, "AdeptJ Modules JpaCrudRepository(EclipseLink)");
         properties.put(EntityManagerFactoryBuilder.JPA_UNIT_NAME, unitName);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
-        this.jpaCrudRepositoryRegistrations.put(unitName, this.context.registerService(JpaCrudRepository.class,
+        this.jpaCrudRepositories.put(unitName, this.context.registerService(JpaCrudRepository.class,
                 new EclipseLinkCrudRepository(emf), properties));
         this.entityManagerFactories.put(unitName, emf);
     }
 
     void unregisterJpaCrudRepository(String unitName) {
         try {
-            ServiceRegistration<JpaCrudRepository> svcReg = this.jpaCrudRepositoryRegistrations.remove(unitName);
+            ServiceRegistration<JpaCrudRepository> svcReg = this.jpaCrudRepositories.remove(unitName);
             if (svcReg == null) {
                 LOGGER.warn("No JpaCrudRepository found for PersistenceUnit: [{}]", unitName);
             } else {
@@ -68,7 +68,7 @@ public class JpaCrudRepositoryManager {
     @Activate
     protected void start(BundleContext context) {
         this.context = context;
-        this.jpaCrudRepositoryRegistrations = new ConcurrentHashMap<>();
+        this.jpaCrudRepositories = new ConcurrentHashMap<>();
         this.entityManagerFactories = new ConcurrentHashMap<>();
     }
 
@@ -79,7 +79,7 @@ public class JpaCrudRepositoryManager {
     }
 
     private void unregisterJpaCrudRepositories() {
-        this.jpaCrudRepositoryRegistrations.forEach((unitName, svcReg) -> {
+        this.jpaCrudRepositories.forEach((unitName, svcReg) -> {
             try {
                 svcReg.unregister();
             } catch (Exception ex) { // NOSONAR
