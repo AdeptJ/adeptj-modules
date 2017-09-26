@@ -24,6 +24,7 @@ import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
+import com.adeptj.modules.data.jpa.QueryType;
 import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
@@ -291,6 +292,17 @@ public interface JpaCrudRepository {
      * @return List of instances of type specified by type parameter C
      */
     <T extends BaseEntity, C> List<C> findByCriteriaAndMapConstructor(ConstructorCriteria<T, C> criteria);
+
+    /**
+     * Gets the single result against the query which must be one of the type {@link QueryType}.
+     *
+     * @param resultClass the type of the query result
+     * @param query       the query string
+     * @param posParams   List of parameters to bind to query a.k.a positional parameters
+     * @param <T>         Type of returned instance
+     * @return singular result from query execution
+     */
+    <T> T getScalarResultOfType(Class<T> resultClass, QueryType type, String query, List<Object> posParams);
 
     /**
      * Gets the single result against the named query which must be in JPQL format.

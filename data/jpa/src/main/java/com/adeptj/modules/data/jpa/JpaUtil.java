@@ -31,7 +31,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -95,8 +94,8 @@ public final class JpaUtil {
      * @param query     the JPA {@link Query}
      * @param posParams positional parameters
      */
-    public static Query queryWithParams(Query query, List<Object> posParams) {
-        setQueryParams(query, posParams);
+    public static Query setQueryParams(Query query, List<Object> posParams) {
+        setQueryParamsInternal(query, posParams);
         return query;
     }
 
@@ -106,15 +105,16 @@ public final class JpaUtil {
      * @param query     the JPA {@link TypedQuery}
      * @param posParams positional parameters
      */
-    public static <T> TypedQuery<T> typedQueryWithParams(TypedQuery<T> query, List<Object> posParams) {
-        setQueryParams(query, posParams);
+    public static <T> TypedQuery<T> setTypedQueryParams(TypedQuery<T> query, List<Object> posParams) {
+        setQueryParamsInternal(query, posParams);
         return query;
     }
 
 
-    private static void setQueryParams(Query query, List<Object> posParams) {
-        Objects.requireNonNull(posParams, "Positional Parameters cannot be null!!");
-        AtomicInteger posParamCounter = new AtomicInteger();
-        posParams.forEach(param -> query.setParameter(posParamCounter.incrementAndGet(), param));
+    private static void setQueryParamsInternal(Query query, List<Object> posParams) {
+        if (posParams != null && !posParams.isEmpty()) {
+            AtomicInteger posParamCounter = new AtomicInteger();
+            posParams.forEach(param -> query.setParameter(posParamCounter.incrementAndGet(), param));
+        }
     }
 }
