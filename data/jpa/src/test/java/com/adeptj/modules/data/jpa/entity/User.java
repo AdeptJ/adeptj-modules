@@ -70,38 +70,31 @@ import java.io.Serializable;
         @SqlResultSetMapping(
                 name = "User.findUserByContact.EntityMapping",
                 entities = {
-                        @EntityResult(entityClass = User.class, fields = {
-                                @FieldResult(name = "id", column = "ID"),
-                                @FieldResult(name = "firstName", column = "FIRST_NAME"),
-                                @FieldResult(name = "lastName", column = "LAST_NAME"),
-                                @FieldResult(name = "email", column = "EMAIL"),
-                                @FieldResult(name = "contact", column = "MOBILE_NO"),
-                        })
+                        @EntityResult(
+                                entityClass = User.class,
+                                fields = {
+                                        @FieldResult(name = "id", column = "ID"),
+                                        @FieldResult(name = "firstName", column = "FIRST_NAME"),
+                                        @FieldResult(name = "lastName", column = "LAST_NAME"),
+                                        @FieldResult(name = "email", column = "EMAIL"),
+                                        @FieldResult(name = "contact", column = "MOBILE_NO"),
+                                })
                 }
         ),
         @SqlResultSetMapping(
                 name = "User.findUserByContact.ConstructorMapping",
                 classes = {
-                        @ConstructorResult(targetClass = UserDTO.class, columns = {
-                                @ColumnResult(name = "ID"),
-                                @ColumnResult(name = "FIRST_NAME"),
-                                @ColumnResult(name = "LAST_NAME"),
-                                @ColumnResult(name = "EMAIL"),
-                                @ColumnResult(name = "MOBILE_NO"),
-                        })
-                }
-        ),
-        @SqlResultSetMapping(
-                name = "User.findUserByContact.ColumnMapping",
-                columns = {
-                        @ColumnResult(name = "ID"),
-                        @ColumnResult(name = "FIRST_NAME"),
-                        @ColumnResult(name = "LAST_NAME"),
-                        @ColumnResult(name = "EMAIL"),
-                        @ColumnResult(name = "MOBILE_NO"),
+                        @ConstructorResult(
+                                targetClass = UserDTO.class,
+                                columns = {
+                                        @ColumnResult(name = "ID"),
+                                        @ColumnResult(name = "FIRST_NAME"),
+                                        @ColumnResult(name = "LAST_NAME"),
+                                        @ColumnResult(name = "EMAIL"),
+                                        @ColumnResult(name = "MOBILE_NO"),
+                                })
                 }
         )
-
 })
 public class User implements BaseEntity {
 

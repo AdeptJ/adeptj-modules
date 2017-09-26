@@ -258,7 +258,7 @@ public interface JpaCrudRepository {
      * of type specified as resultClass.
      *
      * @param resultClass the type of the Constructor being mapped
-     * @param jpaQuery    query in JPQL format
+     * @param jpaQuery    query in JPQL format (JPA SELECT NEW syntax)
      * @param posParams   List of parameters to bind to query a.k.a positional parameters
      * @param <T>         Type of returned instance
      * @return List of instances of type as resultClass

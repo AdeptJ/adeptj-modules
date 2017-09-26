@@ -356,7 +356,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     public <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            return (List<T>) JpaUtil.queryWithParams(em.createNamedQuery(namedQuery), posParams)
+            return JpaUtil.queryWithParams(em.createNamedQuery(namedQuery), posParams)
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
