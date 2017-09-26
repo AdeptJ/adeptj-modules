@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_PID;
@@ -68,8 +68,8 @@ public class JpaCrudRepositoryManager {
     @Activate
     protected void start(BundleContext context) {
         this.context = context;
-        this.jpaCrudRepositoryRegistrations = new HashMap<>();
-        this.entityManagerFactories = new HashMap<>();
+        this.jpaCrudRepositoryRegistrations = new ConcurrentHashMap<>();
+        this.entityManagerFactories = new ConcurrentHashMap<>();
     }
 
     @Deactivate
