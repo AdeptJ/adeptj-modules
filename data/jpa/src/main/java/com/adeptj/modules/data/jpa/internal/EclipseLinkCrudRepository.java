@@ -462,12 +462,27 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> findByQueryAndMapDefault(Class<T> resultClass, String nativeQuery, List<Object> posParams) {
+        EntityManager em = this.emf.createEntityManager();
+        try {
+            return JpaUtil.queryWithParams(em.createNativeQuery(nativeQuery, resultClass), posParams)
+                    .getResultList();
+        } catch (RuntimeException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
+        } finally {
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> findAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
+    public <T> List<T> findByQueryAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
         EntityManager em = this.emf.createEntityManager();
         try {
             Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
@@ -485,7 +500,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T> List<T> findAndMapConstructorByQuery(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
+    public <T> List<T> findByQueryAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
         EntityManager em = this.emf.createEntityManager();
         try {
             return JpaUtil.typedQueryWithParams(em.createQuery(jpaQuery, resultClass), posParams)
@@ -502,7 +517,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T extends BaseEntity, C> List<C> findAndMapConstructorByCriteria(ConstructorCriteria<T, C> criteria) {
+    public <T extends BaseEntity, C> List<C> findByCriteriaAndMapConstructor(ConstructorCriteria<T, C> criteria) {
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();

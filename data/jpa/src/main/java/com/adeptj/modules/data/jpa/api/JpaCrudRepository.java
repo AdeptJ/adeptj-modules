@@ -243,15 +243,28 @@ public interface JpaCrudRepository {
     <T extends BaseEntity> List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values);
 
     /**
+     * Finds the entity using given native query and project in the given result class.
+     * <p>
+     * Note: Use only if the names and the types of the query result match to the entity properties.
+     *
+     * @param resultClass the type of the query result
+     * @param nativeQuery the native query string
+     * @param posParams   List of parameters to bind to query a.k.a positional parameters
+     * @param <T>         Type of returned instance
+     * @return List of entity found by query execution
+     */
+    <T> List<T> findByQueryAndMapDefault(Class<T> resultClass, String nativeQuery, List<Object> posParams);
+
+    /**
      * Finds the entity using given named native query and project in the given result class.
      *
      * @param resultClass the type of the query result
      * @param mappingDTO  DTO containing the native query, resultSetMapping and
      *                    List of parameters to bind to query a.k.a positional parameters
      * @param <T>         Type of returned instance
-     * @return singular result from query execution
+     * @return List of entity found by query execution
      */
-    <T> List<T> findAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO);
+    <T> List<T> findByQueryAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO);
 
     /**
      * First find the entity using the given Jpa query and then Map the result to the constructor
@@ -263,7 +276,7 @@ public interface JpaCrudRepository {
      * @param <T>         Type of returned instance
      * @return List of instances of type as resultClass
      */
-    <T> List<T> findAndMapConstructorByQuery(Class<T> resultClass, String jpaQuery, List<Object> posParams);
+    <T> List<T> findByQueryAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams);
 
     /**
      * First find the entity using the Jpa criteria and then Map the result to the constructor
@@ -277,7 +290,7 @@ public interface JpaCrudRepository {
      * @param <C>      Constructor type
      * @return List of instances of type specified by type parameter C
      */
-    <T extends BaseEntity, C> List<C> findAndMapConstructorByCriteria(ConstructorCriteria<T, C> criteria);
+    <T extends BaseEntity, C> List<C> findByCriteriaAndMapConstructor(ConstructorCriteria<T, C> criteria);
 
     /**
      * Gets the single result against the named query which must be in JPQL format.

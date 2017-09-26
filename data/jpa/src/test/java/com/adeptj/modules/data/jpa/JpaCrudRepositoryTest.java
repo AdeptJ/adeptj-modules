@@ -243,7 +243,7 @@ public class JpaCrudRepositoryTest {
     public void testFindAndMapResultSet() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findAndMapResultSet(User.class, ResultSetMappingDTO.builder()
+        crudRepository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
                 .nativeQuery("SELECT * FROM  Users u WHERE MOBILE_NO = ?1")
                 .resultSetMapping("User.findUserByContact.EntityMapping")
                 .addPosParam(posParams)
@@ -262,7 +262,7 @@ public class JpaCrudRepositoryTest {
                 "FROM User u WHERE u.contact = ?1";
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findAndMapConstructorByQuery(UserDTO.class, jpaQuery, posParams)
+        crudRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery, posParams)
                 .forEach(user -> {
                     System.out.println("User ID: " + user.getId());
                     System.out.println("FirstName: " + user.getFirstName());
@@ -273,7 +273,7 @@ public class JpaCrudRepositoryTest {
 
     @Test
     public void testFindAndMapConstructorByCriteria() {
-        List<UserDTO> usersDTOList = crudRepository.findAndMapConstructorByCriteria(ConstructorCriteria.builder()
+        List<UserDTO> usersDTOList = crudRepository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder()
                 .entity(User.class)
                 .constructorClass(UserDTO.class)
                 .addSelections("id", "firstName", "lastName", "email")
