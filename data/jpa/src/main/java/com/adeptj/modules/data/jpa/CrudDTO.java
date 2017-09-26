@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,6 +30,9 @@ import java.util.List;
  * @author Rakesh.Kumar, AdeptJ
  */
 public class CrudDTO<T extends BaseEntity> {
+
+    private CrudDTO() {
+    }
 
     private Class<T> entity;
 
@@ -115,6 +119,14 @@ public class CrudDTO<T extends BaseEntity> {
                 this.posParams = new ArrayList<>();
             }
             this.posParams.add(param);
+            return this;
+        }
+
+        public Builder addPosParams(Object... params) {
+            if (this.posParams == null) {
+                this.posParams = new ArrayList<>();
+            }
+            this.posParams.add(Arrays.asList(params));
             return this;
         }
 

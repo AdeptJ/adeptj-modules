@@ -22,39 +22,34 @@ package com.adeptj.modules.data.jpa;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Criteria object holding arguments for JpaCrudRepository find* methods.
+ * ResultSetMappingDTO for feting entities using SQL ResultSet mapping.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
+public class ResultSetMappingDTO {
+
+    private String nativeQuery;
+
+    private String resultSetMapping;
 
     private List<Object> posParams;
 
-    // For pagination - Start
-    private int startPos;
+    private ResultSetMappingDTO() {
+    }
 
-    private int maxResult;
-    // For pagination - End
+    public String getNativeQuery() {
+        return nativeQuery;
+    }
 
-    private ReadCriteria(Class<T> entity) {
-        super(entity);
+    public String getResultSetMapping() {
+        return resultSetMapping;
     }
 
     public List<Object> getPosParams() {
         return posParams;
-    }
-
-    public int getStartPos() {
-        return startPos;
-    }
-
-    public int getMaxResult() {
-        return maxResult;
     }
 
     public static Builder builder() {
@@ -62,7 +57,7 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
     }
 
     /**
-     * Builder for creating {@link ReadCriteria}
+     * Builder for creating {@link ResultSetMappingDTO}
      */
     public static class Builder {
 
@@ -70,26 +65,19 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         private Builder() {
         }
 
-        private Class<? extends BaseEntity> entity;
+        private String nativeQuery;
 
-        private Map<String, Object> criteriaAttributes;
+        private String resultSetMapping;
 
         private List<Object> posParams;
 
-        private int startPos;
-
-        private int maxResult;
-
-        public <T extends BaseEntity> Builder entity(Class<T> entity) {
-            this.entity = entity;
+        public Builder nativeQuery(String nativeQuery) {
+            this.nativeQuery = nativeQuery;
             return this;
         }
 
-        public Builder addCriteriaAttribute(String attributeName, Object value) {
-            if (this.criteriaAttributes == null) {
-                this.criteriaAttributes = new HashMap<>();
-            }
-            this.criteriaAttributes.put(attributeName, value);
+        public Builder resultSetMapping(String resultSetMapping) {
+            this.resultSetMapping = resultSetMapping;
             return this;
         }
 
@@ -109,24 +97,12 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder startPos(int startPos) {
-            this.startPos = startPos;
-            return this;
-        }
-
-        public Builder maxResult(int maxResult) {
-            this.maxResult = maxResult;
-            return this;
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T extends BaseEntity> ReadCriteria<T> build() {
-            ReadCriteria<T> criteria = new ReadCriteria<>((Class<T>) this.entity);
-            criteria.criteriaAttributes = this.criteriaAttributes;
-            criteria.posParams = this.posParams;
-            criteria.startPos = this.startPos;
-            criteria.maxResult = this.maxResult;
-            return criteria;
+        public ResultSetMappingDTO build() {
+            ResultSetMappingDTO resultSetMappingDTO = new ResultSetMappingDTO();
+            resultSetMappingDTO.nativeQuery = this.nativeQuery;
+            resultSetMappingDTO.resultSetMapping = this.resultSetMapping;
+            resultSetMappingDTO.posParams = this.posParams;
+            return resultSetMappingDTO;
         }
     }
 }

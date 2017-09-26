@@ -25,6 +25,7 @@ import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.ReadCriteria;
+import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
 
@@ -245,13 +246,12 @@ public interface JpaCrudRepository {
      * Finds the entity using given named native query and project in the given result class.
      *
      * @param resultClass the type of the query result
-     * @param nativeQuery   the native query
-     * @param mapping     the name of the result set mapping
-     * @param posParams   List of parameters to bind to query a.k.a positional parameters
+     * @param mappingDTO  DTO containing the native query, resultSetMapping and
+     *                    List of parameters to bind to query a.k.a positional parameters
      * @param <T>         Type of returned instance
      * @return singular result from query execution
      */
-    <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeQuery, String mapping, List<Object> posParams);
+    <T> List<T> findAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO);
 
     /**
      * First find the entity using the given Jpa query and then Map the result to the constructor

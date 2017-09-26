@@ -7,6 +7,7 @@ import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.PersistenceException;
 import com.adeptj.modules.data.jpa.ReadCriteria;
+import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
 import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -465,10 +467,11 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> findAndMapResultSet(Class<T> resultClass, String nativeQuery, String mapping, List<Object> posParams) {
+    public <T> List<T> findAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
         EntityManager em = this.emf.createEntityManager();
         try {
-            return (List<T>) JpaUtil.queryWithParams(em.createNativeQuery(nativeQuery, mapping), posParams)
+            Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
+            return JpaUtil.queryWithParams(query, mappingDTO.getPosParams())
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);

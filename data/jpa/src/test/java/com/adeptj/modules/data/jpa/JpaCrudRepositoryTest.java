@@ -218,8 +218,7 @@ public class JpaCrudRepositoryTest {
         List<User> users = crudRepository.findByJpaQuery(CrudDTO.builder()
                 .entity(User.class)
                 .jpaQuery("SELECT u FROM  User u WHERE u.firstName = ?1 and u.contact = ?2")
-                .addPosParam("John")
-                .addPosParam("1234567890")
+                .addPosParams("John", "1234567890")
                 .build());
         users.forEach(user -> {
             System.out.println("FirstName: " + user.getFirstName());
@@ -244,14 +243,17 @@ public class JpaCrudRepositoryTest {
     public void testFindAndMapResultSet() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findAndMapResultSet(User.class,
-                "SELECT * FROM  Users u WHERE MOBILE_NO = ?1",
-                "User.findUserByContact.EntityMapping", posParams).forEach(user -> {
-            System.out.println("User ID: " + user.getId());
-            System.out.println("FirstName: " + user.getFirstName());
-            System.out.println("LastName: " + user.getLastName());
+        crudRepository.findAndMapResultSet(User.class, ResultSetMappingDTO.builder()
+                .nativeQuery("SELECT * FROM  Users u WHERE MOBILE_NO = ?1")
+                .resultSetMapping("User.findUserByContact.EntityMapping")
+                .addPosParam(posParams)
+                .build())
+                .forEach(user -> {
+                    System.out.println("User ID: " + user.getId());
+                    System.out.println("FirstName: " + user.getFirstName());
+                    System.out.println("LastName: " + user.getLastName());
 
-        });
+                });
     }
 
     @Test
@@ -260,12 +262,13 @@ public class JpaCrudRepositoryTest {
                 "FROM User u WHERE u.contact = ?1";
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findAndMapConstructorByQuery(UserDTO.class, jpaQuery, posParams).forEach(user -> {
-            System.out.println("User ID: " + user.getId());
-            System.out.println("FirstName: " + user.getFirstName());
-            System.out.println("LastName: " + user.getLastName());
+        crudRepository.findAndMapConstructorByQuery(UserDTO.class, jpaQuery, posParams)
+                .forEach(user -> {
+                    System.out.println("User ID: " + user.getId());
+                    System.out.println("FirstName: " + user.getFirstName());
+                    System.out.println("LastName: " + user.getLastName());
 
-        });
+                });
     }
 
     @Test
@@ -276,12 +279,11 @@ public class JpaCrudRepositoryTest {
                 .addSelections("id", "firstName", "lastName", "email")
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
-        usersDTOList
-                .forEach((UserDTO dto) -> {
-                    System.out.println("User ID: " + dto.getId());
-                    System.out.println("FirstName: " + dto.getFirstName());
-                    System.out.println("LastName: " + dto.getLastName());
+        usersDTOList.forEach((UserDTO dto) -> {
+            System.out.println("User ID: " + dto.getId());
+            System.out.println("FirstName: " + dto.getFirstName());
+            System.out.println("LastName: " + dto.getLastName());
 
-                });
+        });
     }
 }
