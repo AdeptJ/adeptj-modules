@@ -127,7 +127,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             criteria.getUpdateAttributes().forEach(cu::set);
             Root<T> root = cu.from(criteria.getEntity());
             int rowsUpdated = em
-                    .createQuery(cu.where(cb.and(this.withPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .createQuery(cu.where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .executeUpdate();
             txn.commit();
             LOGGER.debug("No. of rows updated: {}", rowsUpdated);
@@ -212,7 +212,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
             Root<T> root = cd.from(criteria.getEntity());
             int rowsDeleted = em
-                    .createQuery(cd.where(cb.and(this.withPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .createQuery(cd.where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .executeUpdate();
             txn.commit();
             LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
@@ -281,7 +281,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq
-                    .where(cb.and(this.withPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -306,7 +306,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .map(root::get)
                     .collect(Collectors.toList())
                     .toArray(new Selection[LEN_ZERO]))
-                    .where(cb.and(this.withPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -327,7 +327,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq
-                    .where(cb.and(this.withPredicates(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(this.getPredicates(criteria.getCriteriaAttributes(), cb, root))))
                     .setFirstResult(criteria.getStartPos())
                     .setMaxResults(criteria.getMaxResult())
                     .getResultList();
@@ -524,7 +524,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
                     .map(root::get)
                     .collect(Collectors.toList())
                     .toArray(new Selection[LEN_ZERO])))
-                    .where(this.withPredicates(criteria.getCriteriaAttributes(), cb, root)))
+                    .where(this.getPredicates(criteria.getCriteriaAttributes(), cb, root)))
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -582,7 +582,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             Root<T> from = cq.from(entity);
             return em.createQuery(cq
                     .select(cb.count(from))
-                    .where(cb.and(this.withPredicates(criteriaAttributes, cb, from))))
+                    .where(cb.and(this.getPredicates(criteriaAttributes, cb, from))))
                     .getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -627,7 +627,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
         }
     }
 
-    private <T> Predicate[] withPredicates(Map<String, Object> attributes, CriteriaBuilder cb, Root<T> root) {
+    private <T> Predicate[] getPredicates(Map<String, Object> attributes, CriteriaBuilder cb, Root<T> root) {
         return attributes
                 .entrySet()
                 .stream()
