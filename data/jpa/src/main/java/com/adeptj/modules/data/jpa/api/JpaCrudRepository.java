@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * JPA Repository for CRUD operations to be performed by the application on underlying DB.
+ * JPA 2.2 Repository for CRUD operations to be performed by the application on underlying DB.
  * All the operations defined in the contract throw PersistenceException which is a wrapped exception
  * of the actual exception thrown by the PersistenceProvider.
  * <p>

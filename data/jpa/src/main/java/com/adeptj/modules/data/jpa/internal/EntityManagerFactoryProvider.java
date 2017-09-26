@@ -118,11 +118,11 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
     }
 
     private void createEntityManagerFactory(String pid, Dictionary<String, ?> configs) {
+        EntityManagerFactory emf = null;
         try {
             String unitName = (String) configs.get("unitName");
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-            EntityManagerFactory emf = new PersistenceProvider().createEntityManagerFactory(unitName,
-                    this.jpaProperties(configs));
+            emf = new PersistenceProvider().createEntityManagerFactory(unitName, this.jpaProperties(configs));
             if (emf == null) {
                 LOGGER.warn("Could not initialize EntityManagerFactory, Most probably persistence.xml not found!!");
             } else {
@@ -138,6 +138,9 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);
+            if (emf != null) {
+                emf.close();
+            }
         }
     }
 
@@ -160,7 +163,7 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
         jpaProperties.put(VALIDATION_MODE, configs.get("validationMode"));
         // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
         jpaProperties.putAll(Arrays.stream((String[]) configs.get("jpaProperties"))
-                .filter(StringUtils::isNotBlank)
+                .filter(StringUtils::isNotEmpty)
                 .map(prop -> prop.split("="))
                 .collect(Collectors.toMap(elem -> elem[0], elem -> elem[1])));
         return jpaProperties;

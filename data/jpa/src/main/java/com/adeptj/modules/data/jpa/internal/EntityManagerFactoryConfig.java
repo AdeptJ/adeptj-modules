@@ -81,7 +81,7 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "EclipseLink LoggingFile",
-            description = "EclipseLink Logging File"
+            description = "EclipseLink Logging File, relative to current working directory"
     )
     String loggingFile() default "adeptj-runtime/deployment/logs/jpa.log";
 
@@ -140,12 +140,12 @@ public @interface EntityManagerFactoryConfig {
             description = "EclipseLink Logging Level",
             options = {
                     @Option(label = FINE, value = FINE),
+                    @Option(label = FINER, value = FINER),
                     @Option(label = FINEST, value = FINEST),
                     @Option(label = SEVERE, value = SEVERE),
                     @Option(label = WARNING, value = WARNING),
                     @Option(label = INFO, value = INFO),
                     @Option(label = CONFIG, value = CONFIG),
-                    @Option(label = FINER, value = FINER),
                     @Option(label = OFF, value = OFF),
                     @Option(label = ALL, value = ALL)
             })
@@ -166,9 +166,9 @@ public @interface EntityManagerFactoryConfig {
             description = "Specifies how the DDL runs",
             options = {
                     @Option(label = "CREATE_OR_EXTEND", value = CREATE_OR_EXTEND),
-                    @Option(label = "DROP_ONLY", value = DROP_ONLY),
                     @Option(label = "CREATE_ONLY", value = CREATE_ONLY),
                     @Option(label = "DROP_AND_CREATE", value = DROP_AND_CREATE),
+                    @Option(label = "DROP_ONLY", value = DROP_ONLY),
                     @Option(label = "NONE", value = NONE),
             })
     String ddlGeneration();

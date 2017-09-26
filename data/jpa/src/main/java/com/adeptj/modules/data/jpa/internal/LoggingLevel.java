@@ -25,7 +25,7 @@ package com.adeptj.modules.data.jpa.internal;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class LoggingLevel {
+final class LoggingLevel {
 
     static final String OFF = "OFF";
 

@@ -35,8 +35,10 @@ public class JpaCrudRepositoryManager {
 
     private Map<String, ServiceRegistration<JpaCrudRepository>> jpaCrudRepositoryRegistrations;
 
+    private Map<String, EntityManagerFactory> entityManagerFactories;
+
     void registerJpaCrudRepository(String unitName, EntityManagerFactory emf) {
-        Dictionary<String , String> properties = new Hashtable<>();
+        Dictionary<String, String> properties = new Hashtable<>();
         properties.put(SERVICE_VENDOR, "AdeptJ");
         properties.put(SERVICE_PID, EclipseLinkCrudRepository.class.getName());
         properties.put(SERVICE_DESCRIPTION, "AdeptJ Modules JpaCrudRepository(EclipseLink)");
@@ -44,13 +46,14 @@ public class JpaCrudRepositoryManager {
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
         this.jpaCrudRepositoryRegistrations.put(unitName, this.context.registerService(JpaCrudRepository.class,
                 new EclipseLinkCrudRepository(emf), properties));
+        this.entityManagerFactories.put(unitName, emf);
     }
 
     void unregisterJpaCrudRepository(String unitName) {
         try {
             ServiceRegistration<JpaCrudRepository> svcReg = this.jpaCrudRepositoryRegistrations.remove(unitName);
             if (svcReg == null) {
-                LOGGER.info("No JpaCrudRepository found for PersistenceUnit: [{}]", unitName);
+                LOGGER.warn("No JpaCrudRepository found for PersistenceUnit: [{}]", unitName);
             } else {
                 LOGGER.info("un-registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
                 svcReg.unregister();
@@ -63,17 +66,41 @@ public class JpaCrudRepositoryManager {
     // Lifecycle Methods
 
     @Activate
-    protected void activate(BundleContext context) {
+    protected void start(BundleContext context) {
         this.context = context;
         this.jpaCrudRepositoryRegistrations = new HashMap<>();
+        this.entityManagerFactories = new HashMap<>();
     }
 
     @Deactivate
-    protected void deactivate() {
+    protected void stop() {
+        this.unregisterJpaCrudRepositories();
+        this.closeEntityManagerFactories();
+    }
+
+    private void unregisterJpaCrudRepositories() {
+        this.jpaCrudRepositoryRegistrations.forEach((unitName, svcReg) -> {
+            try {
+                svcReg.unregister();
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error("Exception while un-registering JpaCrudRepository services!!", ex);
+            }
+        });
+    }
+
+    private void closeEntityManagerFactories() {
+        this.entityManagerFactories
+                .entrySet()
+                .stream()
+                .filter(emfEntry -> emfEntry.getValue().isOpen())
+                .forEach(this::closeEntityManagerFactory);
+    }
+
+    private void closeEntityManagerFactory(Map.Entry<String, EntityManagerFactory> entry) {
         try {
-            this.jpaCrudRepositoryRegistrations.forEach((unitName, svcReg) -> svcReg.unregister());
+            entry.getValue().close();
         } catch (Exception ex) { // NOSONAR
-            LOGGER.error("Exception while un-registering JpaCrudRepository services!!", ex);
+            LOGGER.error("Exception while closing EntityManagerFactory!!", ex);
         }
     }
 }
