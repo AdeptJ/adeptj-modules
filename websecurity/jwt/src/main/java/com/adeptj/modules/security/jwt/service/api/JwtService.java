@@ -18,7 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt;
+package com.adeptj.modules.security.jwt.service.api;
+
+import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 
 import java.util.Map;
 

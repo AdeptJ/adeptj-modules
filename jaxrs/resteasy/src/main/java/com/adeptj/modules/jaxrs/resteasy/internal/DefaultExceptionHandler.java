@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import com.adeptj.modules.jaxrs.core.ErrorResponse;
 import org.jboss.resteasy.spi.ApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,8 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Handles all the unhandled exceptions coming out of resource method calls.
+ * Sends the unhandled exception's message coming out of resource method calls as JSON response if showException
+ * is set as true otherwise a generic error message is sent as plain text.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

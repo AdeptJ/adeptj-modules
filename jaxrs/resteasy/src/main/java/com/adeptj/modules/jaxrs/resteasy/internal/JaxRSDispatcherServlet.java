@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.commons.utils.Loggers;
+import com.adeptj.modules.jaxrs.core.JaxRSExceptionHandler;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
 import org.jboss.resteasy.core.Dispatcher;

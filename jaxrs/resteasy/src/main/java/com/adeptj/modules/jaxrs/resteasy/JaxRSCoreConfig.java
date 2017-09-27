@@ -96,7 +96,7 @@ public @interface JaxRSCoreConfig {
     // Common configs
 
     @AttributeDefinition(
-            name = "Show Exception Message",
+            name = "Show Exception Message as JSON",
             description = "Whether to show exception message in error response"
     )
     boolean showException() default true;

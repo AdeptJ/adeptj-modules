@@ -22,7 +22,7 @@ package com.adeptj.modules.jaxrs.core.jwt;
 import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
-import com.adeptj.modules.security.jwt.JwtService;
+import com.adeptj.modules.security.jwt.service.api.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

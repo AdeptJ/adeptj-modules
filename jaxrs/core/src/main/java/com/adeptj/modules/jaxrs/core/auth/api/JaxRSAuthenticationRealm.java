@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.core.auth.api;
 
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.security.jwt.service.api.JwtService;
 
 /**
  * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
@@ -47,7 +48,7 @@ public interface JaxRSAuthenticationRealm {
     /**
      * Implementations should validate the credentials supplied and return the JaxRSAuthenticationInfo
      * populated with other useful information that can be put into it as it is a map.
-     * This information is later used by {@link com.adeptj.modules.security.jwt.JwtService} for
+     * This information is later used by {@link JwtService} for
      * putting this information in JWT claims.
      * <p>
      * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by

@@ -18,9 +18,8 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
+package com.adeptj.modules.jaxrs.core;
 
-import com.adeptj.modules.jaxrs.core.JaxRSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +31,8 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * {@link ExceptionMapper} for JaxRSException.
+ * {@link ExceptionMapper} for JaxRSException sends the unhandled JaxRSException's message coming out of resource method calls
+ * as JSON response if showException is set as true otherwise a generic error message is sent as plain text.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -43,7 +43,7 @@ public class JaxRSExceptionHandler implements ExceptionMapper<JaxRSException> {
 
     private boolean showException;
 
-    JaxRSExceptionHandler(boolean showException) {
+    public JaxRSExceptionHandler(boolean showException) {
         this.showException = showException;
     }
 

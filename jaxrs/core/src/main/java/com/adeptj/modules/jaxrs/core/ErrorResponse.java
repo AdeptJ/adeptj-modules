@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
+package com.adeptj.modules.jaxrs.core;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,14 +29,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ErrorResponse {
 
-    private static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it." +
-            " Please try again later!!";
+    private static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it.Please try again later!!";
 
     private String status;
 
     private String message;
 
-    ErrorResponse(String status, Exception ex, boolean showException) {
+    public ErrorResponse(String status, Exception ex, boolean showException) {
         this.status = status;
         if (showException) {
             this.message = StringUtils.isEmpty(ex.getMessage()) ? DEFAULT_ERROR_MSG : ex.getMessage();

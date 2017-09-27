@@ -18,11 +18,11 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.internal;
+package com.adeptj.modules.security.jwt.service.internal;
 
-import com.adeptj.modules.security.jwt.JwtClaimsValidator;
+import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import com.adeptj.modules.security.jwt.JwtConfig;
-import com.adeptj.modules.security.jwt.JwtService;
+import com.adeptj.modules.security.jwt.service.api.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;

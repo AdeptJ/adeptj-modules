@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.internal;
+package com.adeptj.modules.security.jwt.service.internal;
 
 import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.security.jwt.JwtConfig;
