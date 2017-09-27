@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.jwt.validation;
 
-import com.adeptj.modules.security.jwt.service.api.JwtService;
+import com.adeptj.modules.security.jwt.JwtService;
 
 import java.util.Map;
 

@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.security.jwt.service.api.JwtService;
+import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;

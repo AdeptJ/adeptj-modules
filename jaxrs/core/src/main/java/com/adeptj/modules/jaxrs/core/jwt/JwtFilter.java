@@ -20,7 +20,7 @@
 package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.commons.utils.Loggers;
-import com.adeptj.modules.security.jwt.service.api.JwtService;
+import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

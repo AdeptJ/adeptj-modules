@@ -21,7 +21,6 @@
 -dsannotations: *
 
 Export-Package: com.adeptj.modules.security.jwt, \
-                com.adeptj.modules.security.jwt.service.api, \
                 com.adeptj.modules.security.jwt.validation
 
 Bundle-Name: ${project.name}
