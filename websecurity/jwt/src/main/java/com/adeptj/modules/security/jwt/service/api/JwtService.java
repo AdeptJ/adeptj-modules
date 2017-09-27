@@ -55,7 +55,7 @@ public interface JwtService {
      *
      * @param jwt claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
      * @return A boolean indicating {@link JwtService} was able to parse the JWT or not, a false should be treated as
-     * an indication of failure so that caller can take action accordingly, such has setting 403 status.
+     * an indication of failure so that caller can take action accordingly, such has setting 401 status.
      */
     boolean verifyJwt(String jwt);
 }

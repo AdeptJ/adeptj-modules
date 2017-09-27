@@ -43,7 +43,6 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static com.adeptj.modules.jaxrs.core.jwt.JwtResource.RESOURCE_BASE;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -96,7 +95,8 @@ public class JwtResource {
         }
         try {
             JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
-            return authInfo == null ? Response.status(UNAUTHORIZED).build() :
+            return authInfo == null ?
+                    Response.status(UNAUTHORIZED).build() :
                     this.responseWithJwt(username, authInfo);
         } catch (Exception ex) {
             throw JaxRSException.builder()
@@ -119,16 +119,18 @@ public class JwtResource {
     @GET
     @Path("/jwt/verify")
     public Response verifyJwt() {
-        return Response.ok("JWT verified successfully!!")
-                .type(TEXT_PLAIN)
-                .build();
+        return Response.noContent().build();
     }
 
     private Response responseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
         String jwt = this.jwtService.issueJwt(username, authInfo);
         return this.cookieConfig.enabled() ?
-                Response.ok().cookie(JwtUtil.buildJwtCookie(this.cookieConfig, jwt)).build() :
-                Response.ok().header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt).build();
+                Response.ok()
+                        .cookie(JwtUtil.buildJwtCookie(this.cookieConfig, jwt))
+                        .build() :
+                Response.ok()
+                        .header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt)
+                        .build();
     }
 
     /**
