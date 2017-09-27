@@ -43,6 +43,7 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static com.adeptj.modules.jaxrs.core.jwt.JwtResource.RESOURCE_BASE;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -119,7 +120,9 @@ public class JwtResource {
     @GET
     @Path("/jwt/verify")
     public Response verifyJwt() {
-        return Response.noContent().build();
+        return Response.ok("Jwt verified successfully!!")
+                .type(TEXT_PLAIN)
+                .build();
     }
 
     private Response responseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
