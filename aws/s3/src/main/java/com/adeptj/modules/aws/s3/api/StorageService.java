@@ -20,7 +20,7 @@
 package com.adeptj.modules.aws.s3.api;
 
 import com.adeptj.modules.aws.s3.S3Response;
-import com.adeptj.modules.aws.s3.UploadRequest;
+import com.adeptj.modules.aws.s3.S3Request;
 
 /**
  * Service for various operations on AWS S3.
@@ -35,7 +35,7 @@ public interface StorageService {
 
     S3Response createFolder(String bucketName, String folderName);
 
-    S3Response uploadFile(UploadRequest request);
+    S3Response uploadFile(S3Request request);
 
     S3Response getFile(String bucketName, String key);
 

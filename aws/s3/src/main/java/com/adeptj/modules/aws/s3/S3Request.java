@@ -30,7 +30,7 @@ import java.io.InputStream;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class UploadRequest {
+public final class S3Request {
 
     private String bucketName;
 
@@ -44,7 +44,7 @@ public class UploadRequest {
 
     private CannedAccessControlList cannedACL;
 
-    private UploadRequest(String bucketName, String key) {
+    private S3Request(String bucketName, String key) {
         this.bucketName = bucketName;
         this.key = key;
     }
@@ -78,9 +78,9 @@ public class UploadRequest {
     }
 
     /**
-     * Builder for creating {@link UploadRequest} fluently.
+     * Builder for creating {@link S3Request} fluently.
      */
-    public static class Builder {
+    public static final class Builder {
 
         private String bucketName;
 
@@ -93,6 +93,10 @@ public class UploadRequest {
         private InputStream data;
 
         private CannedAccessControlList cannedACL;
+
+        // no public access as available through static method.
+        private Builder() {
+        }
 
         public Builder bucketName(String bucketName) {
             this.bucketName = bucketName;
@@ -124,13 +128,13 @@ public class UploadRequest {
             return this;
         }
 
-        public UploadRequest build() {
-            UploadRequest request = new UploadRequest(this.bucketName, this.key);
-            request.folderName = this.folderName;
-            request.metadata = metadata;
-            request.data = this.data;
-            request.cannedACL = this.cannedACL;
-            return request;
+        public S3Request build() {
+            S3Request s3Request = new S3Request(this.bucketName, this.key);
+            s3Request.folderName = this.folderName;
+            s3Request.metadata = metadata;
+            s3Request.data = this.data;
+            s3Request.cannedACL = this.cannedACL;
+            return s3Request;
         }
     }
 }

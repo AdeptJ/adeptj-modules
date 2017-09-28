@@ -66,7 +66,7 @@ public class UploadResource {
             String cannedACL = multipart.getFormDataPart("access", String.class, null);
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setHeader(CONTENT_LENGTH, (long) data.length);
-            this.storageService.uploadFile(UploadRequest.builder()
+            this.storageService.uploadFile(S3Request.builder()
                     .bucketName(bucketName)
                     .key(key)
                     .data(new ByteArrayInputStream(data))

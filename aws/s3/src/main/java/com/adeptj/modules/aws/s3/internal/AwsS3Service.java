@@ -22,7 +22,7 @@ package com.adeptj.modules.aws.s3.internal;
 import com.adeptj.modules.aws.core.AwsException;
 import com.adeptj.modules.aws.s3.S3Config;
 import com.adeptj.modules.aws.s3.S3Response;
-import com.adeptj.modules.aws.s3.UploadRequest;
+import com.adeptj.modules.aws.s3.S3Request;
 import com.adeptj.modules.aws.s3.api.StorageService;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -112,7 +112,7 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public S3Response uploadFile(UploadRequest request) {
+    public S3Response uploadFile(S3Request request) {
         InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);
         ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), OBJ_METADATA_NULL_MSG);
         CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), ACL_NULL_MSG);
