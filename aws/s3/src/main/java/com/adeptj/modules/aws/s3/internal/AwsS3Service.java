@@ -20,13 +20,11 @@
 package com.adeptj.modules.aws.s3.internal;
 
 import com.adeptj.modules.aws.core.AwsException;
+import com.adeptj.modules.aws.core.AwsUtil;
 import com.adeptj.modules.aws.s3.S3Config;
-import com.adeptj.modules.aws.s3.S3Response;
 import com.adeptj.modules.aws.s3.S3Request;
+import com.adeptj.modules.aws.s3.S3Response;
 import com.adeptj.modules.aws.s3.api.StorageService;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -156,16 +154,15 @@ public class AwsS3Service implements StorageService {
         return this.s3Client.getRegionName();
     }
 
-    // Lifecycle Methods
+    // Component Lifecycle Methods
 
     @Activate
-    protected void start(S3Config config) {
+    protected void start(S3Config s3Config) {
         try {
             this.s3Client = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(config.accessKey(),
-                            config.secretKey())))
-                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config.serviceEndpoint(),
-                            config.signingRegion()))
+                    .withEndpointConfiguration(AwsUtil.getEndpointConfig(s3Config.serviceEndpoint(),
+                            s3Config.signingRegion()))
+                    .withCredentials(AwsUtil.getCredentialsProvider(s3Config.accessKey(), s3Config.secretKey()))
                     .build();
         } catch (Throwable ex) { //NOSONAR
             LOGGER.error("Exception while creating S3 client!!", ex);

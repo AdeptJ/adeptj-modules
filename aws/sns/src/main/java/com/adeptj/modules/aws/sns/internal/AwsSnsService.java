@@ -20,13 +20,11 @@
 package com.adeptj.modules.aws.sns.internal;
 
 import com.adeptj.modules.aws.core.AwsException;
+import com.adeptj.modules.aws.core.AwsUtil;
 import com.adeptj.modules.aws.sns.SmsConfig;
 import com.adeptj.modules.aws.sns.SmsRequest;
 import com.adeptj.modules.aws.sns.SmsResponse;
 import com.adeptj.modules.aws.sns.api.SmsService;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
@@ -92,7 +90,7 @@ public class AwsSnsService implements SmsService {
     }
 
 
-    // Lifecycle Methods
+    // Component Lifecycle Methods
 
     @Activate
     protected void start(SmsConfig smsConfig) {
@@ -105,10 +103,9 @@ public class AwsSnsService implements SmsService {
                 .withDataType("String"));
         try {
             this.asyncSNS = AmazonSNSAsyncClientBuilder.standard()
-                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(smsConfig.serviceEndpoint(),
+                    .withEndpointConfiguration(AwsUtil.getEndpointConfig(smsConfig.serviceEndpoint(),
                             smsConfig.signingRegion()))
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(smsConfig.accessKey(),
-                            smsConfig.secretKey())))
+                    .withCredentials(AwsUtil.getCredentialsProvider(smsConfig.accessKey(), smsConfig.secretKey()))
                     .build();
             this.awsSnsAsyncHandler = new AwsSnsAsyncHandler();
         } catch (Exception ex) {

@@ -20,13 +20,11 @@
 package com.adeptj.modules.aws.ses.internal;
 
 import com.adeptj.modules.aws.core.AwsException;
+import com.adeptj.modules.aws.core.AwsUtil;
 import com.adeptj.modules.aws.ses.EmailConfig;
 import com.adeptj.modules.aws.ses.EmailRequest;
 import com.adeptj.modules.aws.ses.EmailResponse;
 import com.adeptj.modules.aws.ses.api.EmailService;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClientBuilder;
 import com.amazonaws.services.simpleemail.model.Body;
@@ -106,17 +104,16 @@ public class AwsSesService implements EmailService {
         }
     }
 
-    // Lifecycle Methods
+    // Component Lifecycle Methods
 
     @Activate
     protected void activate(EmailConfig emailConfig) {
         this.emailConfig = emailConfig;
         try {
             this.asyncSES = AmazonSimpleEmailServiceAsyncClientBuilder.standard()
-                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(emailConfig.serviceEndpoint(),
+                    .withEndpointConfiguration(AwsUtil.getEndpointConfig(emailConfig.serviceEndpoint(),
                             emailConfig.signingRegion()))
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(emailConfig.accessKey(),
-                            emailConfig.secretKey())))
+                    .withCredentials(AwsUtil.getCredentialsProvider(emailConfig.accessKey(), emailConfig.secretKey()))
                     .build();
             this.awsSesAsyncHandler = new AwsSesAsyncHandler();
         } catch (Exception ex) {

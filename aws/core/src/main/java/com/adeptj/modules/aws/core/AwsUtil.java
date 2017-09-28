@@ -20,14 +20,28 @@
 
 package com.adeptj.modules.aws.core;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+
+import static com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
+
 /**
  * AWS utilities.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class AwsUtil {
+public final class AwsUtil {
 
     // Only static utilities therefore deny instantiation.
     private AwsUtil() {
+    }
+
+    public static AWSCredentialsProvider getCredentialsProvider(String accessKey, String secretKey) {
+        return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+    }
+
+    public static EndpointConfiguration getEndpointConfig(String serviceEndpoint, String signingRegion) {
+        return new EndpointConfiguration(serviceEndpoint, signingRegion);
     }
 }
