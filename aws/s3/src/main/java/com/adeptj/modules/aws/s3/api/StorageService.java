@@ -19,10 +19,8 @@
 */
 package com.adeptj.modules.aws.s3.api;
 
+import com.adeptj.modules.aws.s3.S3Response;
 import com.adeptj.modules.aws.s3.UploadRequest;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.S3Object;
 
 /**
  * Service for various operations on AWS S3.
@@ -31,15 +29,15 @@ import com.amazonaws.services.s3.model.S3Object;
  */
 public interface StorageService {
 
-    Bucket createBucket(String bucketName);
+    S3Response createBucket(String bucketName);
 
     void deleteBucket(String bucketName);
 
-    PutObjectResult createFolder(String bucketName, String folderName);
+    S3Response createFolder(String bucketName, String folderName);
 
-    PutObjectResult uploadFile(UploadRequest request);
+    S3Response uploadFile(UploadRequest request);
 
-    S3Object getFile(String bucketName, String key);
+    S3Response getFile(String bucketName, String key);
 
     void deleteFile(String bucketName, String key);
 

@@ -21,6 +21,7 @@ package com.adeptj.modules.aws.s3.internal;
 
 import com.adeptj.modules.aws.core.AwsException;
 import com.adeptj.modules.aws.s3.S3Config;
+import com.adeptj.modules.aws.s3.S3Response;
 import com.adeptj.modules.aws.s3.UploadRequest;
 import com.adeptj.modules.aws.s3.api.StorageService;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -28,12 +29,9 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
-import com.amazonaws.services.s3.model.S3Object;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -72,9 +70,9 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public Bucket createBucket(String bucketName) {
+    public S3Response createBucket(String bucketName) {
         try {
-            return this.s3Client.createBucket(bucketName);
+            return new S3Response().withBucket(this.s3Client.createBucket(bucketName));
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while creating bucket!!", ex);
             throw new AwsException(ex.getMessage(), ex);
@@ -98,12 +96,12 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public PutObjectResult createFolder(String bucketName, String folderName) {
+    public S3Response createFolder(String bucketName, String folderName) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(0);
         try {
-            return this.s3Client.putObject(new PutObjectRequest(bucketName,
-                    folderName + PATH_SEPARATOR, new ByteArrayInputStream(new byte[0]), objectMetadata));
+            return new S3Response().withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(bucketName,
+                    folderName + PATH_SEPARATOR, new ByteArrayInputStream(new byte[0]), objectMetadata)));
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while creating folder!!", ex);
             throw new AwsException(ex.getMessage(), ex);
@@ -114,14 +112,13 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public PutObjectResult uploadFile(UploadRequest request) {
+    public S3Response uploadFile(UploadRequest request) {
         InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);
         ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), OBJ_METADATA_NULL_MSG);
         CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), ACL_NULL_MSG);
         try {
-            return this.s3Client.putObject(new PutObjectRequest(request.getBucketName(), request.getKey(),
-                    data, objectMetadata)
-                    .withCannedAcl(cannedACL));
+            return new S3Response().withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(request.getBucketName(),
+                    request.getKey(), data, objectMetadata).withCannedAcl(cannedACL)));
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while uploading file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
@@ -132,9 +129,9 @@ public class AwsS3Service implements StorageService {
      * {@inheritDoc}
      */
     @Override
-    public S3Object getFile(String bucketName, String key) {
+    public S3Response getFile(String bucketName, String key) {
         try {
-            return this.s3Client.getObject(bucketName, key);
+            return new S3Response().withS3Object(this.s3Client.getObject(bucketName, key));
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while getting file!!", ex);
             throw new AwsException(ex.getMessage(), ex);

@@ -44,7 +44,7 @@ public class UploadRequest {
 
     private CannedAccessControlList cannedACL;
 
-    public UploadRequest(String bucketName, String key) {
+    private UploadRequest(String bucketName, String key) {
         this.bucketName = bucketName;
         this.key = key;
     }
@@ -57,10 +57,6 @@ public class UploadRequest {
         return folderName;
     }
 
-    public void setFolderName(String folderName) {
-        this.folderName = folderName;
-    }
-
     public String getKey() {
         return key;
     }
@@ -69,23 +65,72 @@ public class UploadRequest {
         return metadata;
     }
 
-    public void setMetadata(ObjectMetadata metadata) {
-        this.metadata = metadata;
-    }
-
     public InputStream getData() {
         return data;
-    }
-
-    public void setData(InputStream data) {
-        this.data = data;
     }
 
     public CannedAccessControlList getCannedACL() {
         return cannedACL;
     }
 
-    public void setCannedACL(CannedAccessControlList cannedACL) {
-        this.cannedACL = cannedACL;
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Builder for creating {@link UploadRequest} fluently.
+     */
+    public static class Builder {
+
+        private String bucketName;
+
+        private String folderName;
+
+        private String key;
+
+        private ObjectMetadata metadata;
+
+        private InputStream data;
+
+        private CannedAccessControlList cannedACL;
+
+        public Builder bucketName(String bucketName) {
+            this.bucketName = bucketName;
+            return this;
+        }
+
+        public Builder folderName(String folderName) {
+            this.folderName = folderName;
+            return this;
+        }
+
+        public Builder key(String key) {
+            this.key = key;
+            return this;
+        }
+
+        public Builder metadata(ObjectMetadata metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
+        public Builder data(InputStream data) {
+            this.data = data;
+            return this;
+        }
+
+        public Builder cannedACL(CannedAccessControlList cannedACL) {
+            this.cannedACL = cannedACL;
+            return this;
+        }
+
+        public UploadRequest build() {
+            UploadRequest request = new UploadRequest(this.bucketName, this.key);
+            request.folderName = this.folderName;
+            request.metadata = metadata;
+            request.data = this.data;
+            request.cannedACL = this.cannedACL;
+            return request;
+        }
     }
 }

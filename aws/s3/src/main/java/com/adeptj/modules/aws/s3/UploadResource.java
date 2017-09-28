@@ -64,13 +64,15 @@ public class UploadResource {
             String bucketName = multipart.getFormDataPart("bucketName", String.class, null);
             String key = multipart.getFormDataPart("key", String.class, null);
             String cannedACL = multipart.getFormDataPart("access", String.class, null);
-            UploadRequest request = new UploadRequest(bucketName, key);
-            request.setData(new ByteArrayInputStream(data));
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setHeader(CONTENT_LENGTH, (long) data.length);
-            request.setMetadata(metadata);
-            request.setCannedACL(CannedAccessControlList.valueOf(cannedACL));
-            this.storageService.uploadFile(request);
+            this.storageService.uploadFile(UploadRequest.builder()
+                    .bucketName(bucketName)
+                    .key(key)
+                    .data(new ByteArrayInputStream(data))
+                    .metadata(metadata)
+                    .cannedACL(CannedAccessControlList.valueOf(cannedACL))
+                    .build());
             return Response.ok("File uploaded successfully!!").build();
         } catch (Exception ex) {
             LOGGER.error("Exception while uploading file to S3!!");
