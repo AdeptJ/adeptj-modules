@@ -18,33 +18,33 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.aws.ses.internal;
+package com.adeptj.modules.aws.sns.api;
 
 import com.amazonaws.handlers.AsyncHandler;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.amazonaws.services.simpleemail.model.SendEmailResult;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * AWS {@link AsyncHandler} for SES async calls.
+ * AWS {@link AsyncHandler} for SNS async calls. Default method behaviour is to just log things.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class AwsSesAsyncHandler implements AsyncHandler<SendEmailRequest, SendEmailResult> {
+public interface AwsSnsAsyncHandler extends AsyncHandler<PublishRequest, PublishResult> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AwsSesAsyncHandler.class);
+    Logger LOGGER = LoggerFactory.getLogger(AwsSnsAsyncHandler.class);
 
     @Override
-    public void onError(Exception exception) {
-        LOGGER.error("Exception while sending email asynchronously!!", exception);
+    default void onError(Exception exception) {
+        LOGGER.error("Exception while sending SMS asynchronously!!", exception);
     }
 
     @Override
-    public void onSuccess(SendEmailRequest request, SendEmailResult result) {
+    default void onSuccess(PublishRequest request, PublishResult result) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Email sent to: {}", request.getDestination().getToAddresses());
-            LOGGER.debug("SES SendEmailResult messageId: [{}]", result.getMessageId());
+            LOGGER.debug("SMS sent to: [{}]", request.getPhoneNumber());
+            LOGGER.debug("SNS PublishResult messageId: [{}]", result.getMessageId());
         }
     }
 }

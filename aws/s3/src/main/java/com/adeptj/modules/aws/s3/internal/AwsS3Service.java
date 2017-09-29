@@ -26,7 +26,7 @@ import com.adeptj.modules.aws.s3.S3Request;
 import com.adeptj.modules.aws.s3.S3Response;
 import com.adeptj.modules.aws.s3.api.StorageService;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -111,13 +111,12 @@ public class AwsS3Service implements StorageService {
      */
     @Override
     public S3Response uploadFile(S3Request request) {
-        InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);
         ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), OBJ_METADATA_NULL_MSG);
         CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), ACL_NULL_MSG);
-        try {
+        try(InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);) {
             return new S3Response().withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(request.getBucketName(),
                     request.getKey(), data, objectMetadata).withCannedAcl(cannedACL)));
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             LOGGER.error("Exception while uploading file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
@@ -159,7 +158,7 @@ public class AwsS3Service implements StorageService {
     @Activate
     protected void start(S3Config s3Config) {
         try {
-            this.s3Client = AmazonS3ClientBuilder.standard()
+            this.s3Client = AmazonS3Client.builder()
                     .withEndpointConfiguration(AwsUtil.getEndpointConfig(s3Config.serviceEndpoint(),
                             s3Config.signingRegion()))
                     .withCredentials(AwsUtil.getCredentialsProvider(s3Config.accessKey(), s3Config.secretKey()))

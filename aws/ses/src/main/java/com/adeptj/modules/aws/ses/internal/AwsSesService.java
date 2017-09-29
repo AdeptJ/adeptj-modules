@@ -24,9 +24,10 @@ import com.adeptj.modules.aws.core.AwsUtil;
 import com.adeptj.modules.aws.ses.EmailConfig;
 import com.adeptj.modules.aws.ses.EmailRequest;
 import com.adeptj.modules.aws.ses.EmailResponse;
+import com.adeptj.modules.aws.ses.api.AwsSesAsyncHandler;
 import com.adeptj.modules.aws.ses.api.EmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsync;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClientBuilder;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.Destination;
@@ -36,6 +37,9 @@ import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,9 +59,15 @@ public class AwsSesService implements EmailService {
 
     private AmazonSimpleEmailServiceAsync asyncSES;
 
-    private AwsSesAsyncHandler awsSesAsyncHandler;
-
     private EmailConfig emailConfig;
+
+    @Reference(
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            bind = "bindAwsSesAsyncHandler",
+            unbind = "unbindAwsSesAsyncHandler"
+    )
+    private volatile AwsSesAsyncHandler asyncHandler;
 
     /**
      * {@inheritDoc}
@@ -98,7 +108,7 @@ public class AwsSesService implements EmailService {
                             .withMessage(new Message()
                                     .withSubject(new Content().withData(emailRequest.getSubject()))
                                     .withBody(new Body().withHtml(new Content().withData(emailRequest.getBody())))),
-                    this.awsSesAsyncHandler);
+                    this.asyncHandler);
         } catch (Exception ex) {
             LOGGER.error("Exception while sending email asynchronously!!", ex);
         }
@@ -106,23 +116,31 @@ public class AwsSesService implements EmailService {
 
     // Component Lifecycle Methods
 
+    protected void bindAwsSesAsyncHandler(AwsSesAsyncHandler asyncHandler) {
+        this.asyncHandler = asyncHandler;
+    }
+
+    protected void unbindAwsSesAsyncHandler(AwsSesAsyncHandler asyncHandler) {
+        this.asyncHandler = null;
+    }
+
     @Activate
-    protected void activate(EmailConfig emailConfig) {
+    protected void start(EmailConfig emailConfig) {
         this.emailConfig = emailConfig;
         try {
-            this.asyncSES = AmazonSimpleEmailServiceAsyncClientBuilder.standard()
+            this.asyncSES = AmazonSimpleEmailServiceAsyncClient.asyncBuilder()
                     .withEndpointConfiguration(AwsUtil.getEndpointConfig(emailConfig.serviceEndpoint(),
                             emailConfig.signingRegion()))
                     .withCredentials(AwsUtil.getCredentialsProvider(emailConfig.accessKey(), emailConfig.secretKey()))
                     .build();
-            this.awsSesAsyncHandler = new AwsSesAsyncHandler();
         } catch (Exception ex) {
             LOGGER.error("Exception while starting EmailService!!", ex);
+            throw new AwsException(ex.getMessage(), ex);
         }
     }
 
     @Deactivate
-    protected void deactivate() {
+    protected void stop() {
         try {
             this.asyncSES.shutdown();
         } catch (Exception ex) {

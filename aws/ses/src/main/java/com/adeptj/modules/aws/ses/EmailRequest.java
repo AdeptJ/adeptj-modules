@@ -43,7 +43,7 @@ public class EmailRequest {
 
     private String body;
 
-    public EmailRequest(String subject, String body, List<String> recipientToList) {
+    private EmailRequest(String subject, String body, List<String> recipientToList) {
         this.subject = Objects.requireNonNull(subject, "subject can't be null!!");
         this.body = Objects.requireNonNull(body, "body can't be null!!");
         this.recipientToList = recipientToList;
@@ -73,6 +73,9 @@ public class EmailRequest {
         return new Builder();
     }
 
+    /**
+     * Builder for creating {@link EmailRequest} fluently.
+     */
     public static class Builder {
 
         private List<String> recipientToList;
@@ -84,6 +87,9 @@ public class EmailRequest {
         private String subject;
 
         private String body;
+
+        private Builder() {
+        }
 
         public Builder addRecipientTo(String recipientTo) {
             if (this.recipientToList == null) {
