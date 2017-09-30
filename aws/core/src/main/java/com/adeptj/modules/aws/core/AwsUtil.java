@@ -23,8 +23,7 @@ package com.adeptj.modules.aws.core;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-
-import static com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 
 /**
  * AWS utilities.
