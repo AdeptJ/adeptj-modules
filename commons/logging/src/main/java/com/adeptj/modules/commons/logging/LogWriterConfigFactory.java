@@ -7,7 +7,7 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import java.util.Dictionary;
 
-import static com.adeptj.modules.commons.logging.LoggerWriterConfigFactory.COMPONENT_NAME;
+import static com.adeptj.modules.commons.logging.LogWriterConfigFactory.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
@@ -23,11 +23,11 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
         property = SERVICE_PID + "=" + COMPONENT_NAME,
         configurationPolicy = IGNORE
 )
-public class LoggerWriterConfigFactory implements ManagedServiceFactory {
+public class LogWriterConfigFactory implements ManagedServiceFactory {
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.commons.logging.LoggerWriterConfigFactory.factory";
+    static final String COMPONENT_NAME = "com.adeptj.modules.commons.logging.LogWriterConfigFactory.factory";
 
-    private static final String FACTORY_NAME = "AdeptJ Logback LoggerWriterConfigFactory";
+    private static final String FACTORY_NAME = "AdeptJ Logging LogWriterConfigFactory";
 
     @Override
     public String getName() {

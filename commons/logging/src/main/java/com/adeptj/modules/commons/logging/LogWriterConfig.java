@@ -27,7 +27,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition
+@ObjectClassDefinition(name = "AdeptJ Logging LogWriterConfigFactory")
 public @interface LogWriterConfig {
 
     String file();

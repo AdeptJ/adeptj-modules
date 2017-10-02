@@ -30,7 +30,7 @@ public class LoggerConfigFactory implements ManagedServiceFactory {
 
     static final String COMPONENT_NAME = "com.adeptj.modules.commons.logging.LoggerConfigFactory.factory";
 
-    private static final String FACTORY_NAME = "AdeptJ Logback LoggerConfigFactory";
+    private static final String FACTORY_NAME = "AdeptJ Logging LoggerConfigFactory";
 
     @Override
     public String getName() {
