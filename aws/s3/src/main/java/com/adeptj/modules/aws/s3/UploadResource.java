@@ -21,14 +21,14 @@
 package com.adeptj.modules.aws.s3;
 
 import com.adeptj.modules.aws.s3.api.StorageService;
+import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -36,8 +36,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 
+import static com.adeptj.modules.aws.s3.UploadResource.AWS_S3_ROOT;
 import static com.adeptj.modules.aws.s3.UploadResource.RESOURCE_BASE;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 /**
@@ -45,40 +46,54 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Path("/aws/s3")
+@Path(AWS_S3_ROOT)
 @Component(immediate = true, service = UploadResource.class, property = RESOURCE_BASE)
 public class UploadResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UploadResource.class);
+    private static final String PARAM_DATA = "data";
+
+    private static final String PARAM_BUCKET_NAME = "bucketName";
+
+    private static final String PARAM_KEY = "key";
+
+    private static final String PARAM_CANNED_ACL = "access";
+
+    private static final String PATH_UPLOAD = "/upload";
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=aws-s3";
+
+    static final String AWS_S3_ROOT = "/aws/s3";
 
     @Reference
     private StorageService storageService;
 
     @POST
-    @Path("/upload")
+    @Path(PATH_UPLOAD)
     @Consumes(MULTIPART_FORM_DATA)
     @RequiresJwt
     public Response uploadFile(MultipartFormDataInput multipart) {
         try {
-            byte[] data = multipart.getFormDataPart("data", byte[].class, null);
-            String bucketName = multipart.getFormDataPart("bucketName", String.class, null);
-            String key = multipart.getFormDataPart("key", String.class, null);
-            String cannedACL = multipart.getFormDataPart("access", String.class, null);
+            byte[] data = multipart.getFormDataPart(PARAM_DATA, byte[].class, null);
+            String bucketName = multipart.getFormDataPart(PARAM_BUCKET_NAME, String.class, null);
+            String key = multipart.getFormDataPart(PARAM_KEY, String.class, null);
+            String cannedACL = multipart.getFormDataPart(PARAM_CANNED_ACL, String.class, null);
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setHeader(CONTENT_LENGTH, (long) data.length);
+            metadata.setContentLength((long) data.length);
             this.storageService.uploadFile(S3Request.builder()
                     .bucketName(bucketName)
                     .key(key)
-                    .data(new ByteArrayInputStream(data))
+                    .data(IOUtils.buffer(new ByteArrayInputStream(data)))
                     .metadata(metadata)
                     .cannedACL(CannedAccessControlList.valueOf(cannedACL))
                     .build());
             return Response.ok("File uploaded successfully!!").build();
         } catch (Exception ex) {
-            LOGGER.error("Exception while uploading file to S3!!");
+            throw JaxRSException.builder()
+                    .message(ex.getMessage())
+                    .cause(ex)
+                    .status(STATUS_SERVER_ERROR)
+                    .logException(true)
+                    .build();
         }
-        return Response.ok("File can't be uploaded!!").build();
     }
 }
