@@ -39,9 +39,10 @@ import static org.apache.felix.webconsole.WebConsoleConstants.PLUGIN_TITLE;
  */
 @Component(immediate = true, service = Servlet.class,
         property = {
-                PLUGIN_LABEL + "=tools",
-                PLUGIN_TITLE + "=AdeptJ Tools"
-        })
+                PLUGIN_LABEL + "=" + "tools",
+                PLUGIN_TITLE + "=" + "AdeptJ Tools"
+        }
+)
 public class ToolsPlugin extends SimpleWebConsolePlugin {
 
     private static final long serialVersionUID = 8041033223220201144L;

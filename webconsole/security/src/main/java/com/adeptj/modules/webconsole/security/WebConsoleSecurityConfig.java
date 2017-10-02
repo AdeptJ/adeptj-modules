@@ -25,7 +25,7 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * Roles configured will be used by WebConsoleSecurityProvider for auth purpose.
+ * Configuration will be used by WebConsoleSecurityProvider for auth purpose.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -33,11 +33,13 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
         name = "AdeptJ OSGi WebConsole Security Roles Configuration",
         description = "Roles configured will be used by WebConsoleSecurityProvider for auth purpose."
 )
-public @interface WebConsoleSecurityRoleConfig {
+public @interface WebConsoleSecurityConfig {
 
-    static final int CARDINALITY = 100;
+    int CARDINALITY = 100;
 
-    static final String ROLE_OSGI_ADMIN = "OSGiAdmin";
+    String ROLE_OSGI_ADMIN = "OSGiAdmin";
+
+    String TOOLS_LOGOUT_URI = "/tools/logout";
 
     @AttributeDefinition(
             name = "WebConsole Security Roles",
@@ -45,4 +47,10 @@ public @interface WebConsoleSecurityRoleConfig {
             cardinality = CARDINALITY
     )
     String[] roles() default ROLE_OSGI_ADMIN;
+
+    @AttributeDefinition(
+            name = "Logout Redirect URI",
+            description = "URI where user will be redirected after logout."
+    )
+    String redirectURI() default TOOLS_LOGOUT_URI;
 }
