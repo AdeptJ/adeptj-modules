@@ -21,6 +21,7 @@
 package com.adeptj.modules.aws.sns;
 
 import com.adeptj.modules.aws.sns.api.SmsService;
+import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import org.jboss.resteasy.annotations.Form;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,6 +58,7 @@ public class SmsResource {
     @Path("/send")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_FORM_URLENCODED)
+    @RequiresJwt
     public Response sendEmail(@Form SmsForm form) {
         return Response.ok(this.smsService.sendSms(new SmsRequest(form.getCountryCode(), form.getPhoneNumber(),
                 form.getMessage())))
@@ -66,6 +68,7 @@ public class SmsResource {
     @POST
     @Path("/send-async")
     @Consumes(APPLICATION_FORM_URLENCODED)
+    @RequiresJwt
     public Response sendEmailAsync(@Form SmsForm form) {
         this.smsService.sendSmsAsync(new SmsRequest(form.getCountryCode(), form.getPhoneNumber(), form.getMessage()));
         return Response.ok("Sms sent asynchronously!!").build();

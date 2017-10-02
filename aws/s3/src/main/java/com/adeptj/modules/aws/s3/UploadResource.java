@@ -21,6 +21,7 @@
 package com.adeptj.modules.aws.s3;
 
 import com.adeptj.modules.aws.s3.api.StorageService;
+import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
@@ -58,6 +59,7 @@ public class UploadResource {
     @POST
     @Path("/upload")
     @Consumes(MULTIPART_FORM_DATA)
+    @RequiresJwt
     public Response uploadFile(MultipartFormDataInput multipart) {
         try {
             byte[] data = multipart.getFormDataPart("data", byte[].class, null);
