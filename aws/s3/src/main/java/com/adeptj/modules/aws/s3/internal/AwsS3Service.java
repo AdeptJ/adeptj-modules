@@ -70,7 +70,8 @@ public class AwsS3Service implements StorageService {
     @Override
     public S3Response createBucket(String bucketName) {
         try {
-            return new S3Response().withBucket(this.s3Client.createBucket(bucketName));
+            return new S3Response()
+                    .withBucket(this.s3Client.createBucket(bucketName));
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while creating bucket!!", ex);
             throw new AwsException(ex.getMessage(), ex);
@@ -98,8 +99,9 @@ public class AwsS3Service implements StorageService {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentLength(0);
         try {
-            return new S3Response().withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(bucketName,
-                    folderName + PATH_SEPARATOR, new ByteArrayInputStream(new byte[0]), objectMetadata)));
+            return new S3Response()
+                    .withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(bucketName,
+                            folderName + PATH_SEPARATOR, new ByteArrayInputStream(new byte[0]), objectMetadata)));
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while creating folder!!", ex);
             throw new AwsException(ex.getMessage(), ex);
@@ -113,9 +115,10 @@ public class AwsS3Service implements StorageService {
     public S3Response uploadFile(S3Request request) {
         ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), OBJ_METADATA_NULL_MSG);
         CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), ACL_NULL_MSG);
-        try(InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);) {
-            return new S3Response().withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(request.getBucketName(),
-                    request.getKey(), data, objectMetadata).withCannedAcl(cannedACL)));
+        try (InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);) {
+            return new S3Response()
+                    .withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(request.getBucketName(),
+                            request.getKey(), data, objectMetadata).withCannedAcl(cannedACL)));
         } catch (Exception ex) {
             LOGGER.error("Exception while uploading file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
@@ -128,7 +131,8 @@ public class AwsS3Service implements StorageService {
     @Override
     public S3Response getFile(String bucketName, String key) {
         try {
-            return new S3Response().withS3Object(this.s3Client.getObject(bucketName, key));
+            return new S3Response()
+                    .withS3Object(this.s3Client.getObject(bucketName, key));
         } catch (RuntimeException ex) {
             LOGGER.error("Exception while getting file!!", ex);
             throw new AwsException(ex.getMessage(), ex);
