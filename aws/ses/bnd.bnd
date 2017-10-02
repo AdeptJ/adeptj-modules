@@ -24,13 +24,15 @@ Include-Resource: aws-java-sdk-ses-1.11.197.jar
 
 Bundle-ClassPath: ., aws-java-sdk-ses-1.11.197.jar
 
-Export-Package: com.adeptj.modules.aws.ses, \
-                com.adeptj.modules.aws.ses.api
-
 Import-Package: javax.validation.*, \
                 com.amazonaws.*, \
                 com.adeptj.modules.aws.core, \
                 *
+
+-exportcontents: com.adeptj.modules.aws.ses, \
+                 com.adeptj.modules.aws.ses.api, \
+                 !com.adeptj.modules.aws.ses.internal, \
+                 *
 
 Bundle-Name: ${project.name}
 

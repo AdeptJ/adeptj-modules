@@ -72,7 +72,6 @@ public class AwsSnsService implements SmsService {
     @Override
     public SmsResponse sendSms(SmsRequest smsRequest) {
         try {
-            LOGGER.info("Sending SMS to: [{}]", smsRequest.getPhoneNumber());
             PublishResult result = this.asyncSNS.publish(new PublishRequest()
                     .withMessage(smsRequest.getMessage())
                     .withPhoneNumber(smsRequest.getCountryCode() + smsRequest.getPhoneNumber())
@@ -80,7 +79,7 @@ public class AwsSnsService implements SmsService {
             return new SmsResponse(result.getMessageId(), result.getSdkHttpMetadata().getHttpStatusCode(),
                     result.getSdkHttpMetadata().getHttpHeaders());
         } catch (Exception ex) {
-            LOGGER.error("Exception while sending sms!!", ex);
+            LOGGER.error("Exception while sending SMS!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
     }
@@ -88,13 +87,12 @@ public class AwsSnsService implements SmsService {
     @Override
     public void sendSmsAsync(SmsRequest smsRequest) {
         try {
-            LOGGER.info("Sending SMS asynchronously to: [{}]", smsRequest.getPhoneNumber());
             this.asyncSNS.publishAsync(new PublishRequest()
                     .withMessage(smsRequest.getMessage())
                     .withPhoneNumber(smsRequest.getCountryCode() + smsRequest.getPhoneNumber())
                     .withMessageAttributes(this.smsAttributes), this.asyncHandler);
         } catch (Exception ex) {
-            LOGGER.error("Exception while sending sms asynchronously!!", ex);
+            LOGGER.error("Exception while sending SMS asynchronously!!", ex);
             throw new AwsException(ex.getMessage(), ex);
         }
     }

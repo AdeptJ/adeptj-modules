@@ -25,13 +25,15 @@ Include-Resource: aws-java-sdk-s*s-*.jar
 Bundle-ClassPath: ., aws-java-sdk-sns-1.11.197.jar,\
                      aws-java-sdk-sqs-1.11.197.jar
 
-Export-Package: com.adeptj.modules.aws.sns,\
-                com.adeptj.modules.aws.sns.api
-
 Import-Package: javax.validation.*, \
                 com.amazonaws.*, \
                 com.adeptj.modules.aws.core, \
                 *
+
+-exportcontents: com.adeptj.modules.aws.sns, \
+                 com.adeptj.modules.aws.sns.api, \
+                 !com.adeptj.modules.aws.sns.internal, \
+                 *
 
 Bundle-Name: ${project.name}
 
