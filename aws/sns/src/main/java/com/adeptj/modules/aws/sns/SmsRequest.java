@@ -42,7 +42,7 @@ public class SmsRequest {
     }
 
     public String getCountryCode() {
-        return countryCode.startsWith("+") ? countryCode : "+" + countryCode;
+        return countryCode;
     }
 
     public String getPhoneNumber() {
