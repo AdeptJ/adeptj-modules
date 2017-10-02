@@ -20,14 +20,17 @@
 
 package com.adeptj.modules.commons.logging;
 
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+
 /**
  * AdeptJ LogWriter configurations.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class LogWriterConfig {
+@ObjectClassDefinition
+public @interface LogWriterConfig {
 
-    private String file;
+    String file();
 
-    private long logMaxSize;
+    long logMaxSize();
 }

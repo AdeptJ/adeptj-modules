@@ -20,20 +20,23 @@
 
 package com.adeptj.modules.commons.logging;
 
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+
 /**
  * AdeptJ Logger configurations.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class LoggerConfig {
+@ObjectClassDefinition
+public @interface LoggerConfig {
 
-    private String level;
+    String level();
 
-    private String file;
+    String file();
 
-    private String pattern;
+    String pattern();
 
-    private String[] names;
+    String[] names();
 
-    private boolean additivity;
+    boolean additivity();
 }
