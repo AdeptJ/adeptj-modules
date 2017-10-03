@@ -5,7 +5,7 @@
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
-#    you may not use this file except in compliance with the License.         #
+#    you may not use this logFile except in compliance with the License.         #
 #    You may obtain a copy of the License at                                  #
 #                                                                             #
 #        http://www.apache.org/licenses/LICENSE-2.0                           #
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-runtime-tools</artifactId>
-            <version>1.0.2.Final</version>
+            <version>1.0.3.Final</version>
             <scope>provided</scope>
         </dependency>
 
@@ -105,6 +105,19 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.sling</groupId>
+            <artifactId>org.apache.sling.commons.log</artifactId>
+            <version>5.0.2</version>
             <scope>provided</scope>
         </dependency>
 
