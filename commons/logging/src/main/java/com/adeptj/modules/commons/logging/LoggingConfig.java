@@ -123,5 +123,5 @@ public @interface LoggingConfig {
             description = "Size after which Async Appender discards the logs " +
                     "(ignored for default error.log file)"
     )
-    int asyncLogDiscardingThreshold();
+    int asyncLogDiscardingThreshold() default 0;
 }

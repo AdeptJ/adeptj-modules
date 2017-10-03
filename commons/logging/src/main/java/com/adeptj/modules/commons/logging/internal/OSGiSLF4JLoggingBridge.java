@@ -40,15 +40,16 @@ import static org.osgi.service.log.LogService.LOG_WARNING;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(immediate = true, service = OSGiSLF4JLoggingBridge.class)
-public class OSGiSLF4JLoggingBridge implements LogListener {
+public class OSGiSLF4JLoggingBridge {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OSGiSLF4JLoggingBridge.class);
+    private static final String DEFAULT_LOGGER = "com.adeptj.modules.commons.logging";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DEFAULT_LOGGER);
 
     @Reference
     private LogReaderService logReaderService;
 
-    @Override
-    public void logged(LogEntry entry) {
+    private final LogListener logListener = (LogEntry entry) -> {
         switch (entry.getLevel()) {
             case LOG_ERROR:
                 LOGGER.error(entry.getMessage(), entry.getException());
@@ -59,17 +60,17 @@ public class OSGiSLF4JLoggingBridge implements LogListener {
             default:
                 // do nothing, we are not interested in other log levels.
         }
-    }
+    };
 
     // Component Lifecycle Methods
 
     @Activate
     protected void start() {
-        this.logReaderService.addLogListener(this);
+        this.logReaderService.addLogListener(this.logListener);
     }
 
     @Deactivate
     protected void stop() {
-        this.logReaderService.removeLogListener(this);
+        this.logReaderService.removeLogListener(this.logListener);
     }
 }
