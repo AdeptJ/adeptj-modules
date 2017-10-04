@@ -22,7 +22,6 @@ package com.adeptj.modules.commons.logging.internal;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import com.adeptj.modules.commons.logging.LoggingConfig;
 import com.adeptj.runtime.tools.logging.LogbackConfig;
 import com.adeptj.runtime.tools.logging.LogbackManager;
@@ -103,7 +102,7 @@ public class LoggingConfigFactory implements ManagedServiceFactory {
         int logMaxHistory = (Integer) properties.get("logMaxHistory");
         String logMaxSize = (String) properties.get("logMaxSize");
         boolean immediateFlush = (Boolean) properties.get("immediateFlush");
-        boolean addAsyncAppender = (Boolean) properties.get("addAsyncAppender");
+        boolean addAsyncAppender = (Boolean) properties.get("createAsyncAppender");
         int asyncLogQueueSize = (Integer) properties.get("asyncLogQueueSize");
         int asyncLogDiscardingThreshold = (Integer) properties.get("asyncLogDiscardingThreshold");
         LogbackConfig logbackConfig = LogbackConfig.builder()
@@ -122,18 +121,11 @@ public class LoggingConfigFactory implements ManagedServiceFactory {
                 .asyncLogDiscardingThreshold(asyncLogDiscardingThreshold)
                 .loggers(loggerNames)
                 .build();
-        SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = logbackMgr.getRollingPolicy(logbackConfig);
-        RollingFileAppender<ILoggingEvent> fileAppender = logbackMgr.getFileAppender(logbackConfig);
-        rollingPolicy.setParent(fileAppender);
-        rollingPolicy.start();
-        // Set Rolling and Triggering Policy to RollingFileAppender
-        fileAppender.setRollingPolicy(rollingPolicy);
-        fileAppender.setTriggeringPolicy(rollingPolicy);
-        fileAppender.start();
+        RollingFileAppender<ILoggingEvent> fileAppender = logbackMgr.createRollingFileAppender(logbackConfig);
         logbackConfig.getAppenders().add(fileAppender);
         if (logbackConfig.isAddAsyncAppender()) {
-            logbackConfig.setetAsyncAppender(fileAppender);
-            logbackMgr.addAppender(fileAppender).addAsyncAppender(logbackConfig);
+            logbackConfig.setAsyncAppender(fileAppender);
+            logbackMgr.addAppender(fileAppender).createAsyncAppender(logbackConfig);
         }
         logbackMgr.addLogger(logbackConfig);
     }
