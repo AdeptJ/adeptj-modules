@@ -34,17 +34,21 @@ import static org.osgi.service.log.LogService.LOG_ERROR;
 import static org.osgi.service.log.LogService.LOG_WARNING;
 
 /**
- * OSGi {@link LogListener} which acts as a bridge for {@link LogReaderService} to send
- * ERROR and WARN logs to SLF4J {@link Logger}
+ * OSGi component registers a {@link LogListener} with {@link LogReaderService}.
+ * <p>
+ * The registered {@link LogListener} accepts the {@link LogEntry} which contains information
+ * such as human readable message, exception etc.
+ * <p>
+ * This information is sent to the SLF4J {@link Logger} to log with ERROR or WARN log levels.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true, service = OSGiSLF4JLoggingBridge.class)
+@Component(immediate = true)
 public class OSGiSLF4JLoggingBridge {
 
-    private static final String DEFAULT_LOGGER = "com.adeptj.modules.commons.logging";
+    private static final String OSGI_LOGGER = "com.adeptj.modules.commons.osgi.logger";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DEFAULT_LOGGER);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OSGI_LOGGER);
 
     @Reference
     private LogReaderService logReaderService;
