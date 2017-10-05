@@ -18,11 +18,10 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.beanval.common;
-
-import java.util.Locale;
+package com.adeptj.modules.commons.bv;
 
 import javax.validation.MessageInterpolator;
+import java.util.Locale;
 
 /**
  * A {@link ThreadLocal} to store the Locale to be used in the {@link MessageInterpolator}

@@ -18,7 +18,7 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.beanval.service.api;
+package com.adeptj.modules.commons.bv.service;
 
 import javax.validation.BootstrapConfiguration;
 import javax.validation.Validator;

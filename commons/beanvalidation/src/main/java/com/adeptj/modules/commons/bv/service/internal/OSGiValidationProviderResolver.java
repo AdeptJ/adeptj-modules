@@ -18,15 +18,14 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.beanval.service.impl;
+package com.adeptj.modules.commons.bv.service.internal;
 
-import java.util.Collections;
-import java.util.List;
+import org.hibernate.validator.HibernateValidator;
 
 import javax.validation.ValidationProviderResolver;
 import javax.validation.spi.ValidationProvider;
-
-import org.hibernate.validator.HibernateValidator;
+import java.util.Collections;
+import java.util.List;
 
 public class OSGiValidationProviderResolver implements ValidationProviderResolver {
 

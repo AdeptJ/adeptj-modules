@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.0.Final</version>
+        <version>1.0.7.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-commons-beanvalidation</artifactId>
@@ -47,7 +47,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Category>AdeptJ Commons</Bundle-Category>
-                        <Bundle-Activator>com.adeptj.modularweb.beanval.internal.activator.BeanValidationActivator</Bundle-Activator>
+                        <Bundle-Activator>com.adeptj.modules.commons.bv.internal.activator.BeanValidationActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

@@ -18,16 +18,15 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.beanval.service.impl;
+package com.adeptj.modules.commons.bv.service.internal;
 
-import java.util.Set;
+import com.adeptj.modules.commons.bv.service.ValidatorService;
 
 import javax.validation.BootstrapConfiguration;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
-
-import com.adeptj.modularweb.beanval.service.api.ValidatorService;
+import java.util.Set;
 
 /**
  * ValidatorService Implementation.
