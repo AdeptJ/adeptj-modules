@@ -21,6 +21,7 @@
 package com.adeptj.modules.webconsole.security;
 
 import com.adeptj.runtime.tools.OSGiConsolePasswordVault;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -57,23 +58,20 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 
     @Override
     public void configurationEvent(ConfigurationEvent event) {
-        switch (event.getType()) {
-            case CM_DELETED:
-                if (OSGI_MGR_PID.equals(event.getPid())) {
-                    LOGGER.info("Deleting pid: [{}]", event.getPid());
+        if (StringUtils.equals(OSGI_MGR_PID, event.getPid())) {
+            switch (event.getType()) {
+                case CM_DELETED:
                     OSGiConsolePasswordVault.INSTANCE.setPassword(null);
-                }
-                break;
-            case CM_UPDATED:
-                if (OSGI_MGR_PID.equals(event.getPid())) {
+                    break;
+                case CM_UPDATED:
                     this.handleOSGiManagerPwd(event.getPid());
-                }
-                break;
-            default:
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Ignoring the ConfigurationEvent type: [{}]", event.getType());
-                }
-                break;
+                    break;
+                default:
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Ignoring the ConfigurationEvent type: [{}]", event.getType());
+                    }
+                    break;
+            }
         }
     }
 

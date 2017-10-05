@@ -37,6 +37,7 @@
 
     <modules>
 
+        <module>core</module>
         <!--<module>shiro</module>-->
         <!--<module>esapi</module>-->
         <module>jwt</module>

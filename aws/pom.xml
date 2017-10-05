@@ -30,7 +30,7 @@
     <artifactId>adeptj-modules-aws</artifactId>
     <version>1.0.0.Final</version>
     <packaging>pom</packaging>
-    <name>AdeptJ Modules :: AWS Builder</name>
+    <name>AdeptJ Modules :: AWS :: Builder</name>
     <description>Pseudo project to build AdeptJ :: AWS Modules</description>
     <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>

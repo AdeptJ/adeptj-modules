@@ -30,7 +30,7 @@
     <artifactId>adeptj-modules-webconsole</artifactId>
     <version>1.0.0.Final</version>
     <packaging>pom</packaging>
-    <name>AdeptJ Modules :: WebConsole :: Builder</name>
+    <name>AdeptJ Modules :: Felix WebConsole :: Builder</name>
     <description>Pseudo project to build AdeptJ :: WebConsole Modules</description>
     <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>

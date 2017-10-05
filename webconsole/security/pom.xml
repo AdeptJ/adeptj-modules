@@ -30,7 +30,7 @@
     <artifactId>adeptj-modules-webconsole-security</artifactId>
     <version>1.0.1.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Felix WebConsole Security</name>
+    <name>AdeptJ Modules :: Felix WebConsole :: Security</name>
     <description>AdeptJ Modules :: Felix WebConsole Security</description>
 
     <properties>
@@ -146,6 +146,12 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
             <scope>provided</scope>
         </dependency>
 

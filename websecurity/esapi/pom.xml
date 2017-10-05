@@ -75,7 +75,7 @@
                             org.w3c.dom,
                             *
                         </Import-Package>
-                        <Bundle-Activator>com.adeptj.modularweb.security.esapi.internal.activator.ESAPIActivator</Bundle-Activator>
+                        <Bundle-Activator>ESAPIActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

@@ -44,7 +44,7 @@
         <module>jaxrs</module>
         <module>aws</module>
         <module>data</module>
-        <!--<module>mvc</module>-->
+        <module>mvc</module>
         <!--<module>search</module>-->
 
     </modules>

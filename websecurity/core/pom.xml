@@ -27,11 +27,11 @@
         <version>1.0.7.Final</version>
         <relativePath/>
     </parent>
-    <artifactId>adeptj-modules-mvc-api</artifactId>
+    <artifactId>adeptj-modules-websecurity-core</artifactId>
     <version>1.0.0.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: MVC :: API</name>
-    <description>AdeptJ Modules :: MVC :: API</description>
+    <name>AdeptJ Modules :: WebSecurity :: Core</name>
+    <description>AdeptJ Modules :: WebSecurity :: Core</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -94,8 +94,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -106,18 +106,12 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
     </dependencies>
-
-
 </project>

@@ -18,34 +18,33 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modularweb.security.esapi.internal.activator;
+package com.adeptj.modules.mvc;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.owasp.esapi.ESAPI;
+import org.osgi.framework.Bundle;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.templateresolver.AbstractConfigurableTemplateResolver;
+import org.thymeleaf.templateresource.ITemplateResource;
+
+import java.util.Map;
 
 /**
- * ESAPIActivator.
- *
+ * BundleResourceTemplateResolver.
+ * 
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class ESAPIActivator implements BundleActivator {
+public class BundleTemplateResolver extends AbstractConfigurableTemplateResolver {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void start(BundleContext context) throws Exception {
-		// Load ESAPI eagerly.
-		ESAPI.securityConfiguration();
+	private final Bundle bundle;
+
+	public BundleTemplateResolver(Bundle bundle) {
+		this.bundle = bundle;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void stop(BundleContext context) throws Exception {
-
+	protected ITemplateResource computeTemplateResource(IEngineConfiguration configuration, String ownerTemplate,
+			String template, String resourceName, String characterEncoding,
+			Map<String, Object> templateResolutionAttributes) {
+		return new BundleTemplateResource(bundle, resourceName, characterEncoding);
 	}
 
 }
