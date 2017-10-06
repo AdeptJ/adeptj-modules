@@ -26,6 +26,7 @@ import org.osgi.service.http.context.ServletContextHelper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
 
@@ -43,7 +44,7 @@ public final class ServletContextHelperSupport extends ServletContextHelper {
     private final Authenticator authenticator;
 
     public ServletContextHelperSupport(Bundle bundle, Authenticator authenticator) {
-        super(bundle);
+        super(Objects.requireNonNull(bundle, "Bundle can't be null!!"));
         this.authenticator = authenticator;
     }
 
