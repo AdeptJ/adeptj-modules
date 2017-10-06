@@ -18,8 +18,10 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.core;
+package com.adeptj.modules.security.core.internal;
 
+import com.adeptj.modules.security.core.Authenticator;
+import com.adeptj.modules.security.core.ServletContextHelperSupport;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -35,13 +37,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
-import static com.adeptj.modules.security.core.Authenticator.DEFAULT_SERVLET_CONTEXT_NAME;
-import static com.adeptj.modules.security.core.DefaultServletContext.EQ;
-import static com.adeptj.modules.security.core.DefaultServletContext.ROOT_PATH;
+import static com.adeptj.modules.security.core.ServletContextHelperSupport.DEFAULT_SERVLET_CONTEXT_NAME;
+import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.EQ;
+import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.ROOT_PATH;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_NAME;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_PATH;
 
 /**
+ * DefaultServletContextHelper.
+ *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(
@@ -52,7 +56,7 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
                 HTTP_WHITEBOARD_CONTEXT_PATH + EQ + ROOT_PATH
         }
 )
-public class DefaultServletContext extends ServletContextHelper {
+public class DefaultServletContextHelper extends ServletContextHelper {
 
     static final String EQ = "=";
 
@@ -74,7 +78,7 @@ public class DefaultServletContext extends ServletContextHelper {
 
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return this.authenticator != null && this.authenticator.handleSecurity(request, response);
+        return this.delegatee.handleSecurity(request, response);
     }
 
     @Override
@@ -110,7 +114,7 @@ public class DefaultServletContext extends ServletContextHelper {
     }
 
     @Activate
-    protected void activate(ComponentContext componentContext) {
-        this.delegatee = new ServletContextHelperSupport(componentContext.getUsingBundle());
+    protected void activate(ComponentContext compCtx) {
+        this.delegatee = new ServletContextHelperSupport(compCtx.getUsingBundle(), this.authenticator);
     }
 }
