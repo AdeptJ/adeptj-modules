@@ -20,9 +20,9 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
+import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
@@ -33,6 +33,7 @@ import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -152,18 +153,7 @@ public class JwtServiceImpl implements JwtService {
         }
     }
 
-    // Component Lifecycle Methods
-
-    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
-        this.claimsValidator = claimsValidator;
-    }
-
-    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator ) { // NOSONAR
-        this.claimsValidator = null;
-    }
-
-    @Activate
-    protected void start(JwtConfig jwtConfig) {
+    private void handleSigningKey(JwtConfig jwtConfig) {
         this.jwtConfig = jwtConfig;
         try {
             this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
@@ -187,5 +177,27 @@ public class JwtServiceImpl implements JwtService {
             // Let the exception be rethrown so that SCR would not create a service object of this component.
             throw new RuntimeException(ex); // NOSONAR
         }
+    }
+
+    // Component Lifecycle Methods
+
+    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
+        this.claimsValidator = claimsValidator;
+    }
+
+    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
+        this.claimsValidator = null;
+    }
+
+    @Activate
+    protected void start(JwtConfig jwtConfig) {
+        LOGGER.info("Starting JwtService!!");
+        this.handleSigningKey(jwtConfig);
+    }
+
+    @Modified
+    protected void updated(JwtConfig jwtConfig) {
+        LOGGER.info("Updating JwtService!!");
+        this.handleSigningKey(jwtConfig);
     }
 }
