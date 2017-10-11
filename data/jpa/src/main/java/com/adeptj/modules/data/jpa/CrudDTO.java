@@ -126,7 +126,7 @@ public class CrudDTO<T extends BaseEntity> {
             if (this.posParams == null) {
                 this.posParams = new ArrayList<>();
             }
-            this.posParams.add(Arrays.asList(params));
+            this.posParams.addAll(Arrays.asList(params));
             return this;
         }
 
