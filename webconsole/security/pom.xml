@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.7.Final</version>
+        <version>1.0.8.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-webconsole-security</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Felix WebConsole :: Security</name>
     <description>AdeptJ Modules :: Felix WebConsole Security</description>
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-runtime-tools</artifactId>
-            <version>1.0.2.Final</version>
+            <version>1.0.3.Final</version>
             <scope>provided</scope>
         </dependency>
 
