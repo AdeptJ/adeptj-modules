@@ -24,7 +24,6 @@ import org.apache.felix.webconsole.SimpleWebConsolePlugin;
 import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -52,7 +51,7 @@ public class ToolsPlugin extends SimpleWebConsolePlugin {
     }
 
     @Override
-    protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws IOException {
         res.sendRedirect("/tools/dashboard");
     }
 
