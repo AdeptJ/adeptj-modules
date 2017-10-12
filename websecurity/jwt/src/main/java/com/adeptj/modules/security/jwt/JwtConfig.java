@@ -32,11 +32,16 @@ import org.osgi.service.metatype.annotations.Option;
 @ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for JWT Service")
 public @interface JwtConfig {
 
+    int CARDINALITY = 100;
+
+    long DEFAULT_EXPIRATION_TIME = 720L;
+
     @AttributeDefinition(
-            name = "JWT Signing Key",
-            description = "Signing Key for JWT, can be left blank in case private key singing is used"
+            name = "JWT Hmac Secret Key",
+            description = "Hmac Secret Key for JWT, must be left blank in case RSA private key is used. " +
+                    "Please note that this key will be Base64 encoded when config is saved."
     )
-    String signingKey();
+    String hmacSecretKey();
 
     @AttributeDefinition(
             name = "RSA Private Key(PEM Format) File Location",
@@ -54,14 +59,15 @@ public @interface JwtConfig {
                     @Option(label = "HMAC SHA256", value = "HS256"),
                     @Option(label = "HMAC SHA384", value = "HS384"),
                     @Option(label = "HMAC SHA512", value = "HS512"),
-            })
+            }
+    )
     String signatureAlgo();
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
-    long expirationTime() default 720L;
+    long expirationTime() default DEFAULT_EXPIRATION_TIME;
 
     @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key")
     boolean useDefaultKey() default true;

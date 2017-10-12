@@ -30,7 +30,7 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -43,16 +43,13 @@ import org.slf4j.LoggerFactory;
 
 import java.security.PrivateKey;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
-import static io.jsonwebtoken.SignatureAlgorithm.RS256;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -68,19 +65,19 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String UTF8 = "UTF-8";
 
-    private static final String KEY_INIT_FAIL_MSG = "Couldn't initialize the SigningKey!!";
-
     private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
 
     private static final String UNBIND_CLAIMS_VALIDATOR_SERVICE = "unbindClaimsValidator";
 
     private JwtConfig jwtConfig;
 
-    private String base64EncodedSigningKey;
-
     private SignatureAlgorithm signatureAlgo;
 
-    private PrivateKey signingKey;
+    // For Hmac algorithms
+    private byte[] hmacSecretKey;
+
+    // For Rsa algorithms
+    private PrivateKey rsaPrivateKey;
 
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
@@ -97,17 +94,15 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String issueJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be null or empty!!");
+        Instant now = Instant.now();
         JwtBuilder jwtBuilder = Jwts.builder()
-                .setClaims(claims)
                 .setHeaderParam(TYPE, JWT_TYPE)
+                .setClaims(claims)
                 .setSubject(subject)
                 .setIssuer(this.jwtConfig.issuer())
-                .setIssuedAt(Date.from(Instant.now()))
-                .setId(UUID.randomUUID().toString())
-                .setExpiration(Date.from(LocalDateTime.now()
-                        .plusMinutes(this.jwtConfig.expirationTime())
-                        .atZone(ZoneId.systemDefault())
-                        .toInstant()));
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now.plus(this.jwtConfig.expirationTime(), MINUTES)))
+                .setId(UUID.randomUUID().toString());
         this.signWith(jwtBuilder);
         return jwtBuilder.compact();
     }
@@ -138,18 +133,18 @@ public class JwtServiceImpl implements JwtService {
 
 
     private void signWith(JwtBuilder jwtBuilder) {
-        if (this.signingKey == null) {
-            jwtBuilder.signWith(this.signatureAlgo, this.base64EncodedSigningKey);
+        if (this.rsaPrivateKey == null) {
+            jwtBuilder.signWith(this.signatureAlgo, this.hmacSecretKey);
         } else {
-            jwtBuilder.signWith(this.signatureAlgo, this.signingKey);
+            jwtBuilder.signWith(this.signatureAlgo, this.rsaPrivateKey);
         }
     }
 
-    private void setSigningKey(JwtParser parser) {
-        if (this.signingKey == null) {
-            parser.setSigningKey(this.base64EncodedSigningKey);
+    private void setSigningKey(JwtParser jwtParser) {
+        if (this.rsaPrivateKey == null) {
+            jwtParser.setSigningKey(this.hmacSecretKey);
         } else {
-            parser.setSigningKey(this.signingKey);
+            jwtParser.setSigningKey(this.rsaPrivateKey);
         }
     }
 
@@ -157,20 +152,9 @@ public class JwtServiceImpl implements JwtService {
         this.jwtConfig = jwtConfig;
         try {
             this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-            String signKey = jwtConfig.signingKey();
-            if (StringUtils.isNotEmpty(signKey) && this.signatureAlgo.isHmac()) {
-                this.base64EncodedSigningKey = new String(Base64.getEncoder().encode(signKey.getBytes(UTF8)));
-            } else if (StringUtils.isEmpty(signKey) && this.signatureAlgo.isHmac()) {
-                this.signatureAlgo = RS256;
-            } else {
-                // This is to safeguard from situation where there was no signingKey provided
-                // and HMAC is chosen from  signatureAlgo dropdown. Configuring RS256 as default.
-                if (this.signatureAlgo.isHmac()) {
-                    this.signatureAlgo = RS256;
-                }
-            }
-            if (this.signatureAlgo.isRsa() && (this.signingKey = SigningKeys.getSigningKey(this.jwtConfig)) == null) {
-                throw new IllegalStateException(KEY_INIT_FAIL_MSG);
+            this.hmacSecretKey = JwtSigningKeys.getHmacSecretKey(this.signatureAlgo, jwtConfig.hmacSecretKey());
+            if (ArrayUtils.isEmpty(this.hmacSecretKey)) {
+                this.rsaPrivateKey = JwtSigningKeys.getRsaPrivateKey(this.jwtConfig);
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -191,13 +175,11 @@ public class JwtServiceImpl implements JwtService {
 
     @Activate
     protected void start(JwtConfig jwtConfig) {
-        LOGGER.info("Starting JwtService!!");
         this.handleSigningKey(jwtConfig);
     }
 
     @Modified
     protected void updated(JwtConfig jwtConfig) {
-        LOGGER.info("Updating JwtService!!");
         this.handleSigningKey(jwtConfig);
     }
 }

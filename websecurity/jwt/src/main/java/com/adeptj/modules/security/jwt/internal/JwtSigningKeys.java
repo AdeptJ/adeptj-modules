@@ -22,7 +22,9 @@ package com.adeptj.modules.security.jwt.internal;
 
 import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.security.jwt.JwtConfig;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -30,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -42,7 +45,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class SigningKeys {
+final class JwtSigningKeys {
 
     private static final String UTF8 = "UTF-8";
 
@@ -58,19 +61,36 @@ final class SigningKeys {
 
     private static final String DEFAULT_KEY_FILE = "/default.pem";
 
-    static PrivateKey getSigningKey(JwtConfig jwtConfig) throws Exception {
+    static byte[] getHmacSecretKey(SignatureAlgorithm signatureAlgo, String secretKey) throws UnsupportedEncodingException {
+        byte[] hmacSecretKey = null;
+        if (signatureAlgo.isHmac()) {
+            if (StringUtils.isEmpty(secretKey)) {
+                throw new IllegalStateException("hmacSecretKey property can't be empty when SignatureAlgorithm is Hmac!!");
+            } else {
+                hmacSecretKey = Base64.getEncoder().encode(secretKey.getBytes(UTF8));
+            }
+        } else if (StringUtils.isNotEmpty(secretKey)) {
+            throw new IllegalStateException("Can't have RSA SignatureAlgorithm when hmacSecretKey property is provided!!");
+        }
+        return hmacSecretKey;
+    }
+
+    static PrivateKey getRsaPrivateKey(JwtConfig jwtConfig) throws Exception {
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
         // 1. try the jwtConfig provided keyFileLocation
         String keyFileLocation = System.getProperty(SYS_PROP_CURRENT_DIR) +
                 File.separator +
                 jwtConfig.keyFileLocation();
-        Logger logger = Loggers.get(SigningKeys.class);
+        Logger logger = Loggers.get(JwtSigningKeys.class);
         logger.info("Loading Key file from location: [{}]", keyFileLocation);
         PrivateKey privateKey = loadKeyFromLocation(keyFactory, keyFileLocation);
         if (privateKey == null && jwtConfig.useDefaultKey()) {
             logger.warn("Couldn't load Key file from location [{}], using the default one!!", keyFileLocation);
             // 2. Use the default one that is embedded with this module.
             privateKey = loadDefaultKey(keyFactory, logger);
+        }
+        if (privateKey == null) {
+            throw new IllegalStateException("Couldn't initialize the SigningKey!!");
         }
         return privateKey;
     }
@@ -80,7 +100,7 @@ final class SigningKeys {
         try (FileInputStream inputStream = new FileInputStream(keyFileLocation)) {
             privateKey = generatePrivateKey(keyFactory, inputStream);
         } catch (FileNotFoundException ex) {
-            // Gulp it. Try to load the embedded one next.
+            // Gulp it. Try to load the embedded/default one next.
         }
         return privateKey;
     }
