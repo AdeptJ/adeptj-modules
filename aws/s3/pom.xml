@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.7.Final</version>
+        <version>1.0.8.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-aws-s3</artifactId>
@@ -35,8 +35,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.s3.version>1.11.197</aws.s3.version>
-        <aws.sdk.core.version>1.11.197</aws.sdk.core.version>
+        <aws.s3.version>1.11.213</aws.s3.version>
+        <aws.sdk.core.version>1.11.213</aws.sdk.core.version>
         <adeptj.aws.core.version>1.0.1.Final</adeptj.aws.core.version>
     </properties>
 

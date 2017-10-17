@@ -20,9 +20,9 @@
 
 -dsannotations: *
 
-Include-Resource: aws-java-sdk-ses-1.11.197.jar
+Include-Resource: aws-java-sdk-ses-1.11.213.jar
 
-Bundle-ClassPath: ., aws-java-sdk-ses-1.11.197.jar
+Bundle-ClassPath: ., aws-java-sdk-ses-1.11.213.jar
 
 Import-Package: javax.validation.*, \
                 com.amazonaws.*, \
