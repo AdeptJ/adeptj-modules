@@ -56,7 +56,7 @@ public class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> 
             LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
         } else {
             LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
-            this.addJaxRSResource(resource);
+            this.registry.addSingletonResource(resource);
         }
         return resource;
     }
@@ -72,7 +72,7 @@ public class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> 
         LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
         Optional.ofNullable(service).ifPresent(resource -> this.registry.removeRegistrations(resource.getClass()));
         LOGGER.info("Adding JAX-RS Resource again: [{}]", service);
-        this.addJaxRSResource(service);
+        this.registry.addSingletonResource(service);
     }
 
     @Override
@@ -80,9 +80,5 @@ public class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> 
         this.context.ungetService(reference);
         LOGGER.info("Removing JAX-RS Resource: [{}]", service);
         this.registry.removeRegistrations(service.getClass());
-    }
-
-    private void addJaxRSResource(Object service) {
-        this.registry.addSingletonResource(service);
     }
 }

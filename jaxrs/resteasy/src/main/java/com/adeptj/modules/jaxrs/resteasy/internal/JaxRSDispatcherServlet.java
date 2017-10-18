@@ -27,10 +27,7 @@ import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
-import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -42,16 +39,13 @@ import org.slf4j.Logger;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import java.util.Map;
 
-import static com.adeptj.modules.commons.utils.OSGiUtils.anyServiceFilter;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.EQ;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.JAXRS_DISPATCHER_SERVLET_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.MAPPING_PREFIX_VALUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.SERVLET_PATTERN_VALUE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED;
@@ -67,7 +61,10 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = JaxRSCoreConfig.class)
-@Component(immediate = true, service = Servlet.class, configurationPolicy = REQUIRE,
+@Component(
+        immediate = true,
+        service = Servlet.class,
+        configurationPolicy = REQUIRE,
         property = {
                 HTTP_WHITEBOARD_SERVLET_NAME + EQ + JAXRS_DISPATCHER_SERVLET_NAME,
                 HTTP_WHITEBOARD_SERVLET_PATTERN + EQ + SERVLET_PATTERN_VALUE,
@@ -76,16 +73,6 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
         }
 )
 public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
-
-    private static final long serialVersionUID = -4415966373465265279L;
-
-    private static final String FIELD_CTX_RESOLVERS = "contextResolvers";
-
-    private static final String RES_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
-
-    private static final String PROVIDER_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.provider=*))";
-
-    private static final String INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
 
     static final String EQ = "=";
 
@@ -96,6 +83,8 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     static final String ASYNC_SUPPORTED_TRUE = "true";
 
     static final String MAPPING_PREFIX_VALUE = "/";
+
+    private static final long serialVersionUID = -4415966373465265279L;
 
     private ServiceTracker<Object, Object> resourceTracker;
 
@@ -119,14 +108,15 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 super.init(servletConfig);
                 Dispatcher dispatcher = this.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
-                this.removeDefaultValidators(providerFactory, logger);
+                JaxRSUtil.removeDefaultValidators(providerFactory);
                 providerFactory.register(ValidatorContextResolver.class)
-                        .register(new JaxRSCorsFeature(this.config))
+                        .register(JaxRSUtil.getCorsFilter(this.config))
                         .register(new DefaultExceptionHandler(this.config.showException()))
                         .register(new JaxRSExceptionHandler(this.config.showException()));
-                this.openProviderServiceTracker(this.context, providerFactory);
-                this.openResourceServiceTracker(this.context, dispatcher.getRegistry());
-                logger.info(INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
+                this.providerTracker = JaxRSUtil.getProviderServiceTracker(this.context, providerFactory);
+                this.resourceTracker = JaxRSUtil.getResourceServiceTracker(this.context, dispatcher.getRegistry());
+                logger.info("JaxRSDispatcherServlet initialized in [{}] ms!!",
+                        NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
                 logger.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
                 throw new JaxRSInitializationException(ex.getMessage(), ex);
@@ -134,33 +124,8 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
         });
     }
 
-    private void openResourceServiceTracker(BundleContext context, Registry registry) {
-        this.resourceTracker = new ServiceTracker<>(context, anyServiceFilter(context, RES_FILTER_EXPR),
-                new JaxRSResources(context, registry));
-        this.resourceTracker.open();
-    }
-
-    private void openProviderServiceTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
-        this.providerTracker = new ServiceTracker<>(context, anyServiceFilter(context, PROVIDER_FILTER_EXPR),
-                new JaxRSProviders(context, providerFactory));
-        this.providerTracker.open();
-    }
-
-    private void removeDefaultValidators(ResteasyProviderFactory providerFactory, Logger logger) {
-        try {
-            // First remove the default RESTEasy GeneralValidator and GeneralValidatorCDI.
-            // After that we will register our ValidatorContextResolver.
-            Map<?, ?> contextResolvers = Map.class.cast(getDeclaredField(ResteasyProviderFactory.class,
-                    FIELD_CTX_RESOLVERS, true).get(providerFactory));
-            contextResolvers.remove(GeneralValidator.class);
-            contextResolvers.remove(GeneralValidatorCDI.class);
-            logger.info("Removed RESTEasy Validators!!");
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            logger.error("Exception while removing RESTEasy Validators", ex);
-        }
-    }
-
-    // Component Lifecycle Methods
+    // --------------------------- INTERNAL ---------------------------
+    // ---------------- Component lifecycle methods -------------------
 
     @Activate
     protected void start(JaxRSCoreConfig config, BundleContext context) {
@@ -170,7 +135,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     @Deactivate
     protected void stop() {
-        this.providerTracker.close();
-        this.resourceTracker.close();
+        JaxRSUtil.closeServiceTracker(this.providerTracker);
+        JaxRSUtil.closeServiceTracker(this.resourceTracker);
     }
 }

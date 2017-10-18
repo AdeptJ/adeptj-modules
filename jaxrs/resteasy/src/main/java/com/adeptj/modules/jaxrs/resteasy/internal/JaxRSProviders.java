@@ -26,11 +26,6 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-import java.util.Set;
-
-import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
-
 /**
  * JaxRSProviders is an OSGi ServiceTrackerCustomizer which registers the services annotated with JAX-RS
  * &#064;Provider annotation with RESTEasy provider registry.
@@ -40,8 +35,6 @@ import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 public class JaxRSProviders implements ServiceTrackerCustomizer<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSProviders.class);
-
-    private static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
 
     private ResteasyProviderFactory providerFactory;
 
@@ -59,7 +52,7 @@ public class JaxRSProviders implements ServiceTrackerCustomizer<Object, Object> 
             LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
         } else {
             LOGGER.info("Adding JAX-RS Provider: [{}]", resource);
-            this.addProvider(resource);
+            this.providerFactory.register(resource);
         }
         return resource;
     }
@@ -73,31 +66,15 @@ public class JaxRSProviders implements ServiceTrackerCustomizer<Object, Object> 
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
         LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
-        Optional.ofNullable(service).ifPresent(this::removeProvider);
+        JaxRSUtil.removeJaxRSProvider(this.providerFactory, service);
         LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
-        this.addProvider(service);
+        this.providerFactory.register(service);
     }
 
     @Override
     public void removedService(ServiceReference<Object> reference, Object service) {
         this.context.ungetService(reference);
         LOGGER.info("Removing JAX-RS Provider: [{}]", service);
-        this.removeProvider(service);
-    }
-
-    private void addProvider(Object service) {
-        this.providerFactory.register(service);
-    }
-
-    private void removeProvider(Object provider) {
-        try {
-            if (Set.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, true)
-                    .get(this.providerFactory))
-                    .remove(provider)) {
-                LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
-            }
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            LOGGER.error("Exception while removing JAX-RS Provider!!", ex);
-        }
+        JaxRSUtil.removeJaxRSProvider(this.providerFactory, service);
     }
 }
