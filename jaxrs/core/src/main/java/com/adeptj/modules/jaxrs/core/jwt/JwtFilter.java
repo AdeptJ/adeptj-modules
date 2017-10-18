@@ -20,6 +20,7 @@
 package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.commons.utils.Loggers;
+import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -29,13 +30,11 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
 import static com.adeptj.modules.jaxrs.core.jwt.JwtFilter.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
-import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 
 /**
  * This filter will kick in for any resource method that is annotated with {@link RequiresJwt} annotation.
@@ -77,7 +76,7 @@ public class JwtFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         if (this.jwtService == null) {
-            requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
+            requestContext.abortWith(JaxRSResponses.unavailable());
             return;
         }
         JwtUtil.handleJwt(requestContext, this.jwtService);

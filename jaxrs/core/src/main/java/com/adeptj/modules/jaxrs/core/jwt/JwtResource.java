@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.JaxRSException;
+import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import com.adeptj.modules.security.jwt.JwtService;
@@ -38,15 +38,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static com.adeptj.modules.jaxrs.core.jwt.JwtResource.RESOURCE_BASE;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
  * JAX-RS resource for issuance and verification of JWT.
@@ -92,21 +86,12 @@ public class JwtResource {
     public Response issueJwt(@NotNull @FormParam("username") String username,
                              @NotNull @FormParam("password") String password) {
         if (this.jwtService == null) {
-            return Response.status(SERVICE_UNAVAILABLE).build();
+            return JaxRSResponses.unavailable();
         }
-        try {
-            JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
-            return authInfo == null ?
-                    Response.status(UNAUTHORIZED).build() :
-                    this.responseWithJwt(username, authInfo);
-        } catch (Exception ex) {
-            throw JaxRSException.builder()
-                    .message(ex.getMessage())
-                    .cause(ex)
-                    .status(STATUS_SERVER_ERROR)
-                    .logException(true)
-                    .build();
-        }
+        JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
+        return authInfo == null
+                ? JaxRSResponses.unauthorized()
+                : JwtUtil.responseWithJwt(JwtUtil.issueJwt(this.jwtService, username, authInfo), this.cookieConfig);
     }
 
     /**
@@ -123,35 +108,6 @@ public class JwtResource {
         return Response.ok("Jwt verified successfully!!")
                 .type(TEXT_PLAIN)
                 .build();
-    }
-
-    private Response responseWithJwt(String username, JaxRSAuthenticationInfo authInfo) {
-        String jwt = this.jwtService.issueJwt(username, authInfo);
-        return this.cookieConfig.enabled() ?
-                Response.ok()
-                        .cookie(JwtUtil.buildJwtCookie(this.cookieConfig, jwt))
-                        .build() :
-                Response.ok()
-                        .header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt)
-                        .build();
-    }
-
-    /**
-     * Provides the JWT cookie name configured by this component.
-     */
-    enum JwtCookieNameProvider {
-
-        INSTANCE;
-
-        private String jwtCookieName;
-
-        String getJwtCookieName() {
-            return jwtCookieName;
-        }
-
-        void setJwtCookieName(String jwtCookieName) {
-            this.jwtCookieName = jwtCookieName;
-        }
     }
 
     // Component Lifecycle Methods

@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.JaxRSResponses;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,7 +32,7 @@ import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
  * Utility resolves Jwt either from request headers or from cookies only if not found in headers
@@ -44,14 +46,14 @@ final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
 
-    static NewCookie buildJwtCookie(JwtCookieConfig config, String jwt) {
-        return new NewCookie(config.name(), jwt,
-                config.path(),
-                config.domain(),
-                config.comment(),
-                config.maxAge(),
-                config.secure(),
-                config.httpOnly());
+    static String issueJwt(JwtService jwtService, String subject, JaxRSAuthenticationInfo claims) {
+        return jwtService.issueJwt(subject, claims);
+    }
+
+    static Response responseWithJwt(String jwt, JwtCookieConfig cookieConfig) {
+        return cookieConfig.enabled()
+                ? Response.ok().cookie(getJwtCookie(jwt, cookieConfig)).build()
+                : Response.ok().header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt).build();
     }
 
     static void handleJwt(ContainerRequestContext requestContext, JwtService jwtService) {
@@ -59,7 +61,7 @@ final class JwtUtil {
         // Send Unauthorized if JWT is null or JwtService finds token to be malformed, expired etc.
         // 401 is better suited for token verification failure.
         if (StringUtils.isEmpty(jwt) || !jwtService.verifyJwt(jwt)) {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            requestContext.abortWith(JaxRSResponses.unauthorized());
         }
     }
 
@@ -75,13 +77,23 @@ final class JwtUtil {
     private static String resolveFromCookies(ContainerRequestContext requestContext) {
         Cookie jwtCookie = requestContext
                 .getCookies()
-                .get(JwtResource.JwtCookieNameProvider.INSTANCE.getJwtCookieName());
+                .get(JwtCookieNameProvider.INSTANCE.getJwtCookieName());
         return jwtCookie == null ? null : cleanseJwt(jwtCookie.getValue());
     }
 
     private static String cleanseJwt(String jwt) {
         return StringUtils.startsWith(jwt, AUTH_SCHEME_BEARER) ?
                 StringUtils.substring(jwt, JWT_START_POS) : StringUtils.trim(jwt);
+    }
+
+    private static NewCookie getJwtCookie(String jwt, JwtCookieConfig cookieConfig) {
+        return new NewCookie(cookieConfig.name(), jwt,
+                cookieConfig.path(),
+                cookieConfig.domain(),
+                cookieConfig.comment(),
+                cookieConfig.maxAge(),
+                cookieConfig.secure(),
+                cookieConfig.httpOnly());
     }
 
     // Just static utilities, no instance needed.
