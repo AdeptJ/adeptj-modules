@@ -53,11 +53,11 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
 @Component(immediate = true, property = PROVIDER_OSGI_PROPERTY)
 public class JwtFilter implements ContainerRequestFilter {
 
+    static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
+
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
-
-    static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
 
     /**
      * The {@link JwtService} is optionally referenced, if unavailable this filter

@@ -52,11 +52,11 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 @Component(immediate = true, service = JwtResource.class, property = RESOURCE_BASE)
 public class JwtResource {
 
+    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
+
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
-
-    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
     private JwtCookieConfig cookieConfig;
 
