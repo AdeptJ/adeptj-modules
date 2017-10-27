@@ -30,11 +30,15 @@ import org.slf4j.LoggerFactory;
  */
 public final class Loggers {
 
+    // Static utility methods, no instances required.
+    private Loggers() {
+    }
+
     public static <T> Logger get(Class<T> type) {
         return LoggerFactory.getLogger(type);
     }
 
-    // Static utility methods, no instances required.
-    private Loggers() {
+    public static Logger get(String name) {
+        return LoggerFactory.getLogger(name);
     }
 }

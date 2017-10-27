@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -43,6 +43,10 @@ public final class OSGiUtils {
 
     private static final String PARENTHESIS_CLOSE = ")";
 
+    // No instantiation. Utility methods only.
+    private OSGiUtils() {
+    }
+
     public static Filter filter(BundleContext context, Class<?> objectClass, String filterExpr) {
         try {
             return context.createFilter(new StringBuilder(FILTER_AND)
@@ -77,9 +81,5 @@ public final class OSGiUtils {
 
     public static void unregisterService(ServiceRegistration<?> registration) {
         Optional.ofNullable(registration).ifPresent(ServiceRegistration::unregister);
-    }
-
-    // No instantiation. Utility methods only.
-    private OSGiUtils() {
     }
 }
