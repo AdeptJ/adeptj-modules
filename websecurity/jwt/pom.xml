@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.8.Final</version>
+        <version>1.0.9-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-websecurity-jwt</artifactId>
@@ -35,7 +35,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jjwt.version>0.9.0</jjwt.version>
     </properties>
 
     <!-- Project Information -->
