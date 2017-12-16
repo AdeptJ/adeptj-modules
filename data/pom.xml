@@ -42,7 +42,7 @@
         <module>jpa</module>
         <!--<module>aerospike</module>-->
         <!--<module>couchdb</module>-->
-        <!--<module>mongodb</module>-->
+        <module>mongodb</module>
         <!--<module>redis</module>-->
         <!--<module>cockroachdb</module>-->
         <!--<module>couchbase</module>-->
