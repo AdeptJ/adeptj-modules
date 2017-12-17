@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.adeptj.modules.data.mongo.internal.MongoConnectionProvider.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
@@ -78,13 +79,13 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
 
     @Override
     public void deleted(String s) {
-        LOGGER.info("inside mongo delete");
+        this.serviceContainer.remove(s);
     }
 
     private void buildCrudService(Dictionary<String, ?> properties, String id) {
         try {
             MongoCredential credential = null;
-            if (PropertiesUtil.toString(properties.get("username"), null) != null) {
+            if (!PropertiesUtil.toString(properties.get("username"), "").equals("")) {
                 credential = MongoCredential.createCredential(
                         PropertiesUtil.toString(properties.get("username"), ""),
                         PropertiesUtil.toString(properties.get("dbName"), ""),
@@ -93,20 +94,28 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
             }
 
             Morphia morphia = new Morphia();
-            if (PropertiesUtil.toString(properties.get("mappablePackage"), null) != null) {
+            if (!PropertiesUtil.toString(properties.get("mappablePackage"), "").equals("")) {
                 morphia.mapPackage(properties.get("mappablePackage").toString());
             }
 
             ServerAddress serverAddress = new ServerAddress(
                     PropertiesUtil.toString(properties.get("hostName"), ""),
-                    PropertiesUtil.toInteger(properties.get("hostName"), 0)
+                    PropertiesUtil.toInteger(properties.get("port"), 0)
             );
 
-            MongoClient mongoClient = new MongoClient(
-                serverAddress,
-                Arrays.asList(credential),
-                this.buildMongoOptions(properties)
-            );
+            MongoClient mongoClient = null;
+            if (credential != null) {
+                mongoClient = new MongoClient(
+                        serverAddress,
+                        Arrays.asList(credential),
+                        this.buildMongoOptions(properties)
+                );
+            } else {
+                mongoClient = new MongoClient(
+                        serverAddress,
+                        this.buildMongoOptions(properties)
+                );
+            }
 
             this.serviceContainer.put(id, new MongoCrudRepositoryImpl(
                     morphia.createDatastore(
