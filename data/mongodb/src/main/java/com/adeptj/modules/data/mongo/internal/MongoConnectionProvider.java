@@ -165,5 +165,21 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
         return builder.build();
     }
 
+    /**
+     * Returns {@link Optional} of {@link MongoCrudRepository} for a given unit name.
+     * <p>
+     * Unit name should be same as given in mongoDB connection factory configuration.
+     * An empty {@link Optional} will be returned if unitName does not match any configuration.
+     *
+     * @param unitName  string identifier for mongodb configuration.
+     * @return  {@link Optional<MongoCrudRepository>}
+     */
+    public Optional<MongoCrudRepository> getRepository(String unitName) {
+        return this.serviceContainer.containsValue(unitName) ?
+                        Optional.of(this.serviceContainer.get(unitName)) :
+                        Optional.empty();
+
+    }
+
 
 }
