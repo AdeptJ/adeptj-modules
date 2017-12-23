@@ -84,17 +84,7 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
 
     @Override
     public void deleted(String id) {
-        if (this.unitMapping.containsKey(id)) {
-            //Closing connection to mongodb server for delete action
-            //for any configuration.
-            Optional.of(this.serviceContainer.remove(this.unitMapping.get(id)))
-                    .ifPresent(crudRepository -> {
-                LOGGER.debug("Closing connection for unit {}", unitMapping.get(id));
-                crudRepository.getDatastore().getMongo().close();
-                crudRepository = null;
-                unitMapping.remove(id);
-            });
-        }
+        this.destroy(id);
     }
 
     private void buildCrudService(Dictionary<String, ?> properties, String id) {
@@ -136,6 +126,10 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
                             serverAddress,
                             this.buildMongoOptions(properties)
                     );
+                }
+
+                if (this.unitMapping.containsKey(id)) {
+                    this.destroy(id);
                 }
 
                 this.serviceContainer.put(
@@ -187,6 +181,20 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
 
         //TODO Mongo config for connection pool  configurations.
         return builder.build();
+    }
+
+    private void destroy(String id) {
+        if (this.unitMapping.containsKey(id)) {
+            //Closing connection to mongodb server for delete action
+            //for any configuration.
+            Optional.of(this.serviceContainer.remove(this.unitMapping.get(id)))
+                    .ifPresent(crudRepository -> {
+                        LOGGER.debug("Closing connection for unit {}", unitMapping.get(id));
+                        crudRepository.getDatastore().getMongo().close();
+                        crudRepository = null;
+                        unitMapping.remove(id);
+                    });
+        }
     }
 
     /**
