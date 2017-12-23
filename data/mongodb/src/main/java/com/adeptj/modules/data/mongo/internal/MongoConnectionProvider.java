@@ -40,9 +40,12 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static com.adeptj.modules.data.mongo.internal.MongoConnectionProvider.COMPONENT_NAME;
+import static com.adeptj.modules.data.mongo.internal.Utils.PROVIDER_COMPONENT_NAME;
+import static com.adeptj.modules.data.mongo.internal.Utils.PROVIDER_FACTORY_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
@@ -54,18 +57,14 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 @Designate(ocd = MongoConfiguration.class, factory = true)
 @Component(
         immediate = true,
-        name = COMPONENT_NAME,
-        property = SERVICE_PID + "=" + COMPONENT_NAME,
+        name = PROVIDER_COMPONENT_NAME,
+        property = SERVICE_PID + "=" + PROVIDER_COMPONENT_NAME,
         configurationPolicy = IGNORE
 )
 public class MongoConnectionProvider implements ManagedServiceFactory {
 
     private static final Logger LOGGER =
             LoggerFactory.getLogger(MongoConnectionProvider.class);
-
-    static final String COMPONENT_NAME = "com.adeptj.modules.data.mongo.MongoConnectionProvider.factory";
-
-    private static final String FACTORY_NAME = "AdeptJ MongoDB Connection Provider";
 
     private Map<String, MongoCrudRepository> serviceContainer = new HashMap<>();
 
@@ -75,7 +74,7 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
 
     @Override
     public String getName() {
-        return FACTORY_NAME;
+        return PROVIDER_FACTORY_NAME;
     }
 
     @Override
@@ -161,6 +160,31 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
 
     private MongoClientOptions buildMongoOptions(Dictionary<String, ?> properties) {
         MongoClientOptions.Builder builder = MongoClientOptions.builder();
+
+        //Read preference for mongodb
+        builder.readPreference(
+                Objects.requireNonNull(Utils.readPreference(
+                        Stream.of(ReadPreferenceEnum.values()).filter(
+                                (readPreferenceEnum) -> {
+                                    return readPreferenceEnum.name()
+                                            .equals(PropertiesUtil.toString(properties.get("readPreference"), ""));
+                                }
+                        ).findFirst().orElse(ReadPreferenceEnum.NEAREST)
+                ))
+        );
+
+        //Write concern for mongodb
+        builder.writeConcern(
+                Objects.requireNonNull(Utils.writeConcern(
+                        Stream.of(WriteConcernEnum.values()).filter(
+                                (writeConcernEnum) -> {
+                                    return writeConcernEnum
+                                            .equals(PropertiesUtil.toString(properties.get("readPreference"), ""));
+                                }
+                        ).findFirst().orElse(WriteConcernEnum.UNACKNOWLEDGED)
+                ))
+        );
+
         //TODO Mongo config for connection pool  configurations.
         return builder.build();
     }

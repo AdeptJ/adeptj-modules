@@ -20,8 +20,11 @@
 
 package com.adeptj.modules.data.mongo.internal;
 
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadPreference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.osgi.service.metatype.annotations.Option;
 
 /**
  * OSGI mongo db connection configuration definition.
@@ -77,4 +80,29 @@ public @interface MongoConfiguration {
             description = "MongoDB Collections classes package to Map"
     )
     String mappablePackage();
+
+    @AttributeDefinition(
+            name = "ReadPreference",
+            description = "ReadPreference for transactions.",
+            options = {
+                @Option(label = "PRIMARY", value = "PRIMARY"),
+                @Option(label = "SECONDARY", value = "SECONDARY"),
+                @Option(label = "SECONDARY_PREFERRED", value = "SECONDARY_PREFERRED"),
+                @Option(label = "PRIMARY_PREFERRED", value = "PRIMARY_PREFERRED"),
+                @Option(label = "NEAREST", value = "NEAREST")
+            }
+    )
+    String readPreference();
+
+    @AttributeDefinition(
+            name = "WriteConcern",
+            description = "WriteConcern for transactions.",
+            options = {
+                    @Option(label = "ACKNOWLEDGED", value = "ACKNOWLEDGED"),
+                    @Option(label = "JOURNALED", value = "JOURNALED"),
+                    @Option(label = "MAJORITY", value = "MAJORITY"),
+                    @Option(label = "UNACKNOWLEDGED", value = "UNACKNOWLEDGED")
+            }
+    )
+    String writeConcern();
 }
