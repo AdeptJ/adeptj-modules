@@ -22,6 +22,8 @@ package com.adeptj.modules.data.mongo.internal;
 
 import com.adeptj.modules.commons.utils.PropertiesUtil;
 import com.adeptj.modules.data.mongo.api.MongoCrudRepository;
+import com.adeptj.modules.data.mongo.exception.InvalidMongoDatabaseException;
+import com.adeptj.modules.data.mongo.exception.InvalidMongoUnitException;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
@@ -67,6 +69,10 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
 
     private Map<String, MongoCrudRepository> serviceContainer = new HashMap<>();
 
+    private Map<String, String> unitMapping = new HashMap<>();
+
+    private static final String UNITNAME_PROP = "unitName";
+
     @Override
     public String getName() {
         return FACTORY_NAME;
@@ -78,51 +84,76 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
     }
 
     @Override
-    public void deleted(String s) {
-        this.serviceContainer.remove(s);
+    public void deleted(String id) {
+        if (this.unitMapping.containsKey(id)) {
+            //Closing connection to mongodb server for delete action
+            //for any configuration.
+            Optional.of(this.serviceContainer.remove(this.unitMapping.get(id)))
+                    .ifPresent(crudRepository -> {
+                LOGGER.debug("Closing connection for unit {}", unitMapping.get(id));
+                crudRepository.getDatastore().getMongo().close();
+                crudRepository = null;
+                unitMapping.remove(id);
+            });
+        }
     }
 
     private void buildCrudService(Dictionary<String, ?> properties, String id) {
         try {
-            MongoCredential credential = null;
-            if (!PropertiesUtil.toString(properties.get("username"), "").equals("")) {
-                credential = MongoCredential.createCredential(
-                        PropertiesUtil.toString(properties.get("username"), ""),
-                        PropertiesUtil.toString(properties.get("dbName"), ""),
-                        PropertiesUtil.toString(properties.get("password"), "").toCharArray()
+            if (!PropertiesUtil.toString(properties.get(UNITNAME_PROP), "").equals("")) {
+                //Aboard in case of nothing provided in dbname.
+                //Avoiding db connection creation with blank db name.
+                if (PropertiesUtil.toString(properties.get("dbName"), "").equals("")) {
+                    throw new InvalidMongoDatabaseException("Invalid mongo database name. Provide a valid database name.");
+                }
+                MongoCredential credential = null;
+                if (!PropertiesUtil.toString(properties.get("username"), "").equals("")) {
+                    credential = MongoCredential.createCredential(
+                            PropertiesUtil.toString(properties.get("username"), ""),
+                            PropertiesUtil.toString(properties.get("dbName"), ""),
+                            PropertiesUtil.toString(properties.get("password"), "").toCharArray()
+                    );
+                }
+
+                Morphia morphia = new Morphia();
+                if (!PropertiesUtil.toString(properties.get("mappablePackage"), "").equals("")) {
+                    morphia.mapPackage(properties.get("mappablePackage").toString());
+                }
+
+                ServerAddress serverAddress = new ServerAddress(
+                        PropertiesUtil.toString(properties.get("hostName"), ""),
+                        PropertiesUtil.toInteger(properties.get("port"), 0)
                 );
-            }
 
-            Morphia morphia = new Morphia();
-            if (!PropertiesUtil.toString(properties.get("mappablePackage"), "").equals("")) {
-                morphia.mapPackage(properties.get("mappablePackage").toString());
-            }
+                MongoClient mongoClient = null;
+                if (credential != null) {
+                    mongoClient = new MongoClient(
+                            serverAddress,
+                            Arrays.asList(credential),
+                            this.buildMongoOptions(properties)
+                    );
+                } else {
+                    mongoClient = new MongoClient(
+                            serverAddress,
+                            this.buildMongoOptions(properties)
+                    );
+                }
 
-            ServerAddress serverAddress = new ServerAddress(
-                    PropertiesUtil.toString(properties.get("hostName"), ""),
-                    PropertiesUtil.toInteger(properties.get("port"), 0)
-            );
-
-            MongoClient mongoClient = null;
-            if (credential != null) {
-                mongoClient = new MongoClient(
-                        serverAddress,
-                        Arrays.asList(credential),
-                        this.buildMongoOptions(properties)
+                this.serviceContainer.put(
+                        PropertiesUtil.toString(properties.get(UNITNAME_PROP), ""),
+                        new MongoCrudRepositoryImpl(
+                                morphia.createDatastore(
+                                        mongoClient,
+                                        PropertiesUtil.toString(properties.get("dbName"), "")
+                                )
+                        )
                 );
+
+                this.unitMapping.put(id,
+                        PropertiesUtil.toString(properties.get(UNITNAME_PROP), ""));
             } else {
-                mongoClient = new MongoClient(
-                        serverAddress,
-                        this.buildMongoOptions(properties)
-                );
+                throw new InvalidMongoUnitException("Invalid Unit name provided for mongo db configuration. Provide Valid and unique name for unit");
             }
-
-            this.serviceContainer.put(id, new MongoCrudRepositoryImpl(
-                    morphia.createDatastore(
-                            mongoClient,
-                            PropertiesUtil.toString(properties.get("dbName"), "")
-                    )
-            ));
         } catch (Exception ex) {
             LOGGER.error("Unable to create mongo crud service for config id {} full exception ", id, ex);
         }
