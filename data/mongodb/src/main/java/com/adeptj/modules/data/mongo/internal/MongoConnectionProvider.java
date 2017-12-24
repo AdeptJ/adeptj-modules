@@ -179,7 +179,27 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
                 ))
         );
 
-        //TODO Mongo config for connection pool  configurations.
+        builder.serverSelectionTimeout(
+                PropertiesUtil.toInteger(properties.get("serverSelectionTimeout"), 30000)
+        );
+        builder.connectionsPerHost(
+                PropertiesUtil.toInteger(properties.get("maxConnectionsPerHost"), 100)
+        );
+        builder.maxWaitTime(
+                PropertiesUtil.toInteger(properties.get("maxConnectionsPerHost"), 120000)
+        );
+        builder.maxConnectionIdleTime(
+                PropertiesUtil.toInteger(properties.get("maxConnectionIdleTime"), 100000)
+        );
+        builder.sslEnabled(
+                PropertiesUtil.toBoolean(properties.get("sslEnabled"), false)
+        );
+        builder.connectTimeout(
+                PropertiesUtil.toInteger(properties.get("connectTimeout"), 30000)
+        );
+        builder.maxConnectionLifeTime(
+                PropertiesUtil.toInteger(properties.get("maxConnectionLifeTime"), 300000)
+        );
         return builder.build();
     }
 
