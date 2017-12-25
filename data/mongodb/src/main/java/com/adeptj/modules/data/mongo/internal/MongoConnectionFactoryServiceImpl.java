@@ -24,6 +24,8 @@ import com.adeptj.modules.data.mongo.api.MongoConnectionFactoryService;
 import com.adeptj.modules.data.mongo.api.MongoCrudRepository;
 import com.adeptj.modules.data.mongo.exception.MongoRepositoryNotFoundException;
 import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -45,10 +47,7 @@ public class MongoConnectionFactoryServiceImpl implements MongoConnectionFactory
     private static final Logger LOGGER =
             LoggerFactory.getLogger(MongoConnectionFactoryServiceImpl.class);
 
-    @Reference(
-            target = "("+SERVICE_PID+"="+PROVIDER_COMPONENT_NAME+")",
-            service = ManagedServiceFactory.class
-    )
+    @Reference
     private MongoConnectionProvider connectionProvider;
 
     /**

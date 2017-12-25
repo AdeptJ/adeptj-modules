@@ -29,6 +29,8 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.ObjectFactory;
+import org.mongodb.morphia.mapping.DefaultCreator;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
@@ -59,7 +61,8 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
         immediate = true,
         name = PROVIDER_COMPONENT_NAME,
         property = SERVICE_PID + "=" + PROVIDER_COMPONENT_NAME,
-        configurationPolicy = IGNORE
+        configurationPolicy = IGNORE,
+        service = {MongoConnectionProvider.class, ManagedServiceFactory.class}
 )
 public class MongoConnectionProvider implements ManagedServiceFactory {
 
@@ -108,6 +111,14 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
                 if (!PropertiesUtil.toString(properties.get("mappablePackage"), "").equals("")) {
                     morphia.mapPackage(properties.get("mappablePackage").toString());
                 }
+
+                //Adding bundle class loader to load entity classes from fragment bundle.
+                morphia.getMapper().getOptions().setObjectFactory(new DefaultCreator() {
+                    @Override
+                    protected ClassLoader getClassLoaderForClass() {
+                        return MongoConnectionProvider.class.getClassLoader();
+                    }
+                });
 
                 ServerAddress serverAddress = new ServerAddress(
                         PropertiesUtil.toString(properties.get("hostName"), ""),
@@ -227,7 +238,7 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
      * @return  {@link Optional<MongoCrudRepository>}
      */
     public Optional<MongoCrudRepository> getRepository(String unitName) {
-        return this.serviceContainer.containsValue(unitName) ?
+        return this.serviceContainer.containsKey(unitName) ?
                         Optional.of(this.serviceContainer.get(unitName)) :
                         Optional.empty();
 
