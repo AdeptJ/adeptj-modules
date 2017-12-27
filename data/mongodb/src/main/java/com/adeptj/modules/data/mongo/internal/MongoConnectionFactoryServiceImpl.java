@@ -23,18 +23,12 @@ package com.adeptj.modules.data.mongo.internal;
 import com.adeptj.modules.data.mongo.api.MongoConnectionFactoryService;
 import com.adeptj.modules.data.mongo.api.MongoCrudRepository;
 import com.adeptj.modules.data.mongo.exception.MongoRepositoryNotFoundException;
-import org.osgi.service.cm.ManagedServiceFactory;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
-
-import static com.adeptj.modules.data.mongo.internal.Utils.PROVIDER_COMPONENT_NAME;
-import static org.osgi.framework.Constants.SERVICE_PID;
 
 /**
  * Implementation for {@link MongoConnectionFactoryServiceImpl}

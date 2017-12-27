@@ -29,7 +29,6 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import org.mongodb.morphia.Morphia;
-import org.mongodb.morphia.ObjectFactory;
 import org.mongodb.morphia.mapping.DefaultCreator;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
