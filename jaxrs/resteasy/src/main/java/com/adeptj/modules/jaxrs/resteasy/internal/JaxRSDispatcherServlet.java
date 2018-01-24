@@ -110,7 +110,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
                 JaxRSUtil.removeDefaultValidators(providerFactory);
                 providerFactory.register(ValidatorContextResolver.class)
-                        .register(JaxRSUtil.getCorsFilter(this.config))
+                        .register(JaxRSUtil.createCorsFilter(this.config))
                         .register(new DefaultExceptionHandler(this.config.showException()))
                         .register(new JaxRSExceptionHandler(this.config.showException()));
                 this.providerTracker = JaxRSUtil.getProviderServiceTracker(this.context, providerFactory);

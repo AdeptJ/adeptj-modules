@@ -34,8 +34,9 @@ import org.osgi.util.tracker.ServiceTracker;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 
 /**
@@ -87,17 +88,14 @@ final class JaxRSUtil {
         }
     }
 
-    static CorsFilter getCorsFilter(JaxRSCoreConfig config) {
+    static CorsFilter createCorsFilter(JaxRSCoreConfig config) {
         CorsFilter corsFilter = new CorsFilter();
         corsFilter.setAllowCredentials(config.allowCredentials());
         corsFilter.setAllowedMethods(config.allowedMethods());
         corsFilter.setCorsMaxAge(config.corsMaxAge());
-        corsFilter.setAllowedHeaders(Arrays.stream(config.allowedHeaders())
-                .collect(Collectors.joining(DELIMITER_COMMA)));
-        corsFilter.setExposedHeaders(Arrays.stream(config.exposedHeaders())
-                .collect(Collectors.joining(DELIMITER_COMMA)));
-        corsFilter.getAllowedOrigins().addAll(Arrays.stream(config.allowedOrigins())
-                .collect(Collectors.toSet()));
+        corsFilter.setAllowedHeaders(Arrays.stream(config.allowedHeaders()).collect(joining(DELIMITER_COMMA)));
+        corsFilter.setExposedHeaders(Arrays.stream(config.exposedHeaders()).collect(joining(DELIMITER_COMMA)));
+        corsFilter.getAllowedOrigins().addAll(Arrays.stream(config.allowedOrigins()).collect(toSet()));
         return corsFilter;
     }
 
