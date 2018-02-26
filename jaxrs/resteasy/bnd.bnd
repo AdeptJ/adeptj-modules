@@ -24,12 +24,12 @@
 
 Include-Resource: resteasy-*.jar, apache-mime4j-*.jar
 
-Bundle-ClassPath: ., resteasy-jaxrs-3.1.4.Final.jar,\
-                     resteasy-cdi-3.1.4.Final.jar,\
-                     resteasy-validator-provider-11-3.1.4.Final.jar,\
-                     resteasy-jackson2-provider-3.1.4.Final.jar,\
-                     resteasy-jaxb-provider-3.1.4.Final.jar,\
-                     resteasy-multipart-provider-3.1.4.Final.jar,\
+Bundle-ClassPath: ., resteasy-jaxrs-3.5.0.Final.jar,\
+                     resteasy-cdi-3.5.0.Final.jar,\
+                     resteasy-validator-provider-11-3.5.0.Final.jar,\
+                     resteasy-jackson2-provider-3.5.0.Final.jar,\
+                     resteasy-jaxb-provider-3.5.0.Final.jar,\
+                     resteasy-multipart-provider-3.5.0.Final.jar,\
                      apache-mime4j-0.6.1.jar
 
 -exportcontents: com.adeptj.modules.jaxrs.resteasy,\
