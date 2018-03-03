@@ -95,7 +95,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     private JaxRSCoreConfig config;
 
     @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
+    public void init(ServletConfig servletConfig) {
         final long startTime = System.nanoTime();
         final Logger logger = Loggers.get(JaxRSDispatcherServlet.class);
         logger.info("Initializing JaxRSDispatcherServlet!!");
