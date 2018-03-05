@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Authenticator
+ * Service contract for implementors to authenticate the request.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

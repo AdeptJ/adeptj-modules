@@ -31,7 +31,7 @@ import java.util.Objects;
 import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
 
 /**
- * ServletContextHelperSupport
+ * ServletContextHelper implementation which initializes the super with the using bundle instance.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -43,11 +43,14 @@ public final class ServletContextHelperSupport extends ServletContextHelper {
 
     private final Authenticator authenticator;
 
-    public ServletContextHelperSupport(Bundle bundle, Authenticator authenticator) {
-        super(Objects.requireNonNull(bundle, "Bundle can't be null!!"));
+    public ServletContextHelperSupport(Bundle usingBundle, Authenticator authenticator) {
+        super(Objects.requireNonNull(usingBundle, "Using Bundle can't be null!!"));
         this.authenticator = authenticator;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (this.authenticator == null) {

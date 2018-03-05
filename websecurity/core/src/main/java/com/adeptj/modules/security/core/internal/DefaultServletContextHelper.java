@@ -66,7 +66,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
 
     private static final String UNBIND_AUTHENTICATOR = "unbindAuthenticator";
 
-    private ServletContextHelper delegatee;
+    private ServletContextHelper servletContextHelperSupport;
 
     @Reference(
             cardinality = ReferenceCardinality.OPTIONAL,
@@ -76,29 +76,44 @@ public class DefaultServletContextHelper extends ServletContextHelper {
     )
     private volatile Authenticator authenticator;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return this.delegatee.handleSecurity(request, response);
+        return this.servletContextHelperSupport.handleSecurity(request, response);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public URL getResource(String name) {
-        return this.delegatee.getResource(name);
+        return this.servletContextHelperSupport.getResource(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getMimeType(String name) {
-        return this.delegatee.getMimeType(name);
+        return this.servletContextHelperSupport.getMimeType(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<String> getResourcePaths(String path) {
-        return this.delegatee.getResourcePaths(path);
+        return this.servletContextHelperSupport.getResourcePaths(path);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getRealPath(String path) {
-        return this.delegatee.getRealPath(path);
+        return this.servletContextHelperSupport.getRealPath(path);
     }
 
     // --------------------- INTERNAL ---------------------
@@ -115,6 +130,6 @@ public class DefaultServletContextHelper extends ServletContextHelper {
 
     @Activate
     protected void activate(ComponentContext compCtx) {
-        this.delegatee = new ServletContextHelperSupport(compCtx.getUsingBundle(), this.authenticator);
+        this.servletContextHelperSupport = new ServletContextHelperSupport(compCtx.getUsingBundle(), this.authenticator);
     }
 }
