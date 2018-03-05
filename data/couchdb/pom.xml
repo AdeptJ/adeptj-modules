@@ -25,7 +25,7 @@
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
         <version>1.0.0.Final</version>
-        <relativePath/>
+
     </parent>
     <artifactId>adeptj-modules-data-couchdb</artifactId>
     <packaging>bundle</packaging>

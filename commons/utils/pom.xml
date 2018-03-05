@@ -25,10 +25,10 @@
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
         <version>1.0.9.Final</version>
-        <relativePath/>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-utils</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Utils</name>
     <description>AdeptJ Modules :: Commons :: Services And Utilities</description>

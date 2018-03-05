@@ -25,7 +25,7 @@
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
         <version>1.0.9.Final</version>
-        <relativePath/>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-logging</artifactId>
     <packaging>jar</packaging>

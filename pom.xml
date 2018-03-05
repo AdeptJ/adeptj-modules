@@ -21,11 +21,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-parent</artifactId>
-        <version>1.0.15.Final</version>
-    </parent>
+    <groupId>com.adeptj</groupId>
     <artifactId>adeptj-modules-builder</artifactId>
     <version>1.0.0.Final</version>
     <packaging>pom</packaging>
@@ -39,13 +35,11 @@
         <module>parent</module>
         <module>commons</module>
         <module>webconsole</module>
-        <!--<module>cache</module>-->
         <module>websecurity</module>
         <module>jaxrs</module>
         <module>aws</module>
         <module>data</module>
         <module>mvc</module>
-        <!--<module>search</module>-->
 
     </modules>
 

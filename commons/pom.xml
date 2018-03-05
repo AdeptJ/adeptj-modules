@@ -25,7 +25,7 @@
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
         <version>1.0.9.Final</version>
-        <relativePath/>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons</artifactId>
     <version>1.0.0.Final</version>
@@ -38,11 +38,8 @@
     <modules>
 
         <module>utils</module>
-        <!--<module>beanvalidation</module>-->
         <module>datasource</module>
-        <!--<module>javamail</module>-->
         <module>logging</module>
-        <!--<module>i18n</module>-->
         <module>scheduler</module>
 
     </modules>
