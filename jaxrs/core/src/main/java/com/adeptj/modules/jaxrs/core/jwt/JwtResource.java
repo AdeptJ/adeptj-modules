@@ -25,6 +25,7 @@ import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -122,6 +123,12 @@ public class JwtResource {
 
     @Activate
     protected void start(JwtCookieConfig cookieConfig) {
+        this.cookieConfig = cookieConfig;
+        JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.cookieConfig.name());
+    }
+
+    @Modified
+    protected void updated(JwtCookieConfig cookieConfig) {
         this.cookieConfig = cookieConfig;
         JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.cookieConfig.name());
     }
