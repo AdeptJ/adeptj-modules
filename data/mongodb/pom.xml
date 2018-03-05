@@ -123,7 +123,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1.Final</version>
             <scope>provided</scope>
         </dependency>
 
