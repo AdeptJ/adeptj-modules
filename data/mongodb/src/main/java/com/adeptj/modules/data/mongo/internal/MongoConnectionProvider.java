@@ -234,7 +234,7 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
      * An empty {@link Optional} will be returned if unitName does not match any configuration.
      *
      * @param unitName  string identifier for mongodb configuration.
-     * @return  {@link Optional<MongoCrudRepository>}
+     * @return  Optional
      */
     public Optional<MongoCrudRepository> getRepository(String unitName) {
         return this.serviceContainer.containsKey(unitName) ?

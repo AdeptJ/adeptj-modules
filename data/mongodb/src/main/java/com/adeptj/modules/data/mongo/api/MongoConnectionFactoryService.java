@@ -40,7 +40,7 @@ public interface MongoConnectionFactoryService {
      * @param unitName  string identifier for mongodb configuration.
      * @return  {@link MongoCrudRepository} mongo repository for given unit.
      *
-     * @throws MongoRepositoryNotFoundException
+     * @throws MongoRepositoryNotFoundException unable to find repository for unitName
      */
     MongoCrudRepository getRepository(String unitName) throws MongoRepositoryNotFoundException;
 }

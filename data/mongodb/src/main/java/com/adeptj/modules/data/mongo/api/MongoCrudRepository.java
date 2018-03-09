@@ -36,38 +36,42 @@ public interface MongoCrudRepository {
 
     /**
      * Returns {@link Datastore} generated while creating connection.
-     * @return
+     *
+     * @return Datastore
      */
     Datastore getDatastore();
 
     /**
-     * Save a document of type <T> in mongodb.
+     * Save a document in mongodb.
+     *
      * <p>
      * {@link Object} will be return after operation, which will represent
      * document id for saved document.
      *
      * @param t  Entity to be inserted in db
-     * @param <T>
-     * @return  {@link Object} saved document id
+     * @param <T> document entity type
+     * @return Object saved document id
      */
     <T extends BaseEntity> Object save(T t);
 
     /**
      * Returns {@link List} of entities present in database.
+     *
      * <p>
      * If {@link FindOptions} ifd provided then it will be used
      * to fetch data from database other wise all entities will be returned.
      *
      * @param tClass   entity class
      * @param findOptions   {@link FindOptions} to fetch data from database
-     * @param <T>
+     * @param <T> document entity type
      *
-     * @return {@link List<T>}  list of entity
+     * @return List of entity
      */
     <T extends BaseEntity>List<T> findAll(Class<T> tClass, FindOptions findOptions);
 
     /**
      * Returns {@link List} of entities matching given criteria.
+     *
      * <p>
      * If {@link FindOptions} ifd provided then it will be used
      * to fetch data from database other wise all entities will be returned. And
@@ -76,23 +80,24 @@ public interface MongoCrudRepository {
      * @param tClass    entity class type
      * @param findOptions   {@link FindOptions} find options for query
      * @param criteriaMap   predicates to be used in query
-     * @param <T>
+     * @param <T> document entity type
      *
-     * @return  {@link List<T>} list of entity
+     * @return  List of entity
      */
     <T extends BaseEntity>List<T> findAll(Class<T> tClass, FindOptions findOptions, Map<String, Object> criteriaMap);
 
     /**
      * Returns a document entity found in database.
+     *
      * <p>
      * If {@link FindOptions} ifd provided then it will be used to fetch data
      * from database other wise this first one will be returned.
      *
      * @param tClass   entity type class
      * @param findOptions   {@link FindOptions} find options for query
-     * @param <T>
+     * @param <T> document entity type
      *
-     * @return  T   entity
+     * @return  T entity
      */
     <T extends BaseEntity> T findOne(Class<T> tClass, FindOptions findOptions);
 
@@ -101,9 +106,9 @@ public interface MongoCrudRepository {
      *
      * @param tClass   entity class type
      * @param id   document id
-     * @param <T>
+     * @param <T> document entity type
      *
-     * @return  T   entity
+     * @return T entity
      */
     <T extends BaseEntity> T findOne(Class<T> tClass, Object id);
 
@@ -111,7 +116,7 @@ public interface MongoCrudRepository {
      * Delete a document from mongodb.
      *
      * @param t   entity to be deleted from database
-     * @param <T>
+     * @param <T> document entity type
      */
     <T extends BaseEntity> void delete(T t);
 
@@ -120,7 +125,7 @@ public interface MongoCrudRepository {
      *
      * @param tClass   entity type class
      * @param id    document id
-     * @param <T>
+     * @param <T>  document entity type
      */
     <T extends BaseEntity> void delete(Class<T> tClass, Object id);
 
@@ -129,7 +134,7 @@ public interface MongoCrudRepository {
      *
      * @param t    entity to be updated in database
      * @param operations    {@link UpdateOperations} properties to be updated fo document
-     * @param <T>
+     * @param <T> document entity type
      * @return int  count of updated documents in database.
      */
     <T extends BaseEntity> int update(T t, UpdateOperations<T> operations);
@@ -140,7 +145,7 @@ public interface MongoCrudRepository {
      * @param tClass   entity class type
      * @param id    document id
      * @param operations   {@link UpdateOperations} properties to be updated fo document
-     * @param <T>
+     * @param <T> document entity type
      * @return int  count of updated documents in database.
      */
     <T extends BaseEntity> int update(Class<T> tClass, Object id, UpdateOperations<T> operations);
@@ -151,7 +156,7 @@ public interface MongoCrudRepository {
      * @param tClass   entity type class
      * @param operations    {@link UpdateOperations} properties to be updated fo document
      * @param criteriaMap   predicates to be used in query
-     * @param <T>
+     * @param <T> document entity type
      * @return int  count of updated documents in database.
      */
     <T extends BaseEntity> int updateAll(Class<T> tClass, UpdateOperations<T> operations, Map<String, Object> criteriaMap);
