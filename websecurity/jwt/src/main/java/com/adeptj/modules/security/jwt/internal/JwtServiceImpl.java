@@ -116,7 +116,7 @@ public class JwtServiceImpl implements JwtService {
                     .parseClaimsJws(jwt);
             verified = !this.jwtConfig.validateClaims() ||
                     this.claimsValidator != null && this.claimsValidator.validate(claimsJws.getBody());
-        } catch (RuntimeException ex) {
+        } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {
                 LOGGER.error(ex.getMessage(), ex);

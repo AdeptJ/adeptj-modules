@@ -39,6 +39,7 @@ import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
@@ -115,7 +116,7 @@ final class JwtSigningKeys {
         PrivateKey privateKey = null;
         try (InputStream data = Files.newInputStream(keyFileLocation)) {
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedKey(data)));
-        } catch (Exception ex) {
+        } catch (IOException | InvalidKeySpecException ex) {
             logger.error("Exception while loading Key file!!", ex);
         }
         return privateKey;
@@ -125,7 +126,7 @@ final class JwtSigningKeys {
         PrivateKey privateKey = null;
         try (InputStream data = JwtSigningKeys.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedKey(data)));
-        } catch (Exception ex) {
+        } catch (IOException | InvalidKeySpecException ex) {
             logger.error(ex.getMessage(), ex);
         }
         return privateKey;
