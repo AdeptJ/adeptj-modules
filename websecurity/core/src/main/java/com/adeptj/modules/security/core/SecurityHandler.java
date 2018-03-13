@@ -35,7 +35,7 @@ import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class ServletContextHelperSupport extends ServletContextHelper {
+public final class SecurityHandler extends ServletContextHelper {
 
     public static final String DEFAULT_SERVLET_CONTEXT_NAME = "DefaultServletContext";
 
@@ -43,7 +43,7 @@ public final class ServletContextHelperSupport extends ServletContextHelper {
 
     private final Authenticator authenticator;
 
-    public ServletContextHelperSupport(Bundle usingBundle, Authenticator authenticator) {
+    public SecurityHandler(Bundle usingBundle, Authenticator authenticator) {
         super(Objects.requireNonNull(usingBundle, "Using Bundle can't be null!!"));
         this.authenticator = authenticator;
     }

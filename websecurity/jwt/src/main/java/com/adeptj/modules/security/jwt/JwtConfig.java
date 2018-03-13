@@ -32,9 +32,7 @@ import org.osgi.service.metatype.annotations.Option;
 @ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for JWT Service")
 public @interface JwtConfig {
 
-    int CARDINALITY = 100;
-
-    long DEFAULT_EXPIRATION_TIME = 720L;
+    long DEFAULT_EXPIRATION_TIME = 720L; // 1 day
 
     @AttributeDefinition(
             name = "JWT Hmac Secret Key",
@@ -65,6 +63,9 @@ public @interface JwtConfig {
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";
+
+    @AttributeDefinition(name = "JWT Audience", description = "Audience of JWT")
+    String audience();
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;

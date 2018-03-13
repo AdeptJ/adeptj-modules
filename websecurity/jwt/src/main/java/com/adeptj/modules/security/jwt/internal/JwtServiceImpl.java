@@ -25,12 +25,9 @@ import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
-import org.apache.commons.lang3.ArrayUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -41,7 +38,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.PrivateKey;
+import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
@@ -73,11 +70,7 @@ public class JwtServiceImpl implements JwtService {
 
     private SignatureAlgorithm signatureAlgo;
 
-    // For Hmac algorithms
-    private byte[] hmacSecretKey;
-
-    // For Rsa algorithms
-    private PrivateKey rsaPrivateKey;
+    private Key signingKey;
 
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
@@ -92,19 +85,20 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public String issueJwt(String subject, Map<String, Object> claims) {
+    public String createJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be null or empty!!");
         Instant now = Instant.now();
-        JwtBuilder jwtBuilder = Jwts.builder()
+        return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
                 .setSubject(subject)
+                .setAudience(this.jwtConfig.audience())
                 .setIssuer(this.jwtConfig.issuer())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.jwtConfig.expirationTime(), MINUTES)))
-                .setId(UUID.randomUUID().toString());
-        this.signWith(jwtBuilder);
-        return jwtBuilder.compact();
+                .setId(UUID.randomUUID().toString())
+                .signWith(this.signatureAlgo, signingKey)
+                .compact();
     }
 
     /**
@@ -115,9 +109,11 @@ public class JwtServiceImpl implements JwtService {
         boolean verified = false;
         try {
             Assert.hasText(jwt, "JWT can't be null or empty!!");
-            JwtParser jwtParser = Jwts.parser().requireIssuer(this.jwtConfig.issuer());
-            this.setSigningKey(jwtParser);
-            Jws<Claims> claimsJws = jwtParser.parseClaimsJws(jwt);
+            Jws<Claims> claimsJws = Jwts.parser()
+                    .requireIssuer(this.jwtConfig.issuer())
+                    .requireAudience(this.jwtConfig.audience())
+                    .setSigningKey(this.signingKey)
+                    .parseClaimsJws(jwt);
             verified = !this.jwtConfig.validateClaims() ||
                     this.claimsValidator != null && this.claimsValidator.validate(claimsJws.getBody());
         } catch (RuntimeException ex) {
@@ -129,38 +125,6 @@ public class JwtServiceImpl implements JwtService {
             }
         }
         return verified;
-    }
-
-
-    private void signWith(JwtBuilder jwtBuilder) {
-        if (this.rsaPrivateKey == null) {
-            jwtBuilder.signWith(this.signatureAlgo, this.hmacSecretKey);
-        } else {
-            jwtBuilder.signWith(this.signatureAlgo, this.rsaPrivateKey);
-        }
-    }
-
-    private void setSigningKey(JwtParser jwtParser) {
-        if (this.rsaPrivateKey == null) {
-            jwtParser.setSigningKey(this.hmacSecretKey);
-        } else {
-            jwtParser.setSigningKey(this.rsaPrivateKey);
-        }
-    }
-
-    private void handleSigningKey(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
-        try {
-            this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-            this.hmacSecretKey = JwtSigningKeys.getHmacSecretKey(this.signatureAlgo, jwtConfig.hmacSecretKey());
-            if (ArrayUtils.isEmpty(this.hmacSecretKey)) {
-                this.rsaPrivateKey = JwtSigningKeys.getRsaPrivateKey(this.jwtConfig);
-            }
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-            // Let the exception be rethrown so that SCR would not create a service object of this component.
-            throw new RuntimeException(ex); // NOSONAR
-        }
     }
 
     // Component Lifecycle Methods
@@ -175,11 +139,18 @@ public class JwtServiceImpl implements JwtService {
 
     @Activate
     protected void start(JwtConfig jwtConfig) {
-        this.handleSigningKey(jwtConfig);
+        this.init(jwtConfig);
     }
 
     @Modified
     protected void updated(JwtConfig jwtConfig) {
-        this.handleSigningKey(jwtConfig);
+        LOGGER.info("Modifying the Signing Key!!");
+        this.init(jwtConfig);
+    }
+
+    private void init(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+        this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
+        this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
     }
 }

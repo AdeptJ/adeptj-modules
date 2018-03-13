@@ -47,7 +47,7 @@ final class JwtUtil {
     private static final int JWT_START_POS = 7;
 
     static String issueJwt(JwtService jwtService, String subject, JaxRSAuthenticationInfo claims) {
-        return jwtService.issueJwt(subject, claims);
+        return jwtService.createJwt(subject, claims);
     }
 
     static Response responseWithJwt(String jwt, JwtCookieConfig cookieConfig) {

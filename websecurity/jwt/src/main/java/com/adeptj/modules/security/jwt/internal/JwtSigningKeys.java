@@ -24,15 +24,20 @@ import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.Key;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
@@ -59,7 +64,21 @@ final class JwtSigningKeys {
 
     private static final String DEFAULT_KEY_FILE = "/default.pem";
 
-    static byte[] getHmacSecretKey(SignatureAlgorithm signatureAlgo, String secretKey) throws UnsupportedEncodingException {
+
+    static Key createSigningKey(JwtConfig jwtConfig) {
+        try {
+            SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
+            byte[] hmacSecretKey = JwtSigningKeys.getHmacSecretKey(signatureAlgo, jwtConfig.hmacSecretKey());
+            return ArrayUtils.isEmpty(hmacSecretKey) ? JwtSigningKeys.getRSAPrivateKey(jwtConfig)
+                    : new SecretKeySpec(hmacSecretKey, signatureAlgo.getJcaName());
+        } catch (Exception ex) { // NOSONAR
+            Loggers.get(JwtSigningKeys.class).error(ex.getMessage(), ex);
+            // Let the exception be rethrown so that SCR would not create a service object of this component.
+            throw new RuntimeException(ex); // NOSONAR
+        }
+    }
+
+    private static byte[] getHmacSecretKey(SignatureAlgorithm signatureAlgo, String secretKey) throws UnsupportedEncodingException {
         byte[] hmacSecretKey = null;
         if (signatureAlgo.isHmac()) {
             if (StringUtils.isEmpty(secretKey)) {
@@ -73,26 +92,28 @@ final class JwtSigningKeys {
         return hmacSecretKey;
     }
 
-    static PrivateKey getRsaPrivateKey(JwtConfig jwtConfig) throws Exception {
+    private static PrivateKey getRSAPrivateKey(JwtConfig jwtConfig) throws NoSuchAlgorithmException {
         // 1. try the jwtConfig provided keyFileLocation
-        String keyFileLocation = USER_DIR + File.separator + jwtConfig.keyFileLocation();
         Logger logger = Loggers.get(JwtSigningKeys.class);
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
-        PrivateKey privateKey = loadKeyFromLocation(keyFactory, keyFileLocation, logger);
-        if (privateKey == null && jwtConfig.useDefaultKey()) {
+        Path keyFileLocation = Paths.get(USER_DIR, jwtConfig.keyFileLocation());
+        PrivateKey privateKey = null;
+        if (Files.exists(keyFileLocation)) {
+            privateKey = loadKeyFromLocation(keyFactory, keyFileLocation, logger);
+        } else if (jwtConfig.useDefaultKey()) {
             logger.warn("Loading the default Key, please check if that is intended!!");
             // 2. Use the default one that is embedded with this module.
             privateKey = loadDefaultKey(keyFactory, logger);
         }
         if (privateKey == null) {
-            throw new IllegalStateException("Couldn't initialize the RsaPrivateKey!!");
+            throw new IllegalStateException("Couldn't initialize the RSAPrivateKey!!");
         }
         return privateKey;
     }
 
-    private static PrivateKey loadKeyFromLocation(KeyFactory keyFactory, String keyFileLocation, Logger logger) {
+    private static PrivateKey loadKeyFromLocation(KeyFactory keyFactory, Path keyFileLocation, Logger logger) {
         PrivateKey privateKey = null;
-        try (InputStream data = new FileInputStream(keyFileLocation)) {
+        try (InputStream data = Files.newInputStream(keyFileLocation)) {
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedKey(data)));
         } catch (Exception ex) {
             logger.error("Exception while loading Key file!!", ex);

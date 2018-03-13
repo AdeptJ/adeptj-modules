@@ -21,7 +21,7 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.Authenticator;
-import com.adeptj.modules.security.core.ServletContextHelperSupport;
+import com.adeptj.modules.security.core.SecurityHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
-import static com.adeptj.modules.security.core.ServletContextHelperSupport.DEFAULT_SERVLET_CONTEXT_NAME;
+import static com.adeptj.modules.security.core.SecurityHandler.DEFAULT_SERVLET_CONTEXT_NAME;
 import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.EQ;
 import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.ROOT_PATH;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_NAME;
@@ -66,7 +66,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
 
     private static final String UNBIND_AUTHENTICATOR = "unbindAuthenticator";
 
-    private ServletContextHelper servletContextHelperSupport;
+    private SecurityHandler securityHandler;
 
     @Reference(
             cardinality = ReferenceCardinality.OPTIONAL,
@@ -81,7 +81,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return this.servletContextHelperSupport.handleSecurity(request, response);
+        return this.securityHandler.handleSecurity(request, response);
     }
 
     /**
@@ -89,7 +89,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public URL getResource(String name) {
-        return this.servletContextHelperSupport.getResource(name);
+        return this.securityHandler.getResource(name);
     }
 
     /**
@@ -97,7 +97,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public String getMimeType(String name) {
-        return this.servletContextHelperSupport.getMimeType(name);
+        return this.securityHandler.getMimeType(name);
     }
 
     /**
@@ -105,7 +105,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public Set<String> getResourcePaths(String path) {
-        return this.servletContextHelperSupport.getResourcePaths(path);
+        return this.securityHandler.getResourcePaths(path);
     }
 
     /**
@@ -113,7 +113,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public String getRealPath(String path) {
-        return this.servletContextHelperSupport.getRealPath(path);
+        return this.securityHandler.getRealPath(path);
     }
 
     // --------------------- INTERNAL ---------------------
@@ -130,6 +130,6 @@ public class DefaultServletContextHelper extends ServletContextHelper {
 
     @Activate
     protected void activate(ComponentContext compCtx) {
-        this.servletContextHelperSupport = new ServletContextHelperSupport(compCtx.getUsingBundle(), this.authenticator);
+        this.securityHandler = new SecurityHandler(compCtx.getUsingBundle(), this.authenticator);
     }
 }

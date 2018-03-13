@@ -32,7 +32,7 @@ import java.util.Map;
 public interface JwtService {
 
     /**
-     * Issue JWT for given subject with claims information passed.
+     * Create JWT for given subject with claims information passed.
      * <p>
      * Note: First set the claims, don't allow callers to pass the default claims parameters in claims map
      * such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced when the same ones
@@ -45,7 +45,7 @@ public interface JwtService {
      * @param claims  Caller supplied JWT claims map
      * @return JWT signed with the configured key.
      */
-    String issueJwt(String subject, Map<String, Object> claims);
+    String createJwt(String subject, Map<String, Object> claims);
 
     /**
      * Verify the passed jwt claim information using configured signing key.

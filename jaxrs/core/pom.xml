@@ -189,7 +189,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-websecurity-jwt</artifactId>
-            <version>1.0.7.Final</version>
+            <version>1.0.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
