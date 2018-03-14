@@ -24,7 +24,6 @@ import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -38,7 +37,6 @@ import java.nio.file.Paths;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
@@ -55,7 +53,7 @@ final class JwtSigningKeys {
 
     private static final String UTF8 = "UTF-8";
 
-    private static final String KEY_HEADER = "-----BEGIN PRIVATE KEY-----";
+    private static final String KEY_HEADER = "-----BEGIN PRIVATE KEY-----\n";
 
     private static final String KEY_FOOTER = "-----END PRIVATE KEY-----";
 
@@ -67,72 +65,72 @@ final class JwtSigningKeys {
 
 
     static Key createSigningKey(JwtConfig jwtConfig) {
+        Logger logger = Loggers.get(JwtSigningKeys.class);
         try {
             SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-            byte[] hmacSecretKey = JwtSigningKeys.getHmacSecretKey(signatureAlgo, jwtConfig.hmacSecretKey());
-            return ArrayUtils.isEmpty(hmacSecretKey) ? JwtSigningKeys.getRSAPrivateKey(jwtConfig)
-                    : new SecretKeySpec(hmacSecretKey, signatureAlgo.getJcaName());
+            Key hmacSecretKey = JwtSigningKeys.getHmacSecretKey(signatureAlgo, jwtConfig.hmacSecretKey());
+            return hmacSecretKey == null ? JwtSigningKeys.getRSAPrivateKey(jwtConfig, logger) : hmacSecretKey;
         } catch (Exception ex) { // NOSONAR
-            Loggers.get(JwtSigningKeys.class).error(ex.getMessage(), ex);
+            logger.error(ex.getMessage(), ex);
             // Let the exception be rethrown so that SCR would not create a service object of this component.
             throw new RuntimeException(ex); // NOSONAR
         }
     }
 
-    private static byte[] getHmacSecretKey(SignatureAlgorithm signatureAlgo, String secretKey) throws UnsupportedEncodingException {
-        byte[] hmacSecretKey = null;
+    private static Key getHmacSecretKey(SignatureAlgorithm signatureAlgo, String secretKey) throws UnsupportedEncodingException {
+        Key signingKey = null;
         if (signatureAlgo.isHmac()) {
             if (StringUtils.isEmpty(secretKey)) {
                 throw new IllegalStateException("hmacSecretKey property can't be empty when SignatureAlgorithm is Hmac!!");
             } else {
-                hmacSecretKey = Base64.getEncoder().encode(secretKey.getBytes(UTF8));
+                signingKey = new SecretKeySpec(Base64.getEncoder().encode(secretKey.getBytes(UTF8)), signatureAlgo.getJcaName());
             }
         } else if (StringUtils.isNotEmpty(secretKey)) {
             throw new IllegalStateException("Can't have RSA SignatureAlgorithm when hmacSecretKey property is provided!!");
         }
-        return hmacSecretKey;
+        return signingKey;
     }
 
-    private static PrivateKey getRSAPrivateKey(JwtConfig jwtConfig) throws NoSuchAlgorithmException {
+    private static Key getRSAPrivateKey(JwtConfig jwtConfig, Logger logger) throws NoSuchAlgorithmException {
         // 1. try the jwtConfig provided keyFileLocation
-        Logger logger = Loggers.get(JwtSigningKeys.class);
         KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
         Path keyFileLocation = Paths.get(USER_DIR, jwtConfig.keyFileLocation());
-        PrivateKey privateKey = null;
+        Key signingKey = null;
         if (Files.exists(keyFileLocation)) {
-            privateKey = loadKeyFromLocation(keyFactory, keyFileLocation, logger);
+            signingKey = loadKeyFromLocation(keyFactory, keyFileLocation, logger);
         } else if (jwtConfig.useDefaultKey()) {
-            logger.warn("Loading the default Key, please check if that is intended!!");
+            logger.warn("Loading the default signing key, please check if that is intended!!");
             // 2. Use the default one that is embedded with this module.
-            privateKey = loadDefaultKey(keyFactory, logger);
+            signingKey = loadDefaultKey(keyFactory, logger);
         }
-        if (privateKey == null) {
+        if (signingKey == null) {
             throw new IllegalStateException("Couldn't initialize the RSAPrivateKey!!");
         }
-        return privateKey;
+        return signingKey;
     }
 
-    private static PrivateKey loadKeyFromLocation(KeyFactory keyFactory, Path keyFileLocation, Logger logger) {
-        PrivateKey privateKey = null;
+    private static Key loadKeyFromLocation(KeyFactory keyFactory, Path keyFileLocation, Logger logger) {
+        logger.info("Loading signing key: [{}]", keyFileLocation);
+        Key signingKey = null;
         try (InputStream data = Files.newInputStream(keyFileLocation)) {
-            privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedKey(data)));
+            signingKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyBytes(data)));
         } catch (IOException | InvalidKeySpecException ex) {
             logger.error("Exception while loading Key file!!", ex);
         }
-        return privateKey;
+        return signingKey;
     }
 
-    private static PrivateKey loadDefaultKey(KeyFactory keyFactory, Logger logger) {
-        PrivateKey privateKey = null;
+    private static Key loadDefaultKey(KeyFactory keyFactory, Logger logger) {
+        Key signingKey = null;
         try (InputStream data = JwtSigningKeys.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
-            privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedKey(data)));
+            signingKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyBytes(data)));
         } catch (IOException | InvalidKeySpecException ex) {
             logger.error(ex.getMessage(), ex);
         }
-        return privateKey;
+        return signingKey;
     }
 
-    private static byte[] encodedKey(InputStream data) throws IOException {
+    private static byte[] keyBytes(InputStream data) throws IOException {
         return Base64.getDecoder().decode(IOUtils.toString(data, UTF8)
                 .replace(KEY_HEADER, EMPTY)
                 .replace(KEY_FOOTER, EMPTY)
