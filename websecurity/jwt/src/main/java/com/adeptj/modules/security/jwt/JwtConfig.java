@@ -70,9 +70,6 @@ public @interface JwtConfig {
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
 
-    @AttributeDefinition(name = "Compress JWT", description = "Whether to compress the JWT")
-    boolean compress();
-
     @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key")
     boolean useDefaultKey() default true;
 
