@@ -28,7 +28,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-websecurity-jwt</artifactId>
-    <version>1.0.8-SNAPSHOT</version>
+    <version>1.0.8.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: WebSecurity :: JWT</name>
     <description>AdeptJ Modules :: WebSecurity :: JWT</description>
