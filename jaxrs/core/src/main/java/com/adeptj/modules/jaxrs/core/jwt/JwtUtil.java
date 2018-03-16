@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.jaxrs.core.JaxRSResponses;
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,10 +44,6 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
-
-    static String issueJwt(JwtService jwtService, String subject, JaxRSAuthenticationInfo claims) {
-        return jwtService.createJwt(subject, claims);
-    }
 
     static Response responseWithJwt(String jwt, JwtCookieConfig cookieConfig) {
         return cookieConfig.enabled()

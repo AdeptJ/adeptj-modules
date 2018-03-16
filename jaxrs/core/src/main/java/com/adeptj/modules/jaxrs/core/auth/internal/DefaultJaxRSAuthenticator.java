@@ -21,16 +21,17 @@
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
 
-import com.adeptj.modules.commons.utils.Loggers;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthUtil;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
-import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
+import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,25 +57,14 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
     @Override
     public JaxRSAuthenticationInfo handleSecurity(String username, String password) {
         return this.realms.stream()
-                .sorted((realmOne, realmTwo) -> Integer.compare(realmTwo.priority(), realmOne.priority()))
-                .map(realm -> this.getAuthInfo(realm, username, password))
+                .sorted(Comparator.comparingInt(JaxRSAuthenticationRealm::priority).reversed())
+                .map(realm -> JaxRSAuthUtil.getJaxRSAuthInfo(realm, username, password))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
     }
 
-    private JaxRSAuthenticationInfo getAuthInfo(JaxRSAuthenticationRealm realm, String username, String password) {
-        JaxRSAuthenticationInfo authInfo = null;
-        try {
-            authInfo = realm.getAuthenticationInfo(username, password);
-        } catch (Exception ex) {
-            // Gulping everything so that next realms(if any) get a chance.
-            Loggers.get(this.getClass()).error(ex.getMessage(), ex);
-        }
-        return authInfo;
-    }
-
-    protected void addRealm(JaxRSAuthenticationRealm realm) {
+    protected void addAuthenticationRealm(JaxRSAuthenticationRealm realm) {
         this.realms.add(realm);
     }
 }

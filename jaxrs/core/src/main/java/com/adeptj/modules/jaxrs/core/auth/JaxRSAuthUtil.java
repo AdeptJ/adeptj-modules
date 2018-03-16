@@ -20,34 +20,46 @@
 
 package com.adeptj.modules.jaxrs.core.auth;
 
+import com.adeptj.modules.commons.utils.Loggers;
+import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.Arrays;
 
 /**
- * AuthenticationInfo holding username, password and other arbitrary data for JWT based JAX-RS resource authorization.
+ * Utility methods for {@link JaxRSAuthenticationInfo} and {@link JaxRSAuthenticationRealm}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JaxRSAuthenticationInfo extends HashMap<String, Object> {
+public final class JaxRSAuthUtil {
 
-    private String username;
-
-    private char[] password;
-
-    public JaxRSAuthenticationInfo(String username, char[] password) {
-        JaxRSAuthUtil.validateJaxRSAuthInfoArgs(username, password);
-        this.username = username;
-        this.password = password;
+    private JaxRSAuthUtil() {
     }
 
-    public String getUsername() {
-        return username;
+    public static void validateJaxRSAuthInfoArgs(String username, char[] password) {
+        if (StringUtils.isEmpty(username)) {
+            throw new IllegalArgumentException("username can't be null or empty!!");
+        }
+        if (ArrayUtils.isEmpty(password)) {
+            throw new IllegalArgumentException("password can't be null or empty!!");
+        }
     }
 
-    public char[] getPassword() {
-        return password;
+    public static JaxRSAuthenticationInfo getJaxRSAuthInfo(JaxRSAuthenticationRealm realm, String username, String password) {
+        JaxRSAuthenticationInfo authInfo = null;
+        try {
+            authInfo = realm.getAuthenticationInfo(username, password);
+        } catch (Exception ex) { // NOSONAR
+            // Gulping everything so that next realms(if any) get a chance.
+            Loggers.get(JaxRSAuthUtil.class).error(ex.getMessage(), ex);
+        }
+        return authInfo;
+    }
+
+    public static JaxRSAuthenticationInfo validateJaxRSAuthInfo(JaxRSAuthenticationInfo authInfo, String username, String password) {
+        return authInfo != null && StringUtils.equals(authInfo.getUsername(), username)
+                && Arrays.equals(password.toCharArray(), authInfo.getPassword())
+                ? authInfo : null;
     }
 }

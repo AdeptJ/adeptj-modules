@@ -24,7 +24,8 @@ import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.CompressionCodec;
+import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
@@ -95,7 +96,8 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.jwtConfig.expirationTime(), MINUTES)))
                 .setId(UUID.randomUUID().toString())
-                .signWith(this.signatureAlgo, signingKey)
+                .signWith(this.signatureAlgo, this.signingKey)
+                //.compressWith(CompressionCodecs.DEFLATE)
                 .compact();
     }
 
@@ -107,13 +109,13 @@ public class JwtServiceImpl implements JwtService {
         boolean verified = false;
         try {
             Assert.hasText(jwt, "JWT can't be null or empty!!");
-            Jws<Claims> claimsJws = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
                     .requireAudience(this.jwtConfig.audience())
                     .setSigningKey(this.signingKey)
-                    .parseClaimsJws(jwt);
-            verified = !this.jwtConfig.validateClaims() ||
-                    this.claimsValidator != null && this.claimsValidator.validate(claimsJws.getBody());
+                    .parseClaimsJws(jwt)
+                    .getBody();
+            verified = !this.jwtConfig.validateClaims() || this.claimsValidator != null && this.claimsValidator.validate(claims);
         } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {

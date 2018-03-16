@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -75,24 +75,24 @@ public class JwtResource {
 
 
     /**
-     * Issue Jwt to the username with given credentials.
+     * Create Jwt for the username with given credentials.
      *
      * @param username the username submitted for authentication
      * @param password the password string submitted for authentication
      * @return JAX-RS Response either having a Jwt or Http error 503
      */
     @POST
-    @Path("/jwt/issue")
+    @Path("/jwt/create")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response issueJwt(@NotNull @FormParam("username") String username,
-                             @NotNull @FormParam("password") String password) {
+    public Response createJwt(@NotEmpty @FormParam("username") String username,
+                              @NotEmpty @FormParam("password") String password) {
         if (this.jwtService == null) {
             return JaxRSResponses.unavailable();
         }
         JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
         return authInfo == null
                 ? JaxRSResponses.unauthorized()
-                : JwtUtil.responseWithJwt(JwtUtil.issueJwt(this.jwtService, username, authInfo), this.cookieConfig);
+                : JwtUtil.responseWithJwt(this.jwtService.createJwt(username, authInfo), this.cookieConfig);
     }
 
     /**
@@ -110,6 +110,8 @@ public class JwtResource {
                 .type(TEXT_PLAIN)
                 .build();
     }
+
+    // -------------------- INTERNAL --------------------
 
     // Component Lifecycle Methods
 

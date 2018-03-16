@@ -31,7 +31,6 @@ import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 
 import static com.adeptj.modules.jaxrs.core.jwt.JwtFilter.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
@@ -60,8 +59,8 @@ public class JwtFilter implements ContainerRequestFilter {
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
     /**
-     * The {@link JwtService} is optionally referenced, if unavailable this filter
-     * will set a Service Unavailable (503) status.
+     * The {@link JwtService} is optionally referenced.
+     * If unavailable this filter will set a Service Unavailable (503) status.
      * <p>
      * Note: As per Felix SCR, dynamic references should be declared as volatile.
      */
@@ -74,7 +73,7 @@ public class JwtFilter implements ContainerRequestFilter {
     private volatile JwtService jwtService;
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
         if (this.jwtService == null) {
             requestContext.abortWith(JaxRSResponses.unavailable());
             return;

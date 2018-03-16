@@ -20,10 +20,10 @@
 
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthUtil;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationConfig;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
-import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
@@ -31,7 +31,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Objects;
@@ -96,11 +95,7 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password) {
-        JaxRSAuthenticationInfo authInfo = this.authInfoMap.get(username);
-        return authInfo != null
-                && StringUtils.equals(authInfo.getUsername(), username)
-                && Arrays.equals(password.toCharArray(), authInfo.getPassword())
-                ? authInfo : null;
+        return JaxRSAuthUtil.validateJaxRSAuthInfo(this.authInfoMap.get(username), username, password);
     }
 
     /**
