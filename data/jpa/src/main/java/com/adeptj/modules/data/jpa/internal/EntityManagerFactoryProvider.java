@@ -21,10 +21,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.commons.ds.api.DataSourceProvider;
-import com.adeptj.modules.data.jpa.JpaExceptionHandler;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.jpa.PersistenceProvider;
-import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,29 +31,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Arrays;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
-import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
-import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
 import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.COMPONENT_NAME;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON_STARTUP;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_FILE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
+import static java.util.Objects.requireNonNull;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 
@@ -88,7 +69,7 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
     private JpaCrudRepositoryManager repositoryManager;
 
     @Reference
-    private DataSourceProvider dsProvider;
+    private DataSourceProvider dataSourceProvider;
 
     @Override
     public String getName() {
@@ -96,7 +77,7 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
     }
 
     @Override
-    public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
+    public void updated(String pid, Dictionary<String, ?> properties) {
         // If there is an update to existing PID, remove the mapping against that PID.
         // Close corresponding EntityManagerFactory as well.
         this.handleConfigChange(pid);
@@ -122,7 +103,9 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
         try {
             String unitName = (String) configs.get("unitName");
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-            emf = new PersistenceProvider().createEntityManagerFactory(unitName, this.jpaProperties(configs));
+            DataSource dataSource = requireNonNull(this.dataSourceProvider.getDataSource((String) configs.get("dataSourceName")),
+                    "DataSource cannot be null!!");
+            emf = new PersistenceProvider().createEntityManagerFactory(unitName, EMFUtil.createJpaProperties(dataSource, configs));
             if (emf == null) {
                 LOGGER.warn("Could not initialize EntityManagerFactory, Most probably persistence.xml not found!!");
             } else {
@@ -142,35 +125,5 @@ public class EntityManagerFactoryProvider implements ManagedServiceFactory {
                 emf.close();
             }
         }
-    }
-
-    private Map<String, Object> jpaProperties(Dictionary<String, ?> configs) {
-        Map<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put(NON_JTA_DATASOURCE, this.getDataSource(configs));
-        jpaProperties.put(DDL_GENERATION, configs.get("ddlGeneration"));
-        jpaProperties.put(DDL_GENERATION_MODE, configs.get("ddlGenerationOutputMode"));
-        jpaProperties.put(DEPLOY_ON_STARTUP, Boolean.toString((Boolean) configs.get("deployOnStartup")));
-        jpaProperties.put(LOGGING_FILE, configs.get("loggingFile"));
-        jpaProperties.put(LOGGING_LEVEL, configs.get("loggingLevel"));
-        jpaProperties.put(TRANSACTION_TYPE, configs.get("persistenceUnitTransactionType"));
-        jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, configs.get("persistenceXmlLocation"));
-        jpaProperties.put(SHARED_CACHE_MODE, configs.get("sharedCacheMode"));
-        jpaProperties.put(PERSISTENCE_PROVIDER, configs.get("persistenceProviderClassName"));
-        if ((Boolean) configs.get("useExceptionHandler")) {
-            jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
-        }
-        jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
-        jpaProperties.put(VALIDATION_MODE, configs.get("validationMode"));
-        // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
-        jpaProperties.putAll(Arrays.stream((String[]) configs.get("jpaProperties"))
-                .filter(StringUtils::isNotEmpty)
-                .map(prop -> prop.split("="))
-                .collect(Collectors.toMap(elem -> elem[0], elem -> elem[1])));
-        return jpaProperties;
-    }
-
-    private DataSource getDataSource(Dictionary<String, ?> configs) {
-        return Objects.requireNonNull(this.dsProvider.getDataSource((String) configs.get("dataSourceName")),
-                "DataSource cannot be null!!");
     }
 }
