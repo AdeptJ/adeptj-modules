@@ -89,11 +89,7 @@ public enum DataSources {
     public void handleConfigChange(String pid) {
         Optional.ofNullable(this.pidVsDSNameMapping.remove(pid)).ifPresent(dataSourceName -> {
             LOGGER.info("Closing HikariDataSource named: [{}]", dataSourceName);
-            try {
-                DataSources.INSTANCE.closeDataSource(dataSourceName);
-            } catch (Exception ex) { // NOSONAR
-                LOGGER.error("Exception while closing HikariDataSource!!", ex);
-            }
+            this.closeDataSource(dataSourceName);
         });
     }
 
