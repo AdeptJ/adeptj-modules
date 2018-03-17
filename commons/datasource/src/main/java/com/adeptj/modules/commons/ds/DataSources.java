@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.ds;
 
+import com.adeptj.modules.commons.utils.PropertiesUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
@@ -29,9 +30,13 @@ import javax.sql.DataSource;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.adeptj.modules.commons.ds.DataSourceConfig.DEFAULT_CONN_TIMEOUT;
+import static com.adeptj.modules.commons.ds.DataSourceConfig.DEFAULT_IDLE_TIMEOUT;
+import static com.adeptj.modules.commons.ds.DataSourceConfig.DEFAULT_MAX_LIFETIME;
+import static com.adeptj.modules.commons.ds.DataSourceConfig.DEFAULT_MAX_POOL_SIZE;
+import static com.adeptj.modules.commons.ds.DataSourceConfig.DEFAULT_MIN_IDLE;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.AUTO_COMMIT;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.CONN_TIMEOUT;
 import static com.adeptj.modules.commons.ds.DataSourceConstants.DRIVER_CLASS_NAME;
@@ -61,22 +66,21 @@ public enum DataSources {
 
     public void createDataSource(String pid, Dictionary<String, ?> configs) {
         try {
-            Properties dsProperties = new Properties();
-            String poolName = (String) configs.get(POOL_NAME);
-            dsProperties.put(POOL_NAME, poolName);
-            dsProperties.put(JDBC_URL, configs.get(JDBC_URL));
-            dsProperties.put(DRIVER_CLASS_NAME, configs.get(DRIVER_CLASS_NAME));
-            dsProperties.put(USERNAME, configs.get(USERNAME));
-            dsProperties.put(PWD, configs.get(PWD));
-            dsProperties.put(AUTO_COMMIT, configs.get(AUTO_COMMIT));
-            dsProperties.put(CONN_TIMEOUT, configs.get(CONN_TIMEOUT));
-            dsProperties.put(IDLE_TIMEOUT, configs.get(IDLE_TIMEOUT));
-            dsProperties.put(MAX_LIFETIME, configs.get(MAX_LIFETIME));
-            dsProperties.put(MIN_IDLE, configs.get(MIN_IDLE));
-            dsProperties.put(MAX_POOL_SIZE, configs.get(MAX_POOL_SIZE));
-            LOGGER.info("Initializing HikariDataSource named: [{}]", poolName);
-            this.dataSources.put(poolName, new HikariDataSource(new HikariConfig(dsProperties)));
-            this.pidVsDSNameMapping.put(pid, poolName);
+            HikariConfig hikariConfig = new HikariConfig();
+            hikariConfig.setPoolName(PropertiesUtil.toString(configs.get(POOL_NAME), null));
+            hikariConfig.setJdbcUrl(PropertiesUtil.toString(configs.get(JDBC_URL), null));
+            hikariConfig.setDriverClassName(PropertiesUtil.toString(configs.get(DRIVER_CLASS_NAME), null));
+            hikariConfig.setUsername(PropertiesUtil.toString(configs.get(USERNAME), null));
+            hikariConfig.setPassword(PropertiesUtil.toString(configs.get(PWD), null));
+            hikariConfig.setAutoCommit(PropertiesUtil.toBoolean(configs.get(AUTO_COMMIT), true));
+            hikariConfig.setConnectionTimeout(PropertiesUtil.toLong(configs.get(CONN_TIMEOUT), DEFAULT_CONN_TIMEOUT));
+            hikariConfig.setIdleTimeout(PropertiesUtil.toLong(configs.get(IDLE_TIMEOUT), DEFAULT_IDLE_TIMEOUT));
+            hikariConfig.setMaxLifetime(PropertiesUtil.toLong(configs.get(MAX_LIFETIME), DEFAULT_MAX_LIFETIME));
+            hikariConfig.setMinimumIdle(PropertiesUtil.toInteger(configs.get(MIN_IDLE), DEFAULT_MIN_IDLE));
+            hikariConfig.setMaximumPoolSize(PropertiesUtil.toInteger(configs.get(MAX_POOL_SIZE), DEFAULT_MAX_POOL_SIZE));
+            LOGGER.info("Initializing HikariDataSource named: [{}]", hikariConfig.getPoolName());
+            this.dataSources.put(hikariConfig.getPoolName(), new HikariDataSource(hikariConfig));
+            this.pidVsDSNameMapping.put(pid, hikariConfig.getPoolName());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception while creating HikariDataSource!!", ex);
         }

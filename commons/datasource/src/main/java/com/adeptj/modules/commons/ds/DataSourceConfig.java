@@ -35,17 +35,35 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 )
 public @interface DataSourceConfig {
 
+    long DEFAULT_CONN_TIMEOUT = 30000L;
+
+    long DEFAULT_IDLE_TIMEOUT = 600000L;
+
+    long DEFAULT_MAX_LIFETIME = 1800000L;
+
+    int DEFAULT_MIN_IDLE = 32;
+
+    int DEFAULT_MAX_POOL_SIZE = 32;
+
+    String DEFAULT_JDBC_URL = "jdbc:mysql://localhost:3306/db?useSSL=false&nullNamePatternMatchesAll=true";
+
+    String DEFAULT_DRIVER_CLASSNAME = "com.mysql.cj.jdbc.Driver";
+
+    String DEFAULT_USER = "root";
+
+    boolean DEFAULT_AUTO_COMMIT = true;
+
     @AttributeDefinition(name = "poolName", description = "DataSource Pool Name")
     String poolName();
 
     @AttributeDefinition(name = "jdbcUrl", description = "JDBC URL for target Database")
-    String jdbcUrl() default "jdbc:mysql://localhost:3306/adeptJ?useSSL=false&nullNamePatternMatchesAll=true";
+    String jdbcUrl() default DEFAULT_JDBC_URL;
 
     @AttributeDefinition(name = "driverClassName", description = "JDBC driver FQCN")
-    String driverClassName() default "com.mysql.cj.jdbc.Driver";
+    String driverClassName() default DEFAULT_DRIVER_CLASSNAME;
 
     @AttributeDefinition(name = "username", description = "JDBC default authentication username")
-    String username() default "root";
+    String username() default DEFAULT_USER;
 
     @AttributeDefinition(
             name = "password",
@@ -55,32 +73,32 @@ public @interface DataSourceConfig {
     String password();
 
     @AttributeDefinition(name = "autoCommit", description = "JDBC auto-commit behavior of connections")
-    boolean autoCommit() default true;
+    boolean autoCommit() default DEFAULT_AUTO_COMMIT;
 
     @AttributeDefinition(
             name = "connectionTimeout",
             description = "Maximum number of milliseconds that a client will wait for a connection from the pool"
     )
-    long connectionTimeout() default 30000; // 30 Seconds
+    long connectionTimeout() default DEFAULT_CONN_TIMEOUT; // 30 Seconds
 
     @AttributeDefinition(
             name = "idleTimeout",
             description = "Maximum amount of time that a connection is allowed to sit idle in the pool"
     )
-    long idleTimeout() default 600000; // 10 Minutes
+    long idleTimeout() default DEFAULT_IDLE_TIMEOUT; // 10 Minutes
 
     @AttributeDefinition(name = "maxLifetime", description = "Maximum lifetime of a connection in the pool")
-    long maxLifetime() default 1800000; // 30 Minutes
+    long maxLifetime() default DEFAULT_MAX_LIFETIME; // 30 Minutes
 
     // Configure HikariDataSource as a fixed size pool.
     @AttributeDefinition(
             name = "minimumIdle",
             description = "Minimum number of idle connections that HikariCP tries to maintain in the pool")
-    int minimumIdle() default 32; // 32 Connections;
+    int minimumIdle() default DEFAULT_MIN_IDLE; // 32 Connections;
 
     @AttributeDefinition(
             name = "maximumPoolSize",
             description = "Maximum size that the pool is allowed to reach, including both idle and in-use connections"
     )
-    int maximumPoolSize() default 32; // 32 Connections;
+    int maximumPoolSize() default DEFAULT_MAX_POOL_SIZE; // 32 Connections;
 }
