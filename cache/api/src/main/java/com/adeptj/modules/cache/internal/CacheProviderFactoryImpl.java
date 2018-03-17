@@ -30,43 +30,40 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * CacheProviderFactorySupport.
+ * CacheProviderFactoryImpl.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(immediate = true)
-public class CacheProviderFactorySupport implements CacheProviderFactory {
+public class CacheProviderFactoryImpl implements CacheProviderFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CacheProviderFactorySupport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheProviderFactoryImpl.class);
 
     /**
      * Collect all of the CacheProvider services as and when they become available.
+     * <p>
+     * Note: As per Felix SCR, dynamic references should be declared as volatile.
      */
     @Reference(
             service = CacheProvider.class,
             cardinality = ReferenceCardinality.MULTIPLE,
-            policy = ReferencePolicy.DYNAMIC,
-            bind = "bindCacheProvider",
-            unbind = "unbindCacheProvider")
-    private final Map<String, CacheProvider> cacheProviders = new ConcurrentHashMap<>();
+            policy = ReferencePolicy.DYNAMIC
+    )
+    private volatile List<CacheProvider> cacheProviders = new ArrayList<>();
 
     @Override
     public Optional<CacheProvider> getCacheProvider(CacheProviderType providerType) {
-        return Optional.ofNullable(this.cacheProviders.get(providerType.toString()));
-    }
-
-    protected void bindCacheProvider(CacheProvider provider) {
-        LOGGER.info("Binding CacheProvider: [{}]", provider.getName());
-        this.cacheProviders.put(provider.getName(), provider);
-    }
-
-    protected void unbindCacheProvider(CacheProvider provider) {
-        LOGGER.info("Unbinding CacheProvider: [{}]", provider.getName());
-        this.cacheProviders.remove(provider.getName());
+        Objects.requireNonNull(providerType, "CacheProviderType can't be null!!");
+        LOGGER.info("Getting [{}] CacheProvider.", providerType.toString());
+        return this.cacheProviders
+                .stream()
+                .filter(cacheProvider -> providerType.toString().equalsIgnoreCase(cacheProvider.getName()))
+                .findFirst();
     }
 }

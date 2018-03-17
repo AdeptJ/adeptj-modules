@@ -47,7 +47,7 @@ public class EhcacheActivator implements BundleActivator {
 		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
 		// SERVICE_PID should match the name property of the @Component annotation on EhcacheCacheProvider.
 		// Otherwise ConfigurationAdmin won't be able to bind the factory configuration.
-		props.put(Constants.SERVICE_PID, EhcacheCacheProvider.FACTORY_PID);
+		//props.put(Constants.SERVICE_PID, EhcacheCacheProvider.FACTORY_PID);
 		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules Ehcache Cache Factory");
 		this.cacheMgr = CacheManagerBuilder.newCacheManagerBuilder().build(true);
 		this.svcReg = context.registerService(

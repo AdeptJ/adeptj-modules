@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
 #                                                                             # 
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
@@ -17,33 +16,23 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-modules</artifactId>
-        <version>1.0.9.Final</version>
-        <relativePath>../parent/pom.xml</relativePath>
-    </parent>
-    <artifactId>adeptj-modules-cache</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Cache :: Builder</name>
-    <description>AdeptJ Modules :: Cache :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.cache.ehcache.internal;
 
-        <module>api</module>
-        <module>caffeine</module>
-        <module>ehcache</module>
-        <module>geode</module>
-        <module>hazelcast</module>
-        <module>infinispan</module>
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-    </modules>
+/**
+ * EhcacheCacheConfig.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@ObjectClassDefinition
+@interface EhcacheCacheConfig {
 
-</project>
+    String cacheName();
+
+    long cacheTtl();
+
+    long cacheEntries();
+}
