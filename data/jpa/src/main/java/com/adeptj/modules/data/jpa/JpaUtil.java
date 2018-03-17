@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa;
 
 import com.adeptj.modules.commons.utils.Loggers;
+import org.slf4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -32,7 +33,6 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * Common JPA Utilities.
@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
  * @author Rakesh.Kumar, AdeptJ
  */
 public final class JpaUtil {
+
+    private static final Logger LOGGER = Loggers.get(JpaUtil.class);
 
     public static final int LEN_ZERO = 0;
 
@@ -52,7 +54,7 @@ public final class JpaUtil {
                 em.close();
             }
         } catch (RuntimeException ex) {
-            Loggers.get(JpaUtil.class).error("Exception while closing EntityManager!!", ex);
+            LOGGER.error("Exception while closing EntityManager!!", ex);
         }
     }
 
@@ -75,7 +77,7 @@ public final class JpaUtil {
                 txn.rollback();
             }
         } catch (RuntimeException ex) {
-            Loggers.get(JpaUtil.class).error("Exception while rolling back transaction!!", ex);
+            LOGGER.error("Exception while rolling back transaction!!", ex);
         }
     }
 
@@ -84,8 +86,7 @@ public final class JpaUtil {
                 .entrySet()
                 .stream()
                 .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
-                .collect(Collectors.toList())
-                .toArray(new Predicate[LEN_ZERO]);
+                .toArray(Predicate[]::new);
     }
 
     /**
