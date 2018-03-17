@@ -37,7 +37,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,8 +64,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 )
 public class MongoConnectionProvider implements ManagedServiceFactory {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(MongoConnectionProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoConnectionProvider.class);
 
     private Map<String, MongoCrudRepository> serviceContainer = new HashMap<>();
 
@@ -128,7 +126,7 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
                 if (credential != null) {
                     mongoClient = new MongoClient(
                             serverAddress,
-                            Arrays.asList(credential),
+                            credential,
                             this.buildMongoOptions(properties)
                     );
                 } else {
@@ -169,10 +167,8 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
         builder.readPreference(
                 Objects.requireNonNull(Utils.readPreference(
                         Stream.of(ReadPreferenceEnum.values()).filter(
-                                (readPreferenceEnum) -> {
-                                    return readPreferenceEnum.name()
-                                            .equals(PropertiesUtil.toString(properties.get("readPreference"), ""));
-                                }
+                                (readPreferenceEnum) -> readPreferenceEnum.name()
+                                        .equals(PropertiesUtil.toString(properties.get("readPreference"), ""))
                         ).findFirst().orElse(ReadPreferenceEnum.NEAREST)
                 ))
         );
@@ -181,10 +177,8 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
         builder.writeConcern(
                 Objects.requireNonNull(Utils.writeConcern(
                         Stream.of(WriteConcernEnum.values()).filter(
-                                (writeConcernEnum) -> {
-                                    return writeConcernEnum
-                                            .equals(PropertiesUtil.toString(properties.get("readPreference"), ""));
-                                }
+                                (writeConcernEnum) -> writeConcernEnum.toString()
+                                        .equals(PropertiesUtil.toString(properties.get("readPreference"), ""))
                         ).findFirst().orElse(WriteConcernEnum.UNACKNOWLEDGED)
                 ))
         );
@@ -233,13 +227,13 @@ public class MongoConnectionProvider implements ManagedServiceFactory {
      * Unit name should be same as given in mongoDB connection factory configuration.
      * An empty {@link Optional} will be returned if unitName does not match any configuration.
      *
-     * @param unitName  string identifier for mongodb configuration.
-     * @return  Optional
+     * @param unitName string identifier for mongodb configuration.
+     * @return Optional
      */
     public Optional<MongoCrudRepository> getRepository(String unitName) {
         return this.serviceContainer.containsKey(unitName) ?
-                        Optional.of(this.serviceContainer.get(unitName)) :
-                        Optional.empty();
+                Optional.of(this.serviceContainer.get(unitName)) :
+                Optional.empty();
 
     }
 

@@ -42,7 +42,7 @@ public class MongoCrudRepositoryImpl implements MongoCrudRepository {
 
     final private Datastore datastore;
 
-    public MongoCrudRepositoryImpl(Datastore datastore) {
+    MongoCrudRepositoryImpl(Datastore datastore) {
         this.datastore = datastore;
     }
 
@@ -81,10 +81,10 @@ public class MongoCrudRepositoryImpl implements MongoCrudRepository {
         Query<T> tQuery = this.datastore.createQuery(tClass);
         if (criteriaMap.size() > 0) {
             criteriaMap.forEach(
-                (key, value) -> {
-                    tQuery.field(key)
-                            .equal(value);
-                }
+                    (key, value) -> {
+                        tQuery.field(key)
+                                .equal(value);
+                    }
             );
         }
         return (Objects.nonNull(findOptions)) ?
@@ -127,8 +127,8 @@ public class MongoCrudRepositoryImpl implements MongoCrudRepository {
     public <T extends BaseEntity> void delete(Class<T> tClass, Object id) {
         this.datastore.delete(
                 this.datastore.createQuery(tClass)
-                .field(ID_KEY)
-                .equal(id)
+                        .field(ID_KEY)
+                        .equal(id)
         );
     }
 

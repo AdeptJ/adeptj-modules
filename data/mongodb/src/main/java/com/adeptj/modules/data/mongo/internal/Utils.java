@@ -30,14 +30,15 @@ import com.mongodb.WriteConcern;
  */
 public final class Utils {
 
-    public static final String PROVIDER_COMPONENT_NAME = "com.adeptj.modules.data.mongo.MongoConnectionProvider.factory";
-    public static final String PROVIDER_FACTORY_NAME = "AdeptJ MongoDB Connection Provider";
+    static final String PROVIDER_COMPONENT_NAME = "com.adeptj.modules.data.mongo.MongoConnectionProvider.factory";
+
+    static final String PROVIDER_FACTORY_NAME = "AdeptJ MongoDB Connection Provider";
 
     /**
      * Prepares {@link ReadPreference} from given {@link ReadPreferenceEnum}
      *
-     * @param readPreferenceEnum    Read preference enum value provided in config
-     * @return  Read preference for mongo client options
+     * @param readPreferenceEnum Read preference enum value provided in config
+     * @return Read preference for mongo client options
      */
     public static ReadPreference readPreference(ReadPreferenceEnum readPreferenceEnum) {
         switch (readPreferenceEnum) {
@@ -64,8 +65,8 @@ public final class Utils {
     /**
      * Prepares {@link WriteConcern} from given {@link WriteConcernEnum}
      *
-     * @param writeConcernEnum  write concern provided in config.
-     * @return  write concern for mongo client option.
+     * @param writeConcernEnum write concern provided in config.
+     * @return write concern for mongo client option.
      */
     public static WriteConcern writeConcern(WriteConcernEnum writeConcernEnum) {
         switch (writeConcernEnum) {

@@ -37,9 +37,8 @@ public interface MongoConnectionFactoryService {
      * Unit name should be same as given in mongoDB connection factory configuration.
      * Throws {@link MongoRepositoryNotFoundException} if unitName does not match any configuration.
      *
-     * @param unitName  string identifier for mongodb configuration.
-     * @return  {@link MongoCrudRepository} mongo repository for given unit.
-     *
+     * @param unitName string identifier for mongodb configuration.
+     * @return {@link MongoCrudRepository} mongo repository for given unit.
      * @throws MongoRepositoryNotFoundException unable to find repository for unitName
      */
     MongoCrudRepository getRepository(String unitName) throws MongoRepositoryNotFoundException;

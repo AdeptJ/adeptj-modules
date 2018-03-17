@@ -49,10 +49,9 @@ public class MongoConnectionFactoryServiceImpl implements MongoConnectionFactory
      */
     @Override
     public MongoCrudRepository getRepository(String unitName) throws MongoRepositoryNotFoundException {
-        Optional<MongoCrudRepository> optionalRepository =
-                    this.connectionProvider.getRepository(unitName);
+        Optional<MongoCrudRepository> optionalRepository = this.connectionProvider.getRepository(unitName);
         if (!optionalRepository.isPresent()) {
-            throw new MongoRepositoryNotFoundException("Repository not found for unit name ["+ unitName +"] ");
+            throw new MongoRepositoryNotFoundException("Repository not found for unit name [" + unitName + "] ");
         }
         return optionalRepository.get();
     }

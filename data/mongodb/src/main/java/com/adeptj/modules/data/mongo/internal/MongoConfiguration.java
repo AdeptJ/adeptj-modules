@@ -21,7 +21,6 @@
 package com.adeptj.modules.data.mongo.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
@@ -44,18 +43,15 @@ public @interface MongoConfiguration {
 
     @AttributeDefinition(
             name = "Host",
-            description = "Host name or ip for Mongo DB connection",
-            defaultValue = "127.0.0.1"
+            description = "Host name or ip for Mongo DB connection"
     )
-    String hostName();
+    String hostName() default "127.0.0.1";
 
     @AttributeDefinition(
             name = "Port",
-            description = "Mongo DB connection port",
-            defaultValue = "27017",
-            type = AttributeType.INTEGER
+            description = "Mongo DB connection port"
     )
-    int port();
+    int port() default 27017;
 
     @AttributeDefinition(
             name = "Database Name",
@@ -85,11 +81,11 @@ public @interface MongoConfiguration {
             name = "ReadPreference",
             description = "ReadPreference for transactions.",
             options = {
-                @Option(label = "PRIMARY", value = "PRIMARY"),
-                @Option(label = "SECONDARY", value = "SECONDARY"),
-                @Option(label = "SECONDARY_PREFERRED", value = "SECONDARY_PREFERRED"),
-                @Option(label = "PRIMARY_PREFERRED", value = "PRIMARY_PREFERRED"),
-                @Option(label = "NEAREST", value = "NEAREST")
+                    @Option(label = "PRIMARY", value = "PRIMARY"),
+                    @Option(label = "SECONDARY", value = "SECONDARY"),
+                    @Option(label = "SECONDARY_PREFERRED", value = "SECONDARY_PREFERRED"),
+                    @Option(label = "PRIMARY_PREFERRED", value = "PRIMARY_PREFERRED"),
+                    @Option(label = "NEAREST", value = "NEAREST")
             }
     )
     String readPreference();
@@ -108,58 +104,47 @@ public @interface MongoConfiguration {
 
     @AttributeDefinition(
             name = "Max Connections PerHost",
-            description = "Sets the maximum number of connections per host.",
-            defaultValue = "100",
-            type = AttributeType.INTEGER
+            description = "Sets the maximum number of connections per host."
     )
-    int maxConnectionsPerHost();
+    int maxConnectionsPerHost() default 100;
 
     @AttributeDefinition(
             name = "Server Selection Timeout",
-            description = "Sets the server selection timeout in milliseconds, which defines how long the driver will wait for server selection to succeed before throwing an exception.",
-            defaultValue = "30000",
-            type = AttributeType.INTEGER
+            description = "Sets the server selection timeout in milliseconds, " +
+                    "which defines how long the driver will wait for server selection to succeed before throwing an exception."
     )
-    int serverSelectionTimeout();
+    int serverSelectionTimeout() default 30000;
 
     @AttributeDefinition(
             name = "Max Wait Time",
-            description = "Sets the maximum time that a thread will block waiting for a connection.",
-            defaultValue = "120000",
-            type = AttributeType.INTEGER
+            description = "Sets the maximum time that a thread will block waiting for a connection."
     )
-    int maxWaitTime();
+    int maxWaitTime() default 120000;
 
     @AttributeDefinition(
             name = "Max Connection IdleTime",
-            description = "Sets the maximum idle time for a pooled connection.(the maximum idle time, in milliseconds, which must be >= 0. A zero value indicates no limit to the life time.)",
-            defaultValue = "100000",
-            type = AttributeType.INTEGER
+            description = "Sets the maximum idle time for a pooled connection.(the maximum idle time, in milliseconds, " +
+                    "which must be >= 0. A zero value indicates no limit to the life time.)"
     )
-    int maxConnectionIdleTime();
+    int maxConnectionIdleTime() default 100000;
 
     @AttributeDefinition(
             name = "ssl Enabled",
-            description = "Sets whether to use SSL.",
-            type = AttributeType.BOOLEAN,
-            defaultValue = "false"
+            description = "Sets whether to use SSL."
     )
-    int sslEnabled();
+    boolean sslEnabled();
 
     @AttributeDefinition(
             name = "ConnectTimeout",
-            description = "Sets the connection timeout.(the connection timeout, in milliseconds, which must be > 0)",
-            type = AttributeType.INTEGER,
-            defaultValue = "30000"
+            description = "Sets the connection timeout.(the connection timeout, in milliseconds, which must be > 0)"
     )
-    int connectTimeout();
+    int connectTimeout() default 30000;
 
     @AttributeDefinition(
             name = "Max Connection LifeTime",
-            description = "Sets the maximum life time for a pooled connection.(he maximum life time, in milliseconds, which must be >= 0. A zero value indicates no limit to the life time.)",
-            type = AttributeType.INTEGER,
-            defaultValue = "300000"
+            description = "Sets the maximum life time for a pooled connection.(he maximum life time, in milliseconds, " +
+                    "which must be >= 0. A zero value indicates no limit to the life time.)"
     )
-    int maxConnectionLifeTime();
+    int maxConnectionLifeTime() default 30000;
 
 }
