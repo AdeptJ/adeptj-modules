@@ -26,6 +26,6 @@ Export-Package: com.adeptj.modules.cache.api, \
 
 Bundle-Name: ${project.name}
 
-Bundle-Category: AdeptJ Commons
+Bundle-Category: AdeptJ Cache
 
 Bundle-Vendor: AdeptJ

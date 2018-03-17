@@ -17,44 +17,59 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.cache.infispan.internal;
+package com.adeptj.modules.cache.infinispan.internal;
 
-import com.adeptj.modules.cache.api.CacheProvider;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedServiceFactory;
+import java.util.Collection;
+import java.util.Set;
 
-import java.util.Hashtable;
+import com.adeptj.modules.cache.common.Cache;
 
 /**
- * InfinispanActivator.
- *
- * @author Rakesh.Kumar, AdeptJ.
+ * Implementation for Cache interface, internally this uses the Infinispan for performing the low level operations.
+ * 
+ * @author Rakesh.Kumar
  */
-public class InfinispanActivator implements BundleActivator {
-
-	private ServiceRegistration<?> svcReg;
+public class InfinispanCache<K, V> implements Cache<K, V> {
 	
-	private InfinispanCacheProvider infinispanCacheProvider;
+	private org.infinispan.Cache<K, V> cache;
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		Hashtable<String, Object> props = new Hashtable<>();
-		props.put(Constants.SERVICE_VENDOR, "AdeptJ");
-		props.put(Constants.SERVICE_PID, InfinispanCacheProvider.SERVICE_PID);
-		props.put(Constants.SERVICE_DESCRIPTION, "AdeptJ Modules Infinispan Cache Factory");
-		this.infinispanCacheProvider = new InfinispanCacheProvider();
-		this.svcReg = context.registerService(
-				new String[] { ManagedServiceFactory.class.getName(), CacheProvider.class.getName() },
-				this.infinispanCacheProvider, props);
+	public InfinispanCache(org.infinispan.Cache<K, V> cache) {
+		this.cache = cache;
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception {
-		this.infinispanCacheProvider.shutdownInfinispan();
-		svcReg.unregister();
+	public V get(K key) {
+		return cache.get(key);
 	}
 
+	@Override
+	public V put(K key, V value) {
+		return cache.put(key, value);
+	}
+
+	@Override
+	public V remove(K key) {
+		return cache.remove(key);
+	}
+
+	@Override
+	public void clear() {
+		cache.clear();
+	}
+
+	@Override
+	public int size() {
+		return cache.size();
+	}
+
+	@Override
+	public Set<K> keys() {
+		return cache.keySet();
+	}
+
+	@Override
+	public Collection<V> values() {
+		return cache.values();
+	}
+	
 }

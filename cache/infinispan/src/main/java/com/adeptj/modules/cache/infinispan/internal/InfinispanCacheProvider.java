@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.cache.infispan.internal;
+package com.adeptj.modules.cache.infinispan.internal;
 
 import com.adeptj.modules.cache.api.CacheProvider;
 import com.adeptj.modules.cache.common.Cache;

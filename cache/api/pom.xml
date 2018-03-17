@@ -28,8 +28,8 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-cache-api</artifactId>
-    <packaging>jar</packaging>
     <version>1.0.0.Final</version>
+    <packaging>jar</packaging>
     <name>AdeptJ Modules :: Cache :: API</name>
     <description>AdeptJ Modules :: Cache :: API</description>
 

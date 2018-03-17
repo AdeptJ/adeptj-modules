@@ -28,16 +28,12 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-cache-ehcache</artifactId>
+    <version>1.0.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Cache :: Ehcache</name>
     <description>AdeptJ Modules :: Cache :: Ehcache</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <adeptj-maven-plugin.version>1.0.2.Final</adeptj-maven-plugin.version>
     </properties>
 
@@ -157,12 +153,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
             <scope>provided</scope>
         </dependency>
 
