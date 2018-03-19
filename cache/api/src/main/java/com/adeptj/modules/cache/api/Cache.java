@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.common;
+package com.adeptj.modules.cache.api;
 
 import java.util.Collection;
 import java.util.Set;

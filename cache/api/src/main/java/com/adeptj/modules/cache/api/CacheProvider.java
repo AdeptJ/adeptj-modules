@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.cache.api;
 
-import com.adeptj.modules.cache.common.Cache;
-
 import java.util.Optional;
 
 /**

@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.cache.ehcache.internal;
 
-import com.adeptj.modules.cache.common.Cache;
+import com.adeptj.modules.cache.api.Cache;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;

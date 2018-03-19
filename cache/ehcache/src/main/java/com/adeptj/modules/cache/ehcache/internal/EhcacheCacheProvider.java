@@ -21,7 +21,7 @@
 package com.adeptj.modules.cache.ehcache.internal;
 
 import com.adeptj.modules.cache.api.CacheProvider;
-import com.adeptj.modules.cache.common.Cache;
+import com.adeptj.modules.cache.api.Cache;
 import org.ehcache.CacheManager;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
