@@ -24,8 +24,6 @@ import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.CompressionCodec;
-import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
@@ -91,13 +89,11 @@ public class JwtServiceImpl implements JwtService {
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
                 .setSubject(subject)
-                .setAudience(this.jwtConfig.audience())
                 .setIssuer(this.jwtConfig.issuer())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.jwtConfig.expirationTime(), MINUTES)))
                 .setId(UUID.randomUUID().toString())
                 .signWith(this.signatureAlgo, this.signingKey)
-                //.compressWith(CompressionCodecs.DEFLATE)
                 .compact();
     }
 
@@ -111,7 +107,6 @@ public class JwtServiceImpl implements JwtService {
             Assert.hasText(jwt, "JWT can't be null or empty!!");
             Claims claims = Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
-                    .requireAudience(this.jwtConfig.audience())
                     .setSigningKey(this.signingKey)
                     .parseClaimsJws(jwt)
                     .getBody();
@@ -129,14 +124,6 @@ public class JwtServiceImpl implements JwtService {
 
     // Component Lifecycle Methods
 
-    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
-        this.claimsValidator = claimsValidator;
-    }
-
-    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
-        this.claimsValidator = null;
-    }
-
     @Activate
     protected void start(JwtConfig jwtConfig) {
         this.init(jwtConfig);
@@ -146,6 +133,14 @@ public class JwtServiceImpl implements JwtService {
     protected void updated(JwtConfig jwtConfig) {
         LOGGER.info("Modifying the Signing Key!!");
         this.init(jwtConfig);
+    }
+
+    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
+        this.claimsValidator = claimsValidator;
+    }
+
+    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
+        this.claimsValidator = null;
     }
 
     private void init(JwtConfig jwtConfig) {

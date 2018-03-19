@@ -42,10 +42,19 @@ public @interface JwtConfig {
     String hmacSecretKey();
 
     @AttributeDefinition(
-            name = "RSA Private Key(PEM Format) File Location",
-            description = "Location of Private Key file for JWT signing, relative to current working directory, " +
+            name = "RSA PrivateKey File Location",
+            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format)  for JWT signing, " +
+                    "relative to current working directory, <br>" +
                     "Note: Please don't use the default Key file in production environment!")
-    String keyFileLocation() default "adeptj-runtime/deployment/default.pem";
+    String keyFileLocation() default "adeptj-runtime/deployment/jwt-signing-pkcs8.key";
+
+    @AttributeDefinition(
+            name = "RSA PrivateKey Password",
+            description = "Pass phrase of the RSA PrivateKey")
+    String keyPassword();
+
+    @AttributeDefinition(name = "Password Protected Key", description = "Whether the PrivateKey is password protected.")
+    boolean pwdProtectedKey();
 
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
@@ -64,18 +73,18 @@ public @interface JwtConfig {
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";
 
-    @AttributeDefinition(name = "JWT Audience", description = "Audience of JWT")
-    String audience();
-
-    @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes")
+    @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes.")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
 
-    @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key")
+    @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key.")
     boolean useDefaultKey() default true;
 
-    @AttributeDefinition(name = "Validate JWT Claims", description = "Whether to validate the JWT claims")
+    @AttributeDefinition(
+            name = "Validate JWT Claims",
+            description = "Whether to validate the JWT claims further via a JwtClaimsValidator after successful parsing."
+    )
     boolean validateClaims();
 
-    @AttributeDefinition(name = "Print JwtException Trace", description = "Whether to print JwtException Trace")
+    @AttributeDefinition(name = "Print JwtException Trace", description = "Whether to print JwtException Trace.")
     boolean printJwtExceptionTrace() default true;
 }
