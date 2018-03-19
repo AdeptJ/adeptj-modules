@@ -76,7 +76,7 @@ final class JwtSigningKeys {
 
     private static final String ALGO_RSA = "RSA";
 
-    private static final String DEFAULT_KEY_FILE = "/jwt-signing-pkcs8.key";
+    private static final String DEFAULT_KEY_FILE = "/jwt-pkcs8.key";
 
 
     static Key createSigningKey(JwtConfig jwtConfig) {
@@ -93,52 +93,56 @@ final class JwtSigningKeys {
 
     private static Key getHmacSecretKey(SignatureAlgorithm signatureAlgo, String secretKey) throws UnsupportedEncodingException {
         Key signingKey = null;
-        if (signatureAlgo.isHmac()) {
-            if (StringUtils.isEmpty(secretKey)) {
-                throw new IllegalStateException("hmacSecretKey property can't be empty when SignatureAlgorithm is Hmac!!");
-            } else {
-                signingKey = new SecretKeySpec(Base64.getEncoder().encode(secretKey.getBytes(UTF8)), signatureAlgo.getJcaName());
-            }
+        if (signatureAlgo.isHmac() && StringUtils.isEmpty(secretKey)) {
+            LOGGER.warn("hmacSecretKey property can't be empty when SignatureAlgorithm is Hmac!!");
+        } else if (signatureAlgo.isHmac()) {
+            signingKey = new SecretKeySpec(Base64.getEncoder().encode(secretKey.getBytes(UTF8)), signatureAlgo.getJcaName());
         } else if (StringUtils.isNotEmpty(secretKey)) {
-            throw new IllegalStateException("Can't have RSA SignatureAlgorithm when hmacSecretKey property is provided!!");
+            LOGGER.warn("Can't have RSA SignatureAlgorithm when hmacSecretKey property is provided!!");
         }
         return signingKey;
     }
 
     private static Key getRSAPrivateKey(JwtConfig jwtConfig) throws NoSuchAlgorithmException {
         // 1. try the jwtConfig provided keyFileLocation
-        KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
         Path keyFileLocation = Paths.get(USER_DIR, jwtConfig.keyFileLocation());
         Key signingKey = null;
         if (Files.exists(keyFileLocation)) {
-            signingKey = loadSigningKeyFromLocation(jwtConfig, keyFactory, keyFileLocation);
+            signingKey = loadSigningKeyFromLocation(jwtConfig, keyFileLocation);
         } else if (jwtConfig.useDefaultKey()) {
             LOGGER.warn("Loading the default signing key, please check if that is intended!!");
             // 2. Use the default one that is embedded with this module.
-            signingKey = loadDefaultSigningKey(jwtConfig, keyFactory);
+            signingKey = loadDefaultSigningKey(jwtConfig);
         }
+        // if signingKey is still null then throw exception so that SCR won't create the JwtService instance.
         if (signingKey == null) {
             throw new IllegalStateException("Couldn't initialize the RSAPrivateKey!!");
         }
         return signingKey;
     }
 
-    private static Key loadSigningKeyFromLocation(JwtConfig jwtConfig, KeyFactory keyFactory, Path keyFileLocation) {
+    private static Key loadSigningKeyFromLocation(JwtConfig jwtConfig, Path keyFileLocation) {
         LOGGER.info("Loading signing key: [{}]", keyFileLocation);
         Key signingKey = null;
         try (InputStream data = Files.newInputStream(keyFileLocation)) {
-            signingKey = keyFactory.generatePrivate(getPKCS8EncodedKeySpec(jwtConfig, data));
-        } catch (Exception ex) {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = getPKCS8EncodedKeySpec(jwtConfig, data);
+            if (pkcs8EncodedKeySpec != null) {
+                signingKey = KeyFactory.getInstance(ALGO_RSA).generatePrivate(pkcs8EncodedKeySpec);
+            }
+        } catch (Exception ex) { //NOSONAR
             LOGGER.error("Exception while loading Key file!!", ex);
         }
         return signingKey;
     }
 
-    private static Key loadDefaultSigningKey(JwtConfig jwtConfig, KeyFactory keyFactory) {
+    private static Key loadDefaultSigningKey(JwtConfig jwtConfig) {
         Key signingKey = null;
         try (InputStream data = JwtSigningKeys.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
-            signingKey = keyFactory.generatePrivate(getPKCS8EncodedKeySpec(jwtConfig, data));
-        } catch (Exception ex) {
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = getPKCS8EncodedKeySpec(jwtConfig, data);
+            if (pkcs8EncodedKeySpec != null) {
+                signingKey = KeyFactory.getInstance(ALGO_RSA).generatePrivate(getPKCS8EncodedKeySpec(jwtConfig, data));
+            }
+        } catch (Exception ex) { //NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }
         return signingKey;
@@ -150,17 +154,16 @@ final class JwtSigningKeys {
             String keyData = IOUtils.toString(data, UTF8);
             boolean isEncryptedKey = StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER);
             if (isEncryptedKey && StringUtils.isEmpty(jwtConfig.keyPassword())) {
-                throw new IllegalArgumentException("Key password can't be null or empty!!");
-            }
-            if (isEncryptedKey) {
-                EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(keyBytesEncrypted(keyData));
+                LOGGER.error("PrivateKey is password protected, please provide that in JwtConfig#keyPassword OSGi config!!");
+            } else if (isEncryptedKey) {
+                EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeEncryptedKeyData(keyData));
                 SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
                 SecretKey secretKey = keyFactory.generateSecret(new PBEKeySpec(jwtConfig.keyPassword().toCharArray()));
                 Cipher cipher = Cipher.getInstance(privateKeyInfo.getAlgName());
                 cipher.init(DECRYPT_MODE, secretKey, privateKeyInfo.getAlgParameters());
                 encodedKeySpec = privateKeyInfo.getKeySpec(cipher);
             } else {
-                encodedKeySpec = new PKCS8EncodedKeySpec(keyBytes(keyData));
+                encodedKeySpec = new PKCS8EncodedKeySpec(decodeUnencryptedKeyData(keyData));
             }
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
                 | InvalidKeyException | InvalidAlgorithmParameterException ex) {
@@ -169,19 +172,21 @@ final class JwtSigningKeys {
         return encodedKeySpec;
     }
 
-    private static byte[] keyBytes(String data) throws IOException {
-        return Base64.getDecoder().decode(data
+    private static byte[] decodeUnencryptedKeyData(String unencryptedKeyData) throws UnsupportedEncodingException {
+        return Base64.getDecoder().decode(unencryptedKeyData
                 .replace(KEY_HEADER, EMPTY)
                 .replace(KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)
+                .trim()
                 .getBytes(UTF8));
     }
 
-    private static byte[] keyBytesEncrypted(String data) throws IOException {
-        return Base64.getDecoder().decode(data
+    private static byte[] decodeEncryptedKeyData(String encryptedKeyData) throws UnsupportedEncodingException {
+        return Base64.getDecoder().decode(encryptedKeyData
                 .replace(ENCRYPTED_KEY_HEADER, EMPTY)
                 .replace(ENCRYPTED_KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)
+                .trim()
                 .getBytes(UTF8));
     }
 }
