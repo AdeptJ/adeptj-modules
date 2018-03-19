@@ -94,11 +94,11 @@ final class JwtSigningKeys {
     private static Key getHmacSecretKey(SignatureAlgorithm signatureAlgo, String secretKey) throws UnsupportedEncodingException {
         Key signingKey = null;
         if (signatureAlgo.isHmac() && StringUtils.isEmpty(secretKey)) {
-            LOGGER.warn("hmacSecretKey property can't be empty when SignatureAlgorithm is Hmac!!");
+            throw new IllegalStateException("hmacSecretKey property can't be empty when SignatureAlgorithm is Hmac!!");
         } else if (signatureAlgo.isHmac()) {
             signingKey = new SecretKeySpec(Base64.getEncoder().encode(secretKey.getBytes(UTF8)), signatureAlgo.getJcaName());
         } else if (StringUtils.isNotEmpty(secretKey)) {
-            LOGGER.warn("Can't have RSA SignatureAlgorithm when hmacSecretKey property is provided!!");
+            LOGGER.warn("hmacSecretKey is provided but SignatureAlgorithm is RSA, ignoring Hmac and creating RSA key!!");
         }
         return signingKey;
     }
@@ -154,7 +154,7 @@ final class JwtSigningKeys {
             String keyData = IOUtils.toString(data, UTF8);
             boolean isEncryptedKey = StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER);
             if (isEncryptedKey && StringUtils.isEmpty(jwtConfig.keyPassword())) {
-                LOGGER.error("PrivateKey is password protected, please provide that in JwtConfig#keyPassword OSGi config!!");
+                throw new IllegalStateException("PrivateKey is password protected, please provide that in Jwt OSGi config!!");
             } else if (isEncryptedKey) {
                 EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeEncryptedKeyData(keyData));
                 SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
