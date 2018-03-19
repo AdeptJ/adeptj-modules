@@ -64,11 +64,11 @@ final class JwtSigningKeys {
 
     private static final String UTF8 = "UTF-8";
 
-    private static final String KEY_HEADER = "-----BEGIN PRIVATE KEY-----\n";
+    private static final String KEY_HEADER = "-----BEGIN PRIVATE KEY-----";
 
     private static final String KEY_FOOTER = "-----END PRIVATE KEY-----";
 
-    private static final String ENCRYPTED_KEY_HEADER = "-----BEGIN ENCRYPTED PRIVATE KEY-----\n";
+    private static final String ENCRYPTED_KEY_HEADER = "-----BEGIN ENCRYPTED PRIVATE KEY-----";
 
     private static final String ENCRYPTED_KEY_FOOTER = "-----END ENCRYPTED PRIVATE KEY-----";
 
@@ -145,20 +145,22 @@ final class JwtSigningKeys {
     }
 
     private static PKCS8EncodedKeySpec getPKCS8EncodedKeySpec(JwtConfig jwtConfig, InputStream data) {
-        if (jwtConfig.pwdProtectedKey() && StringUtils.isEmpty(jwtConfig.keyPassword())) {
-            throw new IllegalArgumentException("Key password can't be null or empty!!");
-        }
         PKCS8EncodedKeySpec encodedKeySpec = null;
         try {
-            if (jwtConfig.pwdProtectedKey()) {
-                EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(keyBytesEncrypted(data));
+            String keyData = IOUtils.toString(data, UTF8);
+            boolean isEncryptedKey = StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER);
+            if (isEncryptedKey && StringUtils.isEmpty(jwtConfig.keyPassword())) {
+                throw new IllegalArgumentException("Key password can't be null or empty!!");
+            }
+            if (isEncryptedKey) {
+                EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(keyBytesEncrypted(keyData));
                 SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
                 SecretKey secretKey = keyFactory.generateSecret(new PBEKeySpec(jwtConfig.keyPassword().toCharArray()));
                 Cipher cipher = Cipher.getInstance(privateKeyInfo.getAlgName());
                 cipher.init(DECRYPT_MODE, secretKey, privateKeyInfo.getAlgParameters());
                 encodedKeySpec = privateKeyInfo.getKeySpec(cipher);
             } else {
-                encodedKeySpec = new PKCS8EncodedKeySpec(keyBytes(data));
+                encodedKeySpec = new PKCS8EncodedKeySpec(keyBytes(keyData));
             }
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
                 | InvalidKeyException | InvalidAlgorithmParameterException ex) {
@@ -167,16 +169,16 @@ final class JwtSigningKeys {
         return encodedKeySpec;
     }
 
-    private static byte[] keyBytes(InputStream data) throws IOException {
-        return Base64.getDecoder().decode(IOUtils.toString(data, UTF8)
+    private static byte[] keyBytes(String data) throws IOException {
+        return Base64.getDecoder().decode(data
                 .replace(KEY_HEADER, EMPTY)
                 .replace(KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)
                 .getBytes(UTF8));
     }
 
-    private static byte[] keyBytesEncrypted(InputStream data) throws IOException {
-        return Base64.getDecoder().decode(IOUtils.toString(data, UTF8)
+    private static byte[] keyBytesEncrypted(String data) throws IOException {
+        return Base64.getDecoder().decode(data
                 .replace(ENCRYPTED_KEY_HEADER, EMPTY)
                 .replace(ENCRYPTED_KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)

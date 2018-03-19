@@ -53,9 +53,6 @@ public @interface JwtConfig {
             description = "Pass phrase of the RSA PrivateKey")
     String keyPassword();
 
-    @AttributeDefinition(name = "Password Protected Key", description = "Whether the PrivateKey is password protected.")
-    boolean pwdProtectedKey();
-
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
             description = "Signature Algorithm for JWT signing, only RSA and Hmac with SHA are supported at this moment.",
