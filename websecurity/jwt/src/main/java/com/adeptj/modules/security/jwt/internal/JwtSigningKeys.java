@@ -140,7 +140,7 @@ final class JwtSigningKeys {
         try (InputStream data = JwtSigningKeys.class.getResourceAsStream(DEFAULT_KEY_FILE)) {
             PKCS8EncodedKeySpec pkcs8EncodedKeySpec = getPKCS8EncodedKeySpec(jwtConfig, data);
             if (pkcs8EncodedKeySpec != null) {
-                signingKey = KeyFactory.getInstance(ALGO_RSA).generatePrivate(getPKCS8EncodedKeySpec(jwtConfig, data));
+                signingKey = KeyFactory.getInstance(ALGO_RSA).generatePrivate(pkcs8EncodedKeySpec);
             }
         } catch (Exception ex) { //NOSONAR
             LOGGER.error(ex.getMessage(), ex);
