@@ -154,7 +154,7 @@ final class JwtSigningKeys {
             String keyData = IOUtils.toString(data, UTF8);
             boolean isEncryptedKey = StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER);
             if (isEncryptedKey && StringUtils.isEmpty(jwtConfig.keyPassword())) {
-                throw new IllegalStateException("PrivateKey is password protected, please provide that in Jwt OSGi config!!");
+                throw new IllegalStateException("PrivateKey password is missing in JwtConfig#keyPassword OSGi config!!");
             } else if (isEncryptedKey) {
                 EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeEncryptedKeyData(keyData));
                 SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
