@@ -21,12 +21,14 @@
 package com.adeptj.modules.jaxrs.core.auth.spi;
 
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Provides {@link JaxRSAuthenticationInfo} by querying all the registered JaxRSAuthenticationRealm.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 public interface JaxRSAuthenticator {
 
     /**
@@ -38,7 +40,7 @@ public interface JaxRSAuthenticator {
      *
      * @param username the username submitted for authentication
      * @param password the password string submitted for authentication
-     * @return a validated non null JaxRSAuthenticationInfo instance.
+     * @return a non null JaxRSAuthenticationInfo instance after credentials validation or null if credentials validation failed.
      */
     JaxRSAuthenticationInfo handleSecurity(String username, String password);
 }

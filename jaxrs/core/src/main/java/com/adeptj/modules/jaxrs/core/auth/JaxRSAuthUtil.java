@@ -20,10 +20,11 @@
 
 package com.adeptj.modules.jaxrs.core.auth;
 
-import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -33,6 +34,8 @@ import java.util.Arrays;
  * @author Rakesh.Kumar, AdeptJ
  */
 public final class JaxRSAuthUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthUtil.class);
 
     private JaxRSAuthUtil() {
     }
@@ -52,7 +55,7 @@ public final class JaxRSAuthUtil {
             authInfo = realm.getAuthenticationInfo(username, password);
         } catch (Exception ex) { // NOSONAR
             // Gulping everything so that next realms(if any) get a chance.
-            Loggers.get(JaxRSAuthUtil.class).error(ex.getMessage(), ex);
+            LOGGER.error(ex.getMessage(), ex);
         }
         return authInfo;
     }

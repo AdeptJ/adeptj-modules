@@ -19,13 +19,14 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -52,11 +53,15 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
 @Component(immediate = true, property = PROVIDER_OSGI_PROPERTY)
 public class JwtFilter implements ContainerRequestFilter {
 
-    static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
 
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
+
+    private static final String SVC_UNAVAILABLE_MSG = "JwtService unavailable, please check OSGi WebConsole!!";
+
+    static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
 
     /**
      * The {@link JwtService} is optionally referenced.
@@ -75,6 +80,7 @@ public class JwtFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) {
         if (this.jwtService == null) {
+            LOGGER.warn(SVC_UNAVAILABLE_MSG);
             requestContext.abortWith(JaxRSResponses.unavailable());
             return;
         }
@@ -84,7 +90,7 @@ public class JwtFilter implements ContainerRequestFilter {
     // JwtService lifecycle methods
 
     protected void bindJwtService(JwtService jwtService) {
-        Loggers.get(JwtFilter.class).info("JwtFilter injected with JwtService: [{}]", jwtService);
+        LOGGER.info("JwtFilter injected with JwtService: [{}]", jwtService);
         this.jwtService = jwtService;
     }
 

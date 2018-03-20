@@ -23,12 +23,14 @@ package com.adeptj.modules.jaxrs.core.auth.api;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ConsumerType
 public interface JaxRSAuthenticationRealm {
 
     /**
