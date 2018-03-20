@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core;
 
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
@@ -34,6 +35,18 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 public final class JaxRSResponses {
 
     private JaxRSResponses() {
+    }
+
+    public static Response okWithCookie(NewCookie cookie) {
+        return Response.ok().cookie(cookie).build();
+    }
+
+    public static Response okWithHeader(String name, String value) {
+        return Response.ok().header(name, value).build();
+    }
+
+    public static Response ok(Object entity) {
+        return Response.ok(entity).build();
     }
 
     public static Response unavailable() {

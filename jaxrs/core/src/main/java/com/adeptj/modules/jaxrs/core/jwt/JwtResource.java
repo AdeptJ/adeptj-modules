@@ -92,7 +92,7 @@ public class JwtResource {
         JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
         return authInfo == null
                 ? JaxRSResponses.unauthorized()
-                : JwtUtil.responseWithJwt(this.jwtService.createJwt(username, authInfo), this.cookieConfig);
+                : JwtUtil.createJwt(this.jwtService.createJwt(username, authInfo), this.cookieConfig);
     }
 
     /**
@@ -126,12 +126,12 @@ public class JwtResource {
     @Activate
     protected void start(JwtCookieConfig cookieConfig) {
         this.cookieConfig = cookieConfig;
-        JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.cookieConfig.name());
+        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(this.cookieConfig);
     }
 
     @Modified
     protected void updated(JwtCookieConfig cookieConfig) {
         this.cookieConfig = cookieConfig;
-        JwtCookieNameProvider.INSTANCE.setJwtCookieName(this.cookieConfig.name());
+        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(this.cookieConfig);
     }
 }

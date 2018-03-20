@@ -37,7 +37,7 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
  * Utility resolves Jwt either from request headers or from cookies only if not found in headers
  * and depending upon the outcome further pass the jwt to {@link JwtService} for verification.
  * <p>
- * Also sets response header(401) if JWT is null or JwtService finds token to be malformed, expired etc.
+ * Also sets response header(401) if JWT is null/empty or JwtService finds token to be malformed, expired etc.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -45,15 +45,15 @@ final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
 
-    static Response responseWithJwt(String jwt, JwtCookieConfig cookieConfig) {
+    static Response createJwt(String jwt, JwtCookieConfig cookieConfig) {
         return cookieConfig.enabled()
-                ? Response.ok().cookie(getJwtCookie(jwt, cookieConfig)).build()
-                : Response.ok().header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt).build();
+                ? JaxRSResponses.okWithCookie(newJwtCookie(jwt, cookieConfig))
+                : JaxRSResponses.okWithHeader(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
     }
 
-    static void handleJwt(ContainerRequestContext requestContext, JwtService jwtService) {
+    static void resolveAndVerifyJwt(ContainerRequestContext requestContext, JwtService jwtService) {
         String jwt = resolveJwt(requestContext);
-        // Send Unauthorized if JWT is null or JwtService finds token to be malformed, expired etc.
+        // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
         // 401 is better suited for token verification failure.
         if (StringUtils.isEmpty(jwt) || !jwtService.verifyJwt(jwt)) {
             requestContext.abortWith(JaxRSResponses.unauthorized());
@@ -61,8 +61,12 @@ final class JwtUtil {
     }
 
     private static String resolveJwt(ContainerRequestContext requestContext) {
-        String jwt = resolveFromHeaders(requestContext);
-        return StringUtils.isEmpty(jwt) ? resolveFromCookies(requestContext) : jwt;
+        String jwt = null;
+        // if JwtCookieConfig is enabled then always resolve the Jwt from cookies first.
+        if (JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig().enabled()) {
+            jwt = resolveFromCookies(requestContext);
+        }
+        return StringUtils.isEmpty(jwt) ? resolveFromHeaders(requestContext) : jwt;
     }
 
     private static String resolveFromHeaders(ContainerRequestContext requestContext) {
@@ -72,7 +76,7 @@ final class JwtUtil {
     private static String resolveFromCookies(ContainerRequestContext requestContext) {
         Cookie jwtCookie = requestContext
                 .getCookies()
-                .get(JwtCookieNameProvider.INSTANCE.getJwtCookieName());
+                .get(JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig().name());
         return jwtCookie == null ? null : cleanseJwt(jwtCookie.getValue());
     }
 
@@ -81,7 +85,7 @@ final class JwtUtil {
                 StringUtils.substring(jwt, JWT_START_POS) : StringUtils.trim(jwt);
     }
 
-    private static NewCookie getJwtCookie(String jwt, JwtCookieConfig cookieConfig) {
+    private static NewCookie newJwtCookie(String jwt, JwtCookieConfig cookieConfig) {
         return new NewCookie(cookieConfig.name(), jwt,
                 cookieConfig.path(),
                 cookieConfig.domain(),

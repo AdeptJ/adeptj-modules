@@ -78,7 +78,7 @@ public class JwtFilter implements ContainerRequestFilter {
             requestContext.abortWith(JaxRSResponses.unavailable());
             return;
         }
-        JwtUtil.handleJwt(requestContext, this.jwtService);
+        JwtUtil.resolveAndVerifyJwt(requestContext, this.jwtService);
     }
 
     // JwtService lifecycle methods

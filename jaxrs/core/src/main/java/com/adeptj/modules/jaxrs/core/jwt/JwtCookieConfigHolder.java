@@ -21,19 +21,20 @@
 package com.adeptj.modules.jaxrs.core.jwt;
 
 /**
- * Provides the JWT cookie name configured by {@link JwtResource} component.
+ * Provides the {@link JwtCookieConfig} configured by {@link JwtResource} component.
  */
-public enum JwtCookieNameProvider {
+public enum JwtCookieConfigHolder {
 
     INSTANCE;
 
-    private String jwtCookieName;
+    private JwtCookieConfig jwtCookieConfig;
 
-    public String getJwtCookieName() {
-        return jwtCookieName;
+
+    public JwtCookieConfig getJwtCookieConfig() {
+        return jwtCookieConfig;
     }
 
-    void setJwtCookieName(String jwtCookieName) {
-        this.jwtCookieName = jwtCookieName;
+    void setJwtCookieConfig(JwtCookieConfig jwtCookieConfig) {
+        this.jwtCookieConfig = jwtCookieConfig;
     }
 }
