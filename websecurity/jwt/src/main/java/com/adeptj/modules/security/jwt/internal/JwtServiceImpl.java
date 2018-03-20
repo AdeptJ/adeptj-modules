@@ -110,7 +110,7 @@ public class JwtServiceImpl implements JwtService {
                     .setSigningKey(this.signingKey)
                     .parseClaimsJws(jwt)
                     .getBody();
-            verified = !this.jwtConfig.validateClaims() || this.claimsValidator != null && this.claimsValidator.validate(claims);
+            verified = !this.jwtConfig.validateClaims() || (this.claimsValidator != null && this.claimsValidator.validate(claims));
         } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {
@@ -124,6 +124,14 @@ public class JwtServiceImpl implements JwtService {
 
     // Component Lifecycle Methods
 
+    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
+        this.claimsValidator = claimsValidator;
+    }
+
+    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
+        this.claimsValidator = null;
+    }
+
     @Activate
     protected void start(JwtConfig jwtConfig) {
         this.init(jwtConfig);
@@ -133,14 +141,6 @@ public class JwtServiceImpl implements JwtService {
     protected void updated(JwtConfig jwtConfig) {
         LOGGER.info("Modifying the Signing Key!!");
         this.init(jwtConfig);
-    }
-
-    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
-        this.claimsValidator = claimsValidator;
-    }
-
-    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
-        this.claimsValidator = null;
     }
 
     private void init(JwtConfig jwtConfig) {

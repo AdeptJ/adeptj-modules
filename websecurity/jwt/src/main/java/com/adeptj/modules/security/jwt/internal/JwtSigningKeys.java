@@ -29,23 +29,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.EncryptedPrivateKeyInfo;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
@@ -76,7 +70,7 @@ final class JwtSigningKeys {
 
     private static final String ALGO_RSA = "RSA";
 
-    private static final String DEFAULT_KEY_FILE = "/jwt-pkcs8.key";
+    private static final String DEFAULT_KEY_FILE = "/jwt-pkcs8.pem";
 
 
     static Key createSigningKey(JwtConfig jwtConfig) {
@@ -103,7 +97,7 @@ final class JwtSigningKeys {
         return signingKey;
     }
 
-    private static Key getRSAPrivateKey(JwtConfig jwtConfig) throws NoSuchAlgorithmException {
+    private static Key getRSAPrivateKey(JwtConfig jwtConfig) {
         // 1. try the jwtConfig provided keyFileLocation
         Path keyFileLocation = Paths.get(USER_DIR, jwtConfig.keyFileLocation());
         Key signingKey = null;
@@ -130,7 +124,7 @@ final class JwtSigningKeys {
                 signingKey = KeyFactory.getInstance(ALGO_RSA).generatePrivate(pkcs8EncodedKeySpec);
             }
         } catch (Exception ex) { //NOSONAR
-            LOGGER.error("Exception while loading Key file!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
         }
         return signingKey;
     }
@@ -165,9 +159,8 @@ final class JwtSigningKeys {
             } else {
                 encodedKeySpec = new PKCS8EncodedKeySpec(decodeUnencryptedKeyData(keyData));
             }
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException
-                | InvalidKeyException | InvalidAlgorithmParameterException ex) {
-            LOGGER.error("Exception while creating PrivateKey!!", ex);
+        } catch (Exception ex) { //NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
         }
         return encodedKeySpec;
     }

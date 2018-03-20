@@ -20,35 +20,24 @@
 
 package com.adeptj.modules.security.jwt.validation;
 
-import com.adeptj.modules.security.jwt.JwtService;
-
-import java.util.Map;
-
 /**
- * Service interface for validating the JWT claims(Registered as well as public).
- * <p>
- * This is injected as an optional service in {@link JwtService}, therefore the claims are only
- * validated if an implementation of {@link JwtClaimsValidator} is available in OSGi service registry.
- * <p>
- * Callers should inspect the claims passed and validate claims values as per their need,
- * if everything is fine then must return true otherwise false.
+ * Original Exception must be wrapped and rethrown in case of exceptional scenarios while validating claims.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JwtClaimsValidator {
+public class ClaimsValidationException extends RuntimeException {
 
-    /**
-     * Validate the JWT claims passed.
-     * <p>
-     * Registered Claims such as iss, sub, exp are already validated by {@link JwtService} while parsing the JWT,
-     * therefore should not be validated again.
-     * <p>
-     * Any public claims like username, roles and other important information can be validated as per need.
-     *
-     * @param claims the JWT claims
-     * @return validation status, whether the validation was successful or not
-     * @throws ClaimsValidationException in case of exceptional scenarios caller must wrap the original exception
-     *                                   in ClaimsValidationException and rethrow.
-     */
-    boolean validate(Map<String, Object> claims) throws ClaimsValidationException;
+    private static final long serialVersionUID = 1591499996984025127L;
+
+    public ClaimsValidationException(String message) {
+        super(message);
+    }
+
+    public ClaimsValidationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ClaimsValidationException(Throwable cause) {
+        super(cause);
+    }
 }

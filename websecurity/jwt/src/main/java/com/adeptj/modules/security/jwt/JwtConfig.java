@@ -24,6 +24,8 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
+
 /**
  * JWT Configurations.
  *
@@ -43,19 +45,22 @@ public @interface JwtConfig {
 
     @AttributeDefinition(
             name = "RSA PrivateKey File Location",
-            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format)  for JWT signing, " +
-                    "relative to current working directory, <br>" +
-                    "Note: Please don't use the default Key file in production environment!")
-    String keyFileLocation() default "adeptj-runtime/deployment/jwt-pkcs8.key";
+            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format) for JWT signing, " +
+                    "relative to current working directory. " +
+                    "Note: Please don't use the default PrivateKey in production environment!"
+    )
+    String keyFileLocation() default "adeptj-runtime/deployment/jwt-pkcs8.pem";
 
     @AttributeDefinition(
             name = "RSA PrivateKey Password",
-            description = "Pass phrase of the RSA PrivateKey")
+            description = "Pass phrase of the RSA PrivateKey",
+            type = PASSWORD
+    )
     String keyPassword();
 
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
-            description = "Signature Algorithm for JWT signing, only RSA and Hmac with SHA are supported at this moment.",
+            description = "Signature Algorithm for JWT signing, only RSA and HmacSHA* are supported at this moment.",
             options = {
                     @Option(label = "RSA 256", value = "RS256"),
                     @Option(label = "RSA 384", value = "RS384"),
