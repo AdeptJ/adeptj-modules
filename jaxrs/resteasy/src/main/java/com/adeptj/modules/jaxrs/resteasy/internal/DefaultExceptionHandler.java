@@ -33,8 +33,10 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
+ * An {@link ExceptionMapper} for ApplicationException.
+ * <p>
  * Sends the unhandled exception's message coming out of resource method calls as JSON response if showException
- * is set as true otherwise a generic error message is sent as plain text.
+ * is set as true otherwise a generic error message is sent.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

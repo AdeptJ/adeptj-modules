@@ -23,8 +23,8 @@ package com.adeptj.modules.jaxrs.core;
 import java.util.Objects;
 
 /**
- * This exception must be thrown by resource methods if it is required that the exception should be
- * handled automatically by RESTEasy via an {@link javax.ws.rs.ext.ExceptionMapper}.
+ * This exception must be thrown by resource methods if it is required to be implicitly handled by
+ * RESTEasy via an {@link javax.ws.rs.ext.ExceptionMapper}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -89,7 +89,7 @@ public class JaxRSException extends RuntimeException {
         }
 
         public Builder message(String message) {
-            this.message = message;
+            this.message = Objects.requireNonNull(message, "message must not be null!!");
             return this;
         }
 
