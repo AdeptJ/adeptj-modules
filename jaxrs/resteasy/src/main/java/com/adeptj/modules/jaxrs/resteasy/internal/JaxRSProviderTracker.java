@@ -19,66 +19,63 @@
 */
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import org.jboss.resteasy.spi.Registry;
+import com.adeptj.modules.commons.utils.OSGiUtils;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-
 /**
- * JaxRSResources is an OSGi ServiceTrackerCustomizer which registers the services annotated with JAX-RS
- * &#064;Path annotation with RESTEasy resource registry.
- * <p>
- * Note: As of now all the registered JAX-RS resources are singleton by default.
+ * JaxRSProviderTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS
+ * &#064;Provider annotation with RESTEasy provider registry.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JaxRSResources implements ServiceTrackerCustomizer<Object, Object> {
+public class JaxRSProviderTracker extends ServiceTracker<Object, Object> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResources.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSProviderTracker.class);
 
-    private Registry registry;
+    private static final String PROVIDER_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.provider=*))";
 
-    private BundleContext context;
+    private ResteasyProviderFactory providerFactory;
 
-    JaxRSResources(BundleContext context, Registry registry) {
-        this.context = context;
-        this.registry = registry;
+    JaxRSProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
+        super(context, OSGiUtils.anyServiceFilter(context, PROVIDER_FILTER_EXPR), null);
+        this.providerFactory = providerFactory;
     }
 
     @Override
     public Object addingService(ServiceReference<Object> reference) {
-        Object resource = this.context.getService(reference);
+        Object resource = super.addingService(reference);
         if (resource == null) {
-            LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
+            LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
         } else {
-            LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
-            this.registry.addSingletonResource(resource);
+            LOGGER.info("Adding JAX-RS Provider: [{}]", resource);
+            this.providerFactory.register(resource);
         }
         return resource;
     }
 
     /**
-     * Removes the given Resource from RESTEasy Registry and registers again the modified service.
+     * Removes the given Provider from RESTEasy ProviderFactory and registers again the modified service.
      *
-     * @param reference the OSGi service reference of JAX-RS resource.
-     * @param service   the OSGi service of JAX-RS resource.
+     * @param reference the OSGi service reference of JAX-RS Provider.
+     * @param service   the OSGi service of JAX-RS Provider.
      */
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
-        LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
-        Optional.ofNullable(service).ifPresent(resource -> this.registry.removeRegistrations(resource.getClass()));
-        LOGGER.info("Adding JAX-RS Resource again: [{}]", service);
-        this.registry.addSingletonResource(service);
+        LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
+        JaxRSUtil.removeJaxRSProvider(this.providerFactory, service);
+        LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
+        this.providerFactory.register(service);
     }
 
     @Override
     public void removedService(ServiceReference<Object> reference, Object service) {
-        this.context.ungetService(reference);
-        LOGGER.info("Removing JAX-RS Resource: [{}]", service);
-        this.registry.removeRegistrations(service.getClass());
+        super.removedService(reference, service);
+        LOGGER.info("Removing JAX-RS Provider: [{}]", service);
+        JaxRSUtil.removeJaxRSProvider(this.providerFactory, service);
     }
 }

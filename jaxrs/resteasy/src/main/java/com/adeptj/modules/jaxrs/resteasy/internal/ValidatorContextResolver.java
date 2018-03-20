@@ -34,10 +34,10 @@ import static javax.validation.executable.ExecutableType.CONSTRUCTORS;
 import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
 
 /**
- * Jax-RS ContextResolver for RESTEasy's {@link GeneralValidator}.
+ * JAX-RS ContextResolver for RESTEasy's {@link GeneralValidator}.
  * <p>
  * It prevents the {@link javax.validation.NoProviderFoundException} when resources are added
- * later(after {@link JaxRSDispatcherServlet} is initialized) by {@link JaxRSResources}
+ * later(after {@link JaxRSDispatcherServlet} is initialized) by {@link JaxRSResourceTracker}
  * as and when they are available.
  * <p>
  * Basically this wraps the call that creates the validator with this class's Bundle ClassLoader

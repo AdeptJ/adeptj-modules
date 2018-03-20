@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.Loggers;
-import com.adeptj.modules.commons.utils.OSGiUtils;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.Registry;
@@ -31,8 +30,11 @@ import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
@@ -50,10 +52,6 @@ final class JaxRSUtil {
 
     private static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
 
-    private static final String PROVIDER_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.provider=*))";
-
-    private static final String RES_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
-
     private static final String DELIMITER_COMMA = ",";
 
     private JaxRSUtil() {
@@ -64,9 +62,8 @@ final class JaxRSUtil {
             return;
         }
         try {
-            if (Set.class.cast(getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, true)
-                    .get(providerFactory))
-                    .remove(provider)) {
+            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, true);
+            if (Set.class.cast(providers.get(providerFactory)).remove(provider)) {
                 Loggers.get(JaxRSUtil.class).info("Removed JAX-RS Provider: [{}]", provider);
             }
         } catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -78,8 +75,8 @@ final class JaxRSUtil {
         try {
             // First remove the default RESTEasy GeneralValidator and GeneralValidatorCDI.
             // After that we will register our ValidatorContextResolver.
-            Map<?, ?> contextResolvers = Map.class.cast(getDeclaredField(ResteasyProviderFactory.class,
-                    FIELD_CTX_RESOLVERS, true).get(providerFactory));
+            Field resolvers = getDeclaredField(ResteasyProviderFactory.class, FIELD_CTX_RESOLVERS, true);
+            Map<?, ?> contextResolvers = Map.class.cast(resolvers.get(providerFactory));
             contextResolvers.remove(GeneralValidator.class);
             contextResolvers.remove(GeneralValidatorCDI.class);
             Loggers.get(JaxRSUtil.class).info("Removed RESTEasy Default Validators!!");
@@ -100,25 +97,24 @@ final class JaxRSUtil {
     }
 
     static ServiceTracker<Object, Object> getProviderServiceTracker(BundleContext context, ResteasyProviderFactory factory) {
-        ServiceTracker<Object, Object> providerTracker = new ServiceTracker<>(context,
-                OSGiUtils.anyServiceFilter(context, PROVIDER_FILTER_EXPR),
-                new JaxRSProviders(context, factory));
+        ServiceTracker<Object, Object> providerTracker = new JaxRSProviderTracker(context, factory);
         providerTracker.open();
         return providerTracker;
     }
 
 
     static ServiceTracker<Object, Object> getResourceServiceTracker(BundleContext context, Registry registry) {
-        ServiceTracker<Object, Object> resourceTracker = new ServiceTracker<>(context,
-                OSGiUtils.anyServiceFilter(context, RES_FILTER_EXPR),
-                new JaxRSResources(context, registry));
+        ServiceTracker<Object, Object> resourceTracker = new JaxRSResourceTracker(context, registry);
         resourceTracker.open();
         return resourceTracker;
     }
 
-    static void closeServiceTracker(ServiceTracker<Object, Object> serviceTracker) {
+    static void closeServiceTrackers(List<ServiceTracker<Object, Object>> serviceTrackers) {
         try {
-            serviceTracker.close();
+            serviceTrackers
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .forEach(ServiceTracker::close);
         } catch (Exception ex) {
             Loggers.get(JaxRSUtil.class).error(ex.getMessage(), ex);
         }

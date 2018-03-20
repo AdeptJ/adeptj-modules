@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
+import java.util.Arrays;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.EQ;
@@ -86,23 +86,25 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private static final long serialVersionUID = -4415966373465265279L;
 
+    private static final String SERVLET_INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
+
     private ServiceTracker<Object, Object> resourceTracker;
 
     private ServiceTracker<Object, Object> providerTracker;
 
-    private BundleContext context;
+    private BundleContext bundleContext;
 
     private JaxRSCoreConfig config;
 
     @Override
     public void init(ServletConfig servletConfig) {
-        final long startTime = System.nanoTime();
-        final Logger logger = Loggers.get(JaxRSDispatcherServlet.class);
-        logger.info("Initializing JaxRSDispatcherServlet!!");
-        // Use Bundle ClassLoader as the context ClassLoader because we need to find the providers specified
+        // Use Bundle ClassLoader as the bundleContext ClassLoader because we need to find the providers specified
         // in the file [META-INF/services/javax.ws.rs.Providers] file which will not be visible to the original
-        // context ClassLoader which is the application class loader in fact.
+        // bundleContext ClassLoader which is the application ClassLoader in fact.
         ClassLoaders.executeWith(JaxRSDispatcherServlet.class.getClassLoader(), () -> {
+            final long startTime = System.nanoTime();
+            final Logger logger = Loggers.get(JaxRSDispatcherServlet.class);
+            logger.info("Initializing JaxRSDispatcherServlet!!");
             try {
                 // First let the RESTEasy framework bootstrap in super.init()
                 super.init(servletConfig);
@@ -113,10 +115,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                         .register(JaxRSUtil.createCorsFilter(this.config))
                         .register(new DefaultExceptionHandler(this.config.showException()))
                         .register(new JaxRSExceptionHandler(this.config.showException()));
-                this.providerTracker = JaxRSUtil.getProviderServiceTracker(this.context, providerFactory);
-                this.resourceTracker = JaxRSUtil.getResourceServiceTracker(this.context, dispatcher.getRegistry());
-                logger.info("JaxRSDispatcherServlet initialized in [{}] ms!!",
-                        NANOSECONDS.toMillis(System.nanoTime() - startTime));
+                this.providerTracker = JaxRSUtil.getProviderServiceTracker(this.bundleContext, providerFactory);
+                this.resourceTracker = JaxRSUtil.getResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
+                logger.info(SERVLET_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
                 logger.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
                 throw new JaxRSInitializationException(ex.getMessage(), ex);
@@ -130,12 +131,11 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     @Activate
     protected void start(JaxRSCoreConfig config, BundleContext context) {
         this.config = config;
-        this.context = context;
+        this.bundleContext = context;
     }
 
     @Deactivate
     protected void stop() {
-        JaxRSUtil.closeServiceTracker(this.providerTracker);
-        JaxRSUtil.closeServiceTracker(this.resourceTracker);
+        JaxRSUtil.closeServiceTrackers(Arrays.asList(this.providerTracker, this.resourceTracker));
     }
 }
