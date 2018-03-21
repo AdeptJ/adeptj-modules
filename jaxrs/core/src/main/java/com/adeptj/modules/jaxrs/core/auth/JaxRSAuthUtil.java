@@ -20,11 +20,9 @@
 
 package com.adeptj.modules.jaxrs.core.auth;
 
+import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -35,18 +33,7 @@ import java.util.Arrays;
  */
 public final class JaxRSAuthUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSAuthUtil.class);
-
     private JaxRSAuthUtil() {
-    }
-
-    public static void validateJaxRSAuthInfoArgs(String username, char[] password) {
-        if (StringUtils.isEmpty(username)) {
-            throw new IllegalArgumentException("username can't be null or empty!!");
-        }
-        if (ArrayUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password can't be null or empty!!");
-        }
     }
 
     public static JaxRSAuthenticationInfo getJaxRSAuthInfo(JaxRSAuthenticationRealm realm, String username, String password) {
@@ -55,7 +42,7 @@ public final class JaxRSAuthUtil {
             authInfo = realm.getAuthenticationInfo(username, password);
         } catch (Exception ex) { // NOSONAR
             // Gulping everything so that next realms(if any) get a chance.
-            LOGGER.error(ex.getMessage(), ex);
+            Loggers.get(JaxRSAuthUtil.class).error(ex.getMessage(), ex);
         }
         return authInfo;
     }
