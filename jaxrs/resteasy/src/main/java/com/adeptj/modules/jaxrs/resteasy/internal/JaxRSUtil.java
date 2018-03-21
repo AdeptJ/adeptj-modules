@@ -32,9 +32,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import static java.util.stream.Collectors.joining;
@@ -102,21 +100,9 @@ final class JaxRSUtil {
         return providerTracker;
     }
 
-
     static ServiceTracker<Object, Object> getResourceServiceTracker(BundleContext context, Registry registry) {
         ServiceTracker<Object, Object> resourceTracker = new JaxRSResourceTracker(context, registry);
         resourceTracker.open();
         return resourceTracker;
-    }
-
-    static void closeServiceTrackers(List<ServiceTracker<Object, Object>> serviceTrackers) {
-        try {
-            serviceTrackers
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .forEach(ServiceTracker::close);
-        } catch (Exception ex) {
-            Loggers.get(JaxRSUtil.class).error(ex.getMessage(), ex);
-        }
     }
 }

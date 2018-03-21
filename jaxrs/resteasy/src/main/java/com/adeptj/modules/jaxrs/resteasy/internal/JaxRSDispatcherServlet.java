@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
-import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.core.JaxRSExceptionHandler;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
@@ -31,14 +30,15 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
-import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.EQ;
@@ -86,6 +86,8 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private static final long serialVersionUID = -4415966373465265279L;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDispatcherServlet.class);
+
     private static final String SERVLET_INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
 
     private ServiceTracker<Object, Object> resourceTracker;
@@ -96,15 +98,18 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private JaxRSCoreConfig config;
 
+    /**
+     * Initializes the RESTEasy Framework using Bundle's ClassLoader as the context ClassLoader because
+     * we need to find the providers specified in the file [META-INF/services/javax.ws.rs.Providers] file
+     * which will not be visible to the original context ClassLoader which is the application ClassLoader itself.
+     *
+     * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
+     */
     @Override
     public void init(ServletConfig servletConfig) {
-        // Use Bundle ClassLoader as the bundleContext ClassLoader because we need to find the providers specified
-        // in the file [META-INF/services/javax.ws.rs.Providers] file which will not be visible to the original
-        // bundleContext ClassLoader which is the application ClassLoader in fact.
         ClassLoaders.executeWith(JaxRSDispatcherServlet.class.getClassLoader(), () -> {
             final long startTime = System.nanoTime();
-            final Logger logger = Loggers.get(JaxRSDispatcherServlet.class);
-            logger.info("Initializing JaxRSDispatcherServlet!!");
+            LOGGER.info("Initializing JaxRSDispatcherServlet!!");
             try {
                 // First let the RESTEasy framework bootstrap in super.init()
                 super.init(servletConfig);
@@ -117,12 +122,26 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                         .register(new JaxRSExceptionHandler(this.config.showException()));
                 this.providerTracker = JaxRSUtil.getProviderServiceTracker(this.bundleContext, providerFactory);
                 this.resourceTracker = JaxRSUtil.getResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
-                logger.info(SERVLET_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
+                LOGGER.info(SERVLET_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
-                logger.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
+                LOGGER.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
                 throw new JaxRSInitializationException(ex.getMessage(), ex);
             }
         });
+    }
+
+    /**
+     * Close the resource and provider {@link ServiceTracker} first so that RESTEasy can clean up them from its registry.
+     * Then close the {@link ServiceTracker} so that the OSGi service instances can be released.
+     * Finally call the destroy of super so that RESTEasy can cleanup remaining resources.
+     */
+    @Override
+    public void destroy() {
+        Stream.of(this.providerTracker, this.resourceTracker)
+                .filter(Objects::nonNull)
+                .forEach(ServiceTracker::close);
+        super.destroy();
+        LOGGER.info("JaxRSDispatcherServlet Destroyed!!");
     }
 
     // --------------------------- INTERNAL ---------------------------
@@ -132,10 +151,5 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     protected void start(JaxRSCoreConfig config, BundleContext context) {
         this.config = config;
         this.bundleContext = context;
-    }
-
-    @Deactivate
-    protected void stop() {
-        JaxRSUtil.closeServiceTrackers(Arrays.asList(this.providerTracker, this.resourceTracker));
     }
 }
