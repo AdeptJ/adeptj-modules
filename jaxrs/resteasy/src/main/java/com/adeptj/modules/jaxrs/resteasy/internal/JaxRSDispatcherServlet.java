@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.ClassLoaders;
-import com.adeptj.modules.jaxrs.core.JaxRSExceptionHandler;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
 import org.jboss.resteasy.core.Dispatcher;
@@ -116,12 +115,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
                 Dispatcher dispatcher = this.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
                 JaxRSUtil.removeDefaultValidators(providerFactory);
-                providerFactory.register(ValidatorContextResolver.class)
-                        .register(JaxRSUtil.createCorsFilter(this.config))
-                        .register(new DefaultExceptionHandler(this.config.showException()))
-                        .register(new JaxRSExceptionHandler(this.config.showException()));
-                this.providerTracker = JaxRSUtil.getProviderServiceTracker(this.bundleContext, providerFactory);
-                this.resourceTracker = JaxRSUtil.getResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
+                JaxRSUtil.registerDefaultJaxRSProviders(providerFactory, this.config);
+                this.providerTracker = JaxRSUtil.openProviderServiceTracker(this.bundleContext, providerFactory);
+                this.resourceTracker = JaxRSUtil.openResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
                 LOGGER.info(SERVLET_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
@@ -139,7 +135,14 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
     public void destroy() {
         Stream.of(this.providerTracker, this.resourceTracker)
                 .filter(Objects::nonNull)
-                .forEach(ServiceTracker::close);
+                .forEach(serviceTracker -> {
+                    // Don't want the ServiceTracker#close call to prevent RESTEasy to do proper cleanup.
+                    try {
+                        serviceTracker.close();
+                    } catch (Exception ex) { // NOSONAR
+                        LOGGER.error("Exception while closing ServiceTracker instances!!", ex);
+                    }
+                });
         super.destroy();
         LOGGER.info("JaxRSDispatcherServlet Destroyed!!");
     }
