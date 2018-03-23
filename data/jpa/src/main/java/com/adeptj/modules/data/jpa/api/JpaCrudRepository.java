@@ -40,7 +40,7 @@ import java.util.Map;
  * All the operations defined in the contract throw PersistenceException which is a wrapped exception
  * of the actual exception thrown by the PersistenceProvider.
  * <p>
- * <T> is the Entity type which this repository is dealing with. This should always be a subclass of {@link BaseEntity}.
+ * T is the Entity type which this repository is dealing with. This should always be a subclass of {@link BaseEntity}.
  * Compiler will enforce this as a result of using Java Generics thus enforcing Type Safe JPA operations.
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -122,6 +122,7 @@ public interface JpaCrudRepository {
      * @param entity     the JPA entity class object
      * @param primaryKey the primary key of the JPA entity
      * @param <T>        type of the JPA entity
+     * @return The JPA entity
      */
     <T extends BaseEntity> T findById(Class<T> entity, Object primaryKey);
 
@@ -177,6 +178,7 @@ public interface JpaCrudRepository {
      *
      * @param namedQuery named query either JPQL or native
      * @param posParams  List of parameters to bind to query a.k.a positional parameters
+     * @param <T>        type of the record that is to be return
      * @return List of entity or Object[] found by JPA query(JPQL format) or native query execution
      */
     <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams);
@@ -296,13 +298,13 @@ public interface JpaCrudRepository {
     /**
      * Gets the single result against the query which must be one of the type {@link QueryType}.
      *
+     * @param <E>         as the type of returned instance
      * @param resultClass the type of the query result
      * @param query       the query string
      * @param posParams   List of parameters to bind to query a.k.a positional parameters
-     * @param <T>         Type of returned instance
-     * @return singular result from query execution
+     * @return a singular result from query execution
      */
-    <T> T getScalarResultOfType(Class<T> resultClass, QueryType type, String query, List<Object> posParams);
+    <E> E getScalarResultOfType(Class<E> resultClass, QueryType type, String query, List<Object> posParams);
 
     /**
      * Gets the single result against the named query which must be in JPQL format.

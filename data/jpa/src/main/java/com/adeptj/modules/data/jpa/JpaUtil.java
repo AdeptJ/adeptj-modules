@@ -94,6 +94,7 @@ public final class JpaUtil {
      *
      * @param query     the JPA {@link Query}
      * @param posParams positional parameters
+     * @return JPA {@link Query}
      */
     public static Query setQueryParams(Query query, List<Object> posParams) {
         setQueryParamsInternal(query, posParams);
@@ -105,6 +106,8 @@ public final class JpaUtil {
      *
      * @param query     the JPA {@link TypedQuery}
      * @param posParams positional parameters
+     * @param <T>       as the type of entity
+     * @return JPA {@link TypedQuery}
      */
     public static <T> TypedQuery<T> setTypedQueryParams(TypedQuery<T> query, List<Object> posParams) {
         setQueryParamsInternal(query, posParams);

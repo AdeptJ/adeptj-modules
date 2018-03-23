@@ -29,7 +29,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-datasource</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: JDBC DataSource</name>
     <description>AdeptJ Modules :: Commons :: JDBC DataSource(HikariDS)</description>

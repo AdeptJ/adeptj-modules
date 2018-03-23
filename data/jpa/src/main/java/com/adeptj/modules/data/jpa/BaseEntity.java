@@ -35,6 +35,8 @@ public interface BaseEntity extends Serializable {
 
     /**
      * Most of the sub classes have an Id, can be of type Integer, Long etc. which are Serializable.
+     *
+     * @return primary key of the jpa entity.
      */
     Serializable getId();
 }

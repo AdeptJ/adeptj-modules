@@ -41,10 +41,8 @@ import java.util.Map;
  * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaCrudRepository}
  * <p>
  * <code>
- * <p>
  * &#064;Reference(target="(osgi.unit.name=pu)")
  * private JpaCrudRepository repository;
- * <p>
  * </code>
  *
  * @author Rakesh.Kumar, AdeptJ.
