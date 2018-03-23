@@ -299,6 +299,7 @@ public interface JpaCrudRepository {
      * Gets the single result against the query which must be one of the type {@link QueryType}.
      *
      * @param <E>         as the type of returned instance
+     * @param type        E as the singular result from query execution
      * @param resultClass the type of the query result
      * @param query       the query string
      * @param posParams   List of parameters to bind to query a.k.a positional parameters
