@@ -23,9 +23,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -36,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.EQ;
@@ -89,13 +85,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private static final String SERVLET_INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
 
-    private ServiceTracker<Object, Object> resourceTracker;
-
-    private ServiceTracker<Object, Object> providerTracker;
-
-    private BundleContext bundleContext;
-
-    private JaxRSCoreConfig config;
+    private JaxRSWhiteboardManager whiteboardManager;
 
     /**
      * Initializes the RESTEasy Framework using Bundle's ClassLoader as the context ClassLoader because
@@ -110,14 +100,9 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
             final long startTime = System.nanoTime();
             LOGGER.info("Initializing JaxRSDispatcherServlet!!");
             try {
-                // First let the RESTEasy framework bootstrap in super.init()
+                // First let the RESTEasy framework initializes itself in super.init()
                 super.init(servletConfig);
-                Dispatcher dispatcher = this.getDispatcher();
-                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
-                JaxRSUtil.removeDefaultValidators(providerFactory);
-                JaxRSUtil.registerDefaultJaxRSProviders(providerFactory, this.config);
-                this.providerTracker = JaxRSUtil.openProviderServiceTracker(this.bundleContext, providerFactory);
-                this.resourceTracker = JaxRSUtil.openResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
+                this.whiteboardManager.start(this.getDispatcher());
                 LOGGER.info(SERVLET_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
@@ -133,16 +118,7 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
      */
     @Override
     public void destroy() {
-        Stream.of(this.providerTracker, this.resourceTracker)
-                .filter(Objects::nonNull)
-                .forEach(serviceTracker -> {
-                    // Don't want the ServiceTracker#close call to prevent RESTEasy to do proper cleanup.
-                    try {
-                        serviceTracker.close();
-                    } catch (Exception ex) { // NOSONAR
-                        LOGGER.error("Exception while closing ServiceTracker instances!!", ex);
-                    }
-                });
+        this.whiteboardManager.closeTrackers();
         super.destroy();
         LOGGER.info("JaxRSDispatcherServlet Destroyed!!");
     }
@@ -152,7 +128,6 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     @Activate
     protected void start(JaxRSCoreConfig config, BundleContext context) {
-        this.config = config;
-        this.bundleContext = context;
+        this.whiteboardManager = new JaxRSWhiteboardManager(context, config);
     }
 }
