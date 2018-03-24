@@ -20,27 +20,24 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
-import com.adeptj.modules.jaxrs.resteasy.JaxRSInitializationException;
-import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
-import org.osgi.util.tracker.ServiceTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
+import java.io.IOException;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.EQ;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.JAXRS_DISPATCHER_SERVLET_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.MAPPING_PREFIX_VALUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.SERVLET_PATTERN_VALUE;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED;
@@ -67,7 +64,7 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
                 HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + RESTEASY_SERVLET_MAPPING_PREFIX + EQ + MAPPING_PREFIX_VALUE
         }
 )
-public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
+public class JaxRSDispatcherServlet extends HttpServlet {
 
     static final String EQ = "=";
 
@@ -81,46 +78,22 @@ public class JaxRSDispatcherServlet extends HttpServlet30Dispatcher {
 
     private static final long serialVersionUID = -4415966373465265279L;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDispatcherServlet.class);
-
-    private static final String SERVLET_INIT_MSG = "JaxRSDispatcherServlet initialized in [{}] ms!!";
-
     private JaxRSWhiteboardManager whiteboardManager;
 
-    /**
-     * Initializes the RESTEasy Framework using Bundle's ClassLoader as the context ClassLoader because
-     * we need to find the providers specified in the file [META-INF/services/javax.ws.rs.Providers] file
-     * which will not be visible to the original context ClassLoader which is the application ClassLoader itself.
-     *
-     * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
-     */
+
     @Override
-    public void init(ServletConfig servletConfig) {
-        ClassLoaders.executeWith(JaxRSDispatcherServlet.class.getClassLoader(), () -> {
-            final long startTime = System.nanoTime();
-            LOGGER.info("Initializing JaxRSDispatcherServlet!!");
-            try {
-                // First let the RESTEasy framework initializes itself in super.init()
-                super.init(servletConfig);
-                this.whiteboardManager.start(this.getDispatcher());
-                LOGGER.info(SERVLET_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
-            } catch (Exception ex) { // NOSONAR
-                LOGGER.error("Exception while initializing JaxRSDispatcherServlet!!", ex);
-                throw new JaxRSInitializationException(ex.getMessage(), ex);
-            }
-        });
+    public void init() {
+        this.whiteboardManager.start(this.getServletConfig());
     }
 
-    /**
-     * Close the resource and provider {@link ServiceTracker} first so that RESTEasy can clean up them from its registry.
-     * Then close the {@link ServiceTracker} so that the OSGi service instances can be released.
-     * Finally call the destroy of super so that RESTEasy can cleanup remaining resources.
-     */
+    @Override
+    public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+        this.whiteboardManager.getResteasyDispatcher().service(req, res);
+    }
+
     @Override
     public void destroy() {
-        this.whiteboardManager.closeTrackers();
-        super.destroy();
-        LOGGER.info("JaxRSDispatcherServlet Destroyed!!");
+        this.whiteboardManager.stop();
     }
 
     // --------------------------- INTERNAL ---------------------------

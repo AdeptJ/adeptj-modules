@@ -21,13 +21,13 @@
 package com.adeptj.modules.jaxrs.resteasy;
 
 /**
- * Exception to be thrown on RESTEasy initialization.
+ * Exception thrown on RESTEasy bootstrapping.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class JaxRSInitializationException extends RuntimeException {
+public class JaxRSBootstrapException extends RuntimeException {
 
-    public JaxRSInitializationException(String message, Throwable cause) {
+    public JaxRSBootstrapException(String message, Throwable cause) {
         super(message, cause);
     }
 
