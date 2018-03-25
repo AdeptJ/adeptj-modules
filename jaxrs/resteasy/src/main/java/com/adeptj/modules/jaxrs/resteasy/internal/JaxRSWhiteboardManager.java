@@ -83,10 +83,10 @@ class JaxRSWhiteboardManager {
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
-                JaxRSUtil.removeDefaultValidators(providerFactory);
-                JaxRSUtil.registerDefaultJaxRSProviders(providerFactory, this.config);
-                this.providerTracker = JaxRSUtil.openProviderServiceTracker(this.bundleContext, providerFactory);
-                this.resourceTracker = JaxRSUtil.openResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
+                ResteasyUtil.removeDefaultValidators(providerFactory);
+                ResteasyUtil.registerDefaultJaxRSProviders(providerFactory, this.config);
+                this.providerTracker = ResteasyUtil.openProviderServiceTracker(this.bundleContext, providerFactory);
+                this.resourceTracker = ResteasyUtil.openResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);

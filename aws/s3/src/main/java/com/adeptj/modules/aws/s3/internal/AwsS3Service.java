@@ -115,7 +115,7 @@ public class AwsS3Service implements StorageService {
     public S3Response uploadFile(S3Request request) {
         ObjectMetadata objectMetadata = Objects.requireNonNull(request.getMetadata(), OBJ_METADATA_NULL_MSG);
         CannedAccessControlList cannedACL = Objects.requireNonNull(request.getCannedACL(), ACL_NULL_MSG);
-        try (InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG);) {
+        try (InputStream data = Objects.requireNonNull(request.getData(), DATA_NULL_MSG)) {
             return new S3Response()
                     .withPutObjectResult(this.s3Client.putObject(new PutObjectRequest(request.getBucketName(),
                             request.getKey(), data, objectMetadata).withCannedAcl(cannedACL)));

@@ -41,16 +41,17 @@ import java.util.Set;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
+import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
 
 /**
- * Utilities for RestEasy bootstrap process.
+ * Utilities for RESTEasy bootstrap process.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class JaxRSUtil {
+final class ResteasyUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResteasyUtil.class);
 
     private static final String METHOD_GET_CTX_RESOLVERS = "getContextResolvers";
 
@@ -60,7 +61,7 @@ final class JaxRSUtil {
 
     private static final boolean FORCE_ACCESS = true;
 
-    private JaxRSUtil() {
+    private ResteasyUtil() {
     }
 
     static void registerDefaultJaxRSProviders(ResteasyProviderFactory providerFactory, JaxRSCoreConfig config) {
@@ -76,8 +77,8 @@ final class JaxRSUtil {
             return;
         }
         try {
-            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
-            if (Set.class.cast(providers.get(providerFactory)).remove(provider)) {
+            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES);
+            if (Set.class.cast(readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
                 LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
             }
         } catch (IllegalArgumentException | IllegalAccessException ex) {

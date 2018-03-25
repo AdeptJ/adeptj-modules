@@ -67,7 +67,7 @@ public class JaxRSProviderTracker extends ServiceTracker<Object, Object> {
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
         LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
-        JaxRSUtil.removeJaxRSProvider(this.providerFactory, service);
+        ResteasyUtil.removeJaxRSProvider(this.providerFactory, service);
         LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
         this.providerFactory.register(service);
     }
@@ -76,6 +76,6 @@ public class JaxRSProviderTracker extends ServiceTracker<Object, Object> {
     public void removedService(ServiceReference<Object> reference, Object service) {
         super.removedService(reference, service);
         LOGGER.info("Removing JAX-RS Provider: [{}]", service);
-        JaxRSUtil.removeJaxRSProvider(this.providerFactory, service);
+        ResteasyUtil.removeJaxRSProvider(this.providerFactory, service);
     }
 }
