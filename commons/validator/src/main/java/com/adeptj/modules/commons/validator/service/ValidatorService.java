@@ -22,6 +22,11 @@ package com.adeptj.modules.commons.validator.service;
 
 import javax.validation.ValidatorFactory;
 
+/**
+ * ValidatorService.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
 public interface ValidatorService {
 
     <T> void validate(T instance);
