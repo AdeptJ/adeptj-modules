@@ -77,7 +77,7 @@ final class ResteasyUtil {
             return;
         }
         try {
-            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES);
+            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
             if (Set.class.cast(readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
                 LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
             }
