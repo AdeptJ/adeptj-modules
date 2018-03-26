@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
@@ -118,9 +118,9 @@ final class ResteasyUtil {
         corsFilter.setAllowCredentials(config.allowCredentials());
         corsFilter.setAllowedMethods(config.allowedMethods());
         corsFilter.setCorsMaxAge(config.corsMaxAge());
-        corsFilter.setAllowedHeaders(Arrays.stream(config.allowedHeaders()).collect(joining(DELIMITER_COMMA)));
-        corsFilter.setExposedHeaders(Arrays.stream(config.exposedHeaders()).collect(joining(DELIMITER_COMMA)));
-        corsFilter.getAllowedOrigins().addAll(Arrays.stream(config.allowedOrigins()).collect(toSet()));
+        corsFilter.setAllowedHeaders(Stream.of(config.allowedHeaders()).collect(joining(DELIMITER_COMMA)));
+        corsFilter.setExposedHeaders(Stream.of(config.exposedHeaders()).collect(joining(DELIMITER_COMMA)));
+        corsFilter.getAllowedOrigins().addAll(Stream.of(config.allowedOrigins()).collect(toSet()));
         return corsFilter;
     }
 }

@@ -34,14 +34,7 @@ import static javax.validation.executable.ExecutableType.CONSTRUCTORS;
 import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
 
 /**
- * JAX-RS ContextResolver for RESTEasy's {@link GeneralValidator}.
- * <p>
- * It prevents the {@link javax.validation.NoProviderFoundException} when resources are added
- * later(after {@link JaxRSDispatcherServlet} is initialized) by {@link JaxRSResourceTracker}
- * as and when they are available.
- * <p>
- * Basically this wraps the call that creates the validator with this class's Bundle ClassLoader
- * which has visibility to Hibernate Validator classes.
+ * JAX-RS default ContextResolver for RESTEasy's {@link GeneralValidator}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -50,16 +43,24 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
 
     private volatile GeneralValidator validator;
 
+    ValidatorContextResolver() {
+    }
+
     @Override
     public GeneralValidator getContext(Class<?> type) {
         if (this.validator == null) {
             try {
                 this.validator = new GeneralValidatorImpl(ValidatorFactoryProvider.INSTANCE.getValidatorFactory(),
-                        true, unmodifiableSet(of(CONSTRUCTORS, NON_GETTER_METHODS)));
-            } catch (Exception ex) {
+                        true,
+                        unmodifiableSet(of(CONSTRUCTORS, NON_GETTER_METHODS)));
+            } catch (Exception ex) { // NOSONAR
                 throw new ValidationException(Messages.MESSAGES.unableToLoadValidationSupport(), ex);
             }
         }
         return this.validator;
+    }
+
+    public void setValidator(GeneralValidator validator) {
+        this.validator = validator;
     }
 }

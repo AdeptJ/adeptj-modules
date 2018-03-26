@@ -186,6 +186,13 @@
 
         <dependency>
             <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-validator</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-jaxrs-core</artifactId>
             <version>1.0.9.Final</version>
             <scope>provided</scope>

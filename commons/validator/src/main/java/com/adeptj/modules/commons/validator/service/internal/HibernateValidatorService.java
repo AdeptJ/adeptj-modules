@@ -17,38 +17,61 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.resteasy;
 
-import com.adeptj.modules.commons.utils.Loggers;
+package com.adeptj.modules.commons.validator.service.internal;
+
+import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.hibernate.validator.HibernateValidator;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.NoProviderFoundException;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
-
+import java.util.Set;
 
 /**
- * Initializes the HibernateValidator in case ValidatorService is unavailable.
+ * ValidatorService Implementation.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public enum ValidatorFactoryProvider {
+@Component
+public class HibernateValidatorService implements ValidatorService {
 
-    INSTANCE;
+    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateValidatorService.class);
 
-    private volatile ValidatorFactory validatorFactory;
+    private ValidatorFactory validatorFactory;
 
+    @Override
+    public <T> void validate(T instance) {
+        Set<ConstraintViolation<T>> violations = this.validatorFactory.getValidator().validate(instance);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+    }
+
+    @Override
     public ValidatorFactory getValidatorFactory() {
-        if (this.validatorFactory == null) {
+        return validatorFactory;
+    }
+
+    // --------------------------- INTERNAL ---------------------------
+    // ---------------- Component lifecycle methods -------------------
+
+    @Activate
+    protected void start() {
+        try {
             this.validatorFactory = Validation.byProvider(HibernateValidator.class)
                     .configure()
                     .buildValidatorFactory();
-            Loggers.get(this.getClass()).info("Default HibernateValidator Initialized!!");
+            LOGGER.info("HibernateValidator Initialized!!");
+        } catch (NoProviderFoundException ex) {
+            LOGGER.error("Could not create ValidatorFactory!!", ex);
+            throw ex;
         }
-        return this.validatorFactory;
-    }
-
-    // Will be set by JaxRSDispatcherServlet if ValidatorService is available.
-    public void setValidatorFactory(ValidatorFactory validatorFactory) { // NOSONAR
-        this.validatorFactory = validatorFactory;
     }
 }

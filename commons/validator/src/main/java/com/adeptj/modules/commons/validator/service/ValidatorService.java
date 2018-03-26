@@ -17,38 +17,14 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.resteasy;
 
-import com.adeptj.modules.commons.utils.Loggers;
-import org.hibernate.validator.HibernateValidator;
+package com.adeptj.modules.commons.validator.service;
 
-import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 
+public interface ValidatorService {
 
-/**
- * Initializes the HibernateValidator in case ValidatorService is unavailable.
- *
- * @author Rakesh.Kumar, AdeptJ
- */
-public enum ValidatorFactoryProvider {
+    <T> void validate(T instance);
 
-    INSTANCE;
-
-    private volatile ValidatorFactory validatorFactory;
-
-    public ValidatorFactory getValidatorFactory() {
-        if (this.validatorFactory == null) {
-            this.validatorFactory = Validation.byProvider(HibernateValidator.class)
-                    .configure()
-                    .buildValidatorFactory();
-            Loggers.get(this.getClass()).info("Default HibernateValidator Initialized!!");
-        }
-        return this.validatorFactory;
-    }
-
-    // Will be set by JaxRSDispatcherServlet if ValidatorService is available.
-    public void setValidatorFactory(ValidatorFactory validatorFactory) { // NOSONAR
-        this.validatorFactory = validatorFactory;
-    }
+    ValidatorFactory getValidatorFactory();
 }

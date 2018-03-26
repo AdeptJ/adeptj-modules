@@ -38,6 +38,7 @@
     <modules>
 
         <module>utils</module>
+        <module>validator</module>
         <module>datasource</module>
         <module>logging</module>
         <module>scheduler</module>

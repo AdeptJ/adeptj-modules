@@ -1,7 +1,6 @@
 ############################################################################
 #                                                                          # 
-# Copyright (c) 2016 AdeptJ                                                #
-# Copyright (c) 2016 Rakesh Kumar <irakeshk@outlook.com>                   #
+# Copyright (c) 2016 AdeptJ (http://www.adeptj.com)                        #
 #                                                                          #
 # Licensed under the Apache License, Version 2.0 (the "License");          #
 # you may not use this file except in compliance with the License.         #
@@ -17,4 +16,17 @@
 #                                                                          #
 ############################################################################
 
-invalid.email=Please correct your email!!
+# Scan all packages for Metatype and DS annotations as of now.
+
+-metatypeannotations: *
+
+-dsannotations: *
+
+Export-Package: com.adeptj.modules.commons.validator, \
+                com.adeptj.modules.commons.validator.service
+
+Bundle-Name: ${project.name}
+
+Bundle-Category: AdeptJ Common
+
+Bundle-Vendor: AdeptJ
