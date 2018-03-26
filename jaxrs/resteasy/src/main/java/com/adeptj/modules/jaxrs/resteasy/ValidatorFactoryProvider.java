@@ -35,20 +35,25 @@ public enum ValidatorFactoryProvider {
 
     INSTANCE;
 
-    private volatile ValidatorFactory validatorFactory;
+    private volatile ValidatorFactory defaultValidatorFactory;
+
+    private volatile ValidatorFactory serviceValidatorFactory;
 
     public ValidatorFactory getValidatorFactory() {
-        if (this.validatorFactory == null) {
-            this.validatorFactory = Validation.byProvider(HibernateValidator.class)
-                    .configure()
-                    .buildValidatorFactory();
-            Loggers.get(this.getClass()).info("Default HibernateValidator Initialized!!");
+        if (this.serviceValidatorFactory == null) {
+            if (this.defaultValidatorFactory == null) {
+                this.defaultValidatorFactory = Validation.byProvider(HibernateValidator.class)
+                        .configure()
+                        .buildValidatorFactory();
+                Loggers.get(this.getClass()).info("Default HibernateValidator Initialized!!");
+            }
+            return defaultValidatorFactory;
         }
-        return this.validatorFactory;
+        return this.serviceValidatorFactory;
     }
 
     // Will be set by JaxRSDispatcherServlet if ValidatorService is available.
-    public void setValidatorFactory(ValidatorFactory validatorFactory) { // NOSONAR
-        this.validatorFactory = validatorFactory;
+    public void setServiceValidatorFactory(ValidatorFactory serviceValidatorFactory) { // NOSONAR
+        this.serviceValidatorFactory = serviceValidatorFactory;
     }
 }

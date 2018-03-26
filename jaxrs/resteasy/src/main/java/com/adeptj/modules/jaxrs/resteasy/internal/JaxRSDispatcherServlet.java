@@ -122,12 +122,12 @@ public class JaxRSDispatcherServlet extends HttpServlet {
     protected void bindValidatorService(ValidatorService validatorService) {
         LOGGER.info("Bind ValidatorService: [{}]", validatorService);
         this.validatorService = validatorService;
-        ValidatorFactoryProvider.INSTANCE.setValidatorFactory(this.validatorService.getValidatorFactory());
+        ValidatorFactoryProvider.INSTANCE.setServiceValidatorFactory(this.validatorService.getValidatorFactory());
     }
 
     protected void unbindValidatorService(ValidatorService validatorService) {
         this.validatorService = null;
-        ValidatorFactoryProvider.INSTANCE.setValidatorFactory(null);
+        ValidatorFactoryProvider.INSTANCE.setServiceValidatorFactory(null);
     }
 
     @Activate
@@ -135,7 +135,7 @@ public class JaxRSDispatcherServlet extends HttpServlet {
         if (this.validatorService == null) {
             LOGGER.warn("ValidatorService is unavailable, will load the default ValidatorFactory!!");
         } else {
-            ValidatorFactoryProvider.INSTANCE.setValidatorFactory(this.validatorService.getValidatorFactory());
+            ValidatorFactoryProvider.INSTANCE.setServiceValidatorFactory(this.validatorService.getValidatorFactory());
         }
         this.whiteboardManager = new JaxRSWhiteboardManager(context, config);
     }
