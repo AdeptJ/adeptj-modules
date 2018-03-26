@@ -32,6 +32,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.ValidatorFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -64,9 +65,8 @@ final class ResteasyUtil {
     private ResteasyUtil() {
     }
 
-    static void registerDefaultJaxRSProviders(ResteasyProviderFactory providerFactory, JaxRSCoreConfig config) {
-        providerFactory
-                .register(new ValidatorContextResolver())
+    static void registerInternalProviders(ResteasyProviderFactory rpf, JaxRSCoreConfig config, ValidatorFactory vf) {
+        rpf.register(new ValidatorContextResolver(vf))
                 .register(createCorsFilter(config))
                 .register(new DefaultExceptionHandler(config.showException()))
                 .register(new JaxRSExceptionHandler(config.showException()));
@@ -86,7 +86,7 @@ final class ResteasyUtil {
         }
     }
 
-    static void removeDefaultValidators(ResteasyProviderFactory providerFactory) {
+    static void removeInternalValidators(ResteasyProviderFactory providerFactory) {
         try {
             // First remove the default RESTEasy GeneralValidator and GeneralValidatorCDI.
             // After that we will register our ValidatorContextResolver.

@@ -22,16 +22,11 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
-import com.adeptj.modules.jaxrs.resteasy.ValidatorFactoryProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -83,27 +78,16 @@ public class JaxRSDispatcherServlet extends HttpServlet {
 
     static final String MAPPING_PREFIX_VALUE = "/";
 
-    private static final String BIND_VALIDATOR_SERVICE = "bindValidatorService";
-
-    private static final String UNBIND_VALIDATOR_SERVICE = "unbindValidatorService";
-
     private static final long serialVersionUID = -4415966373465265279L;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSDispatcherServlet.class);
 
     private JaxRSWhiteboardManager whiteboardManager;
 
-    @Reference(
-            bind = BIND_VALIDATOR_SERVICE,
-            unbind = UNBIND_VALIDATOR_SERVICE,
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC
-    )
+    @Reference
     private ValidatorService validatorService;
 
     @Override
     public void init() {
-        this.whiteboardManager.start(this.getServletConfig());
+        this.whiteboardManager.start(this.getServletConfig(), this.validatorService.getValidatorFactory());
     }
 
     @Override
@@ -119,24 +103,8 @@ public class JaxRSDispatcherServlet extends HttpServlet {
     // --------------------------- INTERNAL ---------------------------
     // ---------------- Component lifecycle methods -------------------
 
-    protected void bindValidatorService(ValidatorService validatorService) {
-        LOGGER.info("Bind ValidatorService: [{}]", validatorService);
-        this.validatorService = validatorService;
-        ValidatorFactoryProvider.INSTANCE.setServiceValidatorFactory(this.validatorService.getValidatorFactory());
-    }
-
-    protected void unbindValidatorService(ValidatorService validatorService) {
-        this.validatorService = null;
-        ValidatorFactoryProvider.INSTANCE.setServiceValidatorFactory(null);
-    }
-
     @Activate
     protected void start(BundleContext context, JaxRSCoreConfig config) {
-        if (this.validatorService == null) {
-            LOGGER.warn("ValidatorService is unavailable, will load the default ValidatorFactory!!");
-        } else {
-            ValidatorFactoryProvider.INSTANCE.setServiceValidatorFactory(this.validatorService.getValidatorFactory());
-        }
         this.whiteboardManager = new JaxRSWhiteboardManager(context, config);
     }
 }

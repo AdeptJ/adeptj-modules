@@ -22,6 +22,8 @@ package com.adeptj.modules.commons.validator.service.internal;
 
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.HibernateValidatorConfiguration;
+import org.hibernate.validator.parameternameprovider.ParanamerParameterNameProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -39,7 +41,7 @@ import java.util.Set;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component
+@Component(immediate = true)
 public class HibernateValidatorService implements ValidatorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HibernateValidatorService.class);
@@ -65,9 +67,9 @@ public class HibernateValidatorService implements ValidatorService {
     @Activate
     protected void start() {
         try {
-            this.validatorFactory = Validation.byProvider(HibernateValidator.class)
-                    .configure()
-                    .buildValidatorFactory();
+            HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class).configure();
+            configuration.parameterNameProvider(new ParanamerParameterNameProvider());
+            this.validatorFactory = configuration.buildValidatorFactory();
             LOGGER.info("HibernateValidator Initialized!!");
         } catch (NoProviderFoundException ex) {
             LOGGER.error("Could not create ValidatorFactory!!", ex);

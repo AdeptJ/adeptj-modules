@@ -19,12 +19,12 @@
 */
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.resteasy.ValidatorFactoryProvider;
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.plugins.validation.i18n.Messages;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 import javax.validation.ValidationException;
+import javax.validation.ValidatorFactory;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
@@ -39,28 +39,26 @@ import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Provider
-public class ValidatorContextResolver implements ContextResolver<GeneralValidator> {
+class ValidatorContextResolver implements ContextResolver<GeneralValidator> {
 
     private volatile GeneralValidator validator;
 
-    ValidatorContextResolver() {
+    private ValidatorFactory validatorFactory;
+
+    ValidatorContextResolver(ValidatorFactory validatorFactory) {
+        this.validatorFactory = validatorFactory;
     }
 
     @Override
     public GeneralValidator getContext(Class<?> type) {
         if (this.validator == null) {
             try {
-                this.validator = new GeneralValidatorImpl(ValidatorFactoryProvider.INSTANCE.getValidatorFactory(),
-                        true,
+                this.validator = new GeneralValidatorImpl(this.validatorFactory, true,
                         unmodifiableSet(of(CONSTRUCTORS, NON_GETTER_METHODS)));
             } catch (Exception ex) { // NOSONAR
                 throw new ValidationException(Messages.MESSAGES.unableToLoadValidationSupport(), ex);
             }
         }
         return this.validator;
-    }
-
-    public void setValidator(GeneralValidator validator) {
-        this.validator = validator;
     }
 }

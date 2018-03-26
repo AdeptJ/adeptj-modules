@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
+import javax.validation.ValidatorFactory;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -74,7 +75,7 @@ class JaxRSWhiteboardManager {
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
-    void start(ServletConfig servletConfig) {
+    void start(ServletConfig servletConfig, ValidatorFactory validatorFactory) {
         ClassLoaders.executeWith(JaxRSDispatcherServlet.class.getClassLoader(), () -> {
             try {
                 final long startTime = System.nanoTime();
@@ -83,8 +84,8 @@ class JaxRSWhiteboardManager {
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
-                ResteasyUtil.removeDefaultValidators(providerFactory);
-                ResteasyUtil.registerDefaultJaxRSProviders(providerFactory, this.config);
+                ResteasyUtil.removeInternalValidators(providerFactory);
+                ResteasyUtil.registerInternalProviders(providerFactory, this.config, validatorFactory);
                 this.providerTracker = ResteasyUtil.openProviderServiceTracker(this.bundleContext, providerFactory);
                 this.resourceTracker = ResteasyUtil.openResourceServiceTracker(this.bundleContext, dispatcher.getRegistry());
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
