@@ -29,7 +29,6 @@ public enum JwtCookieConfigHolder {
 
     private JwtCookieConfig jwtCookieConfig;
 
-
     public JwtCookieConfig getJwtCookieConfig() {
         return jwtCookieConfig;
     }
