@@ -101,15 +101,12 @@ public final class PropertiesUtil {
         if (propValue == null) {
             // no value at all
             return defaultArray;
-
         } else if (propValue instanceof String) {
             // single string
             return new String[]{(String) propValue};
-
         } else if (propValue instanceof String[]) {
             // String[]
             return (String[]) propValue;
-
         } else if (propValue.getClass().isArray()) {
             // other array
             Object[] valueArray = (Object[]) propValue;
@@ -120,7 +117,6 @@ public final class PropertiesUtil {
                 }
             }
             return values.toArray(new String[values.size()]);
-
         } else if (propValue instanceof Collection<?>) {
             // collection
             Collection<?> valueCollection = (Collection<?>) propValue;
@@ -132,7 +128,6 @@ public final class PropertiesUtil {
             }
             return valueList.toArray(new String[valueList.size()]);
         }
-
         return defaultArray;
     }
 }

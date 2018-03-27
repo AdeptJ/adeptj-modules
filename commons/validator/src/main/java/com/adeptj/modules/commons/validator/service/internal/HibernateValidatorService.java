@@ -20,12 +20,14 @@
 
 package com.adeptj.modules.commons.validator.service.internal;
 
+import com.adeptj.modules.commons.validator.service.ValidatorConfig;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.parameternameprovider.ParanamerParameterNameProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +43,13 @@ import java.util.Set;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@Designate(ocd = ValidatorConfig.class)
 @Component(immediate = true)
 public class HibernateValidatorService implements ValidatorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HibernateValidatorService.class);
+
+    private ValidatorConfig config;
 
     private ValidatorFactory validatorFactory;
 
@@ -65,10 +70,12 @@ public class HibernateValidatorService implements ValidatorService {
     // ---------------- Component lifecycle methods -------------------
 
     @Activate
-    protected void start() {
+    protected void start(ValidatorConfig config) {
         try {
-            HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class).configure();
-            configuration.parameterNameProvider(new ParanamerParameterNameProvider());
+            HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class)
+                    .configure()
+                    .ignoreXmlConfiguration()
+                    .parameterNameProvider(new ParanamerParameterNameProvider());
             this.validatorFactory = configuration.buildValidatorFactory();
             LOGGER.info("HibernateValidator Initialized!!");
         } catch (NoProviderFoundException ex) {

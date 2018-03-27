@@ -76,7 +76,7 @@ class JaxRSWhiteboardManager {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void start(ServletConfig servletConfig, ValidatorFactory validatorFactory) {
-        ClassLoaders.executeWith(JaxRSDispatcherServlet.class.getClassLoader(), () -> {
+        ClassLoaders.executeWith(this.getClass().getClassLoader(), () -> {
             try {
                 final long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
