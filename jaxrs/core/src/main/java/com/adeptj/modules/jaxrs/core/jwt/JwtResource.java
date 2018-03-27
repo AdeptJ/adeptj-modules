@@ -92,7 +92,7 @@ public class JwtResource {
         JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
         return authInfo == null
                 ? JaxRSResponses.unauthorized()
-                : JwtUtil.createJwt(this.jwtService.createJwt(username, authInfo), this.cookieConfig);
+                : JwtUtil.responseWithJwt(this.jwtService.createJwt(username, authInfo), this.cookieConfig);
     }
 
     /**

@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.CookieBuilder;
 import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +46,7 @@ final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
 
-    static Response createJwt(String jwt, JwtCookieConfig cookieConfig) {
+    static Response responseWithJwt(String jwt, JwtCookieConfig cookieConfig) {
         return cookieConfig.enabled()
                 ? JaxRSResponses.okWithCookie(newJwtCookie(jwt, cookieConfig))
                 : JaxRSResponses.okWithHeader(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
@@ -86,13 +87,17 @@ final class JwtUtil {
     }
 
     private static NewCookie newJwtCookie(String jwt, JwtCookieConfig cookieConfig) {
-        return new NewCookie(cookieConfig.name(), jwt,
-                cookieConfig.path(),
-                cookieConfig.domain(),
-                cookieConfig.comment(),
-                cookieConfig.maxAge(),
-                cookieConfig.secure(),
-                cookieConfig.httpOnly());
+        return CookieBuilder.builder()
+                .name(cookieConfig.name())
+                .value(jwt)
+                .domain(cookieConfig.domain())
+                .path(cookieConfig.path())
+                .comment(cookieConfig.comment())
+                .maxAge(cookieConfig.maxAge())
+                .secure(cookieConfig.secure())
+                .httpOnly(cookieConfig.httpOnly())
+                .build()
+                .getCookie();
     }
 
     // Just static utilities, no instance needed.
