@@ -20,14 +20,12 @@
 
 package com.adeptj.modules.commons.validator.service.internal;
 
-import com.adeptj.modules.commons.validator.service.ValidatorConfig;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.parameternameprovider.ParanamerParameterNameProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,20 +37,20 @@ import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 /**
- * ValidatorService Implementation.
+ * {@link HibernateValidator} based ValidatorService.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = ValidatorConfig.class)
 @Component(immediate = true)
 public class HibernateValidatorService implements ValidatorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HibernateValidatorService.class);
 
-    private ValidatorConfig config;
-
     private ValidatorFactory validatorFactory;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void validate(T instance) {
         Set<ConstraintViolation<T>> violations = this.validatorFactory.getValidator().validate(instance);
@@ -61,6 +59,9 @@ public class HibernateValidatorService implements ValidatorService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ValidatorFactory getValidatorFactory() {
         return validatorFactory;
@@ -70,7 +71,7 @@ public class HibernateValidatorService implements ValidatorService {
     // ---------------- Component lifecycle methods -------------------
 
     @Activate
-    protected void start(ValidatorConfig config) {
+    protected void start() {
         try {
             HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class)
                     .configure()

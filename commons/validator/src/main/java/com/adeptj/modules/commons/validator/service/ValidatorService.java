@@ -23,13 +23,24 @@ package com.adeptj.modules.commons.validator.service;
 import javax.validation.ValidatorFactory;
 
 /**
- * ValidatorService.
+ * Service interface for validating Java beans, JAX-RS resources etc.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public interface ValidatorService {
 
+    /**
+     * Validates the given instance.
+     *
+     * @param instance the object to be validated.
+     * @param <T>      type of the object to be validated
+     */
     <T> void validate(T instance);
 
+    /**
+     * Returns the ValidatorFactory instance.
+     *
+     * @return the ValidatorFactory instance.
+     */
     ValidatorFactory getValidatorFactory();
 }
