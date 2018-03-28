@@ -23,6 +23,8 @@ package com.adeptj.modules.commons.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
+
 /**
  * Utility for SLF4J {@link org.slf4j.Logger}
  *
@@ -32,6 +34,10 @@ public final class Loggers {
 
     // Static utility methods, no instances required.
     private Loggers() {
+    }
+
+    public static Logger get(MethodHandles.Lookup creationContext) {
+        return LoggerFactory.getLogger(creationContext.lookupClass());
     }
 
     public static <T> Logger get(Class<T> type) {

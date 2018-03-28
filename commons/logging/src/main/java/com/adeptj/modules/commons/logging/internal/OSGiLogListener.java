@@ -20,46 +20,37 @@
 
 package com.adeptj.modules.commons.logging.internal;
 
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
-import org.osgi.service.log.LogReaderService;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.osgi.service.log.LogService.LOG_ERROR;
+import static org.osgi.service.log.LogService.LOG_WARNING;
 
 /**
- * OSGi component registers a {@link LogListener} with {@link LogReaderService}.
- * <p>
- * The registered {@link LogListener} accepts the {@link LogEntry} which contains information
- * such as human readable message, exception etc.
- * <p>
- * This information is sent to the SLF4J {@link Logger} to log with ERROR or WARN log levels.
+ * Simple implementation of OSGi {@link LogListener} which logs the given {@link LogEntry}
+ * to underlying logging framework with the help of SLF4J.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
-public class OSGiSLF4JLoggingBridge {
+public class OSGiLogListener implements LogListener {
 
-    @Reference
-    private LogReaderService logReaderService;
+    private static final String OSGI_LOGGER = "com.adeptj.modules.commons.osgi.logger";
 
-    private final LogListener logListener;
+    private static final Logger LOGGER = LoggerFactory.getLogger(OSGI_LOGGER);
 
-    public OSGiSLF4JLoggingBridge() {
-        this.logListener = new OSGiLogListener();
-    }
-
-    // Component Lifecycle Methods
-
-    @Activate
-    protected void start() {
-        this.logReaderService.addLogListener(this.logListener);
-    }
-
-    @Deactivate
-    protected void stop() {
-        this.logReaderService.removeLogListener(this.logListener);
+    @Override
+    public void logged(LogEntry entry) {
+        switch (entry.getLevel()) {
+            case LOG_ERROR:
+                LOGGER.error(entry.getMessage(), entry.getException());
+                break;
+            case LOG_WARNING:
+                LOGGER.warn(entry.getMessage());
+                break;
+            default:
+                // do nothing, we are not interested in other log levels.
+        }
     }
 }
