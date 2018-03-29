@@ -24,11 +24,12 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.0.Final</version>
-
+        <version>1.0.9.Final</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-websecurity-esapi</artifactId>
-    <packaging>bundle</packaging>
+    <version>1.0.0.Final</version>
+    <packaging>jar</packaging>
     <name>AdeptJ Modules :: WebSecurity :: ESAPI</name>
     <description>AdeptJ Modules :: WebSecurity :: ESAPI</description>
 
@@ -37,60 +38,30 @@
     </properties>
 
     <build>
+
         <plugins>
 
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Category>AdeptJ Security</Bundle-Category>
-                        <Embed-Dependency>*;scope=compile;inline=false;type=jar</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                        <_exportcontents>
-                            org.owasp.*;version=2.1.0.1
-                        </_exportcontents>
-                        <Import-Package>
-                            bsh.classpath.*;resolution:=optional,
-                            com.sun.org.apache.xerces.internal.*;resolution:=optional,
-                            javax.servlet.jsp.*;resolution:=optional,
-                            junit.framework.*;resolution:=optional,
-                            org.apache.avalon.framework.logger.*;resolution:=optional,
-                            org.apache.bcel.*;resolution:=optional,
-                            org.apache.commons.*;resolution:=optional,
-                            org.apache.log.*;resolution:=optional,
-                            org.apache.log4j.*;resolution:=optional,
-                            org.apache.xml.resolver.*;resolution:=optional,
-                            org.apache.xmlgraphics.*;resolution:=optional,
-                            org.w3c.dom.xpath.*;resolution:=optional,
-                            sun.io.*;resolution:=optional,
-                            com.ibm.uvm.tools.*;resolution:=optional,
-                            com.sun.jdmk.comm.*;resolution:=optional,
-                            javax.jmdns.*;resolution:=optional,
-                            javax.jms.*;resolution:=optional,
-                            javax.mail.*;resolution:=optional,
-                            !bsh,
-                            org.w3c.dom,
-                            *
-                        </Import-Package>
-                        <Bundle-Activator>ESAPIActivator</Bundle-Activator>
-                    </instructions>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>generate-scr-scrdescriptor</id>
                         <goals>
-                            <goal>scr</goal>
+                            <goal>bnd-process</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -98,12 +69,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <compilerArgument>-parameters</compilerArgument>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
             </plugin>
 
         </plugins>
+
     </build>
 
     <dependencies>
@@ -121,19 +93,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modularweb-common</artifactId>
-            <version>1.0.0.RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <scope>provided</scope>
@@ -147,37 +106,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.1</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.11.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sourceforge.nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-            <version>1.9.22</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>2.0.2</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-css</artifactId>
-            <version>1.8</version>
+            <version>1.9.1</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -188,31 +119,32 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>1.10</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>1.9.22</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>2.0.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.owasp.antisamy</groupId>
             <artifactId>antisamy</artifactId>
-            <version>1.5.5</version>
+            <version>1.5.7</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>net.sourceforge.nekohtml</groupId>
@@ -223,12 +155,8 @@
                     <artifactId>batik-css</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>bsh</groupId>
-                    <artifactId>bsh</artifactId>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -252,16 +180,28 @@
                     <artifactId>commons-beanutils-core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.io7m.xom</groupId>
+                    <groupId>commons-configuration</groupId>
+                    <artifactId>commons-configuration</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xom</groupId>
                     <artifactId>xom</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.xmlgraphics</groupId>
+                    <artifactId>batik-css</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.beanshell</groupId>
+                    <artifactId>bsh-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.owasp.antisamy</groupId>
                     <artifactId>antisamy</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
