@@ -54,7 +54,11 @@
                 </executions>
             </plugin>
 
-            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
+            <!--
+			The following configuration is required because bnd-maven-plugin generates the manifest to
+			target/classes/META-INF/MANIFEST.MF but the normal maven-jar-plugin does not use it. If the jar-plugin
+			is patched to pick up the manifest from this location, then the following config is not needed.
+			-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -90,6 +94,12 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.annotation</artifactId>
             <scope>provided</scope>
         </dependency>
 

@@ -21,7 +21,7 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.Authenticator;
-import com.adeptj.modules.security.core.SecurityHandler;
+import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
-import static com.adeptj.modules.security.core.SecurityHandler.DEFAULT_SERVLET_CONTEXT_NAME;
+import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.SERVLET_CONTEXT_NAME;
 import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.EQ;
 import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.ROOT_PATH;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_NAME;
@@ -48,15 +48,18 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 @Component(
         service = ServletContextHelper.class,
         scope = ServiceScope.BUNDLE,
         property = {
-                HTTP_WHITEBOARD_CONTEXT_NAME + EQ + DEFAULT_SERVLET_CONTEXT_NAME,
+                HTTP_WHITEBOARD_CONTEXT_NAME + EQ + SERVLET_CONTEXT_NAME,
                 HTTP_WHITEBOARD_CONTEXT_PATH + EQ + ROOT_PATH
         }
 )
 public class DefaultServletContextHelper extends ServletContextHelper {
+
+    static final String SERVLET_CONTEXT_NAME = "AdeptJ DefaultServletContext";
 
     static final String EQ = "=";
 

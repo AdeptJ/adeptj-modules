@@ -18,8 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.core;
+package com.adeptj.modules.security.core.internal;
 
+import com.adeptj.modules.security.core.Authenticator;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.context.ServletContextHelper;
 
@@ -35,15 +36,13 @@ import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class SecurityHandler extends ServletContextHelper {
-
-    public static final String DEFAULT_SERVLET_CONTEXT_NAME = "DefaultServletContext";
+final class SecurityHandler extends ServletContextHelper {
 
     private static final String AUTH_SERVICE_MISSING_MSG = "Authenticator service missing!!";
 
     private final Authenticator authenticator;
 
-    public SecurityHandler(Bundle usingBundle, Authenticator authenticator) {
+    SecurityHandler(Bundle usingBundle, Authenticator authenticator) {
         super(Objects.requireNonNull(usingBundle, "Using Bundle can't be null!!"));
         this.authenticator = authenticator;
     }

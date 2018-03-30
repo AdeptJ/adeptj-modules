@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.security.core;
 
+import org.osgi.annotation.versioning.ConsumerType;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ConsumerType
 public interface Authenticator {
 
     boolean handleSecurity(HttpServletRequest req, HttpServletResponse resp);
