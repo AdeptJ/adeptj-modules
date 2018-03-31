@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.ClassLoaders;
+import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import com.adeptj.modules.jaxrs.resteasy.internal.whiteboard.JaxRSWhiteboardManager;
@@ -44,6 +44,7 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.
 import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.SERVLET_PATTERN_VALUE;
 import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
+import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX;
 import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME;
@@ -58,8 +59,8 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
  */
 @Designate(ocd = JaxRSCoreConfig.class)
 @Component(
-        immediate = true,
         service = Servlet.class,
+        scope = PROTOTYPE,
         configurationPolicy = REQUIRE,
         property = {
                 HTTP_WHITEBOARD_SERVLET_NAME + EQ + JAXRS_DISPATCHER_SERVLET_NAME,
@@ -84,6 +85,9 @@ public class JaxRSDispatcherServlet extends HttpServlet {
 
     private JaxRSWhiteboardManager whiteboardManager;
 
+    /**
+     * Statically injected ValidatorService, this component will not resolve until one is provided.
+     */
     @Reference
     private ValidatorService validatorService;
 
@@ -94,14 +98,26 @@ public class JaxRSDispatcherServlet extends HttpServlet {
      */
     @Override
     public void init() {
-        ClassLoaders.executeWith(this.getClass().getClassLoader(), () -> this.whiteboardManager.start(this.getServletConfig()));
+        Functions.execute(this.getClass().getClassLoader(),
+                () -> this.whiteboardManager.start(this.getServletConfig(), this.validatorService.getValidatorFactory()));
     }
 
+    /**
+     * Dispatch the request to RESTEasy's HttpServlet30Dispatcher.
+     *
+     * @param req current request to a resource method
+     * @param res required to setup status code, content etc.
+     * @throws ServletException exception thrown by RESTEasy's HttpServlet30Dispatcher
+     * @throws IOException      exception thrown by RESTEasy's HttpServlet30Dispatcher
+     */
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         this.whiteboardManager.getResteasyDispatcher().service(req, res);
     }
 
+    /**
+     * Shutdown RESTEasy framework and close all the resource and provider trackers.
+     */
     @Override
     public void destroy() {
         this.whiteboardManager.stop();
@@ -112,6 +128,6 @@ public class JaxRSDispatcherServlet extends HttpServlet {
 
     @Activate
     protected void start(BundleContext context, JaxRSCoreConfig config) {
-        this.whiteboardManager = new JaxRSWhiteboardManager(context, config, this.validatorService.getValidatorFactory());
+        this.whiteboardManager = new JaxRSWhiteboardManager(context, config);
     }
 }

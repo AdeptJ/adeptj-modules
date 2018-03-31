@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.validation.ValidatorFactory;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,21 +52,18 @@ public class JaxRSWhiteboardManager {
 
     private static final String JAXRS_RT_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
-    private List<ServiceTracker<Object, Object>> serviceTrackers;
+    private final List<ServiceTracker<Object, Object>> serviceTrackers;
 
-    private WeakReference<ValidatorFactory> vfWeakRef;
-
-    private final WeakReference<JaxRSCoreConfig> configWeakRef;
+    private final JaxRSCoreConfig config;
 
     private final BundleContext context;
 
     private HttpServlet30Dispatcher resteasyDispatcher;
 
-    public JaxRSWhiteboardManager(BundleContext context, JaxRSCoreConfig config, ValidatorFactory vf) {
+    public JaxRSWhiteboardManager(BundleContext context, JaxRSCoreConfig config) {
         this.context = context;
-        this.configWeakRef = new WeakReference<>(config);
+        this.config = config;
         this.serviceTrackers = new ArrayList<>();
-        this.vfWeakRef = new WeakReference<>(vf);
     }
 
     public HttpServlet30Dispatcher getResteasyDispatcher() {
@@ -78,8 +74,9 @@ public class JaxRSWhiteboardManager {
      * Bootstrap the RESTEasy Framework, open ServiceTracker for JAX-RS providers and resources.
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
+     * @param vf            the Java Bean Validation's {@link ValidatorFactory}
      */
-    public void start(ServletConfig servletConfig) {
+    public void start(ServletConfig servletConfig, ValidatorFactory vf) {
         try {
             final long startTime = System.nanoTime();
             LOGGER.info("Bootstrapping JAX-RS Runtime!!");
@@ -88,7 +85,7 @@ public class JaxRSWhiteboardManager {
             Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
             ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory();
             ResteasyUtil.removeInternalValidators(providerFactory);
-            ResteasyUtil.registerInternalProviders(providerFactory, this.configWeakRef.get(), this.vfWeakRef.get());
+            ResteasyUtil.registerInternalProviders(providerFactory, this.config, vf);
             this.serviceTrackers.add(new JaxRSProviderTracker(this.context, providerFactory));
             this.serviceTrackers.add(new JaxRSResourceTracker(this.context, dispatcher.getRegistry()));
             LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));

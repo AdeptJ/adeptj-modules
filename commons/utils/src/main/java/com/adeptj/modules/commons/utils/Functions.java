@@ -21,68 +21,72 @@
 package com.adeptj.modules.commons.utils;
 
 /**
- * Class loading related utilities.
+ * Execute provided functions by setting current Thread's context class loader.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class ClassLoaders {
+public final class Functions {
 
     /**
      * Only static access.
      */
-    private ClassLoaders() {
+    private Functions() {
     }
 
     /**
-     * Defines a callback processor for an action which will be executed using the provided class loader.
+     * A function which will be executed by setting the provided class loader in current thread's
+     * context class loader and returns.
      *
      * @param <T> the return type of the execute method
      * @author Rakesh.Kumar, AdeptJ
      */
     @FunctionalInterface
-    public interface ReturnCallback<T> {
+    public interface ReturningFunction<T> {
         T execute();
     }
 
     /**
-     * Defines a callback processor for an action which will be executed using the provided class loader.
+     * A function which will be executed by setting the provided class loader in current thread's
+     * context class loader and returns nothing.
      *
      * @author Rakesh.Kumar, AdeptJ
      */
     @FunctionalInterface
-    public interface NonReturnCallback {
+    public interface NonReturningFunction {
         void execute();
     }
 
     /**
-     * Executes the provided callback within the context of the specified {@link ClassLoader}.
+     * Executes the provided {@link NonReturningFunction} by setting the provided {@link ClassLoader}
+     * in current thread's context class loader.
      *
      * @param cl       the class loader to use as a context class loader for the execution
-     * @param callback the execution callback handler
+     * @param function the function to be executed under given class loader
      */
-    public static void executeWith(ClassLoader cl, NonReturnCallback callback) {
+    public static void execute(ClassLoader cl, NonReturningFunction function) {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(cl);
-            callback.execute();
+            function.execute();
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
     }
 
     /**
-     * Executes the provided callback within the context of the specified {@link ClassLoader}.
+     * Executes the provided {@link ReturningFunction} by setting the provided {@link ClassLoader}
+     * in current thread's context class loader.
      *
      * @param cl       the class loader to use as a context class loader for the execution
-     * @param callback the execution callback handler
-     * @param <T>      Type that ReturnCallback deals with.
+     * @param function the function to be executed under given class loader
+     * @param <T>      Type that ReturningFunction returns.
      * @return the result of the execution
      */
-    public static <T> T executeWith(ClassLoader cl, ReturnCallback<T> callback) {
+    public static <T> T execute(ClassLoader cl, ReturningFunction<T> function) {
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(cl);
-            return callback.execute();
+            return function.execute();
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }

@@ -49,11 +49,15 @@ public final class OSGiUtils {
     private OSGiUtils() {
     }
 
+    public static boolean isFragment(Bundle bundle) {
+        return bundle.getHeaders().get(FRAGMENT_HOST) != null;
+    }
+
     public static boolean isNotFragment(Bundle bundle) {
         return bundle.getHeaders().get(FRAGMENT_HOST) == null;
     }
 
-    public static Filter filter(BundleContext context, Class<?> objectClass, String filterExpr) {
+    public static Filter specificServiceFilter(BundleContext context, Class<?> objectClass, String filterExpr) {
         try {
             return context.createFilter(FILTER_AND +
                     OBJECTCLASS +

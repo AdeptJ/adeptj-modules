@@ -28,7 +28,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-validator</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Bean Validation</name>
     <description>AdeptJ Modules :: Commons :: Bean Validation Provider Bundle(Hibernate Validator)</description>
@@ -174,7 +174,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.0.8.Final</version>
+            <version>6.0.9.Final</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -191,7 +191,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
-            <version>1.0.1.Final</version>
+            <version>1.0.2.Final</version>
             <scope>provided</scope>
         </dependency>
 

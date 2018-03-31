@@ -22,7 +22,6 @@ package com.adeptj.modules.commons.validator.service.internal;
 
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.parameternameprovider.ParanamerParameterNameProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -34,7 +33,10 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.NoProviderFoundException;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
+import java.util.Objects;
 import java.util.Set;
+
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
  * {@link HibernateValidator} based ValidatorService.
@@ -53,10 +55,17 @@ public class HibernateValidatorService implements ValidatorService {
      */
     @Override
     public <T> void validate(T instance) {
+        Objects.requireNonNull(instance, "Object to be validated can't be null!!");
         Set<ConstraintViolation<T>> violations = this.validatorFactory.getValidator().validate(instance);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
+    }
+
+    @Override
+    public <T> Set<ConstraintViolation<T>> getConstraintViolations(T instance) {
+        Objects.requireNonNull(instance, "Object to be validated can't be null!!");
+        return this.validatorFactory.getValidator().validate(instance);
     }
 
     /**
@@ -73,12 +82,12 @@ public class HibernateValidatorService implements ValidatorService {
     @Activate
     protected void start() {
         try {
-            HibernateValidatorConfiguration configuration = Validation.byProvider(HibernateValidator.class)
+            final long startTime = System.nanoTime();
+            this.validatorFactory = Validation.byProvider(HibernateValidator.class)
                     .configure()
-                    .ignoreXmlConfiguration()
-                    .parameterNameProvider(new ParanamerParameterNameProvider());
-            this.validatorFactory = configuration.buildValidatorFactory();
-            LOGGER.info("HibernateValidator Initialized!!");
+                    .parameterNameProvider(new ParanamerParameterNameProvider())
+                    .buildValidatorFactory();
+            LOGGER.info("HibernateValidator initialized in [{}] ms!!", NANOSECONDS.toMillis(System.nanoTime() - startTime));
         } catch (NoProviderFoundException ex) {
             LOGGER.error("Could not create ValidatorFactory!!", ex);
             throw ex;

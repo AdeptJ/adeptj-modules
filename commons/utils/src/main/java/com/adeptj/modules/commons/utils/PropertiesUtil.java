@@ -116,7 +116,7 @@ public final class PropertiesUtil {
                     values.add(value.toString());
                 }
             }
-            return values.toArray(new String[values.size()]);
+            return values.toArray(new String[0]);
         } else if (propValue instanceof Collection<?>) {
             // collection
             Collection<?> valueCollection = (Collection<?>) propValue;
@@ -126,7 +126,7 @@ public final class PropertiesUtil {
                     valueList.add(value.toString());
                 }
             }
-            return valueList.toArray(new String[valueList.size()]);
+            return valueList.toArray(new String[0]);
         }
         return defaultArray;
     }
