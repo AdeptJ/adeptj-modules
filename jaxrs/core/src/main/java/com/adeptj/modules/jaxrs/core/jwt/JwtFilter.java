@@ -59,8 +59,6 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
-    private static final String SVC_UNAVAILABLE_MSG = "JwtService unavailable, please check OSGi WebConsole!!";
-
     static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
 
     /**
@@ -80,7 +78,6 @@ public class JwtFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) {
         if (this.jwtService == null) {
-            LOGGER.warn(SVC_UNAVAILABLE_MSG);
             requestContext.abortWith(JaxRSResponses.unavailable());
             return;
         }
@@ -90,11 +87,12 @@ public class JwtFilter implements ContainerRequestFilter {
     // JwtService lifecycle methods
 
     protected void bindJwtService(JwtService jwtService) {
-        LOGGER.info("JwtFilter injected with JwtService: [{}]", jwtService);
+        LOGGER.info("Bind JwtService: [{}]", jwtService);
         this.jwtService = jwtService;
     }
 
     protected void unbindJwtService(JwtService jwtService) {
+        LOGGER.info("Unbind JwtService: [{}]", jwtService);
         this.jwtService = null;
     }
 }

@@ -30,6 +30,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.Consumes;
@@ -53,18 +55,23 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 @Component(immediate = true, service = JwtResource.class, property = RESOURCE_BASE)
 public class JwtResource {
 
-    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtResource.class);
 
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
     private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
-    private JwtCookieConfig cookieConfig;
+    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
     @Reference
     private JaxRSAuthenticator authenticator;
 
-    // As per Felix SCR, dynamic references should be declared as volatile.
+    /**
+     * The {@link JwtService} is optionally referenced.
+     * If unavailable this resource will set a Service Unavailable (503) status.
+     * <p>
+     * Note: As per Felix SCR, dynamic references should be declared as volatile.
+     */
     @Reference(
             cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
@@ -92,7 +99,7 @@ public class JwtResource {
         JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
         return authInfo == null
                 ? JaxRSResponses.unauthorized()
-                : JwtUtil.responseWithJwt(this.jwtService.createJwt(username, authInfo), this.cookieConfig);
+                : JwtUtil.responseWithJwt(this.jwtService.createJwt(username, authInfo));
     }
 
     /**
@@ -116,22 +123,22 @@ public class JwtResource {
     // Component Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
+        LOGGER.info("Bind JwtService: [{}]", jwtService);
         this.jwtService = jwtService;
     }
 
     protected void unbindJwtService(JwtService jwtService) { // NOSONAR
+        LOGGER.info("Unbind JwtService: [{}]", jwtService);
         this.jwtService = null;
     }
 
     @Activate
     protected void start(JwtCookieConfig cookieConfig) {
-        this.cookieConfig = cookieConfig;
-        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(this.cookieConfig);
+        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(cookieConfig);
     }
 
     @Modified
     protected void updated(JwtCookieConfig cookieConfig) {
-        this.cookieConfig = cookieConfig;
-        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(this.cookieConfig);
+        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(cookieConfig);
     }
 }

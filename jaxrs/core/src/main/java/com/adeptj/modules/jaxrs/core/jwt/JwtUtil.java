@@ -46,7 +46,8 @@ final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
 
-    static Response responseWithJwt(String jwt, JwtCookieConfig cookieConfig) {
+    static Response responseWithJwt(String jwt) {
+        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig();
         return cookieConfig.enabled()
                 ? JaxRSResponses.okWithCookie(newJwtCookie(jwt, cookieConfig))
                 : JaxRSResponses.okWithHeader(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
