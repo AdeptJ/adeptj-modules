@@ -1,0 +1,20 @@
+language: java
+sudo: false
+install: true
+
+addons:
+  sonarcloud:
+    organization: "adeptj"
+    token:
+      secure: ${SONAR_TOKEN}
+
+jdk:
+  - oraclejdk8
+
+script:
+  - mvn clean install org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar -Dsonar.projectKey=adeptj-modules
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
