@@ -23,12 +23,9 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 import com.adeptj.modules.jaxrs.core.JaxRSExceptionHandler;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
-import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
-import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +47,7 @@ import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class ResteasyUtil {
+public final class ResteasyUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResteasyUtil.class);
 
@@ -65,28 +62,14 @@ final class ResteasyUtil {
     private ResteasyUtil() {
     }
 
-    static void registerInternalProviders(ResteasyProviderFactory rpf, JaxRSCoreConfig config, ValidatorFactory vf) {
+    public static void registerInternalProviders(ResteasyProviderFactory rpf, JaxRSCoreConfig config, ValidatorFactory vf) {
         rpf.register(new ValidatorContextResolver(vf))
                 .register(createCorsFilter(config))
                 .register(new DefaultExceptionHandler(config.showException()))
                 .register(new JaxRSExceptionHandler(config.showException()));
     }
 
-    static void removeJaxRSProvider(ResteasyProviderFactory providerFactory, Object provider) {
-        if (provider == null) {
-            return;
-        }
-        try {
-            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
-            if (Set.class.cast(readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
-                LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
-            }
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            LOGGER.error("Exception while removing JAX-RS Provider!!", ex);
-        }
-    }
-
-    static void removeInternalValidators(ResteasyProviderFactory providerFactory) {
+    public static void removeInternalValidators(ResteasyProviderFactory providerFactory) {
         try {
             // First remove the default RESTEasy GeneralValidator and GeneralValidatorCDI.
             // After that we will register our ValidatorContextResolver.
@@ -101,16 +84,18 @@ final class ResteasyUtil {
         }
     }
 
-    static ServiceTracker<Object, Object> openProviderServiceTracker(BundleContext context, ResteasyProviderFactory factory) {
-        ServiceTracker<Object, Object> providerTracker = new JaxRSProviderTracker(context, factory);
-        providerTracker.open();
-        return providerTracker;
-    }
-
-    static ServiceTracker<Object, Object> openResourceServiceTracker(BundleContext context, Registry registry) {
-        ServiceTracker<Object, Object> resourceTracker = new JaxRSResourceTracker(context, registry);
-        resourceTracker.open();
-        return resourceTracker;
+    static void removeJaxRSProvider(ResteasyProviderFactory providerFactory, Object provider) {
+        if (provider == null) {
+            return;
+        }
+        try {
+            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
+            if (Set.class.cast(readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
+                LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
+            }
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            LOGGER.error("Exception while removing JAX-RS Provider!!", ex);
+        }
     }
 
     private static CorsFilter createCorsFilter(JaxRSCoreConfig config) {

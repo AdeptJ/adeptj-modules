@@ -20,8 +20,10 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
+import com.adeptj.modules.jaxrs.resteasy.internal.whiteboard.JaxRSWhiteboardManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -85,9 +87,14 @@ public class JaxRSDispatcherServlet extends HttpServlet {
     @Reference
     private ValidatorService validatorService;
 
+    /**
+     * Bootstraps the RESTEasy Framework using Bundle's ClassLoader as the context ClassLoader because
+     * we need to find the providers specified in the file [META-INF/services/javax.ws.rs.Providers] file
+     * which will not be visible to the original context ClassLoader which is the application ClassLoader itself.
+     */
     @Override
     public void init() {
-        this.whiteboardManager.start(this.getServletConfig(), this.validatorService.getValidatorFactory());
+        ClassLoaders.executeWith(this.getClass().getClassLoader(), () -> this.whiteboardManager.start(this.getServletConfig()));
     }
 
     @Override
@@ -105,6 +112,6 @@ public class JaxRSDispatcherServlet extends HttpServlet {
 
     @Activate
     protected void start(BundleContext context, JaxRSCoreConfig config) {
-        this.whiteboardManager = new JaxRSWhiteboardManager(context, config);
+        this.whiteboardManager = new JaxRSWhiteboardManager(context, config, this.validatorService.getValidatorFactory());
     }
 }

@@ -37,13 +37,14 @@ public class JaxRSProviderTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSProviderTracker.class);
 
-    private static final String PROVIDER_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.provider=*))";
+    private static final String PROVIDER_FILTER_EXPR = "(osgi.jaxrs.provider=*)";
 
     private ResteasyProviderFactory providerFactory;
 
-    JaxRSProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
+    public JaxRSProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
         super(context, OSGiUtils.anyServiceFilter(context, PROVIDER_FILTER_EXPR), null);
         this.providerFactory = providerFactory;
+        this.open();
     }
 
     @Override

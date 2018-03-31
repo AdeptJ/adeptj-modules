@@ -41,13 +41,14 @@ public class JaxRSResourceTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResourceTracker.class);
 
-    private static final String RES_FILTER_EXPR = "(&(objectClass=*)(osgi.jaxrs.resource.base=*))";
+    private static final String RES_FILTER_EXPR = "(osgi.jaxrs.resource.base=*)";
 
     private Registry registry;
 
-    JaxRSResourceTracker(BundleContext context, Registry registry) {
+    public JaxRSResourceTracker(BundleContext context, Registry registry) {
         super(context, OSGiUtils.anyServiceFilter(context, RES_FILTER_EXPR), null);
         this.registry = registry;
+        this.open();
     }
 
     @Override

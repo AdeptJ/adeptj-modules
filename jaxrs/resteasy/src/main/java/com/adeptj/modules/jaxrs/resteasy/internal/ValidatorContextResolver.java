@@ -37,7 +37,7 @@ import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Provider
-class ValidatorContextResolver implements ContextResolver<GeneralValidator> {
+public class ValidatorContextResolver implements ContextResolver<GeneralValidator> {
 
     private volatile GeneralValidator validator;
 
