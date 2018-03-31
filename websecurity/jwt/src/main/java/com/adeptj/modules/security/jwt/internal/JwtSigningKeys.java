@@ -72,6 +72,8 @@ final class JwtSigningKeys {
 
     private static final String DEFAULT_KEY_FILE = "/jwt-pkcs8.pem";
 
+    private JwtSigningKeys() {
+    }
 
     static Key createSigningKey(JwtConfig jwtConfig) {
         try {
@@ -101,7 +103,7 @@ final class JwtSigningKeys {
         // 1. try the jwtConfig provided keyFileLocation
         Path keyFileLocation = Paths.get(USER_DIR, jwtConfig.keyFileLocation());
         Key signingKey = null;
-        if (Files.exists(keyFileLocation)) {
+        if (keyFileLocation.toFile().exists()) {
             signingKey = loadSigningKeyFromLocation(jwtConfig, keyFileLocation);
         } else if (jwtConfig.useDefaultKey()) {
             LOGGER.warn("Loading the default signing key, please check if that is intended!!");
