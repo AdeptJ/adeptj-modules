@@ -37,11 +37,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.ASYNC_SUPPORTED_TRUE;
-import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.EQ;
-import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.JAXRS_DISPATCHER_SERVLET_NAME;
-import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.MAPPING_PREFIX_VALUE;
-import static com.adeptj.modules.jaxrs.resteasy.internal.JaxRSDispatcherServlet.SERVLET_PATTERN_VALUE;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.ASYNC_SUPPORTED_TRUE;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.EQ;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.JAXRS_DISPATCHER_SERVLET_NAME;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.MAPPING_PREFIX_VALUE;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVLET_PATTERN_VALUE;
 import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
@@ -52,8 +52,10 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
 
 
 /**
- * JaxRSDispatcherServlet extends RESTEasy HttpServlet30Dispatcher so that Servlet 3.0 Async behaviour can be leveraged.
- * It also registers the JAX-RS resource/provider ServiceTracker and other providers.
+ * JaxRSDispatcherServlet extends RESTEasy's HttpServlet30Dispatcher so that Servlet 3.0 Async behaviour can be leveraged.
+ * <p>
+ * RESTEasy's bootstrapping is delegated to {@link JaxRSWhiteboardManager} which also registers the ServiceTracker for
+ * JAX-RS resources and providers.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -71,18 +73,11 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
 )
 public class JaxRSDispatcherServlet extends HttpServlet {
 
-    static final String EQ = "=";
-
-    static final String JAXRS_DISPATCHER_SERVLET_NAME = "AdeptJ JAX-RS DispatcherServlet";
-
-    static final String SERVLET_PATTERN_VALUE = "/*";
-
-    static final String ASYNC_SUPPORTED_TRUE = "true";
-
-    static final String MAPPING_PREFIX_VALUE = "/";
-
     private static final long serialVersionUID = -4415966373465265279L;
 
+    /**
+     * Manages RESTEasy's lifecycle.
+     */
     private JaxRSWhiteboardManager whiteboardManager;
 
     /**
@@ -103,10 +98,10 @@ public class JaxRSDispatcherServlet extends HttpServlet {
     }
 
     /**
-     * Dispatch the request to RESTEasy's HttpServlet30Dispatcher.
+     * Dispatches the request to RESTEasy's HttpServlet30Dispatcher.
      *
      * @param req current request to a resource method
-     * @param res required to setup status code, content etc.
+     * @param res required to set status code, content etc.
      * @throws ServletException exception thrown by RESTEasy's HttpServlet30Dispatcher
      * @throws IOException      exception thrown by RESTEasy's HttpServlet30Dispatcher
      */

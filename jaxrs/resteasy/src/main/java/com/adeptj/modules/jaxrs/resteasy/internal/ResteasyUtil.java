@@ -36,6 +36,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.DELIMITER_COMMA;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD_PROVIDER_INSTANCES;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FORCE_ACCESS;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.METHOD_GET_CTX_RESOLVERS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
@@ -50,14 +54,6 @@ import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
 public final class ResteasyUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResteasyUtil.class);
-
-    private static final String METHOD_GET_CTX_RESOLVERS = "getContextResolvers";
-
-    private static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
-
-    private static final String DELIMITER_COMMA = ",";
-
-    private static final boolean FORCE_ACCESS = true;
 
     private ResteasyUtil() {
     }
