@@ -45,8 +45,8 @@ public final class JaxRSResponses {
         return Response.ok().header(name, value).build();
     }
 
-    public static Response ok(Object entity) {
-        return Response.ok(entity).build();
+    public static Response ok(Object entity, String type) {
+        return Response.ok(entity).type(type).build();
     }
 
     public static Response unavailable() {

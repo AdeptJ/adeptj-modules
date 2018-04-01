@@ -108,9 +108,7 @@ public class JwtResource {
     @GET
     @Path("/jwt/verify")
     public Response verifyJwt() {
-        return Response.ok("Jwt verified successfully!!")
-                .type(TEXT_PLAIN)
-                .build();
+        return JaxRSResponses.ok("Jwt verified successfully!!", TEXT_PLAIN);
     }
 
     // -------------------- INTERNAL --------------------
