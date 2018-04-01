@@ -79,7 +79,12 @@ public class StaticJwtFilter implements JwtFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        this.doFilter(requestContext, this.jwtService);
+        this.doFilter(requestContext);
+    }
+
+    @Override
+    public JwtService getJwtService() {
+        return this.jwtService;
     }
 
     // -------------- INTERNAL --------------

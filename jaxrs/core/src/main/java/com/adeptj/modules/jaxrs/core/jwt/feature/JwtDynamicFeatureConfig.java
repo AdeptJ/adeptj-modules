@@ -24,13 +24,17 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * JwtDynamicFeatureConfig
+ * Configuration specifying the JAX-RS resource class to methods mapping. There can be n numbers of such mappings.
+ * <p>
+ * Must be in the specified format as given below.
+ * <p>
+ * JAX-RS resource FQCN=resourceMethod1,resourceMethod1,...n
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ JWT DynamicFeatureConfig",
-        description = "AdeptJ JWT DynamicFeatureConfig"
+        name = "AdeptJ JWT DynamicFeature Config",
+        description = "AdeptJ JWT DynamicFeature Config"
 )
 @interface JwtDynamicFeatureConfig {
 
@@ -38,7 +42,5 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
             name = "Resource Class Method Mapping",
             description = "JAX-RS Resource Class Method Mapping. Must be in the format: FQCN=resourceMethod1,resourceMethod1,...n"
     )
-    String[] resourceClassMethodMapping() default {
-            "com.adeptj.modules.jaxrs.core.jwt.JwtResource=verifyJwt"
-    };
+    String[] resourceClassAndMethodsMapping() default {};
 }

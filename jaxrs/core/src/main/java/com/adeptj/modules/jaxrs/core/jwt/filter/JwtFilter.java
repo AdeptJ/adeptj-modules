@@ -43,11 +43,13 @@ import javax.ws.rs.container.ContainerRequestFilter;
  */
 public interface JwtFilter extends ContainerRequestFilter {
 
-    default void doFilter(ContainerRequestContext requestContext, JwtService jwtService) {
-        if (jwtService == null) {
+    JwtService getJwtService();
+
+    default void doFilter(ContainerRequestContext requestContext) {
+        if (this.getJwtService() == null) {
             requestContext.abortWith(JaxRSResponses.unavailable());
             return;
         }
-        JwtUtil.resolveAndVerifyJwt(requestContext, jwtService);
+        JwtUtil.resolveAndVerifyJwt(requestContext, this.getJwtService());
     }
 }

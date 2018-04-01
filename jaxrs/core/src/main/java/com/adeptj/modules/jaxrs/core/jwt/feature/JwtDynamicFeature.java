@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.core.jwt.feature;
 
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
-import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -35,10 +34,11 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 
 /**
@@ -57,24 +57,20 @@ public class JwtDynamicFeature implements DynamicFeature {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtDynamicFeature.class);
 
-    private Map<String, List<String>> resourceClassMethodMapping;
+    private Map<String, List<String>> resourceClassMethodsMapping;
 
     @Reference(target = "(filter.name=dyna-jwt)")
     private JwtFilter jwtFilter;
 
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-        this.resourceClassMethodMapping.entrySet()
+        String resource = resourceInfo.getResourceClass().getName();
+        String method = resourceInfo.getResourceMethod().getName();
+        this.resourceClassMethodsMapping.entrySet()
                 .stream()
-                .filter(entry -> StringUtils.equals(entry.getKey(), resourceInfo.getResourceClass().getName()))
-                .filter(entry -> entry.getValue().contains(resourceInfo.getResourceMethod().getName()))
-                .forEach(entry -> {
-                            LOGGER.info("Enabling DynamicJwtFilter for mapping [{}#{}]",
-                                    resourceInfo.getResourceClass().getName(),
-                                    resourceInfo.getResourceMethod().getName());
-                            context.register(this.jwtFilter, AUTHENTICATION);
-                        }
-                );
+                .filter(entry -> resource.equals(entry.getKey()) && entry.getValue().contains(method))
+                .peek(entry -> LOGGER.info("Enabling DynamicJwtFilter for mapping [{}#{}]", resource, method))
+                .forEach(entry -> context.register(this.jwtFilter, AUTHENTICATION));
     }
 
     // -------------------- INTERNAL --------------------
@@ -83,10 +79,8 @@ public class JwtDynamicFeature implements DynamicFeature {
 
     @Activate
     protected void start(JwtDynamicFeatureConfig config) {
-        this.resourceClassMethodMapping = new HashMap<>();
-        for (String mapping : config.resourceClassMethodMapping()) {
-            String[] classMethodMapping = mapping.split("=");
-            this.resourceClassMethodMapping.put(classMethodMapping[0], Arrays.asList(classMethodMapping[1].split(",")));
-        }
+        this.resourceClassMethodsMapping = Stream.of(config.resourceClassAndMethodsMapping())
+                .map(mapping -> mapping.split("="))
+                .collect(toMap(mapping -> mapping[0], mapping -> Arrays.asList(mapping[1].split(","))));
     }
 }
