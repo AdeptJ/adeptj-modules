@@ -41,8 +41,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @interface JwtDynamicFeatureConfig {
 
     @AttributeDefinition(
-            name = "Resource To Methods Mapping",
-            description = "JAX-RS Resource to Methods Mapping. Must be in the format: FQCN=resourceMethod1,resourceMethod2,...n"
+            name = "Resource Vs Methods Mapping",
+            description = "JAX-RS Resource vs Methods Mapping. Must be in the format: FQCN=resourceMethod1,resourceMethod2,...n"
     )
-    String[] resourceToMethodsMapping() default {};
+    String[] resourceVsMethodsMapping() default {};
 }

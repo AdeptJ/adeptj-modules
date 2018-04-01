@@ -47,13 +47,11 @@ public interface JwtFilter extends ContainerRequestFilter {
 
     String UNBIND_JWT_SERVICE = "unbindJwtService";
 
-    JwtService getJwtService();
-
-    default void doFilter(ContainerRequestContext requestContext) {
-        if (this.getJwtService() == null) {
+    default void doFilter(ContainerRequestContext requestContext, JwtService jwtService) {
+        if (jwtService == null) {
             requestContext.abortWith(JaxRSResponses.unavailable());
-            return;
+        } else {
+            JwtUtil.resolveAndVerifyJwt(requestContext, jwtService);
         }
-        JwtUtil.resolveAndVerifyJwt(requestContext, this.getJwtService());
     }
 }

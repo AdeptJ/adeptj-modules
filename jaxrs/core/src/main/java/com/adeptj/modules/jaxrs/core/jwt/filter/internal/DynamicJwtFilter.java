@@ -64,12 +64,7 @@ public class DynamicJwtFilter implements JwtFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        this.doFilter(requestContext);
-    }
-
-    @Override
-    public JwtService getJwtService() {
-        return this.jwtService;
+        this.doFilter(requestContext, this.jwtService);
     }
 
     // -------------- INTERNAL --------------
