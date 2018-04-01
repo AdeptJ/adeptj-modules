@@ -24,11 +24,11 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * Configuration specifying the JAX-RS resource class to methods mapping. There can be n numbers of such mappings.
+ * Configuration specifying the JAX-RS resource class to methods mapping.There can be n numbers of such mappings.
  * <p>
  * Must be in the specified format as given below.
  * <p>
- * JAX-RS resource FQCN=resourceMethod1,resourceMethod1,...n.
+ * JAX-RS resource FQCN=resourceMethod1,resourceMethod2,...n.
  * <p>
  * Alternatively, can be the resource FQCN alone, in that case the filter will be applied on all the resource methods.
  *
