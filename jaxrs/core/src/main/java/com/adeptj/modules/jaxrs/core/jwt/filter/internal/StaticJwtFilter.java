@@ -17,27 +17,25 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
-import com.adeptj.modules.jaxrs.core.JaxRSResponses;
+import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
+import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
-import static com.adeptj.modules.jaxrs.core.jwt.JwtFilter.PROVIDER_OSGI_PROPERTY;
+import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 
 /**
- * This filter will kick in for any resource method that is annotated with {@link RequiresJwt} annotation.
+ * This filter will kick in for any resource class/method that is annotated with {@link RequiresJwt}.
  * Filter will try to resolve the Jwt first from HTTP Authorization header and if that resolves to null
  * then try to resolve from Cookies.
  * <p>
@@ -50,10 +48,14 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
 @RequiresJwt
 @Priority(AUTHENTICATION)
 @Provider
-@Component(immediate = true, property = PROVIDER_OSGI_PROPERTY)
-public class JwtFilter implements ContainerRequestFilter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
+@Component(
+        immediate = true,
+        property = {
+                PROVIDER_OSGI_PROPERTY,
+                "filter.name=static-jwt"
+        }
+)
+public class StaticJwtFilter implements JwtFilter {
 
     private static final String BIND_JWT_SERVICE = "bindJwtService";
 
@@ -77,22 +79,17 @@ public class JwtFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        if (this.jwtService == null) {
-            requestContext.abortWith(JaxRSResponses.unavailable());
-            return;
-        }
-        JwtUtil.resolveAndVerifyJwt(requestContext, this.jwtService);
+        this.doFilter(requestContext, this.jwtService);
     }
 
+    // -------------- INTERNAL --------------
     // JwtService lifecycle methods
 
     protected void bindJwtService(JwtService jwtService) {
-        LOGGER.info("Bind JwtService: [{}]", jwtService);
         this.jwtService = jwtService;
     }
 
     protected void unbindJwtService(JwtService jwtService) {
-        LOGGER.info("Unbind JwtService: [{}]", jwtService);
         this.jwtService = null;
     }
 }

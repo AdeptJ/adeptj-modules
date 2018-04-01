@@ -42,24 +42,24 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class JwtUtil {
+public final class JwtUtil {
 
     private static final int JWT_START_POS = 7;
 
-    static Response responseWithJwt(String jwt) {
-        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig();
-        return cookieConfig.enabled()
-                ? JaxRSResponses.okWithCookie(newJwtCookie(jwt, cookieConfig))
-                : JaxRSResponses.okWithHeader(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
-    }
-
-    static void resolveAndVerifyJwt(ContainerRequestContext requestContext, JwtService jwtService) {
+    public static void resolveAndVerifyJwt(ContainerRequestContext requestContext, JwtService jwtService) {
         String jwt = resolveJwt(requestContext);
         // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
         // 401 is better suited for token verification failure.
         if (StringUtils.isEmpty(jwt) || !jwtService.verifyJwt(jwt)) {
             requestContext.abortWith(JaxRSResponses.unauthorized());
         }
+    }
+
+    static Response responseWithJwt(String jwt) {
+        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig();
+        return cookieConfig.enabled()
+                ? JaxRSResponses.okWithCookie(newJwtCookie(jwt, cookieConfig))
+                : JaxRSResponses.okWithHeader(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
     }
 
     private static String resolveJwt(ContainerRequestContext requestContext) {

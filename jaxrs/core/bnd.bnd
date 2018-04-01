@@ -23,7 +23,9 @@
 Export-Package: com.adeptj.modules.jaxrs.core,\
                 com.adeptj.modules.jaxrs.core.auth,\
                 com.adeptj.modules.jaxrs.core.auth.api,\
-                com.adeptj.modules.jaxrs.core.jwt
+                com.adeptj.modules.jaxrs.core.jwt,\
+                !com.adeptj.modules.jaxrs.core.jwt.feature,\
+                !com.adeptj.modules.jaxrs.core.jwt.filter
 
 Import-Package: \
   com.fasterxml.jackson.jaxrs.xml,\

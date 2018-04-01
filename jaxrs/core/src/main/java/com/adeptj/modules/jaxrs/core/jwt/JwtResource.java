@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.core.jwt;
 import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -105,9 +106,9 @@ public class JwtResource {
     /**
      * This resource method exists to verify the Jwt issued earlier. Should not be called by clients directly.
      * <p>
-     * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link JwtFilter}
+     * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link StaticJwtFilter}
      *
-     * @return response 200 if {@link JwtFilter} was able to verify the Jwt issued earlier.
+     * @return response 200 if {@link StaticJwtFilter} was able to verify the Jwt issued earlier.
      */
     @RequiresJwt
     @GET
@@ -139,6 +140,7 @@ public class JwtResource {
 
     @Modified
     protected void updated(JwtCookieConfig cookieConfig) {
+        LOGGER.info("JwtCookieConfig update!");
         JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(cookieConfig);
     }
 }
