@@ -43,6 +43,10 @@ import javax.ws.rs.container.ContainerRequestFilter;
  */
 public interface JwtFilter extends ContainerRequestFilter {
 
+    String BIND_JWT_SERVICE = "bindJwtService";
+
+    String UNBIND_JWT_SERVICE = "unbindJwtService";
+
     JwtService getJwtService();
 
     default void doFilter(ContainerRequestContext requestContext) {

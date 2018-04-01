@@ -31,8 +31,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.Consumes;
@@ -43,6 +41,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.jwt.JwtResource.RESOURCE_BASE;
+import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.BIND_JWT_SERVICE;
+import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.UNBIND_JWT_SERVICE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
@@ -55,12 +55,6 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 @Designate(ocd = JwtCookieConfig.class)
 @Component(immediate = true, service = JwtResource.class, property = RESOURCE_BASE)
 public class JwtResource {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtResource.class);
-
-    private static final String BIND_JWT_SERVICE = "bindJwtService";
-
-    private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
@@ -124,12 +118,10 @@ public class JwtResource {
     // Component Lifecycle Methods
 
     protected void bindJwtService(JwtService jwtService) {
-        LOGGER.info("Bind JwtService: [{}]", jwtService);
         this.jwtService = jwtService;
     }
 
     protected void unbindJwtService(JwtService jwtService) { // NOSONAR
-        LOGGER.info("Unbind JwtService: [{}]", jwtService);
         this.jwtService = null;
     }
 
@@ -140,7 +132,6 @@ public class JwtResource {
 
     @Modified
     protected void updated(JwtCookieConfig cookieConfig) {
-        LOGGER.info("JwtCookieConfig update!");
         JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(cookieConfig);
     }
 }

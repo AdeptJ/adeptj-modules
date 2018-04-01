@@ -29,6 +29,8 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 
 import javax.ws.rs.container.ContainerRequestContext;
 
+import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter.FILTER_NAME;
+
 /**
  * This filter will kick in for resource classes and methods configured by JwtDynamicFeature.
  * Filter will try to resolve the Jwt from HTTP Authorization header first and if that resolves to null
@@ -41,12 +43,10 @@ import javax.ws.rs.container.ContainerRequestContext;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true, property = "filter.name=dyna-jwt")
+@Component(immediate = true, property = FILTER_NAME)
 public class DynamicJwtFilter implements JwtFilter {
 
-    private static final String BIND_JWT_SERVICE = "bindJwtService";
-
-    private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
+    static final String FILTER_NAME = "jwt.filter.name=dynamic";
 
     /**
      * The {@link JwtService} is optionally referenced.

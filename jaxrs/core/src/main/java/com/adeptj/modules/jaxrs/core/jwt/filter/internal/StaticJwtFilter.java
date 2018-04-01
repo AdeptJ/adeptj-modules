@@ -31,6 +31,7 @@ import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.ext.Provider;
 
+import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.FILTER_NAME;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 
@@ -52,16 +53,14 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
         immediate = true,
         property = {
                 PROVIDER_OSGI_PROPERTY,
-                "filter.name=static-jwt"
+                FILTER_NAME
         }
 )
 public class StaticJwtFilter implements JwtFilter {
 
-    private static final String BIND_JWT_SERVICE = "bindJwtService";
-
-    private static final String UNBIND_JWT_SERVICE = "unbindJwtService";
-
     static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
+
+    static final String FILTER_NAME = "jwt.filter.name=static";
 
     /**
      * The {@link JwtService} is optionally referenced.

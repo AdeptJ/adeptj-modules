@@ -28,7 +28,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  * <p>
  * Must be in the specified format as given below.
  * <p>
- * JAX-RS resource FQCN=resourceMethod1,resourceMethod1,...n
+ * JAX-RS resource FQCN=resourceMethod1,resourceMethod1,...n.
+ * <p>
+ * Alternatively, can be the resource FQCN alone, in that case the filter will be applied on all the resource methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -39,8 +41,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @interface JwtDynamicFeatureConfig {
 
     @AttributeDefinition(
-            name = "Resource Class Method Mapping",
-            description = "JAX-RS Resource Class Method Mapping. Must be in the format: FQCN=resourceMethod1,resourceMethod1,...n"
+            name = "Resource To Methods Mapping",
+            description = "JAX-RS Resource to Methods Mapping. Must be in the format: FQCN=resourceMethod1,resourceMethod2,...n"
     )
-    String[] resourceClassAndMethodsMapping() default {};
+    String[] resourceToMethodsMapping() default {};
 }
