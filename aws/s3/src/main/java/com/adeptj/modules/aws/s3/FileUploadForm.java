@@ -18,19 +18,69 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.validation;
+package com.adeptj.modules.aws.s3;
+
+import org.jboss.resteasy.annotations.providers.multipart.PartType;
+
+import javax.ws.rs.FormParam;
 
 /**
- * Original Exception must be wrapped and rethrown in case of exceptional scenarios while validating claims.
+ * File upload form bean.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ClaimsValidationException extends RuntimeException {
+public class FileUploadForm {
 
-    private static final long serialVersionUID = 1591499996984025127L;
+    private static final String PARAM_DATA = "data";
 
-    public ClaimsValidationException(String reason, Throwable cause) {
-        super(reason, cause);
+    private static final String PARAM_BUCKET_NAME = "bucketName";
+
+    private static final String PARAM_KEY = "key";
+
+    private static final String PARAM_CANNED_ACL = "access";
+
+    private byte[] data;
+
+    private String bucketName;
+
+    private String key;
+
+    private String access;
+
+    public byte[] getData() {
+        return data;
     }
 
+    @FormParam(PARAM_DATA)
+    @PartType("application/octet-stream")
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    @FormParam(PARAM_BUCKET_NAME)
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    @FormParam(PARAM_KEY)
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getAccess() {
+        return access;
+    }
+
+    @FormParam(PARAM_CANNED_ACL)
+    public void setAccess(String access) {
+        this.access = access;
+    }
 }

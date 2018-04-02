@@ -24,20 +24,20 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.9.Final</version>
+        <version>1.0.10.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-aws-core</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: AWS :: Core</name>
     <description>AdeptJ Modules :: AWS Core</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.sdk.core.version>1.11.301</aws.sdk.core.version>
+        <aws.sdk.core.version>1.11.306</aws.sdk.core.version>
         <ion.java.version>1.1.0</ion.java.version>
-        <aws.s3.version>1.11.301</aws.s3.version>
+        <aws.s3.version>1.11.306</aws.s3.version>
     </properties>
 
     <!-- Project Information -->

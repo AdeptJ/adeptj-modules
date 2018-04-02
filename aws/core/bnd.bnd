@@ -21,12 +21,12 @@
 -dsannotations: *
 
 Include-Resource: aws-java-sdk-core-*.jar, \
-                  aws-java-sdk-s3-1.11.301.jar, \
+                  aws-java-sdk-s3-1.11.306.jar, \
                   jmespath-java*.jar
 
-Bundle-ClassPath: ., aws-java-sdk-core-1.11.301.jar, \
-                     aws-java-sdk-s3-1.11.301.jar, \
-                     jmespath-java-1.11.301.jar
+Bundle-ClassPath: ., aws-java-sdk-core-1.11.306.jar, \
+                     aws-java-sdk-s3-1.11.306.jar, \
+                     jmespath-java-1.11.306.jar
 
 -exportcontents: com.adeptj.modules.aws.core,\
                  *

@@ -26,7 +26,7 @@ import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.apache.commons.io.IOUtils;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -50,14 +50,6 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 @Component(immediate = true, service = UploadResource.class, property = RESOURCE_BASE)
 public class UploadResource {
 
-    private static final String PARAM_DATA = "data";
-
-    private static final String PARAM_BUCKET_NAME = "bucketName";
-
-    private static final String PARAM_KEY = "key";
-
-    private static final String PARAM_CANNED_ACL = "access";
-
     private static final String PATH_UPLOAD = "/upload";
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=aws-s3";
@@ -71,23 +63,19 @@ public class UploadResource {
     @Path(PATH_UPLOAD)
     @Consumes(MULTIPART_FORM_DATA)
     @RequiresJwt
-    public Response uploadFile(MultipartFormDataInput multipart) {
+    public Response uploadFile(@MultipartForm FileUploadForm form) {
         try {
-            byte[] data = multipart.getFormDataPart(PARAM_DATA, byte[].class, null);
-            String bucketName = multipart.getFormDataPart(PARAM_BUCKET_NAME, String.class, null);
-            String key = multipart.getFormDataPart(PARAM_KEY, String.class, null);
-            String cannedACL = multipart.getFormDataPart(PARAM_CANNED_ACL, String.class, null);
             ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength((long) data.length);
+            metadata.setContentLength((long) form.getData().length);
             this.storageService.uploadFile(S3Request.builder()
-                    .bucketName(bucketName)
-                    .key(key)
-                    .data(IOUtils.buffer(new ByteArrayInputStream(data)))
+                    .bucketName(form.getBucketName())
+                    .key(form.getKey())
+                    .data(IOUtils.buffer(new ByteArrayInputStream(form.getData())))
                     .metadata(metadata)
-                    .cannedACL(CannedAccessControlList.valueOf(cannedACL))
+                    .cannedACL(CannedAccessControlList.valueOf(form.getAccess()))
                     .build());
             return Response.ok("File uploaded successfully!!").build();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             throw JaxRSException.builder()
                     .message(ex.getMessage())
                     .cause(ex)

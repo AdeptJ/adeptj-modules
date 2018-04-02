@@ -28,15 +28,15 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-aws-ses</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: AWS :: SES</name>
     <description>AdeptJ Modules :: AWS Simple Email Service</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.ses.version>1.11.301</aws.ses.version>
-        <aws.sdk.core.version>1.11.301</aws.sdk.core.version>
+        <aws.ses.version>1.11.306</aws.ses.version>
+        <aws.sdk.core.version>1.11.306</aws.sdk.core.version>
         <adeptj.aws.core.version>1.0.1.Final</adeptj.aws.core.version>
     </properties>
 
