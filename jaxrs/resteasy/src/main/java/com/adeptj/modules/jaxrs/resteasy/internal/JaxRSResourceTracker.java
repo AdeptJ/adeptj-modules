@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.OSGiUtils;
+import com.adeptj.modules.commons.utils.OSGiUtil;
 import org.jboss.resteasy.spi.Registry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -46,7 +46,7 @@ public class JaxRSResourceTracker extends ServiceTracker<Object, Object> {
     private Registry registry;
 
     public JaxRSResourceTracker(BundleContext context, Registry registry) {
-        super(context, OSGiUtils.anyServiceFilter(context, RES_FILTER_EXPR), null);
+        super(context, OSGiUtil.anyServiceFilter(context, RES_FILTER_EXPR), null);
         this.registry = registry;
         this.open();
     }

@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.OSGiUtils;
+import com.adeptj.modules.commons.utils.OSGiUtil;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -42,7 +42,7 @@ public class JaxRSProviderTracker extends ServiceTracker<Object, Object> {
     private ResteasyProviderFactory providerFactory;
 
     public JaxRSProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
-        super(context, OSGiUtils.anyServiceFilter(context, PROVIDER_FILTER_EXPR), null);
+        super(context, OSGiUtil.anyServiceFilter(context, PROVIDER_FILTER_EXPR), null);
         this.providerFactory = providerFactory;
         this.open();
     }
