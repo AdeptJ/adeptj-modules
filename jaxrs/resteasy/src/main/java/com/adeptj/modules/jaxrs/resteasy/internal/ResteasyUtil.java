@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.DELIMITER_COMMA;
+import static com.adeptj.modules.commons.utils.Constants.COMMA;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD_PROVIDER_INSTANCES;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FORCE_ACCESS;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.METHOD_GET_CTX_RESOLVERS;
@@ -99,8 +99,8 @@ public final class ResteasyUtil {
         corsFilter.setAllowCredentials(config.allowCredentials());
         corsFilter.setAllowedMethods(config.allowedMethods());
         corsFilter.setCorsMaxAge(config.corsMaxAge());
-        corsFilter.setAllowedHeaders(Stream.of(config.allowedHeaders()).collect(joining(DELIMITER_COMMA)));
-        corsFilter.setExposedHeaders(Stream.of(config.exposedHeaders()).collect(joining(DELIMITER_COMMA)));
+        corsFilter.setAllowedHeaders(Stream.of(config.allowedHeaders()).collect(joining(COMMA)));
+        corsFilter.setExposedHeaders(Stream.of(config.exposedHeaders()).collect(joining(COMMA)));
         corsFilter.getAllowedOrigins().addAll(Stream.of(config.allowedOrigins()).collect(toSet()));
         return corsFilter;
     }

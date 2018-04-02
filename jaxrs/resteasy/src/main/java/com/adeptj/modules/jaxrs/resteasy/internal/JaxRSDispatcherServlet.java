@@ -37,8 +37,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.ASYNC_SUPPORTED_TRUE;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.EQ;
+import static com.adeptj.modules.commons.utils.Constants.ASYNC_SUPPORTED_TRUE;
+import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.JAXRS_DISPATCHER_SERVLET_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.MAPPING_PREFIX_VALUE;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVLET_PATTERN_VALUE;

@@ -18,27 +18,21 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
+package com.adeptj.modules.commons.utils;
 
 /**
- * Constants for RESTEasy modules.
+ * Common constants to be used in AdeptJ Modules.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class ResteasyConstants {
+public final class Constants {
 
-    static final String METHOD_GET_CTX_RESOLVERS = "getContextResolvers";
-
-    static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
-
-    static final boolean FORCE_ACCESS = true;
-
-    static final String JAXRS_DISPATCHER_SERVLET_NAME = "AdeptJ JAX-RS DispatcherServlet";
-
-    static final String SERVLET_PATTERN_VALUE = "/*";
-
-    static final String MAPPING_PREFIX_VALUE = "/";
-
-    private ResteasyConstants() {
+    private Constants() {
     }
+
+    public static final String EQ = "=";
+
+    public static final String COMMA = ",";
+
+    public static final String ASYNC_SUPPORTED_TRUE = "true";
 }

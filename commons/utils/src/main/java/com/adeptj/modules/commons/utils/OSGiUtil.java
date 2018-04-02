@@ -23,19 +23,22 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
 
 import java.util.Optional;
 
 import static org.osgi.framework.Constants.FRAGMENT_HOST;
 import static org.osgi.framework.Constants.OBJECTCLASS;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 
 /**
  * Utility for creating OSGi Filter for tracking/finding Services etc.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class OSGiUtils {
+public final class OSGiUtil {
 
     private static final String FILTER_AND = "(&(";
 
@@ -46,7 +49,7 @@ public final class OSGiUtils {
     private static final String PARENTHESIS_CLOSE = ")";
 
     // No instantiation. Utility methods only.
-    private OSGiUtils() {
+    private OSGiUtil() {
     }
 
     public static boolean isFragment(Bundle bundle) {
@@ -68,7 +71,7 @@ public final class OSGiUtils {
                     PARENTHESIS_CLOSE);
         } catch (InvalidSyntaxException ex) {
             // Filter expression is malformed, not RFC-1960 based Filter.
-            throw new IllegalArgumentException("InvalidSyntaxException!!", ex);
+            throw new IllegalArgumentException(ex);
         }
     }
 
@@ -83,11 +86,27 @@ public final class OSGiUtils {
                     PARENTHESIS_CLOSE);
         } catch (InvalidSyntaxException ex) {
             // Filter expression is malformed, not RFC-1960 based Filter.
-            throw new IllegalArgumentException("InvalidSyntaxException!!", ex);
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    public void close(ServiceTracker<Object, Object> tracker) {
+        tracker.close();
+    }
+
+    public void closeQuietly(ServiceTracker<Object, Object> tracker) {
+        try {
+            tracker.close();
+        } catch (Exception ex) { // NOSONAR
+            // Ignore, anyway Framework is managing it as the Tracked service is being removed from service registry.
         }
     }
 
     public static void unregisterService(ServiceRegistration<?> registration) {
         Optional.ofNullable(registration).ifPresent(ServiceRegistration::unregister);
+    }
+
+    public static String getServiceDesc(ServiceReference<?> reference) {
+        return (String) reference.getProperty(SERVICE_DESCRIPTION);
     }
 }
