@@ -21,8 +21,9 @@
 package com.adeptj.modules.commons.ds;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
  * HikariDataSorce configurations, few configurations defaults to MySQL DB.
@@ -68,7 +69,7 @@ public @interface DataSourceConfig {
     @AttributeDefinition(
             name = "password",
             description = "JDBC default authentication password",
-            type = AttributeType.PASSWORD
+            type = PASSWORD
     )
     String password();
 
@@ -101,4 +102,16 @@ public @interface DataSourceConfig {
             description = "Maximum size that the pool is allowed to reach, including both idle and in-use connections"
     )
     int maximumPoolSize() default DEFAULT_MAX_POOL_SIZE; // 32 Connections;
+
+    @AttributeDefinition(
+            name = "dataSourceProperties",
+            description = "Underlying JDBC data source specific properties, in key=value format",
+            cardinality = 200
+    )
+    String[] dataSourceProperties() default {
+            "prepStmtCacheSize=250",
+            "prepStmtCacheSqlLimit=2048",
+            "useServerPrepStmts=true",
+            "cachePrepStmts=true"
+    };
 }

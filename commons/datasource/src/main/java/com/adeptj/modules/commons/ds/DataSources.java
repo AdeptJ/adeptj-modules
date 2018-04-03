@@ -20,8 +20,11 @@
 
 package com.adeptj.modules.commons.ds;
 
+import com.adeptj.modules.commons.utils.Constants;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import java.util.stream.Stream;
 
 /**
  * Utility for managing {@link HikariDataSource} instances.
@@ -43,6 +46,11 @@ public final class DataSources {
         hikariConfig.setMaxLifetime(config.maxLifetime());
         hikariConfig.setMinimumIdle(config.minimumIdle());
         hikariConfig.setMaximumPoolSize(config.maximumPoolSize());
+        Stream.of(config.dataSourceProperties())
+                .forEach(entry -> {
+                    String[] mapping = entry.split(Constants.EQ);
+                    hikariConfig.getDataSourceProperties().put(mapping[0], mapping[1]);
+                });
         return new HikariDataSource(hikariConfig);
     }
 }
