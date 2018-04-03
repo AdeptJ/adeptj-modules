@@ -23,23 +23,23 @@ package com.adeptj.modules.commons.logging.internal;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import com.adeptj.modules.commons.logging.LoggingConfig;
+import com.adeptj.modules.commons.utils.Constants;
 import com.adeptj.runtime.tools.logging.LogbackConfig;
 import com.adeptj.runtime.tools.logging.LogbackManager;
 import org.apache.commons.lang3.StringUtils;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Dictionary;
 import java.util.UUID;
 
 import static com.adeptj.modules.commons.logging.internal.LoggingConfigFactory.COMPONENT_NAME;
 import static com.adeptj.runtime.tools.logging.LogbackManager.APPENDER_CONSOLE;
 import static org.osgi.framework.Constants.SERVICE_PID;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
  * Configuration Factory for AdeptJ Logging mechanism.
@@ -50,10 +50,10 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 @Component(
         immediate = true,
         name = COMPONENT_NAME,
-        property = SERVICE_PID + "=" + COMPONENT_NAME,
-        configurationPolicy = IGNORE
+        property = SERVICE_PID + Constants.EQ + COMPONENT_NAME,
+        configurationPolicy = REQUIRE
 )
-public class LoggingConfigFactory implements ManagedServiceFactory {
+public class LoggingConfigFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingConfigFactory.class);
 
@@ -61,21 +61,14 @@ public class LoggingConfigFactory implements ManagedServiceFactory {
 
     private static final String SLASH = "/";
 
-    private static final String FACTORY_NAME = "AdeptJ Logging LoggingConfigFactory";
-
     static final String COMPONENT_NAME = "com.adeptj.modules.commons.logging.LoggingConfigFactory.factory";
 
-    @Override
-    public String getName() {
-        return FACTORY_NAME;
-    }
-
-    @Override
-    public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-        String level = (String) properties.get("level");
-        String logFile = (String) properties.get("logFile");
-        String[] loggerNames = (String[]) properties.get("loggerNames");
-        boolean additivity = (Boolean) properties.get("additivity");
+    @Activate
+    protected void start(LoggingConfig config) {
+        String level = config.level();
+        String logFile = config.logFile();
+        String[] loggerNames = config.loggerNames();
+        boolean additivity = config.additivity();
         LogbackManager logbackMgr = LogbackManager.INSTANCE;
         // If configuration is for error.log, add the configured loggers to both FILE and CONSOLE appender.
         if (StringUtils.endsWith(logFile, DEFAULT_LOG_FILE)) {
@@ -97,14 +90,14 @@ public class LoggingConfigFactory implements ManagedServiceFactory {
                     .build());
             return;
         }
-        String rolloverFile = (String) properties.get("rolloverFile");
-        String pattern = (String) properties.get("pattern");
-        int logMaxHistory = (Integer) properties.get("logMaxHistory");
-        String logMaxSize = (String) properties.get("logMaxSize");
-        boolean immediateFlush = (Boolean) properties.get("immediateFlush");
-        boolean addAsyncAppender = (Boolean) properties.get("createAsyncAppender");
-        int asyncLogQueueSize = (Integer) properties.get("asyncLogQueueSize");
-        int asyncLogDiscardingThreshold = (Integer) properties.get("asyncLogDiscardingThreshold");
+        String rolloverFile = config.rolloverFile();
+        String pattern = config.pattern();
+        int logMaxHistory = config.logMaxHistory();
+        String logMaxSize = config.logMaxSize();
+        boolean immediateFlush = config.immediateFlush();
+        boolean addAsyncAppender = config.addAsyncAppender();
+        int asyncLogQueueSize = config.asyncLogQueueSize();
+        int asyncLogDiscardingThreshold = config.asyncLogDiscardingThreshold();
         LogbackConfig logbackConfig = LogbackConfig.builder()
                 .appenderName(UUID.randomUUID().toString())
                 .asyncAppenderName(UUID.randomUUID().toString())
@@ -130,8 +123,7 @@ public class LoggingConfigFactory implements ManagedServiceFactory {
         logbackMgr.addLogger(logbackConfig);
     }
 
-    @Override
-    public void deleted(String pid) {
-
+    @Deactivate
+    protected void stop(LoggingConfig config) {
     }
 }

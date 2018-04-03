@@ -20,9 +20,18 @@
 
 package com.adeptj.modules.commons.ds.internal;
 
-import com.adeptj.modules.commons.ds.DataSources;
+import com.adeptj.modules.commons.ds.DataSourceConfig;
 import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.Designate;
+
+import static com.adeptj.modules.commons.ds.internal.DataSourceFactory.COMPONENT_NAME;
+import static com.adeptj.modules.commons.utils.Constants.EQ;
+import static org.osgi.framework.Constants.SERVICE_PID;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
  * A {@link BundleActivator} for closing all the remaining opened {@link com.zaxxer.hikari.HikariDataSource}
@@ -30,15 +39,27 @@ import org.osgi.framework.BundleContext;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class DataSourceActivator implements BundleActivator {
+@Designate(ocd = DataSourceConfig.class, factory = true)
+@Component(
+        immediate = true,
+        name = COMPONENT_NAME,
+        property = SERVICE_PID + EQ + COMPONENT_NAME,
+        configurationPolicy = REQUIRE
+)
+public class DataSourceFactory {
 
-    @Override
-    public void start(BundleContext context) throws Exception {
-        // Nothing to do as such on startup
+    static final String COMPONENT_NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
+
+    @Reference
+    private DataSourceManager dataSourceManager;
+
+    @Activate
+    protected void start(DataSourceConfig config) {
+        this.dataSourceManager.createDataSource(config);
     }
 
-    @Override
-    public void stop(BundleContext context) throws Exception {
-        DataSources.INSTANCE.closeAll();
+    @Deactivate
+    protected void stop(DataSourceConfig config) {
+        this.dataSourceManager.closeDataSource(config.poolName());
     }
 }
