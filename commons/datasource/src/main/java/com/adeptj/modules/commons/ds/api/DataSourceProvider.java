@@ -29,5 +29,11 @@ import javax.sql.DataSource;
  */
 public interface DataSourceProvider {
 
+    /**
+     * Returns the configured {@link DataSource} instance against the name passed if any, otherwise null.
+     *
+     * @param dataSourceName the name of the JDBC pool.
+     * @return The configured {@link DataSource} instance against the name passed if any, otherwise null.
+     */
     DataSource getDataSource(String dataSourceName);
 }

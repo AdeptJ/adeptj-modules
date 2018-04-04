@@ -27,29 +27,31 @@ package com.adeptj.modules.commons.ds;
  */
 final class DataSourceConstants {
 
-    static final String POOL_NAME = "poolName";
-
-    static final String JDBC_URL = "jdbcUrl";
-
-    static final String DRIVER_CLASS_NAME = "driverClassName";
-
-    static final String USERNAME = "username";
-
-    static final String PWD = "password";
-
-    static final String AUTO_COMMIT = "autoCommit";
-
-    static final String CONN_TIMEOUT = "connectionTimeout";
-
-    static final String IDLE_TIMEOUT = "idleTimeout";
-
-    static final String MAX_LIFETIME = "maxLifetime";
-
-    static final String MIN_IDLE = "minimumIdle";
-
-    static final String MAX_POOL_SIZE = "maximumPoolSize";
-
     // Class just declaring constants, no instances required.
-    private DataSourceConstants(){
+    private DataSourceConstants() {
     }
+
+    static final String POOL_NAME = "JDBC Pool Name";
+
+    static final String JDBC_URL = "JDBC URL";
+
+    static final String DRIVER_CLASS_NAME = "JDBC Driver Class Name";
+
+    static final String USERNAME = "JDBC Username";
+
+    static final String PWD = "JDBC Password";
+
+    static final String AUTO_COMMIT = "JDBC AutoCommit";
+
+    static final String CONN_TIMEOUT = "JDBC Connection Timeout";
+
+    static final String IDLE_TIMEOUT = "JDBC Idle Timeout";
+
+    static final String MAX_LIFETIME = "JDBC Max Lifetime";
+
+    static final String MIN_IDLE = "JDBC Minimum Idle";
+
+    static final String MAX_POOL_SIZE = "JDBC Maximum Pool Size";
+
+    static final String DATASOURCE_PROPS = "JDBC DataSource Properties";
 }

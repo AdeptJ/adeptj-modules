@@ -21,7 +21,6 @@
 package com.adeptj.modules.commons.ds.internal;
 
 import com.adeptj.modules.commons.ds.DataSourceConfig;
-import org.osgi.framework.BundleActivator;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -34,8 +33,7 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * A {@link BundleActivator} for closing all the remaining opened {@link com.zaxxer.hikari.HikariDataSource}
- * instances when this bundle stops.
+ * A factory for creating {@link com.zaxxer.hikari.HikariDataSource} instances.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

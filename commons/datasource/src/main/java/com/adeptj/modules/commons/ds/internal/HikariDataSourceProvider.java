@@ -21,13 +21,18 @@
 package com.adeptj.modules.commons.ds.internal;
 
 import com.adeptj.modules.commons.ds.api.DataSourceProvider;
+import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.sql.DataSource;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 /**
- * JDBC DataSource implementation HikariDataSource is being configured and returned to the callers.
+ * Provides {@link com.zaxxer.hikari.HikariDataSource} as the JDBC {@link DataSource} implementation.
+ * <p>
+ * The {@link com.zaxxer.hikari.HikariDataSource} is configured by the {@link DataSourceManager}.
  * <p>
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -38,8 +43,12 @@ public class HikariDataSourceProvider implements DataSourceProvider {
     @Reference
     private DataSourceManager dataSourceManager;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataSource getDataSource(String dataSourceName) {
+        Validate.isTrue(isNotEmpty(dataSourceName), "dataSourceName can't be null or empty!!");
         return this.dataSourceManager.getDataSource(dataSourceName);
     }
 }

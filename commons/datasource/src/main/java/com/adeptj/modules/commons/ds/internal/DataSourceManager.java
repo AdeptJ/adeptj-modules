@@ -33,8 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * A factory for closing all the remaining opened {@link com.zaxxer.hikari.HikariDataSource}
- * instances when this bundle stops.
+ * Manages {@link com.zaxxer.hikari.HikariDataSource} lifecycle from creation to closing of DataSource.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -43,6 +42,9 @@ public class DataSourceManager {
 
     private static final Logger LOGGER = Loggers.get(MethodHandles.lookup().lookupClass());
 
+    /**
+     * Pool name vs HikariDataSource mapping.
+     */
     private ConcurrentMap<String, HikariDataSource> hikariDataSources = new ConcurrentHashMap<>();
 
     void createDataSource(DataSourceConfig config) {

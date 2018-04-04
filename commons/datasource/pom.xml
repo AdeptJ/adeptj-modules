@@ -29,7 +29,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-datasource</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: JDBC DataSource</name>
     <description>AdeptJ Modules :: Commons :: JDBC DataSource(HikariDS)</description>
@@ -67,7 +67,9 @@
             </roles>
             <timezone>+5:30</timezone>
             <properties>
-                <picUrl>https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg</picUrl>
+                <picUrl>
+                    https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg
+                </picUrl>
             </properties>
         </developer>
     </developers>
