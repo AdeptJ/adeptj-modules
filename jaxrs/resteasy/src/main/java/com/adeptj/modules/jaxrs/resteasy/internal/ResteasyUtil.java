@@ -62,7 +62,6 @@ public final class ResteasyUtil {
 
     public static void registerInternalProviders(ResteasyProviderFactory rpf, JaxRSCoreConfig config, ValidatorFactory vf) {
         rpf.register(new ValidatorContextResolver(vf))
-                .register(new JsonbContextResolver())
                 .register(createCorsFilter(config))
                 .register(new DefaultExceptionHandler(config.showException()))
                 .register(new JaxRSExceptionHandler(config.showException()));
