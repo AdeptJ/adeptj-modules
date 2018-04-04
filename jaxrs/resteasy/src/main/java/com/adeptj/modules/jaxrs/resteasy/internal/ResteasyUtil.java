@@ -23,6 +23,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 import com.adeptj.modules.jaxrs.core.JaxRSExceptionHandler;
 import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+import org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
@@ -37,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.adeptj.modules.commons.utils.Constants.COMMA;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD_PROVIDER_CLASSES;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD_PROVIDER_INSTANCES;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FORCE_ACCESS;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.METHOD_GET_CTX_RESOLVERS;
@@ -60,6 +62,7 @@ public final class ResteasyUtil {
 
     public static void registerInternalProviders(ResteasyProviderFactory rpf, JaxRSCoreConfig config, ValidatorFactory vf) {
         rpf.register(new ValidatorContextResolver(vf))
+                .register(new JsonbContextResolver())
                 .register(createCorsFilter(config))
                 .register(new DefaultExceptionHandler(config.showException()))
                 .register(new JaxRSExceptionHandler(config.showException()));
@@ -75,6 +78,10 @@ public final class ResteasyUtil {
             contextResolvers.remove(GeneralValidator.class);
             contextResolvers.remove(GeneralValidatorCDI.class);
             LOGGER.info("ContextResolver(s) after removal: [{}]", contextResolvers.size());
+            Field field = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
+            Set<?> providerClasses = Set.class.cast(readField(field, providerFactory, FORCE_ACCESS));
+            providerClasses.remove(org.jboss.resteasy.plugins.validation.ValidatorContextResolver.class);
+            providerClasses.remove(ValidatorContextResolverCDI.class);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
             LOGGER.error("Exception while removing RESTEasy Validators", ex);
         }

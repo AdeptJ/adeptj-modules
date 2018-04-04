@@ -18,29 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
+package com.adeptj.modules.data.jpa.internal;
 
 /**
- * Constants for RESTEasy modules.
+ * Exception thrown when there is failure bootstrapping {@link javax.persistence.EntityManagerFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class ResteasyConstants {
+class JpaBootstrapException extends RuntimeException {
 
-    static final String METHOD_GET_CTX_RESOLVERS = "getContextResolvers";
+    private static final long serialVersionUID = 4572809035305367737L;
 
-    static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
-
-    static final String FIELD_PROVIDER_CLASSES = "providerClasses";
-
-    static final boolean FORCE_ACCESS = true;
-
-    static final String JAXRS_DISPATCHER_SERVLET_NAME = "AdeptJ JAX-RS DispatcherServlet";
-
-    static final String SERVLET_PATTERN_VALUE = "/*";
-
-    static final String MAPPING_PREFIX_VALUE = "/";
-
-    private ResteasyConstants() {
+    JpaBootstrapException(Throwable throwable) {
+        super(throwable);
     }
 }

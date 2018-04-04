@@ -21,9 +21,15 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.commons.ds.api.DataSourceProvider;
+import com.adeptj.modules.commons.validator.service.ValidatorService;
+import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
+import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
-import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
@@ -31,15 +37,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Dictionary;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.data.jpa.internal.EntityManagerFactoryProvider.COMPONENT_NAME;
-import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.osgi.framework.Constants.SERVICE_PID;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
  * Provides an instance of {@link javax.persistence.EntityManagerFactory} from configured factories.
@@ -50,80 +56,69 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
 @Component(
         immediate = true,
         name = COMPONENT_NAME,
-        property = SERVICE_PID + "=" + COMPONENT_NAME,
-        configurationPolicy = IGNORE
+        property = SERVICE_PID + EQ + COMPONENT_NAME,
+        configurationPolicy = REQUIRE
 )
-public class EntityManagerFactoryProvider implements ManagedServiceFactory {
+public class EntityManagerFactoryProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManagerFactoryProvider.class);
 
+    private static final String DS_NOT_NULL_MSG = "DataSource cannot be null!!";
+
+    private static final String EMF_NULL_MSG = "Could not initialize EntityManagerFactory, most probably persistence.xml not found!!";
+
     static final String COMPONENT_NAME = "com.adeptj.modules.data.jpa.EntityManagerFactoryProvider.factory";
 
-    private static final String FACTORY_NAME = "AdeptJ EntityManagerFactoryProvider";
+    private final Lock lock = new ReentrantLock(true);
 
-    private Map<String, EntityManagerFactory> unitNameVsEMFMapping = new ConcurrentHashMap<>();
+    private ServiceRegistration<JpaCrudRepository> jpaCrudRepository;
 
-    private Map<String, String> pidVsUnitNameMapping = new ConcurrentHashMap<>();
-
-    @Reference
-    private JpaCrudRepositoryManager repositoryManager;
+    private EntityManagerFactory emf;
 
     @Reference
     private DataSourceProvider dataSourceProvider;
 
-    @Override
-    public String getName() {
-        return FACTORY_NAME;
-    }
+    @Reference
+    private ValidatorService validatorService;
 
-    @Override
-    public void updated(String pid, Dictionary<String, ?> properties) {
-        // If there is an update to existing PID, remove the mapping against that PID.
-        // Close corresponding EntityManagerFactory as well.
-        this.handleConfigChange(pid);
-        // Recreate the EntityManagerFactory.
-        this.createEntityManagerFactory(pid, properties);
-    }
+    // ---------------- INTERNAL ----------------
 
-    @Override
-    public void deleted(String pid) {
-        this.handleConfigChange(pid);
-    }
-
-    private void handleConfigChange(String pid) {
-        Optional.ofNullable(this.pidVsUnitNameMapping.remove(pid)).ifPresent(unitName -> {
-            this.repositoryManager.unregisterJpaCrudRepository(unitName);
-            LOGGER.info("Closing EntityManagerFactory against PersistenceUnit: [{}]", unitName);
-            this.unitNameVsEMFMapping.remove(unitName).close();
-        });
-    }
-
-    private void createEntityManagerFactory(String pid, Dictionary<String, ?> configs) {
-        EntityManagerFactory emf = null;
+    @Activate
+    protected void start(BundleContext context, EntityManagerFactoryConfig config) {
+        this.lock.lock();
         try {
-            String unitName = (String) configs.get("unitName");
+            String unitName = config.unitName();
+            Validate.isTrue(isNotEmpty(unitName), "unitName can't be null or empty!!");
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-            DataSource dataSource = requireNonNull(this.dataSourceProvider.getDataSource((String) configs.get("dataSourceName")),
-                    "DataSource cannot be null!!");
-            emf = new PersistenceProvider().createEntityManagerFactory(unitName, EMFUtil.createJpaProperties(dataSource, configs));
-            if (emf == null) {
-                LOGGER.warn("Could not initialize EntityManagerFactory, Most probably persistence.xml not found!!");
+            DataSource ds = Validate.notNull(this.dataSourceProvider.getDataSource(config.dataSourceName()), DS_NOT_NULL_MSG);
+            this.emf = new PersistenceProvider()
+                    .createEntityManagerFactory(unitName, JpaProperties.create(config, ds, this.validatorService.getValidatorFactory()));
+            if (this.emf == null) {
+                throw new IllegalStateException(EMF_NULL_MSG);
             } else {
-                LOGGER.info("EntityManagerFactory [{}] created for PersistenceUnit: [{}]", emf, unitName);
-                this.pidVsUnitNameMapping.put(pid, unitName);
-                this.unitNameVsEMFMapping.put(unitName, emf);
-                this.repositoryManager.registerJpaCrudRepository(unitName, emf);
-                if (LOGGER.isDebugEnabled()) {
-                    emf.getMetamodel()
-                            .getEntities()
-                            .forEach(type -> LOGGER.debug("EntityType: [{}]", type.getName()));
-                }
+                LOGGER.info("EntityManagerFactory [{}] created for PersistenceUnit: [{}]", this.emf, unitName);
+                this.jpaCrudRepository = JpaCrudRepositories.create(unitName, this.emf, context);
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);
-            if (emf != null) {
-                emf.close();
-            }
+            // Close the EntityManagerFactory if it was created earlier but exception occurred later.
+            Optional.ofNullable(this.emf).ifPresent(EntityManagerFactory::close);
+            // Throw exception so that SCR won't create the component instance.
+            throw new JpaBootstrapException(ex);
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    @Deactivate
+    protected void stop(EntityManagerFactoryConfig config) {
+        this.lock.lock();
+        try {
+            LOGGER.info("Closing EntityManagerFactory against PersistenceUnit: [{}]", config.unitName());
+            JpaCrudRepositories.dispose(config.unitName(), this.jpaCrudRepository);
+            Optional.ofNullable(this.emf).ifPresent(EntityManagerFactory::close);
+        } finally {
+            this.lock.unlock();
         }
     }
 }

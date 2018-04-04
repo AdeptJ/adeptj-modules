@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.9.Final</version>
+        <version>1.0.10.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-data-jpa</artifactId>
-    <version>1.0.5.Final</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Data :: JPA</name>
     <description>AdeptJ Modules :: Data :: JPA(EclipseLink)</description>
@@ -158,7 +158,13 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- EclipseLink 2.6.4 Dependencies -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- EclipseLink Dependencies -->
 
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -184,14 +190,21 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
-            <version>1.0.1.Final</version>
+            <version>1.0.2.Final</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-datasource</artifactId>
-            <version>1.0.4.Final</version>
+            <version>1.1.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-validator</artifactId>
+            <version>1.0.1.Final</version>
             <scope>provided</scope>
         </dependency>
 
