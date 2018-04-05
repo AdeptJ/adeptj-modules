@@ -29,7 +29,7 @@ final class JpaCrudRepositories {
         Dictionary<String, String> properties = new Hashtable<>();
         properties.put(SERVICE_VENDOR, "AdeptJ");
         properties.put(SERVICE_PID, EclipseLinkCrudRepository.class.getName());
-        properties.put(SERVICE_DESCRIPTION, "AdeptJ Modules JpaCrudRepository(EclipseLink)");
+        properties.put(SERVICE_DESCRIPTION, "AdeptJ JpaCrudRepository(EclipseLink)");
         properties.put(JPA_UNIT_NAME, unitName);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
         return context.registerService(JpaCrudRepository.class, new EclipseLinkCrudRepository(emf), properties);

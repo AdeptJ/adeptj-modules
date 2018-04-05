@@ -21,14 +21,15 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
@@ -72,9 +73,10 @@ class JpaProperties {
         jpaProperties.put(NON_JTA_DATASOURCE, ds);
         jpaProperties.put(VALIDATOR_FACTORY, vf);
         // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
-        jpaProperties.putAll(Arrays.stream(config.jpaProperties())
+        jpaProperties.putAll(Stream.of(config.jpaProperties())
                 .filter(StringUtils::isNotEmpty)
-                .map(prop -> prop.split(EQ))
+                .map(row -> row.split(EQ))
+                .filter(mapping -> ArrayUtils.getLength(mapping) == 2)
                 .collect(Collectors.toMap(elem -> elem[0], elem -> elem[1])));
         return jpaProperties;
     }

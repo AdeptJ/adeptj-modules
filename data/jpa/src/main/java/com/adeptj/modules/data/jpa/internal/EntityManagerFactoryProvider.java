@@ -114,8 +114,8 @@ public class EntityManagerFactoryProvider {
     protected void stop(EntityManagerFactoryConfig config) {
         this.lock.lock();
         try {
-            LOGGER.info("Closing EntityManagerFactory against PersistenceUnit: [{}]", config.unitName());
             JpaCrudRepositories.dispose(config.unitName(), this.jpaCrudRepository);
+            LOGGER.info("Closing EntityManagerFactory against PersistenceUnit: [{}]", config.unitName());
             Optional.ofNullable(this.emf).ifPresent(EntityManagerFactory::close);
         } finally {
             this.lock.unlock();

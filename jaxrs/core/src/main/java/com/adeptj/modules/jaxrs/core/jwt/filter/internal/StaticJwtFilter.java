@@ -30,6 +30,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.ext.Provider;
+import java.util.Objects;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.FILTER_NAME;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.PROVIDER_OSGI_PROPERTY;
@@ -89,6 +90,8 @@ public class StaticJwtFilter implements JwtFilter {
     }
 
     protected void unbindJwtService(JwtService jwtService) {
-        this.jwtService = null;
+        if (Objects.equals(jwtService, this.jwtService)) {
+            this.jwtService = null;
+        }
     }
 }

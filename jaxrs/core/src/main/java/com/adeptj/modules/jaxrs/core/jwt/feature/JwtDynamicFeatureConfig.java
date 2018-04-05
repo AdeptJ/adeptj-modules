@@ -30,19 +30,20 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  * <p>
  * JAX-RS resource FQCN=resourceMethod1,resourceMethod2,...n.
  * <p>
- * Alternatively, can be the resource FQCN alone, in that case the filter will be applied on all the resource methods.
+ * Alternatively, can be resource FQCN=*, in that case the filter will be applied on all the resource methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ JWT DynamicFeature Config",
-        description = "AdeptJ JWT DynamicFeature Config"
+        name = "AdeptJ JWT DynamicFeature Configuration",
+        description = "AdeptJ JWT DynamicFeature Configuration"
 )
 @interface JwtDynamicFeatureConfig {
 
     @AttributeDefinition(
             name = "Resource Vs Methods Mapping",
-            description = "JAX-RS Resource vs Methods Mapping. Must be in the format: FQCN=resourceMethod1,resourceMethod2,...n"
+            description = "JAX-RS Resource vs Methods Mapping, must be either in the format: FQCN=resourceMethod1,resourceMethod2,...n. "
+                    + "or FQCN=*, in latter case the filter will be applied on all the resource methods."
     )
     String[] resourceVsMethodsMapping() default {};
 }

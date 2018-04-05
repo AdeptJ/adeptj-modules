@@ -28,6 +28,7 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import java.util.Objects;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter.FILTER_NAME;
 
@@ -75,6 +76,8 @@ public class DynamicJwtFilter implements JwtFilter {
     }
 
     protected void unbindJwtService(JwtService jwtService) {
-        this.jwtService = null;
+        if (Objects.equals(jwtService, this.jwtService)) {
+            this.jwtService = null;
+        }
     }
 }

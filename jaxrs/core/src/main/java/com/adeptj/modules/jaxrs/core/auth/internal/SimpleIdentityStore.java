@@ -20,42 +20,35 @@
 
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthUtil;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
-import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
-import org.osgi.service.component.annotations.Component;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default implementation of JaxRSAuthenticationRealm for creating {@link JaxRSAuthenticationInfo} instances
- * which are stored by {@link SimpleIdentityStore} for querying purpose in case no other implementation
- * of {@link JaxRSAuthenticationRealm} is found.
+ * Map based identity store which stores {@link JaxRSAuthenticationInfo} created vis OSGi configs.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
-public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm {
+enum SimpleIdentityStore {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int priority() {
-        return -1;
+    INSTANCE;
+
+    private Map<String, JaxRSAuthenticationInfo> authInfoMap = new ConcurrentHashMap<>();
+
+    void put(String username, JaxRSAuthenticationInfo authInfo) {
+        if (this.authInfoMap.containsKey(username)) {
+            throw new IllegalStateException(String.format("Username: [%s] already present!!", username));
+        }
+        this.authInfoMap.put(username, authInfo);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getName() {
-        return this.getClass().getName();
+    JaxRSAuthenticationInfo get(String username) {
+        return this.authInfoMap.get(username);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password) {
-        return JaxRSAuthUtil.validateJaxRSAuthInfo(SimpleIdentityStore.INSTANCE.get(username), username, password);
+    void remove(String username) {
+        this.authInfoMap.remove(username);
     }
+
 }

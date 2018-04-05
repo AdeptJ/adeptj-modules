@@ -22,7 +22,6 @@ package com.adeptj.modules.jaxrs.core.jwt.feature;
 
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -39,6 +38,7 @@ import java.util.stream.Stream;
 
 import static com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
+import static org.apache.commons.lang3.StringUtils.containsAny;
 
 /**
  * A {@link DynamicFeature} that enables the {@link JwtFilter} for the configured JAX-RS resourceVsMethodsMapping.
@@ -66,6 +66,8 @@ public class JwtDynamicFeature implements DynamicFeature {
 
     private static final String COMMA = ",";
 
+    private static final String ASTERISK = "*";
+
     private static final String FILTER_REG_MSG = "Registered DynamicJwtFilter for mapping [{}#{}]";
 
     static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=jwt-dyna-feature";
@@ -73,7 +75,7 @@ public class JwtDynamicFeature implements DynamicFeature {
     /**
      * Each element may be in the form - FQCN=resourceMethod1,resourceMethod1,...n if JwtFilter
      * has to be applied on given methods, otherwise just provide the resource class's
-     * fully qualified name itself which will apply the filter on all the resource methods.
+     * fully qualified name equals to [*] itself will apply the filter on all the resource methods.
      */
     private String[] resourceVsMethodsMapping;
 
@@ -87,29 +89,23 @@ public class JwtDynamicFeature implements DynamicFeature {
      * Registers the {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter} for interception
      * in case of a match of configured resource class and methods.
      * <p>
-     * See documentation on {@link JwtDynamicFeature#resourceVsMethodsMapping} to know how will the algo work.
+     * See documentation on {@link JwtDynamicFeature#resourceVsMethodsMapping} to know how the algo will work.
      *
      * @param resourceInfo containing the resource class and method
      * @param context      to register the DynamicJwtFilter for interception in case of a match
      */
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
+        String resource = resourceInfo.getResourceClass().getName();
+        String method = resourceInfo.getResourceMethod().getName();
         Stream.of(this.resourceVsMethodsMapping)
+                .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
+                .map(row -> row.split(EQ))
+                .filter(mapping -> resource.equals(mapping[0]) && containsAny(mapping[1], method, ASTERISK))
                 .forEach(mapping -> {
-                    String[] resVsMethods = mapping.split(EQ);
-                    if (ArrayUtils.getLength(resVsMethods) == 2
-                            && resourceInfo.getResourceClass().getName().equals(resVsMethods[0])
-                            && ArrayUtils.contains(resVsMethods[1].split(COMMA), resourceInfo.getResourceMethod().getName())) {
-                        this.registerDynamicJwtFilter(resourceInfo, context);
-                    } else if (StringUtils.equals(mapping, resourceInfo.getResourceClass().getName())) {
-                        this.registerDynamicJwtFilter(resourceInfo, context);
-                    }
+                    context.register(this.jwtFilter, AUTHENTICATION);
+                    LOGGER.info(FILTER_REG_MSG, resource, method);
                 });
-    }
-
-    private void registerDynamicJwtFilter(ResourceInfo resourceInfo, FeatureContext context) {
-        context.register(this.jwtFilter, AUTHENTICATION);
-        LOGGER.info(FILTER_REG_MSG, resourceInfo.getResourceClass().getName(), resourceInfo.getResourceMethod().getName());
     }
 
     // -------------------- INTERNAL --------------------

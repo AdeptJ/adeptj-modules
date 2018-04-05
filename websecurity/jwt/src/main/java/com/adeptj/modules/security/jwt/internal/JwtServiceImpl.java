@@ -41,6 +41,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
@@ -129,7 +130,9 @@ public class JwtServiceImpl implements JwtService {
     }
 
     protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
-        this.claimsValidator = null;
+        if (Objects.equals(claimsValidator, this.claimsValidator)) {
+            this.claimsValidator = null;
+        }
     }
 
     @Activate

@@ -49,14 +49,14 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC
     )
-    private volatile List<JaxRSAuthenticationRealm> realms = new ArrayList<>();
+    private volatile List<JaxRSAuthenticationRealm> authRealms = new ArrayList<>();
 
     /**
      * {@inheritDoc}
      */
     @Override
     public JaxRSAuthenticationInfo handleSecurity(String username, String password) {
-        return this.realms.stream()
+        return this.authRealms.stream()
                 .sorted(Comparator.comparingInt(JaxRSAuthenticationRealm::priority).reversed())
                 .map(realm -> JaxRSAuthUtil.getJaxRSAuthInfo(realm, username, password))
                 .filter(Objects::nonNull)
@@ -65,6 +65,6 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
     }
 
     protected void addAuthenticationRealm(JaxRSAuthenticationRealm realm) {
-        this.realms.add(realm);
+        this.authRealms.add(realm);
     }
 }
