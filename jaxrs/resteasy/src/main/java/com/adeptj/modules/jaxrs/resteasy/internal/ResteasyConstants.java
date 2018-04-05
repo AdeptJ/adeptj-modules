@@ -37,9 +37,7 @@ final class ResteasyConstants {
 
     static final String JAXRS_DISPATCHER_SERVLET_NAME = "AdeptJ JAX-RS DispatcherServlet";
 
-    static final String SERVLET_PATTERN_VALUE = "/*";
-
-    static final String MAPPING_PREFIX_VALUE = "/";
+    static final String SERVLET_URL_PATTERN = "/";
 
     private ResteasyConstants() {
     }
