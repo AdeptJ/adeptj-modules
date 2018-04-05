@@ -40,8 +40,7 @@ import java.io.IOException;
 import static com.adeptj.modules.commons.utils.Constants.ASYNC_SUPPORTED_TRUE;
 import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.JAXRS_DISPATCHER_SERVLET_NAME;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.MAPPING_PREFIX_VALUE;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVLET_PATTERN_VALUE;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVLET_URL_PATTERN;
 import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
@@ -66,9 +65,9 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
         configurationPolicy = REQUIRE,
         property = {
                 HTTP_WHITEBOARD_SERVLET_NAME + EQ + JAXRS_DISPATCHER_SERVLET_NAME,
-                HTTP_WHITEBOARD_SERVLET_PATTERN + EQ + SERVLET_PATTERN_VALUE,
+                HTTP_WHITEBOARD_SERVLET_PATTERN + EQ + SERVLET_URL_PATTERN,
                 HTTP_WHITEBOARD_SERVLET_ASYNC_SUPPORTED + EQ + ASYNC_SUPPORTED_TRUE,
-                HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + RESTEASY_SERVLET_MAPPING_PREFIX + EQ + MAPPING_PREFIX_VALUE
+                HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + RESTEASY_SERVLET_MAPPING_PREFIX + EQ + SERVLET_URL_PATTERN
         }
 )
 public class JaxRSDispatcherServlet extends HttpServlet {
