@@ -22,8 +22,8 @@
 
 Include-Resource: aws-java-sdk-s*s-*.jar
 
-Bundle-ClassPath: ., aws-java-sdk-sns-1.11.306.jar,\
-                     aws-java-sdk-sqs-1.11.306.jar
+Bundle-ClassPath: ., aws-java-sdk-sns-1.11.310.jar,\
+                     aws-java-sdk-sqs-1.11.310.jar
 
 Import-Package: javax.validation.*, \
                 com.amazonaws.*, \

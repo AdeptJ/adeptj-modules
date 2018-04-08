@@ -20,7 +20,8 @@
 
 -dsannotations: *
 
-Export-Package: com.adeptj.modules.commons.utils
+Export-Package: com.adeptj.modules.commons.utils,\
+                com.adeptj.modules.commons.utils.service
 
 Bundle-Name: ${project.name}
 

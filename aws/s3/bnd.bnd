@@ -20,9 +20,9 @@
 
 -dsannotations: *
 
-Include-Resource: aws-java-sdk-kms-1.11.306.jar
+Include-Resource: aws-java-sdk-kms-1.11.310.jar
 
-Bundle-ClassPath: ., aws-java-sdk-kms-1.11.306.jar
+Bundle-ClassPath: ., aws-java-sdk-kms-1.11.310.jar
 
 -exportcontents: com.adeptj.modules.aws.s3,\
                  !com.adeptj.modules.aws.s3.internal,\
