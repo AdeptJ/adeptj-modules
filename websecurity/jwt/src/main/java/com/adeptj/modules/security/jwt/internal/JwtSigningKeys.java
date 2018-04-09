@@ -36,7 +36,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -47,7 +46,6 @@ import java.util.Base64;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Utility for creating JWT signing key.
@@ -68,18 +66,21 @@ final class JwtSigningKeys {
 
     private static final String REGEX_SPACE = "\\s";
 
+    private static final String KEY_FILE_LOC_NULL_MSG = "keyFileLocation can't be blank when algo is RSA!!";
+
+    private static final String HMAC_SECRET_KEY_NULL_MSG = "hmacSecretKey can't be blank when algo is Hmac!!";
+
+    private static final String KEYPASS_NULL_MSG = "keyPassword can't be blank!!";
+
     private JwtSigningKeys() {
     }
 
     static Key createSigningKey(JwtConfig jwtConfig) {
         SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         try {
-            Key signingKey = JwtSigningKeys.getHmacSigningKey(signatureAlgo, jwtConfig.hmacSecretKey());
-            if (signingKey == null && signatureAlgo.isRsa()) {
-                Validate.isTrue(isNotEmpty(jwtConfig.keyFileLocation()), "keyFileLocation is blank!!");
-                signingKey = JwtSigningKeys.getRsaSigningKey(signatureAlgo, jwtConfig);
-            }
-            return signingKey;
+            Key hmacSigningKey = JwtSigningKeys.getHmacSigningKey(signatureAlgo, jwtConfig.hmacSecretKey());
+            return hmacSigningKey == null && signatureAlgo.isRsa()
+                    ? JwtSigningKeys.getRsaSigningKey(signatureAlgo, jwtConfig) : hmacSigningKey;
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw new KeyInitializationException(ex.getMessage(), ex);
@@ -89,17 +90,17 @@ final class JwtSigningKeys {
     private static Key getHmacSigningKey(SignatureAlgorithm algo, String secretKey) {
         Key signingKey = null;
         if (algo.isHmac()) {
-            Validate.isTrue(isNotEmpty(secretKey),
-                    "hmacSecretKey property can't be blank when SignatureAlgorithm is Hmac!!");
+            Validate.isTrue(StringUtils.isNotEmpty(secretKey), HMAC_SECRET_KEY_NULL_MSG);
             signingKey = new SecretKeySpec(Base64.getEncoder().encode(secretKey.getBytes(UTF_8)), algo.getJcaName());
         }
         return signingKey;
     }
 
     private static Key getRsaSigningKey(SignatureAlgorithm algo, JwtConfig jwtConfig) throws Exception { // NOSONAR
-        Path keyFileLocation = Paths.get(jwtConfig.keyFileLocation());
+        String keyFileLocation = jwtConfig.keyFileLocation();
+        Validate.isTrue(StringUtils.isNotEmpty(keyFileLocation), KEY_FILE_LOC_NULL_MSG);
         LOGGER.info("Loading signing key: [{}]", keyFileLocation);
-        try (InputStream is = Files.newInputStream(keyFileLocation)) {
+        try (InputStream is = Files.newInputStream(Paths.get(keyFileLocation))) {
             EncodedKeySpec encodedKeySpec = getEncodedKeySpec(jwtConfig, IOUtils.toString(is, UTF_8));
             return KeyFactory.getInstance(algo.getFamilyName()).generatePrivate(encodedKeySpec);
         }
@@ -108,8 +109,7 @@ final class JwtSigningKeys {
     private static EncodedKeySpec getEncodedKeySpec(JwtConfig jwtConfig, String keyData) throws Exception { // NOSONAR
         EncodedKeySpec keySpec;
         if (StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER)) {
-            Validate.isTrue(isNotEmpty(jwtConfig.keyPassword()),
-                    "PrivateKey password is missing in JwtConfig#keyPassword OSGi config!!");
+            Validate.isTrue(StringUtils.isNotEmpty(jwtConfig.keyPassword()), KEYPASS_NULL_MSG);
             EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeEncryptedKeyData(keyData));
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
             SecretKey secretKey = keyFactory.generateSecret(new PBEKeySpec(jwtConfig.keyPassword().toCharArray()));
