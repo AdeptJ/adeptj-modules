@@ -45,11 +45,9 @@ public @interface JwtConfig {
 
     @AttributeDefinition(
             name = "RSA PrivateKey File Location",
-            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format) for JWT signing, " +
-                    "relative to current working directory. " +
-                    "Note: Please don't use the default PrivateKey in production environment!"
+            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format) on file system for JWT signing"
     )
-    String keyFileLocation() default "adeptj-runtime/deployment/jwt-pkcs8.pem";
+    String keyFileLocation();
 
     @AttributeDefinition(
             name = "RSA PrivateKey Password",
