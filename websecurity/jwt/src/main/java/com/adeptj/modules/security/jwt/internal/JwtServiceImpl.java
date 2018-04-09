@@ -111,7 +111,7 @@ public class JwtServiceImpl implements JwtService {
                     .setSigningKey(this.signingKey)
                     .parseClaimsJws(jwt)
                     .getBody();
-            verified = !this.jwtConfig.validateClaims() || (this.claimsValidator != null && this.claimsValidator.validate(claims));
+            verified = !this.jwtConfig.validateClaims() || this.claimsValidator != null && this.claimsValidator.validate(claims);
         } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {
