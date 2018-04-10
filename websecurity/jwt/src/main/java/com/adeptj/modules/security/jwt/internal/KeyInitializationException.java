@@ -21,7 +21,7 @@
 package com.adeptj.modules.security.jwt.internal;
 
 /**
- * KeyInitializationException.
+ * Thrown while Jwt signing key creation failed.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
