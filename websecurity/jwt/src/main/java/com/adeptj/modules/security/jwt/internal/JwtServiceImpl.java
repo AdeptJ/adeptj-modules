@@ -26,7 +26,8 @@ import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.lang.Assert;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -68,7 +69,7 @@ public class JwtServiceImpl implements JwtService {
 
     private SignatureAlgorithm signatureAlgo;
 
-    private Key signingKey;
+    private volatile Key signingKey;
 
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
@@ -84,7 +85,7 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String createJwt(String subject, Map<String, Object> claims) {
-        Assert.hasText(subject, "Subject can't be null or empty!!");
+        Validate.isTrue(StringUtils.isNotEmpty(subject), "Subject can't be blank!!");
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
@@ -105,7 +106,7 @@ public class JwtServiceImpl implements JwtService {
     public boolean verifyJwt(String jwt) {
         boolean verified = false;
         try {
-            Assert.hasText(jwt, "JWT can't be null or empty!!");
+            Validate.isTrue(StringUtils.isNotEmpty(jwt), "JWT can't be blank!!");
             Claims claims = Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
                     .setSigningKey(this.signingKey)
@@ -123,6 +124,7 @@ public class JwtServiceImpl implements JwtService {
         return verified;
     }
 
+    // ------------------ INTERNAL ------------------
     // Component Lifecycle Methods
 
     protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
@@ -137,18 +139,17 @@ public class JwtServiceImpl implements JwtService {
 
     @Activate
     protected void start(JwtConfig jwtConfig) {
-        this.init(jwtConfig);
+        this.jwtConfig = jwtConfig;
+        this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
+        this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
     }
 
     @Modified
     protected void updated(JwtConfig jwtConfig) {
-        LOGGER.info("Modifying the Signing Key!!");
-        this.init(jwtConfig);
-    }
-
-    private void init(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
-        this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-        this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
+        LOGGER.info("In updated,recreating the signing Key!!");
+        this.jwtConfig = null;
+        this.signatureAlgo = null;
+        this.signingKey = null;
+        this.start(jwtConfig);
     }
 }
