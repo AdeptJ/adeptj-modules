@@ -37,26 +37,6 @@ public @interface JwtConfig {
     long DEFAULT_EXPIRATION_TIME = 720L; // 1 day
 
     @AttributeDefinition(
-            name = "JWT Hmac Secret Key",
-            description = "Hmac Secret Key for JWT, must be left blank in case RSA private key is used. " +
-                    "Please note that this key will be Base64 encoded when config is saved."
-    )
-    String hmacSecretKey();
-
-    @AttributeDefinition(
-            name = "RSA PrivateKey File Location",
-            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format) on file system for JWT signing"
-    )
-    String keyFileLocation();
-
-    @AttributeDefinition(
-            name = "RSA PrivateKey Password",
-            description = "Pass phrase of the RSA PrivateKey",
-            type = PASSWORD
-    )
-    String keyPassword();
-
-    @AttributeDefinition(
             name = "JWT Signature Algorithm",
             description = "Signature Algorithm for JWT signing, only RSA and HmacSHA* are supported at this moment.",
             options = {
@@ -70,14 +50,42 @@ public @interface JwtConfig {
     )
     String signatureAlgo();
 
+    @AttributeDefinition(
+            name = "RSA PrivateKey File Location",
+            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format) on file system for JWT signing."
+    )
+    String keyFileLocation();
+
+    @AttributeDefinition(
+            name = "RSA PrivateKey Password",
+            description = "Pass phrase of the RSA PrivateKey",
+            type = PASSWORD
+    )
+    String keyPassword();
+
+    @AttributeDefinition(
+            name = "RSA PrivateKey Search User Home",
+            description = "Whether to search the RSA PrivateKey in user home directory."
+    )
+    boolean searchKeyInUserHome() default true;
+
+    @AttributeDefinition(
+            name = "RSA PrivateKey Search Default Name",
+            description = "Default name of the RSA PrivateKey to search in user home directory"
+    )
+    String defaultKeyName() default "jwt.pem";
+
+    @AttributeDefinition(
+            name = "JWT Hmac Secret Key",
+            description = "Hmac Secret Key for JWT signing, leave it blank in case RSA algo is selected. "
+    )
+    String hmacSecretKey();
+
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes.")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
-
-    @AttributeDefinition(name = "Use Default Signing Key", description = "Whether to use Default Signing Key.")
-    boolean useDefaultKey() default true;
 
     @AttributeDefinition(
             name = "Validate JWT Claims",

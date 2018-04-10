@@ -59,7 +59,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Component(configurationPolicy = REQUIRE)
 public class JwtServiceImpl implements JwtService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
 
     private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
 

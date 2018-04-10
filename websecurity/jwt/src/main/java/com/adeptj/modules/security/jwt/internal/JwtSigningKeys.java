@@ -43,9 +43,11 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
+import static java.io.File.separator;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.SystemUtils.USER_HOME;
 
 /**
  * Utility for creating JWT signing key.
@@ -65,8 +67,6 @@ final class JwtSigningKeys {
     private static final String ENCRYPTED_KEY_FOOTER = "-----END ENCRYPTED PRIVATE KEY-----";
 
     private static final String REGEX_SPACE = "\\s";
-
-    private static final String KEY_FILE_LOC_NULL_MSG = "keyFileLocation can't be blank when algo is RSA!!";
 
     private static final String HMAC_SECRET_KEY_NULL_MSG = "hmacSecretKey can't be blank when algo is Hmac!!";
 
@@ -98,7 +98,9 @@ final class JwtSigningKeys {
 
     private static Key getRsaSigningKey(SignatureAlgorithm algo, JwtConfig jwtConfig) throws Exception { // NOSONAR
         String keyFileLocation = jwtConfig.keyFileLocation();
-        Validate.isTrue(StringUtils.isNotEmpty(keyFileLocation), KEY_FILE_LOC_NULL_MSG);
+        if (StringUtils.isEmpty(keyFileLocation) && jwtConfig.searchKeyInUserHome()) {
+            keyFileLocation = USER_HOME + separator + jwtConfig.defaultKeyName();
+        }
         LOGGER.info("Loading signing key: [{}]", keyFileLocation);
         try (InputStream is = Files.newInputStream(Paths.get(keyFileLocation))) {
             EncodedKeySpec encodedKeySpec = getEncodedKeySpec(jwtConfig.keyPassword(), IOUtils.toString(is, UTF_8));
