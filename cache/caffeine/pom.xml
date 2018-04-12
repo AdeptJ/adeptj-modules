@@ -25,45 +25,42 @@
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
         <version>1.0.0.Final</version>
-
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-cache-caffeine</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>AdeptJ Modules :: Cache :: Caffeine</name>
     <description>AdeptJ Modules :: Cache :: Caffeine</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <caffeine.version>2.5.2</caffeine.version>
+        <caffeine.version>2.6.2</caffeine.version>
     </properties>
 
     <build>
         <plugins>
 
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Category>AdeptJ Cache</Bundle-Category>
-                        <Bundle-Activator>com.adeptj.modules.cache.caffeine.internal.CaffeineActivator</Bundle-Activator>
-                    </instructions>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>generate-scr-scrdescriptor</id>
                         <goals>
-                            <goal>scr</goal>
+                            <goal>bnd-process</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -71,9 +68,15 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <compilerArgument>-parameters</compilerArgument>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-maven-plugin</artifactId>
+                <version>1.0.2.Final</version>
             </plugin>
 
         </plugins>

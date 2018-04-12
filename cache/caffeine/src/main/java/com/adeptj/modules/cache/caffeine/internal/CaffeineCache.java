@@ -1,4 +1,4 @@
-/** 
+/*
 ###############################################################################
 #                                                                             # 
 #    Copyright 2016, AdeptJ (http://adeptj.com)                               #
@@ -17,54 +17,55 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.cache.caffeine.internal;
+
+import com.adeptj.modules.cache.api.Cache;
 
 import java.util.Collection;
 import java.util.Set;
 
-import com.adeptj.modules.cache.common.Cache;
-
 /**
  * Implementation for Cache interface, internally this uses the EHCache
  * CacheManager for performing the low level operations.
- * 
+ *
  * @author Rakesh.Kumar
  */
 public class CaffeineCache<K, V> implements Cache<K, V> {
 
-	@Override
-	public V get(K key) {
-		return null;
-	}
+    @Override
+    public V get(K key) {
+        return null;
+    }
 
-	@Override
-	public V put(K key, V value) {
-		return null;
-	}
+    @Override
+    public V put(K key, V value) {
+        return null;
+    }
 
-	@Override
-	public V remove(K key) {
-		return null;
-	}
+    @Override
+    public V remove(K key) {
+        return null;
+    }
 
-	@Override
-	public void clear() {
-		
-	}
+    @Override
+    public void clear() {
 
-	@Override
-	public int size() {
-		return 0;
-	}
+    }
 
-	@Override
-	public Set<K> keys() {
-		return null;
-	}
+    @Override
+    public int size() {
+        return 0;
+    }
 
-	@Override
-	public Collection<V> values() {
-		return null;
-	}
-	
+    @Override
+    public Set<K> keys() {
+        return null;
+    }
+
+    @Override
+    public Collection<V> values() {
+        return null;
+    }
+
 }

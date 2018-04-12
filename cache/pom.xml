@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.9.Final</version>
+        <version>1.0.10.Final</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-cache</artifactId>
@@ -40,9 +40,6 @@
         <module>api</module>
         <module>caffeine</module>
         <module>ehcache</module>
-        <module>geode</module>
-        <module>hazelcast</module>
-        <module>infinispan</module>
 
     </modules>
 

@@ -1,4 +1,4 @@
-/** 
+/*
 ###############################################################################
 #                                                                             # 
 #    Copyright 2016, AdeptJ (http://adeptj.com)                               #
@@ -17,6 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.cache.ehcache.internal;
 
 import com.adeptj.modules.cache.api.CacheProvider;

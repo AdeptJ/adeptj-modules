@@ -34,6 +34,7 @@
 
         <module>parent</module>
         <module>commons</module>
+        <module>cache</module>
         <module>webconsole</module>
         <module>websecurity</module>
         <module>jaxrs</module>

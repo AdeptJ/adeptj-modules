@@ -20,17 +20,14 @@
 
 package com.adeptj.modules.cache.ehcache.internal;
 
-import com.adeptj.modules.cache.api.CacheProvider;
 import com.adeptj.modules.cache.api.Cache;
+import com.adeptj.modules.cache.api.CacheProvider;
 import org.ehcache.CacheManager;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Dictionary;
 import java.util.Optional;
 
 import static com.adeptj.modules.cache.ehcache.internal.EhcacheCacheProvider.COMPONENT_NAME;
@@ -52,7 +49,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
         property = SERVICE_PID + "=" + COMPONENT_NAME,
         configurationPolicy = IGNORE
 )
-public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactory {
+public class EhcacheCacheProvider implements CacheProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EhcacheCacheProvider.class);
 
@@ -72,14 +69,5 @@ public class EhcacheCacheProvider implements CacheProvider, ManagedServiceFactor
     @Override
     public String getName() {
         return "AdeptJ Modules Ehcache Cache Factory";
-    }
-
-    @Override
-    public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-
-    }
-
-    @Override
-    public void deleted(String pid) {
     }
 }

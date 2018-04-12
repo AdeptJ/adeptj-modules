@@ -1,6 +1,6 @@
-/** 
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://adeptj.com)                               #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,23 +17,15 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.cache.caffeine.internal;
 
-import java.util.Dictionary;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Property;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedServiceFactory;
+import com.adeptj.modules.cache.api.Cache;
+import com.adeptj.modules.cache.api.CacheProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adeptj.modules.cache.common.Cache;
-import com.adeptj.modules.cache.common.CacheConfig;
-import com.adeptj.modules.cache.api.CacheProvider;
+import java.util.Optional;
 
 /**
  * OSGi service for cache manager, this services initializes the Caffeine
@@ -43,42 +35,19 @@ import com.adeptj.modules.cache.api.CacheProvider;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true, ds = false, metatype = true, configurationFactory = true, name = CaffeineCacheProvider.FACTORY_PID, 
-	label = "AdeptJ Modules Caffeine Cache Factory", description = "AdeptJ Modules Caffeine CacheProvider creates or gets cache on demand")
-public class CaffeineCacheProvider implements CacheProvider, ManagedServiceFactory {
+public class CaffeineCacheProvider implements CacheProvider {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(CaffeineCacheProvider.class);
-	
-	public static final String FACTORY_PID = "cache.caffeine.CacheProvider.factory";
+    static final Logger LOGGER = LoggerFactory.getLogger(CaffeineCacheProvider.class);
 
-	@Property(label = "Cache Name", description = "Cache Name", value = "")
-	public static final String CACHE_NAME = "cache.name";
+    public static final String FACTORY_PID = "cache.caffeine.CacheProvider.factory";
 
-	@Property(label = "Cache TTL", description = "Cache TTL(in seconds)", longValue = 720)
-	public static final String CACHE_TTL = "cache.ttl";
-	
-	@Property(label = "Cache Entries", description = "Number of elements in Cache", longValue = 1000)
-	public static final String CACHE_ENTRIES = "cache.entries";
+    @Override
+    public String getName() {
+        return null;
+    }
 
-	ConcurrentMap<String, CacheConfig> cacheConfigs = new ConcurrentHashMap<>();
-
-	@Override
-	public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		return "AdeptJ Modules Caffeine Cache Factory";
-	}
-
-	@Override
-	public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-		
-	}
-
-	@Override
-	public void deleted(String pid) {
-		
-	}
+    @Override
+    public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
+        return Optional.empty();
+    }
 }
