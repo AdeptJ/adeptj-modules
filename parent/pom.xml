@@ -22,13 +22,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.adeptj</groupId>
+        <groupId>io.adeptj</groupId>
         <artifactId>adeptj-parent</artifactId>
-        <version>1.0.18.Final</version>
+        <version>1.0.20.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules</artifactId>
-    <version>1.0.10.Final</version>
+    <version>1.0.11.Final</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Parent</name>
     <description>Parent for AdeptJ Modules Project</description>
@@ -38,7 +38,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.osgi.annotation.version>6.0.0</org.osgi.annotation.version>
-        <adeptj-maven-plugin.version>1.0.1.Final</adeptj-maven-plugin.version>
+        <adeptj-maven-plugin.version>1.0.2.Final</adeptj-maven-plugin.version>
         <adeptj.console.url>http://localhost:9007/system/console</adeptj.console.url>
         <adeptj.auth.url>http://localhost:9007/auth/j_security_check</adeptj.auth.url>
         <adeptj.user>admin</adeptj.user>
