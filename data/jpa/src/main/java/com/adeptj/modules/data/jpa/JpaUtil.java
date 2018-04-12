@@ -73,7 +73,7 @@ public final class JpaUtil {
     public static void rollbackTransaction(EntityTransaction txn) {
         try {
             if (txn != null && txn.isActive() && txn.getRollbackOnly()) {
-                Loggers.get(JpaUtil.class).warn("Rolling back transaction!!");
+                LOGGER.warn("Rolling back transaction!!");
                 txn.rollback();
             }
         } catch (RuntimeException ex) {

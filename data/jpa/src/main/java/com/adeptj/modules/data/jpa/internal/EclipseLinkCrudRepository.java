@@ -27,8 +27,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Implementation of {@link JpaCrudRepository} based on EclipseLink JPA Reference Implementation
@@ -39,7 +41,7 @@ import java.util.Map;
  * Therefore there will be a separate service for each PersistenceUnit.
  * <p>
  * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaCrudRepository}
- * <p>
+ *
  * <code>
  * &#064;Reference(target="(osgi.unit.name=pu)")
  * private JpaCrudRepository repository;
@@ -51,9 +53,12 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EclipseLinkCrudRepository.class);
 
-    private EntityManagerFactory emf;
+    private final ScheduledExecutorService executorService;
 
-    public EclipseLinkCrudRepository(EntityManagerFactory emf) {
+    private final EntityManagerFactory emf;
+
+    public EclipseLinkCrudRepository(EntityManagerFactory emf, ScheduledExecutorService executorService) {
+        this.executorService = executorService;
         this.emf = emf;
     }
 
@@ -605,8 +610,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
             Root<T> from = cq.from(entity);
-            return em.createQuery(cq
-                    .select(cb.count(from))
+            return em.createQuery(cq.select(cb.count(from))
                     .where(cb.and(JpaUtil.getPredicates(criteriaAttributes, cb, from))))
                     .getSingleResult();
         } catch (RuntimeException ex) {
@@ -622,6 +626,8 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      */
     @Override
     public EntityManager getEntityManager() {
-        return this.emf.createEntityManager();
+        return EntityManager.class.cast(Proxy.newProxyInstance(this.getClass().getClassLoader(),
+                new Class[]{ EntityManager.class },
+                new EntityManagerInvocationHandler(this.emf.createEntityManager(), this.executorService)));
     }
 }

@@ -28,7 +28,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-validator</artifactId>
-    <version>1.0.1.Final</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Bean Validation</name>
     <description>AdeptJ Modules :: Commons :: Bean Validation Provider Bundle(Hibernate Validator)</description>

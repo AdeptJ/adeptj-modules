@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManagerFactory;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.concurrent.Executors;
 
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_PID;
@@ -32,7 +33,8 @@ final class JpaCrudRepositories {
         properties.put(SERVICE_DESCRIPTION, "AdeptJ JpaCrudRepository(EclipseLink)");
         properties.put(JPA_UNIT_NAME, unitName);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
-        return context.registerService(JpaCrudRepository.class, new EclipseLinkCrudRepository(emf), properties);
+        return context.registerService(JpaCrudRepository.class,
+                new EclipseLinkCrudRepository(emf, Executors.newSingleThreadScheduledExecutor()), properties);
     }
 
     static void dispose(String unitName, ServiceRegistration<JpaCrudRepository> svcReg) {

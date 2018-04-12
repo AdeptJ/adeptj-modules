@@ -41,12 +41,25 @@ public interface ValidatorService {
     <T> void validate(T instance);
 
     /**
+     * Validates the given instance property.
+     *
+     * @param instance the object to be validated.
+     * @param property the property of the instance passed which is to be validated.
+     * @param <T>      type of the object to be validated
+     * @return set of ConstraintViolation
+     * @throws javax.validation.ConstraintViolationException when object being validated failed validation.
+     * @since 1.0.2.Final
+     */
+    <T> Set<ConstraintViolation<T>> validateProperty(T instance, String property);
+
+    /**
      * Validates the given instance.
      *
      * @param instance the object to be validated.
      * @param <T>      type of the object to be validated
      * @return set of ConstraintViolation
      * @throws javax.validation.ConstraintViolationException when object being validated failed validation.
+     * @since 1.0.1.Final
      */
     <T> Set<ConstraintViolation<T>> getConstraintViolations(T instance);
 

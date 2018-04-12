@@ -66,6 +66,14 @@ public class HibernateValidatorService implements ValidatorService {
      * {@inheritDoc}
      */
     @Override
+    public <T> Set<ConstraintViolation<T>> validateProperty(T instance, String property) {
+        return this.validatorFactory.getValidator().validateProperty(instance, property);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <T> Set<ConstraintViolation<T>> getConstraintViolations(T instance) {
         Objects.requireNonNull(instance, "Object to be validated can't be null!!");
         return this.validatorFactory.getValidator().validate(instance);

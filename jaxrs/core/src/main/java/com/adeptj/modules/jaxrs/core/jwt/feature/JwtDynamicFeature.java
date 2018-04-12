@@ -64,8 +64,6 @@ public class JwtDynamicFeature implements DynamicFeature {
 
     private static final String EQ = "=";
 
-    private static final String COMMA = ",";
-
     private static final String ASTERISK = "*";
 
     private static final String FILTER_REG_MSG = "Registered DynamicJwtFilter for mapping [{}#{}]";

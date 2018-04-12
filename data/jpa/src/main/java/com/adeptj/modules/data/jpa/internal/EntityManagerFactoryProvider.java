@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import javax.validation.ValidatorFactory;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,7 +64,7 @@ public class EntityManagerFactoryProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityManagerFactoryProvider.class);
 
-    private static final String DS_NOT_NULL_MSG = "DataSource cannot be null!!";
+    private static final String DS_NULL_MSG = "DataSource cannot be null!!";
 
     private static final String EMF_NULL_MSG = "Could not initialize EntityManagerFactory, most probably persistence.xml not found!!";
 
@@ -88,11 +89,12 @@ public class EntityManagerFactoryProvider {
         this.lock.lock();
         try {
             String unitName = config.unitName();
-            Validate.isTrue(isNotEmpty(unitName), "unitName can't be null or empty!!");
+            Validate.isTrue(isNotEmpty(unitName), "unitName can't be blank!!");
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-            DataSource ds = Validate.notNull(this.dataSourceProvider.getDataSource(config.dataSourceName()), DS_NOT_NULL_MSG);
+            DataSource ds = Validate.notNull(this.dataSourceProvider.getDataSource(config.dataSourceName()), DS_NULL_MSG);
+            ValidatorFactory validatorFactory = this.validatorService.getValidatorFactory();
             this.emf = new PersistenceProvider()
-                    .createEntityManagerFactory(unitName, JpaProperties.create(config, ds, this.validatorService.getValidatorFactory()));
+                    .createEntityManagerFactory(unitName, JpaProperties.create(config, ds, validatorFactory));
             if (this.emf == null) {
                 throw new IllegalStateException(EMF_NULL_MSG);
             } else {
@@ -117,6 +119,8 @@ public class EntityManagerFactoryProvider {
             JpaCrudRepositories.dispose(config.unitName(), this.jpaCrudRepository);
             LOGGER.info("Closing EntityManagerFactory against PersistenceUnit: [{}]", config.unitName());
             Optional.ofNullable(this.emf).ifPresent(EntityManagerFactory::close);
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error("Exception occurred while closing EntityManagerFactory!!", ex);
         } finally {
             this.lock.unlock();
         }
