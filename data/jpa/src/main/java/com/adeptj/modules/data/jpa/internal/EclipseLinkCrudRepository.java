@@ -30,7 +30,6 @@ import javax.persistence.criteria.Selection;
 import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Implementation of {@link JpaCrudRepository} based on EclipseLink JPA Reference Implementation
@@ -53,12 +52,9 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EclipseLinkCrudRepository.class);
 
-    private final ScheduledExecutorService executorService;
-
     private final EntityManagerFactory emf;
 
-    public EclipseLinkCrudRepository(EntityManagerFactory emf, ScheduledExecutorService executorService) {
-        this.executorService = executorService;
+    public EclipseLinkCrudRepository(EntityManagerFactory emf) {
         this.emf = emf;
     }
 
@@ -627,7 +623,7 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
     @Override
     public EntityManager getEntityManager() {
         return EntityManager.class.cast(Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                new Class[]{ EntityManager.class },
-                new EntityManagerInvocationHandler(this.emf.createEntityManager(), this.executorService)));
+                new Class[]{EntityManager.class},
+                new EntityManagerInvocationHandler(this.emf.createEntityManager())));
     }
 }
