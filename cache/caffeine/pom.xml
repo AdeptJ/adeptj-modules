@@ -24,10 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.0.Final</version>
+        <version>1.0.11.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-cache-caffeine</artifactId>
+    <version>1.0.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Cache :: Caffeine</name>
     <description>AdeptJ Modules :: Cache :: Caffeine</description>
@@ -93,12 +94,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
             <scope>provided</scope>
         </dependency>
 
