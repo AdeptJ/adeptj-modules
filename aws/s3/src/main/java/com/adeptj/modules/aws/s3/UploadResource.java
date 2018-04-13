@@ -25,7 +25,6 @@ import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -34,6 +33,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
 import static com.adeptj.modules.aws.s3.UploadResource.AWS_S3_ROOT;
@@ -63,14 +63,14 @@ public class UploadResource {
     @Path(PATH_UPLOAD)
     @Consumes(MULTIPART_FORM_DATA)
     @RequiresJwt
-    public Response uploadFile(@MultipartForm FileUploadForm form) {
+    public Response uploadFile(@MultipartForm S3UploadForm form) {
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength((long) form.getData().length);
             this.storageService.uploadFile(S3Request.builder()
                     .bucketName(form.getBucketName())
                     .key(form.getKey())
-                    .data(IOUtils.buffer(new ByteArrayInputStream(form.getData())))
+                    .data(new BufferedInputStream(new ByteArrayInputStream(form.getData())))
                     .metadata(metadata)
                     .cannedACL(CannedAccessControlList.valueOf(form.getAccess()))
                     .build());

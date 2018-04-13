@@ -24,12 +24,14 @@ import org.jboss.resteasy.annotations.providers.multipart.PartType;
 
 import javax.ws.rs.FormParam;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
+
 /**
- * File upload form bean.
+ * S3 File upload form bean.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class FileUploadForm {
+public class S3UploadForm {
 
     private static final String PARAM_DATA = "data";
 
@@ -52,7 +54,7 @@ public class FileUploadForm {
     }
 
     @FormParam(PARAM_DATA)
-    @PartType("application/octet-stream")
+    @PartType(APPLICATION_OCTET_STREAM)
     public void setData(byte[] data) {
         this.data = data;
     }
