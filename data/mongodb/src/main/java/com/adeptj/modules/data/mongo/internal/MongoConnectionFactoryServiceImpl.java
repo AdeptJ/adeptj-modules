@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 /**
- * Implementation for {@link MongoConnectionFactoryServiceImpl}
+ * Implementation for {@link MongoConnectionFactoryService}
  *
  * @author prince.arora, AdeptJ.
  */
