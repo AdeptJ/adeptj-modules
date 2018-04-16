@@ -64,7 +64,7 @@ public class CryptoResource {
     @Consumes(APPLICATION_FORM_URLENCODED)
     @RequiresJwt
     public Response generateHashedText(@NotEmpty @FormParam("plainText") String plainText) {
-        String salt = this.cryptoService.getSalt();
+        String salt = this.cryptoService.getSaltText();
         return JaxRSResponses.ok(new JSONObject()
                 .put("salt", salt)
                 .put("hash", this.cryptoService.getHashedText(plainText, salt))

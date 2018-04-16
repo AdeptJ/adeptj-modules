@@ -21,13 +21,41 @@
 package com.adeptj.modules.commons.utils.service;
 
 /**
- * CryptoService.
+ * Service for generating random salt and hashed text using PBKDF2WithHmacSHA256 algo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public interface CryptoService {
 
-    String getSalt();
+    /**
+     * Generates a random salt as byte array.
+     *
+     * @return a random salt as byte array.
+     */
+    byte[] getSaltBytes();
 
+    /**
+     * Generates a random salt as text.
+     *
+     * @return a random salt as text.
+     */
+    String getSaltText();
+
+    /**
+     * Generates random hashed bytes using PBKDF2WithHmacSHA256 algo.
+     *
+     * @param plainText the text to be hashed.
+     * @param salt      the salt to be added for hashing.
+     * @return hashed bytes after applying the given salt.
+     */
+    byte[] getHashedBytes(String plainText, byte[] salt);
+
+    /**
+     * Generates random hashed text using PBKDF2WithHmacSHA256 algo.
+     *
+     * @param plainText the text to be hashed.
+     * @param salt      the salt to be added for hashing.
+     * @return hashed bytes after applying the given salt.
+     */
     String getHashedText(String plainText, String salt);
 }

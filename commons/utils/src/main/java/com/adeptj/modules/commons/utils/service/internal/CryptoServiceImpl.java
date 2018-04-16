@@ -38,7 +38,7 @@ import java.util.Base64;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * CryptoServiceImpl.
+ * Service implementation for generating random salt and hashed text using PBKDF2WithHmacSHA256 algo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -52,27 +52,46 @@ public class CryptoServiceImpl implements CryptoService {
 
     private CryptoConfig cryptoConfig;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getSalt() {
+    public byte[] getSaltBytes() {
         byte[] saltBytes = new byte[this.cryptoConfig.saltSize()];
         DEFAULT_SECURE_RANDOM.nextBytes(saltBytes);
-        return new String(Base64.getEncoder().encode(saltBytes), UTF_8);
+        return saltBytes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getHashedText(String plainText, String salt) {
+    public String getSaltText() {
+        return new String(Base64.getEncoder().encode(this.getSaltBytes()), UTF_8);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] getHashedBytes(String plainText, byte[] salt) {
         try {
-            PBEKeySpec keySpec = new PBEKeySpec(plainText.toCharArray(), salt.getBytes(UTF_8),
-                    this.cryptoConfig.iterationCount(),
-                    this.cryptoConfig.keyLength());
-            byte[] hashedBytes = SecretKeyFactory.getInstance(this.cryptoConfig.secretKeyAlgo())
-                    .generateSecret(keySpec)
+            return SecretKeyFactory.getInstance(this.cryptoConfig.secretKeyAlgo())
+                    .generateSecret(new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
+                            this.cryptoConfig.keyLength()))
                     .getEncoded();
-            return new String(Base64.getEncoder().encode(hashedBytes), UTF_8);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             LOGGER.error("Exception while generating hashed text!!", ex);
             throw new RuntimeException(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getHashedText(String plainText, String salt) {
+        return new String(Base64.getEncoder().encode(this.getHashedBytes(plainText, salt.getBytes(UTF_8))), UTF_8);
     }
 
     // -------------- INTERNAL --------------

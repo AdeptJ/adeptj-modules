@@ -24,7 +24,7 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * CryptoConfig.
+ * OSGi Configuration for {@link com.adeptj.modules.commons.utils.service.CryptoService}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
