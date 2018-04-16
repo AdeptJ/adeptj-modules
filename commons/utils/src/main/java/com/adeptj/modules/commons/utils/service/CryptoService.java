@@ -20,12 +20,18 @@
 
 package com.adeptj.modules.commons.utils.service;
 
+import java.util.Map;
+
 /**
  * Service for generating random salt and hashed text using PBKDF2WithHmacSHA256 algo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public interface CryptoService {
+
+    String KEY_SALT = "salt";
+
+    String KEY_HASH = "hash";
 
     /**
      * Generates a random salt as byte array.
@@ -58,4 +64,11 @@ public interface CryptoService {
      * @return hashed bytes after applying the given salt.
      */
     String getHashedText(String plainText, String salt);
+
+    /**
+     * Creates the pair of salt and hash of plain text where keys are salt and hash respectively.
+     *
+     * @return the pair of salt and hash of plain text
+     */
+    Map<String, String> getSaltAndHash(String plainText);
 }

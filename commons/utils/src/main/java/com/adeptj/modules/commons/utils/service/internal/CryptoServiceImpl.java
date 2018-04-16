@@ -34,6 +34,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -92,6 +95,18 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public String getHashedText(String plainText, String salt) {
         return new String(Base64.getEncoder().encode(this.getHashedBytes(plainText, salt.getBytes(UTF_8))), UTF_8);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, String> getSaltAndHash(String plainText) {
+        byte[] saltBytes = this.getSaltBytes();
+        Map<String, String> pair = new HashMap<>();
+        pair.put(KEY_SALT, new String(Base64.getEncoder().encode(saltBytes), UTF_8));
+        pair.put(KEY_HASH, new String(Base64.getEncoder().encode(this.getHashedBytes(plainText, saltBytes)), UTF_8));
+        return Collections.unmodifiableMap(pair);
     }
 
     // -------------- INTERNAL --------------

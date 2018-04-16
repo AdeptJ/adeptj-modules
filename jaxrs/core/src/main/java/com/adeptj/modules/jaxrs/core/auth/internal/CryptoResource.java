@@ -33,7 +33,10 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.util.Map;
 
+import static com.adeptj.modules.commons.utils.service.CryptoService.KEY_HASH;
+import static com.adeptj.modules.commons.utils.service.CryptoService.KEY_SALT;
 import static com.adeptj.modules.jaxrs.core.auth.internal.CryptoResource.RESOURCE_BASE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -64,10 +67,11 @@ public class CryptoResource {
     @Consumes(APPLICATION_FORM_URLENCODED)
     @RequiresJwt
     public Response generateHashedText(@NotEmpty @FormParam("plainText") String plainText) {
-        String salt = this.cryptoService.getSaltText();
-        return JaxRSResponses.ok(new JSONObject()
-                .put("salt", salt)
-                .put("hash", this.cryptoService.getHashedText(plainText, salt))
-                .toString(), APPLICATION_JSON);
+        Map<String, String> saltAndHash = this.cryptoService.getSaltAndHash(plainText);
+        String json = new JSONObject()
+                .put(KEY_SALT, saltAndHash.get(KEY_SALT))
+                .put(KEY_HASH, saltAndHash.get(KEY_HASH))
+                .toString();
+        return JaxRSResponses.ok(json, APPLICATION_JSON);
     }
 }
