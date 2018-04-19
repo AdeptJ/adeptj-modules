@@ -124,6 +124,13 @@ public @interface DataSourceConfig {
             "prepStmtCacheSize=250",
             "prepStmtCacheSqlLimit=2048",
             "useServerPrepStmts=true",
-            "cachePrepStmts=true"
+            "cachePrepStmts=true",
+            "useLocalSessionState=true",
+            "useLocalTransactionState=true",
+            "rewriteBatchedStatements=true",
+            "cacheResultSetMetadata=true",
+            "cacheServerConfiguration=true",
+            "elideSetAutoCommits=true",
+            "maintainTimeStats=false",
     };
 }

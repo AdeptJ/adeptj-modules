@@ -32,13 +32,13 @@ public interface Cache<K, V> {
 
     V get(K key);
 
-    V put(K key, V value);
+    void put(K key, V value);
 
-    V remove(K key);
+    void remove(K key);
 
     void clear();
 
-    int size();
+    long size();
 
     Set<K> keys();
 

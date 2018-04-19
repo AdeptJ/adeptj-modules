@@ -16,49 +16,12 @@
 #                                                                          #
 ############################################################################
 
-# Scan all packages for Metatype and DS annotations as of now.
-
 -metatypeannotations: *
 
 -dsannotations: *
 
-Include-Resource: resteasy-*.jar, apache-mime4j-*.jar
-
-Bundle-ClassPath: ., resteasy-jaxrs-3.5.1.Final.jar,\
-                     resteasy-cdi-3.5.1.Final.jar,\
-                     resteasy-validator-provider-11-3.5.1.Final.jar,\
-                     resteasy-jackson2-provider-3.5.1.Final.jar,\
-                     resteasy-jaxb-provider-3.5.1.Final.jar,\
-                     resteasy-multipart-provider-3.5.1.Final.jar,\
-                     apache-mime4j-0.6.1.jar
-
--exportcontents: com.adeptj.modules.jaxrs.resteasy,\
-                 !com.adeptj.modules.jaxrs.resteasy.internal,\
-                 *
-
-Import-Package: \
-  com.fasterxml.jackson.jaxrs.xml,\
-  javax.annotation;\
-  javax.annotation.sql;\
-  javax.annotation.security,\
-  javax.mail,\
-  javax.servlet;\
-  javax.servlet.http;\
-  javax.servlet.descriptor;\
-  javax.servlet.annotation,\
-  com.sun.el.parser;\
-  com.sun.el.lang;\
-  com.sun.el.stream;\
-  com.sun.el.util;\
-  com.sun.el,\
-  com.adeptj.modules.jaxrs.core;\
-  com.adeptj.modules.jaxrs.core.auth;\
-  com.adeptj.modules.jaxrs.core.auth.api;\
-  com.adeptj.modules.jaxrs.core.jwt,\
-  *
-  
 Bundle-Name: ${project.name}
 
-Bundle-Category: AdeptJ JAX-RS
+Bundle-Category: AdeptJ Cache
 
 Bundle-Vendor: AdeptJ

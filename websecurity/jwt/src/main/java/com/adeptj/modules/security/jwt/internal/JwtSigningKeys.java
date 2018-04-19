@@ -112,31 +112,22 @@ final class JwtSigningKeys {
         EncodedKeySpec keySpec;
         if (StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER)) {
             Validate.isTrue(StringUtils.isNotEmpty(keyPassword), KEYPASS_NULL_MSG);
-            EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeEncryptedKeyData(keyData));
+            EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeKeyData(keyData, true));
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
             SecretKey secretKey = keyFactory.generateSecret(new PBEKeySpec(keyPassword.toCharArray()));
             Cipher cipher = Cipher.getInstance(privateKeyInfo.getAlgName());
             cipher.init(DECRYPT_MODE, secretKey, privateKeyInfo.getAlgParameters());
             keySpec = privateKeyInfo.getKeySpec(cipher);
         } else {
-            keySpec = new PKCS8EncodedKeySpec(decodeUnencryptedKeyData(keyData));
+            keySpec = new PKCS8EncodedKeySpec(decodeKeyData(keyData, false));
         }
         return keySpec;
     }
 
-    private static byte[] decodeUnencryptedKeyData(String unencryptedKeyData) {
-        return Base64.getDecoder().decode(unencryptedKeyData
-                .replace(KEY_HEADER, EMPTY)
-                .replace(KEY_FOOTER, EMPTY)
-                .replaceAll(REGEX_SPACE, EMPTY)
-                .trim()
-                .getBytes(UTF_8));
-    }
-
-    private static byte[] decodeEncryptedKeyData(String encryptedKeyData) {
-        return Base64.getDecoder().decode(encryptedKeyData
-                .replace(ENCRYPTED_KEY_HEADER, EMPTY)
-                .replace(ENCRYPTED_KEY_FOOTER, EMPTY)
+    private static byte[] decodeKeyData(String keyData, boolean encrypted) {
+        return Base64.getDecoder().decode(keyData
+                .replace(encrypted ? ENCRYPTED_KEY_HEADER : KEY_HEADER, EMPTY)
+                .replace(encrypted ? ENCRYPTED_KEY_FOOTER : KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)
                 .trim()
                 .getBytes(UTF_8));

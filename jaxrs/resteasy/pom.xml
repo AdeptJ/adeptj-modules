@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.10.Final</version>
+        <version>1.0.12.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-jaxrs-resteasy</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: RESTEasy</name>
     <description>RESTEasy as JAX-RS implementation</description>
@@ -179,21 +179,21 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.1.0.Final</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-validator</artifactId>
-            <version>1.0.1.Final</version>
+            <version>1.0.2.Final</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-jaxrs-core</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.1.1.Final</version>
             <scope>provided</scope>
         </dependency>
 
@@ -502,7 +502,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>3.5.0.Final</version>
+            <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>junit</groupId>

@@ -26,46 +26,51 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Implementation for Cache interface, internally this uses the EHCache
- * CacheManager for performing the low level operations.
+ * Implementation for Cache interface, internally this uses the Caffeine's caffeineCache.
  *
  * @author Rakesh.Kumar
  */
 public class CaffeineCache<K, V> implements Cache<K, V> {
 
+    private com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache;
+
+    CaffeineCache(com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache) {
+        this.caffeineCache = caffeineCache;
+    }
+
     @Override
     public V get(K key) {
-        return null;
+        return this.caffeineCache.getIfPresent(key);
     }
 
     @Override
-    public V put(K key, V value) {
-        return null;
+    public void put(K key, V value) {
+        this.caffeineCache.put(key, value);
     }
 
     @Override
-    public V remove(K key) {
-        return null;
+    public void remove(K key) {
+        this.caffeineCache.invalidate(key);
     }
 
     @Override
     public void clear() {
-
+        this.caffeineCache.invalidateAll();
     }
 
     @Override
-    public int size() {
-        return 0;
+    public long size() {
+        return this.caffeineCache.estimatedSize();
     }
 
     @Override
     public Set<K> keys() {
-        return null;
+        return this.caffeineCache.asMap().keySet();
     }
 
     @Override
     public Collection<V> values() {
-        return null;
+        return this.caffeineCache.asMap().values();
     }
 
 }

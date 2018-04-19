@@ -25,7 +25,12 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_LANGUAGE;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_LENGTH;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static javax.ws.rs.core.HttpHeaders.EXPIRES;
+import static javax.ws.rs.core.HttpHeaders.LAST_MODIFIED;
 
 /**
  * JAX-RS(RESTEasy) configurations.
@@ -37,6 +42,8 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
         description = "Configuration for RESTEasy Framework"
 )
 public @interface JaxRSCoreConfig {
+
+    String PRAGMA = "Pragma";
 
     // CorsFilter configs
 
@@ -74,17 +81,24 @@ public @interface JaxRSCoreConfig {
                     + "can be used when making the actual request"
     )
     String[] allowedHeaders() default {
-            AUTHORIZATION,
+            CACHE_CONTROL,
+            CONTENT_LANGUAGE,
             CONTENT_TYPE,
-            ACCEPT,
+            EXPIRES,
+            LAST_MODIFIED,
+            PRAGMA,
     };
 
     @AttributeDefinition(
             name = "CORS Exposed Headers",
-            description = "This header lets a server whitelist headers that browsers are allowed to access "
+            description = "This header lets a server whitelist headers that clients are allowed to access. "
                     + "Value of [Access-Control-Expose-Headers] header."
     )
-    String[] exposedHeaders() default {};
+    String[] exposedHeaders() default {
+            CONTENT_LENGTH,
+            AUTHORIZATION,
+            ACCEPT,
+    };
 
     @AttributeDefinition(
             name = "CORS Allowed Origins",

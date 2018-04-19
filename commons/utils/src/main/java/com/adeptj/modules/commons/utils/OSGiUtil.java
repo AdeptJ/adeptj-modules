@@ -90,11 +90,11 @@ public final class OSGiUtil {
         }
     }
 
-    public void close(ServiceTracker<Object, Object> tracker) {
+    public <S, T> void close(ServiceTracker<S, T> tracker) {
         tracker.close();
     }
 
-    public void closeQuietly(ServiceTracker<Object, Object> tracker) {
+    public <S, T> void closeQuietly(ServiceTracker<S, T> tracker) {
         try {
             tracker.close();
         } catch (Exception ex) { // NOSONAR
@@ -102,11 +102,11 @@ public final class OSGiUtil {
         }
     }
 
-    public static void unregisterService(ServiceRegistration<?> registration) {
+    public static <T> void unregisterService(ServiceRegistration<T> registration) {
         Optional.ofNullable(registration).ifPresent(ServiceRegistration::unregister);
     }
 
-    public static String getServiceDesc(ServiceReference<?> reference) {
-        return (String) reference.getProperty(SERVICE_DESCRIPTION);
+    public static <T> String getServiceDesc(ServiceReference<T> reference) {
+        return String.valueOf(reference.getProperty(SERVICE_DESCRIPTION));
     }
 }

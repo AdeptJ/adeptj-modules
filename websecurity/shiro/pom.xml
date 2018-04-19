@@ -202,7 +202,7 @@
 
         <dependency>
             <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-cache</artifactId>
+            <artifactId>shiro-caffeineCache</artifactId>
             <version>${shiro.version}</version>
             <scope>provided</scope>
         </dependency>

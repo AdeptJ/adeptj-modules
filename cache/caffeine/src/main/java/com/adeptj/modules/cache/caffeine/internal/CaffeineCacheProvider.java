@@ -22,32 +22,57 @@ package com.adeptj.modules.cache.caffeine.internal;
 
 import com.adeptj.modules.cache.api.Cache;
 import com.adeptj.modules.cache.api.CacheProvider;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheProvider.COMPONENT_NAME;
+import static org.osgi.framework.Constants.SERVICE_PID;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * OSGi service for cache manager, this services initializes the Caffeine
- * CacheManager that gives handle to the cache instances configured in cache XML
- * and also provides API for creating cache dynamically either applying the
- * default configurations or providing at creation time.
+ * CaffeineCacheProvider.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@Designate(ocd = CaffeineCacheConfig.class, factory = true)
+@Component(
+        immediate = true,
+        name = COMPONENT_NAME,
+        property = SERVICE_PID + "=" + COMPONENT_NAME,
+        configurationPolicy = REQUIRE
+)
 public class CaffeineCacheProvider implements CacheProvider {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(CaffeineCacheProvider.class);
+    static final String COMPONENT_NAME = "com.adeptj.modules.cache.caffeine.CacheProvider.factory";
 
-    public static final String FACTORY_PID = "cache.caffeine.CacheProvider.factory";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CaffeineCacheProvider.class);
 
     @Override
     public String getName() {
-        return null;
+        return "CAFFEINE";
     }
 
     @Override
     public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
-        return Optional.empty();
+        return Optional.of(new CaffeineCache<>(Caffeine.newBuilder()
+                .maximumSize(10_000)
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                .build()));
+    }
+
+    @Activate
+    protected void start(CaffeineCacheConfig config) {
+    }
+
+    @Deactivate
+    protected void stop(CaffeineCacheConfig config) {
     }
 }

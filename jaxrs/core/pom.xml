@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.10.Final</version>
+        <version>1.0.12.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-jaxrs-core</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: Core</name>
     <description>AdeptJ Modules :: JAX-RS :: Core</description>
@@ -194,14 +194,14 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.1.0.Final</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-websecurity-jwt</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
+            <version>1.1.0.Final</version>
             <scope>provided</scope>
         </dependency>
 

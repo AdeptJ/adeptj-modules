@@ -27,12 +27,15 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition
+@ObjectClassDefinition(
+        name = "AdeptJ EhcacheCache Configuration",
+        description = "Configuration for AdeptJ EhcacheCache."
+)
 @interface EhcacheCacheConfig {
 
     String cacheName();
 
-    long cacheTtl();
+    long cacheTTL();
 
     long cacheEntries();
 }

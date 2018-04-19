@@ -21,7 +21,6 @@
 package com.adeptj.modules.cache.spi;
 
 import com.adeptj.modules.cache.api.CacheProvider;
-import com.adeptj.modules.cache.common.CacheProviderType;
 
 import java.util.Optional;
 
@@ -32,5 +31,5 @@ import java.util.Optional;
  */
 public interface CacheProviderFactory {
 
-    Optional<CacheProvider> getCacheProvider(CacheProviderType providerType);
+    Optional<CacheProvider> getCacheProvider(String providerName);
 }

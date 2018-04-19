@@ -48,18 +48,13 @@ public class EhcacheCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public V put(K key, V value) {
-        return this.ehcache.putIfAbsent(key, value);
+    public void put(K key, V value) {
+        this.ehcache.putIfAbsent(key, value);
     }
 
     @Override
-    public V remove(K key) {
-        V element = null;
-        if (this.ehcache.containsKey(key)) {
-            element = this.ehcache.get(key);
-            this.ehcache.remove(key);
-        }
-        return element;
+    public void remove(K key) {
+        this.ehcache.remove(key);
     }
 
     @Override
@@ -68,7 +63,7 @@ public class EhcacheCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public int size() {
+    public long size() {
         return CollectionUtils.size(ehcache);
     }
 

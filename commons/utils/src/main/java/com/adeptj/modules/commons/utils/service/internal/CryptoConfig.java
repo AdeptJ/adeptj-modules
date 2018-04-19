@@ -36,7 +36,7 @@ public @interface CryptoConfig {
 
     @AttributeDefinition(
             name = "Salt Size",
-            description = "Size of the salt byte array"
+            description = "Size of the salt byte array."
     )
     int saltSize() default 32;
 
@@ -48,13 +48,13 @@ public @interface CryptoConfig {
 
     @AttributeDefinition(
             name = "Key Length",
-            description = "The key length is the length of the derived symmetric key"
+            description = "The key length is the length of the derived symmetric key."
     )
     int keyLength() default 256;
 
     @AttributeDefinition(
             name = "Secret Key Algo",
-            description = "Algo to generate the hash"
+            description = "Algo to generate the hash, only [PBKDF2WithHmacSHA256] is supported at this moment."
     )
     String secretKeyAlgo() default "PBKDF2WithHmacSHA256";
 }

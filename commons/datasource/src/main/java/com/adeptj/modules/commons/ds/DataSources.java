@@ -20,12 +20,13 @@
 
 package com.adeptj.modules.commons.ds;
 
-import com.adeptj.modules.commons.utils.Constants;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.stream.Stream;
+
+import static com.adeptj.modules.commons.utils.Constants.EQ;
 
 /**
  * Utility for creating {@link HikariDataSource} instances.
@@ -48,9 +49,9 @@ public final class DataSources {
         hikariConfig.setMinimumIdle(config.minimumIdle());
         hikariConfig.setMaximumPoolSize(config.maximumPoolSize());
         Stream.of(config.dataSourceProperties())
-                .filter(row -> ArrayUtils.getLength(row.split(Constants.EQ)) == 2)
+                .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
                 .forEach(entry -> {
-                    String[] mapping = entry.split(Constants.EQ);
+                    String[] mapping = entry.split(EQ);
                     hikariConfig.getDataSourceProperties().put(mapping[0], mapping[1]);
                 });
         return new HikariDataSource(hikariConfig);

@@ -23,7 +23,9 @@ package com.adeptj.modules.cache.ehcache.internal;
 import com.adeptj.modules.cache.api.Cache;
 import com.adeptj.modules.cache.api.CacheProvider;
 import org.ehcache.CacheManager;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +34,10 @@ import java.util.Optional;
 
 import static com.adeptj.modules.cache.ehcache.internal.EhcacheCacheProvider.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * OSGi service for cache manager, this services initializes the EHcache
- * CacheManager that gives handle to the cache instances configured in cache XML
- * and also provides API for creating cache dynamically either applying the
- * default configurations or providing at creation time.
+ * EhcacheCacheProvider.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -47,7 +46,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.IGNORE;
         immediate = true,
         name = COMPONENT_NAME,
         property = SERVICE_PID + "=" + COMPONENT_NAME,
-        configurationPolicy = IGNORE
+        configurationPolicy = REQUIRE
 )
 public class EhcacheCacheProvider implements CacheProvider {
 
@@ -57,17 +56,21 @@ public class EhcacheCacheProvider implements CacheProvider {
 
     private CacheManager cacheMgr;
 
-    EhcacheCacheProvider(CacheManager cacheMgr) {
-        this.cacheMgr = cacheMgr;
+    @Override
+    public String getName() {
+        return "EHCAHE";
     }
 
     @Override
     public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
-        return null;
+        return Optional.of(new EhcacheCache<>(this.cacheMgr.getCache(name, keyType, valueType)));
     }
 
-    @Override
-    public String getName() {
-        return "AdeptJ Modules Ehcache Cache Factory";
+    @Activate
+    protected void start(EhcacheCacheConfig config) {
+    }
+
+    @Deactivate
+    protected void stop(EhcacheCacheConfig config) {
     }
 }

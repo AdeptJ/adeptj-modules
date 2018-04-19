@@ -21,16 +21,19 @@
 package com.adeptj.modules.cache.internal;
 
 import com.adeptj.modules.cache.api.CacheProvider;
-import com.adeptj.modules.cache.common.CacheProviderType;
 import com.adeptj.modules.cache.spi.CacheProviderFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,10 +43,13 @@ import java.util.Optional;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
+@Designate(ocd = CacheProviderConfig.class)
+@Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class CacheProviderFactoryImpl implements CacheProviderFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheProviderFactoryImpl.class);
+
+    private CacheProviderConfig config;
 
     /**
      * Collect all of the CacheProvider services as and when they become available.
@@ -58,12 +64,18 @@ public class CacheProviderFactoryImpl implements CacheProviderFactory {
     private volatile List<CacheProvider> cacheProviders = new ArrayList<>();
 
     @Override
-    public Optional<CacheProvider> getCacheProvider(CacheProviderType providerType) {
-        Objects.requireNonNull(providerType, "CacheProviderType can't be null!!");
-        LOGGER.info("Getting [{}] CacheProvider.", providerType.toString());
+    public Optional<CacheProvider> getCacheProvider(String providerName) {
+        Objects.requireNonNull(providerName, "providerName can't be null!!");
+        LOGGER.info("Getting [{}] CacheProvider.", providerName);
         return this.cacheProviders
                 .stream()
-                .filter(cacheProvider -> providerType.toString().equalsIgnoreCase(cacheProvider.getName()))
+                .filter(cacheProvider -> Arrays.asList(this.config.cacheProviders()).contains(providerName)
+                        && providerName.equalsIgnoreCase(cacheProvider.getName()))
                 .findFirst();
+    }
+
+    @Activate
+    protected void start(CacheProviderConfig config) {
+        this.config = config;
     }
 }
