@@ -20,8 +20,10 @@
 
 package com.adeptj.modules.commons.utils.service.internal;
 
+import com.adeptj.modules.commons.utils.CryptoException;
 import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.commons.utils.service.CryptoService;
+import com.adeptj.modules.commons.utils.service.SaltHashPair;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -81,13 +83,14 @@ public class CryptoServiceImpl implements CryptoService {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
         Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt can't be empty!!");
         try {
+            PBEKeySpec keySpec = new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
+                    this.cryptoConfig.keyLength());
             return SecretKeyFactory.getInstance(this.cryptoConfig.secretKeyAlgo())
-                    .generateSecret(new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
-                            this.cryptoConfig.keyLength()))
+                    .generateSecret(keySpec)
                     .getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            LOGGER.error("Exception while generating hashed text!!", ex);
-            throw new RuntimeException(ex.getMessage(), ex);
+            LOGGER.error("Exception while generating hashed bytes!!", ex);
+            throw new CryptoException(ex);
         }
     }
 
@@ -112,7 +115,15 @@ public class CryptoServiceImpl implements CryptoService {
                 this.encodeToString(this.getHashedBytes(plainText, saltBytes), UTF_8));
     }
 
-    // -------------- INTERNAL --------------
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean compareHashes(SaltHashPair saltHashPair, String plainText) {
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
+        return StringUtils.equals(saltHashPair.getHash(), this.getHashedText(plainText, saltHashPair.getSalt()));
+    }
+// -------------- INTERNAL --------------
 
     @Activate
     protected void start(CryptoConfig cryptoConfig) {

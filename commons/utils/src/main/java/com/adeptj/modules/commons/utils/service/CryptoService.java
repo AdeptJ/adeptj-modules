@@ -50,6 +50,7 @@ public interface CryptoService {
      * @param plainText the text to be hashed.
      * @param salt      the salt to be added for hashing.
      * @return hashed bytes after applying the given salt.
+     * @throws com.adeptj.modules.commons.utils.CryptoException when could not create the hashed bytes.
      */
     byte[] getHashedBytes(String plainText, byte[] salt);
 
@@ -69,32 +70,16 @@ public interface CryptoService {
      */
     SaltHashPair getSaltHashPair(String plainText);
 
+    /**
+     * Compares the hashed text contained in {@link SaltHashPair} to the computed hash of the plainText.
+     *
+     * @param saltHashPair the {@link SaltHashPair} contained hashed text and the salt.
+     * @param plainText    the text whose hash is to be compared.
+     * @return boolean to indicate the comparision outcome.
+     */
+    boolean compareHashes(SaltHashPair saltHashPair, String plainText);
+
     default String encodeToString(byte[] bytesToEncode, Charset charset) {
         return new String(Base64.getEncoder().encode(bytesToEncode), charset);
-    }
-
-    /**
-     * Salt and Hash pair holder.
-     *
-     * @author Rakesh.Kumar, AdeptJ
-     */
-    class SaltHashPair {
-
-        private String salt;
-
-        private String hash;
-
-        public SaltHashPair(String salt, String hash) {
-            this.salt = salt;
-            this.hash = hash;
-        }
-
-        public String getSalt() {
-            return salt;
-        }
-
-        public String getHash() {
-            return hash;
-        }
     }
 }
