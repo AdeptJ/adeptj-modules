@@ -17,11 +17,15 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.core.resource;
 
 import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.jwt.JwtCookieConfig;
+import com.adeptj.modules.jaxrs.core.jwt.JwtCookieConfigHolder;
+import com.adeptj.modules.jaxrs.core.jwt.JwtUtil;
+import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
@@ -40,9 +44,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import static com.adeptj.modules.jaxrs.core.jwt.JwtResource.RESOURCE_BASE;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.BIND_JWT_SERVICE;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.UNBIND_JWT_SERVICE;
+import static com.adeptj.modules.jaxrs.core.resource.JwtResource.RESOURCE_BASE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
@@ -125,11 +129,11 @@ public class JwtResource {
 
     @Activate
     protected void start(JwtCookieConfig cookieConfig) {
-        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(cookieConfig);
+        JwtCookieConfigHolder.getInstance().setJwtCookieConfig(cookieConfig);
     }
 
     @Modified
     protected void updated(JwtCookieConfig cookieConfig) {
-        JwtCookieConfigHolder.INSTANCE.setJwtCookieConfig(cookieConfig);
+        JwtCookieConfigHolder.getInstance().setJwtCookieConfig(cookieConfig);
     }
 }

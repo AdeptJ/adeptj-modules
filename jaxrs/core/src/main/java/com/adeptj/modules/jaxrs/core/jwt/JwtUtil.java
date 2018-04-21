@@ -55,8 +55,8 @@ public final class JwtUtil {
         }
     }
 
-    static Response responseWithJwt(String jwt) {
-        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig();
+    public static Response responseWithJwt(String jwt) {
+        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
         return cookieConfig.enabled()
                 ? JaxRSResponses.okWithCookie(newJwtCookie(jwt, cookieConfig))
                 : JaxRSResponses.okWithHeader(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
@@ -65,7 +65,7 @@ public final class JwtUtil {
     private static String resolveJwt(ContainerRequestContext requestContext) {
         String jwt = null;
         // if JwtCookieConfig is enabled then always resolve the Jwt from cookies first.
-        if (JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig().enabled()) {
+        if (JwtCookieConfigHolder.getInstance().getJwtCookieConfig().enabled()) {
             jwt = resolveFromCookies(requestContext);
         }
         return StringUtils.isEmpty(jwt) ? resolveFromHeaders(requestContext) : jwt;
@@ -78,7 +78,7 @@ public final class JwtUtil {
     private static String resolveFromCookies(ContainerRequestContext requestContext) {
         Cookie jwtCookie = requestContext
                 .getCookies()
-                .get(JwtCookieConfigHolder.INSTANCE.getJwtCookieConfig().name());
+                .get(JwtCookieConfigHolder.getInstance().getJwtCookieConfig().name());
         return jwtCookie == null ? null : cleanseJwt(jwtCookie.getValue());
     }
 

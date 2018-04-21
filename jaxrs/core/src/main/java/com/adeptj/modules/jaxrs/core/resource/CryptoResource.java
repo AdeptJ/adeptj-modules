@@ -18,12 +18,10 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.auth.internal;
+package com.adeptj.modules.jaxrs.core.resource;
 
 import com.adeptj.modules.commons.utils.service.CryptoService;
-import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
-import org.json.JSONObject;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -32,12 +30,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.Map;
 
-import static com.adeptj.modules.commons.utils.service.CryptoService.KEY_HASH;
-import static com.adeptj.modules.commons.utils.service.CryptoService.KEY_SALT;
-import static com.adeptj.modules.jaxrs.core.auth.internal.CryptoResource.RESOURCE_BASE;
+import static com.adeptj.modules.jaxrs.core.resource.CryptoResource.RESOURCE_BASE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -59,19 +55,15 @@ public class CryptoResource {
     /**
      * Creates the hash of the plain text string passed.
      *
-     * @param plainText the text to be hashed
-     * @return JAX-RS Response having the generated hash
+     * @param plainText the text to be hashed.
+     * @return JAX-RS {@link Response} having the generated hash and the salt in JSON format.
      */
     @POST
-    @Path("/generate-hash")
+    @Path("/create-salt-hash-pair")
     @Consumes(APPLICATION_FORM_URLENCODED)
+    @Produces(APPLICATION_JSON)
     @RequiresJwt
-    public Response generateHashedText(@NotEmpty @FormParam("plainText") String plainText) {
-        Map<String, String> saltAndHash = this.cryptoService.getSaltAndHash(plainText);
-        String json = new JSONObject()
-                .put(KEY_SALT, saltAndHash.get(KEY_SALT))
-                .put(KEY_HASH, saltAndHash.get(KEY_HASH))
-                .toString();
-        return JaxRSResponses.ok(json, APPLICATION_JSON);
+    public Response createSaltHashPair(@NotEmpty @FormParam("plainText") String plainText) {
+        return Response.ok((this.cryptoService.getSaltHashPair(plainText))).build();
     }
 }

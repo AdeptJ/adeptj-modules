@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.resource.JwtResource;
+
 /**
  * Provides the {@link JwtCookieConfig} configured by {@link JwtResource} component.
  *
@@ -35,7 +37,11 @@ public enum JwtCookieConfigHolder {
         return jwtCookieConfig;
     }
 
-    void setJwtCookieConfig(JwtCookieConfig jwtCookieConfig) {
+    public void setJwtCookieConfig(JwtCookieConfig jwtCookieConfig) {
         this.jwtCookieConfig = jwtCookieConfig;
+    }
+
+    public static JwtCookieConfigHolder getInstance() {
+        return INSTANCE;
     }
 }

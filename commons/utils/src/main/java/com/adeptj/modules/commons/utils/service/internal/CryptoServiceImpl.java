@@ -20,23 +20,23 @@
 
 package com.adeptj.modules.commons.utils.service.internal;
 
+import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.commons.utils.service.CryptoService;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import java.lang.invoke.MethodHandles;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -49,7 +49,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class CryptoServiceImpl implements CryptoService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CryptoServiceImpl.class);
+    private static final Logger LOGGER = Loggers.get(MethodHandles.lookup());
 
     private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
 
@@ -70,7 +70,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String getSaltText() {
-        return new String(Base64.getEncoder().encode(this.getSaltBytes()), UTF_8);
+        return this.encodeToString(this.getSaltBytes(), UTF_8);
     }
 
     /**
@@ -78,6 +78,8 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public byte[] getHashedBytes(String plainText, byte[] salt) {
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
+        Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt can't be empty!!");
         try {
             return SecretKeyFactory.getInstance(this.cryptoConfig.secretKeyAlgo())
                     .generateSecret(new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
@@ -94,19 +96,20 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String getHashedText(String plainText, String salt) {
-        return new String(Base64.getEncoder().encode(this.getHashedBytes(plainText, salt.getBytes(UTF_8))), UTF_8);
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
+        return this.encodeToString(this.getHashedBytes(plainText, salt.getBytes(UTF_8)), UTF_8);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Map<String, String> getSaltAndHash(String plainText) {
+    public SaltHashPair getSaltHashPair(String plainText) {
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
         byte[] saltBytes = this.getSaltBytes();
-        Map<String, String> pair = new HashMap<>();
-        pair.put(KEY_SALT, new String(Base64.getEncoder().encode(saltBytes), UTF_8));
-        pair.put(KEY_HASH, new String(Base64.getEncoder().encode(this.getHashedBytes(plainText, saltBytes)), UTF_8));
-        return Collections.unmodifiableMap(pair);
+        return new SaltHashPair(this.encodeToString(saltBytes, UTF_8),
+                this.encodeToString(this.getHashedBytes(plainText, saltBytes), UTF_8));
     }
 
     // -------------- INTERNAL --------------
