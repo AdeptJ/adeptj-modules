@@ -43,7 +43,7 @@ import java.security.spec.InvalidKeySpecException;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Service implementation for generating random salt and hashed text using PBKDF2WithHmacSHA256 algo.
+ * Service implementation for generating random salt and hashed text using PBKDF2WithHmacSHA* algo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -52,6 +52,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class CryptoServiceImpl implements CryptoService {
 
     private static final Logger LOGGER = Loggers.get(MethodHandles.lookup());
+
+    private static final String PLAINTEXT_NULL_MSG = "plainText can't be blank!!";
 
     private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
 
@@ -80,7 +82,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public byte[] getHashedBytes(String plainText, byte[] salt) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt can't be empty!!");
         try {
             PBEKeySpec keySpec = new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
@@ -99,7 +101,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String getHashedText(String plainText, String salt) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
         return this.encodeToString(this.getHashedBytes(plainText, salt.getBytes(UTF_8)), UTF_8);
     }
@@ -109,7 +111,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public SaltHashPair getSaltHashPair(String plainText) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         byte[] saltBytes = this.getSaltBytes();
         return new SaltHashPair(this.encodeToString(saltBytes, UTF_8),
                 this.encodeToString(this.getHashedBytes(plainText, saltBytes), UTF_8));
@@ -120,7 +122,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public boolean compareHashes(SaltHashPair saltHashPair, String plainText) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         return StringUtils.equals(saltHashPair.getHash(), this.getHashedText(plainText, saltHashPair.getSalt()));
     }
 // -------------- INTERNAL --------------

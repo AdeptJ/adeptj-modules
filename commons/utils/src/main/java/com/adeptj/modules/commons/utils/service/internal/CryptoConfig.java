@@ -54,7 +54,7 @@ public @interface CryptoConfig {
 
     @AttributeDefinition(
             name = "Secret Key Algo",
-            description = "Algo to generate the hash, only [PBKDF2WithHmacSHA256] is supported at this moment."
+            description = "Algo to generate the hash, only [PBKDF2WithHmacSHA*] is supported at this moment."
     )
     String secretKeyAlgo() default "PBKDF2WithHmacSHA256";
 }
