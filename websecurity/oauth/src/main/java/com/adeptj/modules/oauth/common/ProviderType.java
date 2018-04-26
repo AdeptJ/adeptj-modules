@@ -18,21 +18,24 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modules.commons.oauth.provider.api;
-
-import com.adeptj.modules.commons.oauth.common.OAuthProvider;
-import com.github.scribejava.core.oauth.OAuth20Service;
+package com.adeptj.modules.oauth.common;
 
 /**
- * OAuthProviderFactory.
+ * ProviderType.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface OAuthProviderFactory {
+public enum ProviderType {
 
-	OAuthProvider getProvider(String providerName);
+	LINKEDIN,
 	
-	void addOAuth2Service(String providerName, OAuth20Service service);
+	FACEBOOK,
 	
-	OAuth20Service getOAuth2Service(String providerName);
+	GITHUB,
+	
+	GOOGLE,
+	
+	TWITTER,
+	
+	XING
 }

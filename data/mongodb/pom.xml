@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.9.Final</version>
+        <version>1.0.12.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-data-mongodb</artifactId>
@@ -105,19 +105,27 @@
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia</artifactId>
             <version>${morphia.version}</version>
+            <scope>provided</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongo-java-driver</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib-nodep</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>cglib</groupId>
                     <artifactId>cglib-nodep</artifactId>
                 </exclusion>
             </exclusions>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
-            <version>3.2.4</version>
+            <version>3.2.6</version>
         </dependency>
 
         <dependency>
@@ -139,12 +147,14 @@
             <version>2.8.47</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

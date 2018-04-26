@@ -39,6 +39,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.osgi.annotation.version>6.0.0</org.osgi.annotation.version>
         <adeptj-maven-plugin.version>1.0.2.Final</adeptj-maven-plugin.version>
+        <scribejava.version>5.4.0</scribejava.version>
         <adeptj.console.url>http://localhost:9007/system/console</adeptj.console.url>
         <adeptj.auth.url>http://localhost:9007/auth/j_security_check</adeptj.auth.url>
         <adeptj.user>admin</adeptj.user>
@@ -294,6 +295,20 @@
                         <artifactId>jboss-servlet-api_3.1_spec</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.scribejava</groupId>
+                <artifactId>scribejava-core</artifactId>
+                <version>${scribejava.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.scribejava</groupId>
+                <artifactId>scribejava-apis</artifactId>
+                <version>${scribejava.version}</version>
+                <scope>provided</scope>
             </dependency>
 
         </dependencies>

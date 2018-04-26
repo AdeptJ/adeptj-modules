@@ -18,7 +18,7 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modules.commons.oauth.common;
+package com.adeptj.modules.oauth.common;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
 

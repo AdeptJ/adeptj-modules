@@ -39,6 +39,7 @@
 
         <module>core</module>
         <module>jwt</module>
+        <module>oauth</module>
 
     </modules>
 

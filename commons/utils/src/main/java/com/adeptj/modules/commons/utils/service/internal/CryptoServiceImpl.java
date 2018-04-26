@@ -39,6 +39,7 @@ import java.lang.invoke.MethodHandles;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -85,7 +86,7 @@ public class CryptoServiceImpl implements CryptoService {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt can't be empty!!");
         try {
-            PBEKeySpec keySpec = new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
+            KeySpec keySpec = new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
                     this.cryptoConfig.keyLength());
             return SecretKeyFactory.getInstance(this.cryptoConfig.secretKeyAlgo())
                     .generateSecret(keySpec)

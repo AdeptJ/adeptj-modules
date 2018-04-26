@@ -24,22 +24,22 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.7.Final</version>
-
+        <version>1.0.12.Final</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    <artifactId>adeptj-modules-websecurity-oauth2</artifactId>
+    <artifactId>adeptj-modules-websecurity-oauth</artifactId>
     <version>1.0.0.Final</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: WebSecurity :: OAuth2</name>
-    <description>AdeptJ Modules :: WebSecurity :: OAuth2</description>
+    <name>AdeptJ Modules :: WebSecurity :: OAuth</name>
+    <description>AdeptJ Modules :: WebSecurity :: OAuth 1.0a and 2.0</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
-        
-         <!-- Below BND plugin is required to process the OSGi Annotation-->
+
+        <!-- Below BND plugin is required to process the OSGi Annotation-->
         <plugins>
 
             <plugin>
@@ -76,7 +76,7 @@
             </plugin>
 
         </plugins>
-        
+
     </build>
 
     <dependencies>
@@ -100,12 +100,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
@@ -120,14 +114,12 @@
         <dependency>
             <groupId>com.github.scribejava</groupId>
             <artifactId>scribejava-apis</artifactId>
-            <version>4.1.1</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.scribejava</groupId>
             <artifactId>scribejava-core</artifactId>
-            <version>4.1.1</version>
             <scope>provided</scope>
         </dependency>
 

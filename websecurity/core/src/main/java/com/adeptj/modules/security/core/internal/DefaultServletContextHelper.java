@@ -132,7 +132,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
     }
 
     @Activate
-    protected void activate(ComponentContext compCtx) {
-        this.securityHandler = new SecurityHandler(compCtx.getUsingBundle(), this.authenticator);
+    protected void start(ComponentContext componentContext) {
+        this.securityHandler = new SecurityHandler(componentContext.getUsingBundle(), this.authenticator);
     }
 }

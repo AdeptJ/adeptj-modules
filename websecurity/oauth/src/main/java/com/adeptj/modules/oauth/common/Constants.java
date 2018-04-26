@@ -18,56 +18,16 @@
  * 
  * =============================================================================
  */
-package com.adeptj.modules.commons.oauth.common;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.adeptj.modules.oauth.common;
 
 /**
- * OAuthProfile.
+ * Common Constants.
  * 
  * @author Rakesh.Kumar, AdeptJ
  */
-public class OAuthProfile {
+public final class Constants {
 	
-	private Map<String, String> profileAttribs = new HashMap<>();
-
-	private String firstName;
+	public static final String OAUTH_PROVIDER_FACTORY = "com.adeptj.modularweb.oauth.provider.api.OAuthProviderFactory";
 	
-	private String lastName;
-	
-	private String email;
-
-	public Map<String, String> getProfileAttribs() {
-		return profileAttribs;
-	}
-	
-	public void putAttribute(String attrKey, String attrVal) {
-		profileAttribs.put(attrKey, attrVal);
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
+	public static final String MANAGED_SERVICE_FACTORY = "org.osgi.service.cm.ManagedServiceFactory";
 }

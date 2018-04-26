@@ -76,35 +76,36 @@ final class JwtSigningKeys {
     }
 
     static Key createSigningKey(JwtConfig jwtConfig) {
-        SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         try {
-            Key hmacSigningKey = JwtSigningKeys.getHmacSigningKey(signatureAlgo, jwtConfig);
-            return hmacSigningKey == null ? JwtSigningKeys.getRsaSigningKey(signatureAlgo, jwtConfig) : hmacSigningKey;
+            Key hmacSigningKey = JwtSigningKeys.getHmacSigningKey(jwtConfig);
+            return hmacSigningKey == null ? JwtSigningKeys.getRsaSigningKey(jwtConfig) : hmacSigningKey;
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw new KeyInitializationException(ex.getMessage(), ex);
         }
     }
 
-    private static Key getHmacSigningKey(SignatureAlgorithm algo, JwtConfig jwtConfig) {
+    private static Key getHmacSigningKey(JwtConfig jwtConfig) {
         Key signingKey = null;
-        if (algo.isHmac()) {
+        SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
+        if (signatureAlgo.isHmac()) {
             Validate.isTrue(StringUtils.isNotEmpty(jwtConfig.hmacSecretKey()), HMAC_SECRET_KEY_NULL_MSG);
             signingKey = new SecretKeySpec(Base64.getEncoder().encode(jwtConfig.hmacSecretKey().getBytes(UTF_8)),
-                    algo.getJcaName());
+                    signatureAlgo.getJcaName());
         }
         return signingKey;
     }
 
-    private static Key getRsaSigningKey(SignatureAlgorithm algo, JwtConfig jwtConfig) throws Exception { // NOSONAR
+    private static Key getRsaSigningKey(JwtConfig jwtConfig) throws Exception { // NOSONAR
         String keyFileLocation = jwtConfig.keyFileLocation();
         if (StringUtils.isEmpty(keyFileLocation) && jwtConfig.searchKeyInUserHome()) {
             keyFileLocation = USER_HOME + separator + jwtConfig.defaultKeyName();
         }
         LOGGER.info("Loading signing key: [{}]", keyFileLocation);
+        SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         try (InputStream is = Files.newInputStream(Paths.get(keyFileLocation))) {
-            EncodedKeySpec encodedKeySpec = getEncodedKeySpec(jwtConfig.keyPassword(), IOUtils.toString(is, UTF_8));
-            return KeyFactory.getInstance(algo.getFamilyName()).generatePrivate(encodedKeySpec);
+            return KeyFactory.getInstance(signatureAlgo.getFamilyName())
+                    .generatePrivate(getEncodedKeySpec(jwtConfig.keyPassword(), IOUtils.toString(is, UTF_8)));
         }
     }
 
@@ -113,8 +114,8 @@ final class JwtSigningKeys {
         if (StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER)) {
             Validate.isTrue(StringUtils.isNotEmpty(keyPassword), KEYPASS_NULL_MSG);
             EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeKeyData(keyData, true));
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
-            SecretKey secretKey = keyFactory.generateSecret(new PBEKeySpec(keyPassword.toCharArray()));
+            SecretKey secretKey = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName())
+                    .generateSecret(new PBEKeySpec(keyPassword.toCharArray()));
             Cipher cipher = Cipher.getInstance(privateKeyInfo.getAlgName());
             cipher.init(DECRYPT_MODE, secretKey, privateKeyInfo.getAlgParameters());
             keySpec = privateKeyInfo.getKeySpec(cipher);
