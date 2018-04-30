@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-parent</artifactId>
-        <version>1.0.20.Final</version>
+        <version>1.0.21.Final</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules</artifactId>
-    <version>1.0.12.Final</version>
+    <version>1.0.13.Final</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Parent</name>
     <description>Parent for AdeptJ Modules Project</description>
@@ -37,9 +37,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.osgi.annotation.version>6.0.0</org.osgi.annotation.version>
-        <adeptj-maven-plugin.version>1.0.2.Final</adeptj-maven-plugin.version>
-        <scribejava.version>5.4.0</scribejava.version>
         <adeptj.console.url>http://localhost:9007/system/console</adeptj.console.url>
         <adeptj.auth.url>http://localhost:9007/auth/j_security_check</adeptj.auth.url>
         <adeptj.user>admin</adeptj.user>
@@ -126,11 +123,24 @@
                     <version>${bnd-maven-plugin.version}</version>
                 </plugin>
 
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <skipTests>${skipTests}</skipTests>
+                    </configuration>
+                </plugin>
+
                 <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
+                    <configuration>
+                        <archive>
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        </archive>
+                    </configuration>
                 </plugin>
 
                 <!-- AdeptJ maven plugin for bundle installation etc -->
@@ -164,32 +174,16 @@
             </dependency>
 
             <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.annotation</artifactId>
+                <version>${osgi.annotation.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${javax.servlet-api.version}</version>
-            </dependency>
-
-            <!-- OSGi annotations for DS and metatype -->
-
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.annotation</artifactId>
-                <version>${org.osgi.annotation.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.service.component.annotations</artifactId>
-                <version>${org.osgi.cmp.annotations.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.service.metatype.annotations</artifactId>
-                <version>${org.osgi.meta.annotations.version}</version>
-                <scope>provided</scope>
             </dependency>
 
             <dependency>

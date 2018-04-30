@@ -102,9 +102,9 @@ final class JwtSigningKeys {
             keyFileLocation = USER_HOME + separator + jwtConfig.defaultKeyName();
         }
         LOGGER.info("Loading signing key: [{}]", keyFileLocation);
-        SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         try (InputStream is = Files.newInputStream(Paths.get(keyFileLocation))) {
-            return KeyFactory.getInstance(signatureAlgo.getFamilyName())
+            String algorithm = SignatureAlgorithm.forName(jwtConfig.signatureAlgo()).getFamilyName();
+            return KeyFactory.getInstance(algorithm)
                     .generatePrivate(getEncodedKeySpec(jwtConfig.keyPassword(), IOUtils.toString(is, UTF_8)));
         }
     }
@@ -113,12 +113,12 @@ final class JwtSigningKeys {
         EncodedKeySpec keySpec;
         if (StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER)) {
             Validate.isTrue(StringUtils.isNotEmpty(keyPassword), KEYPASS_NULL_MSG);
-            EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(decodeKeyData(keyData, true));
-            SecretKey secretKey = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName())
+            EncryptedPrivateKeyInfo keyInfo = new EncryptedPrivateKeyInfo(decodeKeyData(keyData, true));
+            SecretKey secretKey = SecretKeyFactory.getInstance(keyInfo.getAlgName())
                     .generateSecret(new PBEKeySpec(keyPassword.toCharArray()));
-            Cipher cipher = Cipher.getInstance(privateKeyInfo.getAlgName());
-            cipher.init(DECRYPT_MODE, secretKey, privateKeyInfo.getAlgParameters());
-            keySpec = privateKeyInfo.getKeySpec(cipher);
+            Cipher cipher = Cipher.getInstance(keyInfo.getAlgName());
+            cipher.init(DECRYPT_MODE, secretKey, keyInfo.getAlgParameters());
+            keySpec = keyInfo.getKeySpec(cipher);
         } else {
             keySpec = new PKCS8EncodedKeySpec(decodeKeyData(keyData, false));
         }

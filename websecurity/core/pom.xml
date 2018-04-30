@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.9.Final</version>
+        <version>1.0.13.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-websecurity-core</artifactId>
@@ -99,7 +99,7 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.annotation</artifactId>
+            <artifactId>osgi.annotation</artifactId>
             <scope>provided</scope>
         </dependency>
 

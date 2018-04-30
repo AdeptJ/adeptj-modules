@@ -23,7 +23,6 @@ package com.adeptj.modules.security.jwt.internal;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
@@ -104,15 +103,12 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public boolean verifyJwt(String jwt) {
-        boolean verified = false;
         try {
             Validate.isTrue(StringUtils.isNotEmpty(jwt), "JWT can't be blank!!");
-            Claims claims = Jwts.parser()
+            return Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
                     .setSigningKey(this.signingKey)
-                    .parseClaimsJws(jwt)
-                    .getBody();
-            verified = !this.jwtConfig.validateClaims() || this.claimsValidator != null && this.claimsValidator.validate(claims);
+                    .parse(jwt, JwtHandlerAdapters.createAdapter(this.jwtConfig.validateClaims(), this.claimsValidator));
         } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {
@@ -121,7 +117,7 @@ public class JwtServiceImpl implements JwtService {
                 LOGGER.error(ex.getMessage());
             }
         }
-        return verified;
+        return false;
     }
 
     // ------------------ INTERNAL ------------------
