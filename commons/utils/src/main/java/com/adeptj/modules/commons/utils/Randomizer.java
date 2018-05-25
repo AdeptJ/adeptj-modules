@@ -18,17 +18,25 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy;
+package com.adeptj.modules.commons.utils;
+
+import java.security.SecureRandom;
 
 /**
- * Exception thrown on RESTEasy bootstrapping.
+ * Provides random bytes using {@link SecureRandom}.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-public class JaxRSBootstrapException extends RuntimeException {
+public final class Randomizer {
 
-    public JaxRSBootstrapException(String message, Throwable cause) {
-        super(message, cause);
+    private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
+
+    private Randomizer() {
     }
 
+    public static byte[] getRandomBytes(int length) {
+        byte[] saltBytes = new byte[length];
+        DEFAULT_SECURE_RANDOM.nextBytes(saltBytes);
+        return saltBytes;
+    }
 }

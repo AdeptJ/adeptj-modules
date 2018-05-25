@@ -43,8 +43,6 @@ public final class JpaUtil {
 
     private static final Logger LOGGER = Loggers.get(JpaUtil.class);
 
-    public static final int LEN_ZERO = 0;
-
     private JpaUtil() {
     }
 

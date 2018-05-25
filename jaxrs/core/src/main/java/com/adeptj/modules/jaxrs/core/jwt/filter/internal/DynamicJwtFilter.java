@@ -68,8 +68,7 @@ public class DynamicJwtFilter implements JwtFilter {
         this.doFilter(requestContext, this.jwtService);
     }
 
-    // -------------- INTERNAL --------------
-    // JwtService lifecycle methods
+    // ------------------------------------------ INTERNAL ------------------------------------------
 
     protected void bindJwtService(JwtService jwtService) {
         this.jwtService = jwtService;

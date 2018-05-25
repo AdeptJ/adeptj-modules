@@ -115,7 +115,7 @@ public class JpaCrudRepositoryTest {
 
     @Test
     public void testFindByCriteria() {
-        List<BaseEntity> users = crudRepository.findByCriteria(ReadCriteria.builder()
+        List<User> users = crudRepository.findByCriteria(ReadCriteria.builder()
                 .entity(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
@@ -128,40 +128,36 @@ public class JpaCrudRepositoryTest {
                 .entity(User.class)
                 .addSelections("firstName", "lastName")
                 .addCriteriaAttribute("contact", "1234567890")
-                .build())
-                .forEach(tuple -> {
-                    System.out.println("FirstName: " + tuple.get(0));
-                    System.out.println("LastName: " + tuple.get(1));
-                });
+                .build()).forEach(tuple -> {
+            System.out.println("FirstName: " + tuple.get(0));
+            System.out.println("LastName: " + tuple.get(1));
+        });
     }
 
     @Test
     public void testFindByJpaNamedQueryAsUser() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        List<User> users = crudRepository.findByJpaNamedQuery(User.class,
-                "User.findUserByContact.JPA.User", posParams);
-        users.forEach(user -> {
-            System.out.println("FirstName: " + user.getFirstName());
-            System.out.println("LastName: " + user.getLastName());
-
-        });
+        crudRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User", posParams)
+                .forEach(user -> {
+                    System.out.println("FirstName: " + user.getFirstName());
+                    System.out.println("LastName: " + user.getLastName());
+                });
     }
 
     @Test
     public void testFindByJpaNamedQueryAsObjectArray() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findByJpaNamedQuery(Object[].class,
-                "User.findUserByContact.JPA.ObjectArray", posParams).forEach(objectArray -> {
-            System.out.println("FirstName: " + objectArray[0]);
-            System.out.println("LastName: " + objectArray[1]);
-
-        });
+        crudRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray", posParams)
+                .forEach(objectArray -> {
+                    System.out.println("FirstName: " + objectArray[0]);
+                    System.out.println("LastName: " + objectArray[1]);
+                });
     }
 
     @Test
-    public void testFindByNamedQueryJPA() {
+    public void testFindByJPQLNamedQuery() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
         crudRepository.findByNamedQuery("User.findUserByContact.JPA.User", posParams)
@@ -181,7 +177,7 @@ public class JpaCrudRepositoryTest {
     }
 
     @Test
-    public void testFindByNamedQueryNative() {
+    public void testFindByNativeNamedQuery() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
         crudRepository.findByNamedQuery("User.findUserByContact.NATIVE", posParams)

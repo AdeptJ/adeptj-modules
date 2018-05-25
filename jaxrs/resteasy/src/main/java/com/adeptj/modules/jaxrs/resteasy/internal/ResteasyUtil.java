@@ -21,7 +21,7 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.jaxrs.core.JaxRSExceptionHandler;
-import com.adeptj.modules.jaxrs.resteasy.JaxRSCoreConfig;
+import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.ValidatorFactory;
+import javax.ws.rs.Path;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -42,7 +43,6 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD_PROVIDER_INSTANCES;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FORCE_ACCESS;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.METHOD_GET_CTX_RESOLVERS;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
@@ -53,32 +53,29 @@ import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class ResteasyUtil {
+final class ResteasyUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResteasyUtil.class);
 
     private ResteasyUtil() {
     }
 
-    public static void registerInternalProviders(ResteasyProviderFactory rpf, JaxRSCoreConfig config, ValidatorFactory vf) {
+    static void registerInternalProviders(ResteasyProviderFactory rpf, ResteasyConfig config, ValidatorFactory vf) {
         rpf.register(new ValidatorContextResolver(vf))
                 .register(createCorsFilter(config))
                 .register(new DefaultExceptionHandler(config.showException()))
                 .register(new JaxRSExceptionHandler(config.showException()));
     }
 
-    public static void removeInternalValidators(ResteasyProviderFactory providerFactory) {
+    static void removeInternalValidators(ResteasyProviderFactory rpf) {
         try {
-            // First remove the default RESTEasy GeneralValidator and GeneralValidatorCDI.
-            // After that we will register our ValidatorContextResolver.
-            Map<?, ?> contextResolvers = Map.class.cast(invokeMethod(providerFactory, FORCE_ACCESS, METHOD_GET_CTX_RESOLVERS,
-                    null, null));
+            Map<?, ?> contextResolvers = Map.class.cast(invokeMethod(rpf, FORCE_ACCESS, METHOD_GET_CTX_RESOLVERS, null, null));
             LOGGER.info("ContextResolver(s) prior to removal: [{}]", contextResolvers.size());
             contextResolvers.remove(GeneralValidator.class);
             contextResolvers.remove(GeneralValidatorCDI.class);
             LOGGER.info("ContextResolver(s) after removal: [{}]", contextResolvers.size());
             Field field = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
-            Set<?> providerClasses = Set.class.cast(readField(field, providerFactory, FORCE_ACCESS));
+            Set<?> providerClasses = Set.class.cast(readField(field, rpf, FORCE_ACCESS));
             providerClasses.remove(org.jboss.resteasy.plugins.validation.ValidatorContextResolver.class);
             providerClasses.remove(ValidatorContextResolverCDI.class);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
@@ -100,13 +97,17 @@ public final class ResteasyUtil {
         }
     }
 
-    private static CorsFilter createCorsFilter(JaxRSCoreConfig config) {
+    static boolean isNotAnnotatedWithPath(Object resource) {
+        return resource == null || !resource.getClass().isAnnotationPresent(Path.class);
+    }
+
+    private static CorsFilter createCorsFilter(ResteasyConfig config) {
         CorsFilter corsFilter = new CorsFilter();
         corsFilter.setAllowCredentials(config.allowCredentials());
         corsFilter.setAllowedMethods(config.allowedMethods());
         corsFilter.setCorsMaxAge(config.corsMaxAge());
-        corsFilter.setAllowedHeaders(Stream.of(config.allowedHeaders()).collect(joining(COMMA)));
-        corsFilter.setExposedHeaders(Stream.of(config.exposedHeaders()).collect(joining(COMMA)));
+        corsFilter.setAllowedHeaders(String.join(COMMA, config.allowedHeaders()));
+        corsFilter.setExposedHeaders(String.join(COMMA, config.exposedHeaders()));
         corsFilter.getAllowedOrigins().addAll(Stream.of(config.allowedOrigins()).collect(toSet()));
         return corsFilter;
     }

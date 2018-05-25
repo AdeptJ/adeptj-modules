@@ -38,10 +38,10 @@ import static javax.ws.rs.core.HttpHeaders.LAST_MODIFIED;
  * @author Rakesh.Kumar, AdeptJ.
  */
 @ObjectClassDefinition(
-        name = "AdeptJ JAX-RS Core Configuration",
+        name = "AdeptJ RESTEasy Configuration",
         description = "Configuration for RESTEasy Framework"
 )
-public @interface JaxRSCoreConfig {
+public @interface ResteasyConfig {
 
     String PRAGMA = "Pragma";
 

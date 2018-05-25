@@ -20,14 +20,15 @@
 
 package com.adeptj.modules.commons.ds.internal;
 
+import com.adeptj.modules.commons.ds.DataSourceNotConfiguredException;
 import com.adeptj.modules.commons.ds.api.DataSourceProvider;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.sql.DataSource;
-
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import java.util.Optional;
 
 /**
  * Provides {@link com.zaxxer.hikari.HikariDataSource} as the JDBC {@link DataSource} implementation.
@@ -40,6 +41,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @Component(service = DataSourceProvider.class)
 public class HikariDataSourceProvider implements DataSourceProvider {
 
+    private static final String JDBC_DS_NOT_CONFIGURED_MSG = "HikariDataSource: [%s] is not configured!!";
+
+    /**
+     * Statically referenced OSGi service.
+     */
     @Reference
     private DataSourceManager dataSourceManager;
 
@@ -48,7 +54,8 @@ public class HikariDataSourceProvider implements DataSourceProvider {
      */
     @Override
     public DataSource getDataSource(String dataSourceName) {
-        Validate.isTrue(isNotEmpty(dataSourceName), "dataSourceName can't be null or empty!!");
-        return this.dataSourceManager.getDataSource(dataSourceName);
+        Validate.isTrue(StringUtils.isNotEmpty(dataSourceName), "dataSourceName can't be blank!!");
+        return Optional.ofNullable(this.dataSourceManager.getDataSource(dataSourceName))
+                .orElseThrow(() -> new DataSourceNotConfiguredException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, dataSourceName)));
     }
 }

@@ -18,44 +18,25 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.core.internal;
-
-import com.adeptj.modules.security.core.Authenticator;
-import org.osgi.framework.Bundle;
-import org.osgi.service.http.context.ServletContextHelper;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Objects;
-
-import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
+package com.adeptj.modules.commons.utils;
 
 /**
- * ServletContextHelper implementation which initializes the super with the using bundle instance.
+ * Utility methods to deal with exceptions.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class SecurityHandler extends ServletContextHelper {
+public final class Exceptions {
 
-    private static final String AUTH_SERVICE_MISSING_MSG = "Authenticator service missing!!";
-
-    private final Authenticator authenticator;
-
-    SecurityHandler(Bundle usingBundle, Authenticator authenticator) {
-        super(Objects.requireNonNull(usingBundle, "Using Bundle can't be null!!"));
-        this.authenticator = authenticator;
+    private Exceptions() {
     }
 
     /**
-     * {@inheritDoc}
+     * Wraps the given exception in a {@link RuntimeException} and rethrow.
+     *
+     * @param ex the given exception.
+     * @return RuntimeException wrapping the original exception.
      */
-    @Override
-    public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (this.authenticator == null) {
-            response.sendError(SC_SERVICE_UNAVAILABLE, AUTH_SERVICE_MISSING_MSG);
-            return false;
-        }
-        return this.authenticator.handleSecurity(request, response);
+    public static RuntimeException rethrow(Exception ex) {
+        throw new RuntimeException(ex);
     }
 }

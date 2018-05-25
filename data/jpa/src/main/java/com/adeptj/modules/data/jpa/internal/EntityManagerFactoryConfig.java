@@ -94,7 +94,7 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "Deploy on Startup",
-            description = "Whether to create PersistenceUnit when the application starts up"
+            description = "Whether to register PersistenceUnit when the application starts up"
     )
     boolean deployOnStartup() default true;
 

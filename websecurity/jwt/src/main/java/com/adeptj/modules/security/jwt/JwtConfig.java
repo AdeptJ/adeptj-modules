@@ -24,6 +24,11 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
+import static io.jsonwebtoken.Claims.EXPIRATION;
+import static io.jsonwebtoken.Claims.ID;
+import static io.jsonwebtoken.Claims.ISSUED_AT;
+import static io.jsonwebtoken.Claims.ISSUER;
+import static io.jsonwebtoken.Claims.SUBJECT;
 import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
@@ -84,8 +89,25 @@ public @interface JwtConfig {
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";
 
-    @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes.")
+    @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time as per expirationTimeUnit.")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
+
+    @AttributeDefinition(
+            name = "JWT Expiration Time Unit",
+            description = "JWT Expiration Time Unit in Java ChronoUnit.",
+            options = {
+                    @Option(label = "MINUTES", value = "Minutes"),
+                    @Option(label = "SECONDS", value = "Seconds"),
+                    @Option(label = "HOURS", value = "Hours"),
+            }
+    )
+    String expirationTimeUnit();
+
+    @AttributeDefinition(
+            name = "JWT default claims which need to be validated",
+            description = "JWT default claims which need to be validated"
+    )
+    String[] defaultClaimsToValidate() default {SUBJECT, ISSUER, ID, ISSUED_AT, EXPIRATION};
 
     @AttributeDefinition(
             name = "Validate JWT Claims",

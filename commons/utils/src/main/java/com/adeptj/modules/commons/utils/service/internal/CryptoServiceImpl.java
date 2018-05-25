@@ -22,6 +22,7 @@ package com.adeptj.modules.commons.utils.service.internal;
 
 import com.adeptj.modules.commons.utils.CryptoException;
 import com.adeptj.modules.commons.utils.Loggers;
+import com.adeptj.modules.commons.utils.Randomizer;
 import com.adeptj.modules.commons.utils.service.CryptoService;
 import com.adeptj.modules.commons.utils.service.SaltHashPair;
 import org.apache.commons.lang3.ArrayUtils;
@@ -37,7 +38,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.lang.invoke.MethodHandles;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
@@ -56,8 +56,6 @@ public class CryptoServiceImpl implements CryptoService {
 
     private static final String PLAINTEXT_NULL_MSG = "plainText can't be blank!!";
 
-    private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
-
     private CryptoConfig cryptoConfig;
 
     /**
@@ -65,9 +63,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public byte[] getSaltBytes() {
-        byte[] saltBytes = new byte[this.cryptoConfig.saltSize()];
-        DEFAULT_SECURE_RANDOM.nextBytes(saltBytes);
-        return saltBytes;
+        return Randomizer.getRandomBytes(this.cryptoConfig.saltSize());
     }
 
     /**

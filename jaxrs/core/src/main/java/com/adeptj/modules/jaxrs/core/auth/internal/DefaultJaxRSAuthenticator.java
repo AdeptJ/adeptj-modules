@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
-
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthUtil;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
@@ -34,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Provides {@link JaxRSAuthenticationInfo} by querying all the registered {@link JaxRSAuthenticationRealm}
@@ -49,22 +48,21 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
             cardinality = ReferenceCardinality.MULTIPLE,
             policy = ReferencePolicy.DYNAMIC
     )
-    private volatile List<JaxRSAuthenticationRealm> authRealms = new ArrayList<>();
+    private volatile List<JaxRSAuthenticationRealm> authRealms;
+
+    public DefaultJaxRSAuthenticator() {
+        this.authRealms = new ArrayList<>();
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public JaxRSAuthenticationInfo handleSecurity(String username, String password) {
+    public Optional<JaxRSAuthenticationInfo> handleSecurity(String username, String password) {
         return this.authRealms.stream()
                 .sorted(Comparator.comparingInt(JaxRSAuthenticationRealm::priority).reversed())
                 .map(realm -> JaxRSAuthUtil.getJaxRSAuthInfo(realm, username, password))
                 .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
-    }
-
-    protected void addAuthenticationRealm(JaxRSAuthenticationRealm realm) {
-        this.authRealms.add(realm);
+                .findFirst();
     }
 }

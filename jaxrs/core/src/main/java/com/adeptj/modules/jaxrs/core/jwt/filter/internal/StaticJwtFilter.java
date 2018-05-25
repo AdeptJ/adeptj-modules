@@ -26,6 +26,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsExtension;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -33,7 +34,6 @@ import javax.ws.rs.ext.Provider;
 import java.util.Objects;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.FILTER_NAME;
-import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 
 /**
@@ -47,19 +47,12 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@JaxrsExtension
 @RequiresJwt
 @Priority(AUTHENTICATION)
 @Provider
-@Component(
-        immediate = true,
-        property = {
-                PROVIDER_OSGI_PROPERTY,
-                FILTER_NAME
-        }
-)
+@Component(immediate = true, property = FILTER_NAME)
 public class StaticJwtFilter implements JwtFilter {
-
-    static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=JwtFilter";
 
     static final String FILTER_NAME = "jwt.filter.name=static";
 
@@ -82,8 +75,7 @@ public class StaticJwtFilter implements JwtFilter {
         this.doFilter(requestContext, this.jwtService);
     }
 
-    // -------------- INTERNAL --------------
-    // JwtService lifecycle methods
+    // ------------------------------------------ INTERNAL ------------------------------------------
 
     protected void bindJwtService(JwtService jwtService) {
         this.jwtService = jwtService;

@@ -41,7 +41,7 @@ import static org.osgi.service.http.HttpContext.REMOTE_USER;
  */
 @Designate(ocd = WebConsoleSecurityConfig.class)
 @Component(immediate = true, service = WebConsoleSecurityProvider.class)
-public class OSGiConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
+public class DefaultWebConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
 
     private static final String HEADER_LOC = "Location";
 

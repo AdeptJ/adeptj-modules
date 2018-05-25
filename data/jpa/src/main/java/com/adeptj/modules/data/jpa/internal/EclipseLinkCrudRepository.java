@@ -35,7 +35,7 @@ import java.util.Map;
  * Implementation of {@link JpaCrudRepository} based on EclipseLink JPA Reference Implementation
  * <p>
  * This will be registered with the OSGi service registry whenever there is a new EntityManagerFactory configuration
- * saved by {@link EntityManagerFactoryProvider}
+ * saved by {@link JpaCrudRepositoryFactory}
  * <p>
  * Therefore there will be a separate service for each PersistenceUnit.
  * <p>

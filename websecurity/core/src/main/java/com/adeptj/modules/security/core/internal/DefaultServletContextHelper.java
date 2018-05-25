@@ -21,6 +21,7 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.Authenticator;
+import com.adeptj.modules.security.core.ServletContextHelperAdapter;
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -30,18 +31,17 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.http.context.ServletContextHelper;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.Set;
 
-import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.SERVLET_CONTEXT_NAME;
-import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.EQ;
+import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_NAME;
 import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.ROOT_PATH;
-import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_NAME;
-import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_PATH;
 
 /**
  * DefaultServletContextHelper.
@@ -49,19 +49,9 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
-@Component(
-        service = ServletContextHelper.class,
-        scope = ServiceScope.BUNDLE,
-        property = {
-                HTTP_WHITEBOARD_CONTEXT_NAME + EQ + SERVLET_CONTEXT_NAME,
-                HTTP_WHITEBOARD_CONTEXT_PATH + EQ + ROOT_PATH
-        }
-)
+@HttpWhiteboardContext(name = SERVLET_CONTEXT_NAME, path = ROOT_PATH)
+@Component(service = ServletContextHelper.class, scope = ServiceScope.BUNDLE)
 public class DefaultServletContextHelper extends ServletContextHelper {
-
-    static final String SERVLET_CONTEXT_NAME = "AdeptJ DefaultServletContext";
-
-    static final String EQ = "=";
 
     static final String ROOT_PATH = "/";
 
@@ -69,8 +59,15 @@ public class DefaultServletContextHelper extends ServletContextHelper {
 
     private static final String UNBIND_AUTHENTICATOR = "unbindAuthenticator";
 
-    private SecurityHandler securityHandler;
+    private volatile ServletContextHelperAdapter contextHelper;
 
+    /**
+     * The {@link Authenticator} is optionally referenced.
+     * If unavailable {@link ServletContextHelperAdapter} will set a Service Unavailable (503) status
+     * while calling {@link ServletContextHelperAdapter#handleSecurity(HttpServletRequest, HttpServletResponse)}.
+     * <p>
+     * Note: As per Felix SCR, dynamic references should be declared as volatile.
+     */
     @Reference(
             cardinality = ReferenceCardinality.OPTIONAL,
             policy = ReferencePolicy.DYNAMIC,
@@ -84,7 +81,15 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return this.securityHandler.handleSecurity(request, response);
+        return this.contextHelper.handleSecurity(request, response);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
+        this.contextHelper.finishSecurity(request, response);
     }
 
     /**
@@ -92,7 +97,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public URL getResource(String name) {
-        return this.securityHandler.getResource(name);
+        return this.contextHelper.getResource(name);
     }
 
     /**
@@ -100,7 +105,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public String getMimeType(String name) {
-        return this.securityHandler.getMimeType(name);
+        return this.contextHelper.getMimeType(name);
     }
 
     /**
@@ -108,7 +113,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public Set<String> getResourcePaths(String path) {
-        return this.securityHandler.getResourcePaths(path);
+        return this.contextHelper.getResourcePaths(path);
     }
 
     /**
@@ -116,23 +121,26 @@ public class DefaultServletContextHelper extends ServletContextHelper {
      */
     @Override
     public String getRealPath(String path) {
-        return this.securityHandler.getRealPath(path);
+        return this.contextHelper.getRealPath(path);
     }
 
-    // --------------------- INTERNAL ---------------------
+    // ------------------------------------------ INTERNAL ------------------------------------------
 
-    // Lifecycle methods
+    // Component lifecycle methods
+
+    @Activate
+    protected void start(ComponentContext componentContext) {
+        this.contextHelper = new ServletContextHelperAdapter(componentContext.getUsingBundle());
+        Optional.ofNullable(this.authenticator).ifPresent(this.contextHelper::setAuthenticator);
+    }
 
     protected void bindAuthenticator(Authenticator authenticator) {
         this.authenticator = authenticator;
+        Optional.ofNullable(this.contextHelper).ifPresent(sh -> sh.setAuthenticator(this.authenticator));
     }
 
     protected void unbindAuthenticator(Authenticator authenticator) {
         this.authenticator = null;
-    }
-
-    @Activate
-    protected void start(ComponentContext componentContext) {
-        this.securityHandler = new SecurityHandler(componentContext.getUsingBundle(), this.authenticator);
+        Optional.ofNullable(this.contextHelper).ifPresent(ServletContextHelperAdapter::unsetAuthenticator);
     }
 }

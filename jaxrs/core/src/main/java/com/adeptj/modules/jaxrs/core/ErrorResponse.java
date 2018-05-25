@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ErrorResponse {
 
-    private static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it.Please try again later!!";
+    public static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it.Please try again later!!";
 
     private String status;
 

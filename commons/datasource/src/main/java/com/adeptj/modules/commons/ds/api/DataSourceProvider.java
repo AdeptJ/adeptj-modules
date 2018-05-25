@@ -20,6 +20,9 @@
 
 package com.adeptj.modules.commons.ds.api;
 
+import com.adeptj.modules.commons.ds.DataSourceNotConfiguredException;
+import org.osgi.annotation.versioning.ProviderType;
+
 import javax.sql.DataSource;
 
 /**
@@ -27,13 +30,15 @@ import javax.sql.DataSource;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
+@ProviderType
 public interface DataSourceProvider {
 
     /**
-     * Returns the configured {@link DataSource} instance against the name passed if any, otherwise null.
+     * Returns the configured {@link DataSource} instance against the name passed.
      *
      * @param dataSourceName the name of the JDBC pool.
-     * @return The configured {@link DataSource} instance against the name passed if any, otherwise null.
+     * @return The configured {@link DataSource} instance against the name passed.
+     * @throws DataSourceNotConfiguredException if {@link DataSource} is not configured.
      */
-    DataSource getDataSource(String dataSourceName);
+    DataSource getDataSource(String dataSourceName) throws DataSourceNotConfiguredException;
 }

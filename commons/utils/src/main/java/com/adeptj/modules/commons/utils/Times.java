@@ -18,38 +18,39 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.auth;
+package com.adeptj.modules.commons.utils;
 
-import com.adeptj.modules.commons.utils.Loggers;
-import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
- * Utility methods for {@link JaxRSAuthenticationInfo} and {@link JaxRSAuthenticationRealm}
+ * Utility for providing execution time in different {@link java.util.concurrent.TimeUnit}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JaxRSAuthUtil {
+public final class Times {
 
-    private JaxRSAuthUtil() {
+    // No instances, just utility methods.
+    private Times() {
     }
 
-    public static JaxRSAuthenticationInfo getJaxRSAuthInfo(JaxRSAuthenticationRealm realm, String username, String password) {
-        JaxRSAuthenticationInfo authInfo = null;
-        try {
-            authInfo = realm.getAuthenticationInfo(username, password);
-        } catch (Exception ex) { // NOSONAR
-            // Gulping everything so that next realms(if any) get a chance.
-            Loggers.get(JaxRSAuthUtil.class).error(ex.getMessage(), ex);
-        }
-        return authInfo;
+    /**
+     * Returns elapsed time in milliseconds from the provided time in nanoseconds.
+     *
+     * @param startTime time in nanoseconds
+     * @return elapsed time in milliseconds
+     */
+    public static long elapsedMillis(final long startTime) {
+        return NANOSECONDS.toMillis(System.nanoTime() - startTime);
     }
 
-    public static JaxRSAuthenticationInfo validateJaxRSAuthInfo(JaxRSAuthenticationInfo authInfo, String username, String password) {
-        return authInfo != null && StringUtils.equals(authInfo.getUsername(), username)
-                && Arrays.equals(password.toCharArray(), authInfo.getPassword())
-                ? authInfo : null;
+    /**
+     * Returns elapsed time in seconds from the provided time in milliseconds.
+     *
+     * @param startTime time in milliseconds
+     * @return elapsed time in seconds
+     */
+    public static long elapsedSeconds(final long startTime) {
+        return MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
     }
 }

@@ -68,9 +68,9 @@ class JpaProperties {
         if (config.useExceptionHandler()) {
             jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         }
-        jpaProperties.put(CLASSLOADER, EntityManagerFactoryProvider.class.getClassLoader());
-        jpaProperties.put(VALIDATION_MODE, config.validationMode());
+        jpaProperties.put(CLASSLOADER, JpaProperties.class.getClassLoader());
         jpaProperties.put(NON_JTA_DATASOURCE, ds);
+        jpaProperties.put(VALIDATION_MODE, config.validationMode());
         jpaProperties.put(VALIDATOR_FACTORY, vf);
         // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
         jpaProperties.putAll(Stream.of(config.jpaProperties())

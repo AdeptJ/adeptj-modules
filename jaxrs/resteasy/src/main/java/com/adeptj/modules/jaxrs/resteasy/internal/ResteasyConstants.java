@@ -27,6 +27,9 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
  */
 final class ResteasyConstants {
 
+    private ResteasyConstants() {
+    }
+
     static final String METHOD_GET_CTX_RESOLVERS = "getContextResolvers";
 
     static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
@@ -35,10 +38,7 @@ final class ResteasyConstants {
 
     static final boolean FORCE_ACCESS = true;
 
-    static final String JAXRS_DISPATCHER_SERVLET_NAME = "AdeptJ JAX-RS DispatcherServlet";
+    static final String RESTEASY_PROXY_SERVLET_NAME = "AdeptJ RESTEasy ProxyServlet";
 
     static final String SERVLET_URL_PATTERN = "/";
-
-    private ResteasyConstants() {
-    }
 }

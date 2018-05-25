@@ -23,7 +23,6 @@ package com.adeptj.modules.webconsole.security;
 import com.adeptj.runtime.tools.OSGiConsolePasswordVault;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationEvent;
 import org.osgi.service.cm.ConfigurationListener;
@@ -61,7 +60,7 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
         if (StringUtils.equals(OSGI_MGR_PID, event.getPid())) {
             switch (event.getType()) {
                 case CM_DELETED:
-                    OSGiConsolePasswordVault.INSTANCE.setPassword(null);
+                    OSGiConsolePasswordVault.getInstance().setPassword(null);
                     break;
                 case CM_UPDATED:
                     this.handleOSGiManagerPwd(event.getPid());
@@ -84,12 +83,12 @@ public class OSGiManagerConfigListener implements ConfigurationListener {
 
     private void handleOSGiManagerPwd(String pid) {
         try {
-            Configuration osgiMgrConfig = this.configAdmin.getConfiguration(pid, null);
-            Dictionary<String, Object> properties = osgiMgrConfig.getProperties();
-            if (properties != null) {
-                OSGiConsolePasswordVault.INSTANCE.setPassword(((String) properties.get(CFG_PWD)));
-                LOGGER.info("OSGi Web Console password set successfully!!");
+            Dictionary<String, Object> properties = this.configAdmin.getConfiguration(pid, null).getProperties();
+            if (properties == null) {
+                return;
             }
+            OSGiConsolePasswordVault.getInstance().setPassword(((String) properties.get(CFG_PWD)));
+            LOGGER.info("OSGi Web Console password set successfully!!");
         } catch (IOException ex) {
             LOGGER.error("IOException!!", ex);
         }

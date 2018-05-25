@@ -26,6 +26,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsExtension;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,6 @@ import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 import java.util.stream.Stream;
 
-import static com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature.PROVIDER_OSGI_PROPERTY;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static org.apache.commons.lang3.StringUtils.containsAny;
 
@@ -51,13 +51,10 @@ import static org.apache.commons.lang3.StringUtils.containsAny;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@JaxrsExtension
 @Provider
 @Designate(ocd = JwtDynamicFeatureConfig.class)
-@Component(
-        immediate = true,
-        configurationPolicy = ConfigurationPolicy.REQUIRE,
-        property = PROVIDER_OSGI_PROPERTY
-)
+@Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class JwtDynamicFeature implements DynamicFeature {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtDynamicFeature.class);
@@ -67,8 +64,6 @@ public class JwtDynamicFeature implements DynamicFeature {
     private static final String ASTERISK = "*";
 
     private static final String FILTER_REG_MSG = "Registered DynamicJwtFilter for mapping [{}#{}]";
-
-    static final String PROVIDER_OSGI_PROPERTY = "osgi.jaxrs.provider=jwt-dyna-feature";
 
     /**
      * Each element may be in the form - FQCN=resourceMethod1,resourceMethod1,...n if JwtFilter
@@ -81,7 +76,7 @@ public class JwtDynamicFeature implements DynamicFeature {
      * Inject {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter}
      */
     @Reference(target = "(jwt.filter.name=dynamic)")
-    private JwtFilter jwtFilter;
+    private JwtFilter dynamicJwtFilter;
 
     /**
      * Registers the {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter} for interception
@@ -101,7 +96,7 @@ public class JwtDynamicFeature implements DynamicFeature {
                 .map(row -> row.split(EQ))
                 .filter(mapping -> resource.equals(mapping[0]) && containsAny(mapping[1], method, ASTERISK))
                 .forEach(mapping -> {
-                    context.register(this.jwtFilter, AUTHENTICATION);
+                    context.register(this.dynamicJwtFilter, AUTHENTICATION);
                     LOGGER.info(FILTER_REG_MSG, resource, method);
                 });
     }

@@ -20,35 +20,25 @@
 
 package com.adeptj.modules.jaxrs.core.auth;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
 
 /**
- * AuthenticationInfo holding username, password and other arbitrary data for JWT based JAX-RS resource authorization.
+ * AuthenticationInfo holding {@link SimpleCredentials} and other arbitrary data for JWT based JAX-RS resource authorization.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public class JaxRSAuthenticationInfo extends HashMap<String, Object> {
 
-    private String username;
+    private SimpleCredentials credentials;
 
-    private char[] password;
-
-    public JaxRSAuthenticationInfo(String username, char[] password) {
-        Validate.isTrue(StringUtils.isNotEmpty(username), "username can't be null or empty!!");
-        Validate.isTrue(ArrayUtils.isNotEmpty(password), "password can't be null or empty!!");
-        this.username = username;
-        this.password = password;
+    public JaxRSAuthenticationInfo(SimpleCredentials credentials) {
+        Validate.notNull(credentials, "SimpleCredentials can't be null!!");
+        this.credentials = credentials;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public char[] getPassword() {
-        return password;
+    public SimpleCredentials getCredentials() {
+        return credentials;
     }
 }

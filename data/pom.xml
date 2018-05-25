@@ -37,6 +37,7 @@
 
     <modules>
 
+        <module>api</module>
         <module>jpa</module>
         <module>mongodb</module>
 

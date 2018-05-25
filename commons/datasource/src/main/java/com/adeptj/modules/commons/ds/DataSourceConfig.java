@@ -106,7 +106,8 @@ public @interface DataSourceConfig {
     // Configure HikariDataSource as a fixed size pool.
     @AttributeDefinition(
             name = MIN_IDLE,
-            description = "Minimum number of idle connections that HikariCP tries to maintain in the pool")
+            description = "Minimum number of idle connections that HikariCP tries to maintain in the pool"
+    )
     int minimumIdle() default DEFAULT_MIN_IDLE; // 32 Connections;
 
     @AttributeDefinition(

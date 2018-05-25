@@ -20,15 +20,14 @@
 
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthUtil;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.osgi.service.component.annotations.Component;
 
 /**
  * Default implementation of JaxRSAuthenticationRealm for creating {@link JaxRSAuthenticationInfo} instances
- * which are stored by {@link SimpleIdentityStore} for querying purpose in case no other implementation
- * of {@link JaxRSAuthenticationRealm} is found.
+ * which are stored by {@link JaxRSAuthenticationInfoHolder}
+ * for querying purpose in case no other implementation of {@link JaxRSAuthenticationRealm} is found.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -56,6 +55,6 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password) {
-        return JaxRSAuthUtil.validateJaxRSAuthInfo(SimpleIdentityStore.INSTANCE.get(username), username, password);
+        return JaxRSAuthUtil.validateCredentials(username, password);
     }
 }

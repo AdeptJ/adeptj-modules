@@ -24,6 +24,8 @@ import com.adeptj.modules.commons.ds.DataSourceConfig;
 import com.adeptj.modules.commons.ds.DataSources;
 import com.adeptj.modules.commons.utils.Loggers;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 
@@ -48,8 +50,10 @@ public class DataSourceManager {
     private ConcurrentMap<String, HikariDataSource> hikariDataSources = new ConcurrentHashMap<>();
 
     void createDataSource(DataSourceConfig config) {
-        this.hikariDataSources.put(config.poolName(), DataSources.createDataSource(config));
-        LOGGER.info("HikariDataSource: [{}] initialized!!", config.poolName());
+        String poolName = config.poolName();
+        Validate.isTrue(StringUtils.isNotEmpty(poolName), "JDBC Pool Name can't be blank!!");
+        this.hikariDataSources.put(poolName, DataSources.newDataSource(config));
+        LOGGER.info("HikariDataSource: [{}] initialized!!", poolName);
     }
 
     HikariDataSource getDataSource(String dataSourceName) {

@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.13.Final</version>
+        <version>1.0.14.Final</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-jaxrs-core</artifactId>
@@ -202,6 +202,18 @@
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-websecurity-jwt</artifactId>
             <version>1.1.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
             <scope>provided</scope>
         </dependency>
 

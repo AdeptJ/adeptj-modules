@@ -42,6 +42,7 @@
         <module>datasource</module>
         <module>logging</module>
         <module>scheduler</module>
+        <module>xslt</module>
 
     </modules>
 

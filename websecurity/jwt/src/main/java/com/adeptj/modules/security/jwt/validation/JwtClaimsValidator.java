@@ -21,6 +21,7 @@
 package com.adeptj.modules.security.jwt.validation;
 
 import com.adeptj.modules.security.jwt.JwtService;
+import org.osgi.annotation.versioning.ConsumerType;
 
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ConsumerType
 public interface JwtClaimsValidator {
 
     /**

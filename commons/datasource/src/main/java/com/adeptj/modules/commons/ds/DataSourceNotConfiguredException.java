@@ -18,49 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.internal;
-
-import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtHandlerAdapter;
-
-import java.util.Map;
+package com.adeptj.modules.commons.ds;
 
 /**
- * Factory for creating {@link JwtHandlerAdapter} instances.
+ * Thrown when an instance of {@link com.zaxxer.hikari.HikariDataSource} is requested even before it is configured.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class JwtHandlerAdapters {
+public class DataSourceNotConfiguredException extends RuntimeException {
 
-    private JwtHandlerAdapters() {
-    }
+    private static final long serialVersionUID = -4649854107775357466L;
 
-    static JwtHandlerAdapter<Boolean> createAdapter(boolean validateClaims, JwtClaimsValidator claimsValidator) {
-        return new ClaimsJwsHandler(validateClaims, claimsValidator);
-    }
-
-    static class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
-
-        private final boolean validateClaims;
-
-        private final JwtClaimsValidator claimsValidator;
-
-        ClaimsJwsHandler(boolean validateClaims, JwtClaimsValidator claimsValidator) {
-            this.validateClaims = validateClaims;
-            this.claimsValidator = claimsValidator;
-        }
-
-        /**
-         * Validates the {@link Claims} via {@link JwtClaimsValidator}.
-         *
-         * @param jws the Json web signature.
-         * @return boolean to indicate the outcome of {@link JwtClaimsValidator#validate(Map)}.
-         */
-        @Override
-        public Boolean onClaimsJws(Jws<Claims> jws) {
-            return !this.validateClaims || this.claimsValidator != null && this.claimsValidator.validate(jws.getBody());
-        }
+    public DataSourceNotConfiguredException(String message) {
+        super(message);
     }
 }

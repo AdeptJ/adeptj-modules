@@ -27,56 +27,80 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
+import static org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants.JAX_RS_RESOURCE;
 
 /**
- * JaxRSResourceTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS
- * &#064;Path annotation with RESTEasy resource registry.
+ * ResourceTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS &#064;Path
+ * annotation with RESTEasy resource registry.
  * <p>
- * Note: As of now all the registered JAX-RS resources are singleton by default.
+ * Note: All the registered JAX-RS resources are singleton by default.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JaxRSResourceTracker extends ServiceTracker<Object, Object> {
+public class ResourceTracker extends ServiceTracker<Object, Object> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSResourceTracker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceTracker.class);
 
-    private static final String RES_FILTER_EXPR = "(osgi.jaxrs.resource.base=*)";
+    private static final String RES_FILTER_EXPR = String.format("(%s=%s)", JAX_RS_RESOURCE, "true");
 
     private Registry registry;
 
-    public JaxRSResourceTracker(BundleContext context, Registry registry) {
+    ResourceTracker(BundleContext context, Registry registry) {
         super(context, OSGiUtil.anyServiceFilter(context, RES_FILTER_EXPR), null);
         this.registry = registry;
         this.open();
     }
 
+    /**
+     * Registers the JAX-RS resource with the RESTEasy {@link Registry}.
+     *
+     * @param reference The reference to the service being added to this {@code ServiceTracker}.
+     * @return The service object to be tracked for the service added to this {@code ServiceTracker}.
+     */
     @Override
     public Object addingService(ServiceReference<Object> reference) {
         Object resource = super.addingService(reference);
         if (resource == null) {
             LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
+            return null;
+        } else if (ResteasyUtil.isNotAnnotatedWithPath(resource)) {
+            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", reference);
+            return null;
         } else {
             LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
             this.registry.addSingletonResource(resource);
+            return resource;
         }
-        return resource;
     }
 
     /**
-     * Removes the given Resource from RESTEasy Registry and registers again the modified service.
+     * Removes the given resource from RESTEasy {@link Registry} and registers again the modified service.
      *
      * @param reference the OSGi service reference of JAX-RS resource.
      * @param service   the OSGi service of JAX-RS resource.
      */
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
+        if (service == null) {
+            LOGGER.warn("JAX-RS service is null, can't remove the resource from RESTEasy's registry!!");
+            return;
+        }
         LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
-        Optional.ofNullable(service).ifPresent(resource -> this.registry.removeRegistrations(resource.getClass()));
-        LOGGER.info("Adding JAX-RS Resource again: [{}]", service);
-        this.registry.addSingletonResource(service);
+        this.registry.removeRegistrations(service.getClass());
+        if (ResteasyUtil.isNotAnnotatedWithPath(service)) {
+            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", reference);
+        } else {
+            LOGGER.info("Adding JAX-RS Resource [{}] again!!", service);
+            this.registry.addSingletonResource(service);
+        }
     }
 
+    /**
+     * Removes the JAX-RS resource from the RESTEasy {@link Registry}.
+     *
+     * @param reference The reference to removed service.
+     * @param service   The service object for the removed service.
+     */
     @Override
     public void removedService(ServiceReference<Object> reference, Object service) {
         super.removedService(reference, service);

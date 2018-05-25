@@ -34,6 +34,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.osgi.service.metatype.annotations.Designate;
 
 import javax.validation.constraints.NotEmpty;
@@ -43,10 +44,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.BIND_JWT_SERVICE;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.UNBIND_JWT_SERVICE;
-import static com.adeptj.modules.jaxrs.core.resource.JwtResource.RESOURCE_BASE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
@@ -55,12 +56,11 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@JaxrsResource
 @Path("/auth")
 @Designate(ocd = JwtCookieConfig.class)
-@Component(immediate = true, service = JwtResource.class, property = RESOURCE_BASE)
+@Component(immediate = true, service = JwtResource.class)
 public class JwtResource {
-
-    static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=authenticator";
 
     @Reference
     private JaxRSAuthenticator authenticator;
@@ -95,10 +95,10 @@ public class JwtResource {
         if (this.jwtService == null) {
             return JaxRSResponses.unavailable();
         }
-        JaxRSAuthenticationInfo authInfo = this.authenticator.handleSecurity(username, password);
-        return authInfo == null
-                ? JaxRSResponses.unauthorized()
-                : JwtUtil.responseWithJwt(this.jwtService.createJwt(username, authInfo));
+        Optional<JaxRSAuthenticationInfo> optionalAuthInfo = this.authenticator.handleSecurity(username, password);
+        return optionalAuthInfo.isPresent()
+                ? JwtUtil.responseWithJwt(this.jwtService.createJwt(username, optionalAuthInfo.get()))
+                : JaxRSResponses.unauthorized();
     }
 
     /**

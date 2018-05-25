@@ -21,6 +21,8 @@
 package com.adeptj.modules.security.jwt;
 
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
+import io.jsonwebtoken.lang.Assert;
+import org.osgi.annotation.versioning.ProviderType;
 
 import java.util.Map;
 
@@ -29,6 +31,7 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 public interface JwtService {
 
     /**
@@ -48,6 +51,20 @@ public interface JwtService {
     String createJwt(String subject, Map<String, Object> claims);
 
     /**
+     * Create JWT from claims information passed.
+     * <p>
+     * Note: This method expects that caller should pass the default claims parameters in claims map
+     * such as "sub", "iss", "sub", "iat" etc.
+     * <p>
+     * Default claims parameters from JwtConfig are not considered.
+     *
+     * @param claims Caller supplied JWT claims map
+     * @return JWT signed with the configured key.
+     * @since 1.1.0.Final
+     */
+    String createJwt(Map<String, Object> claims);
+
+    /**
      * Verify the passed jwt claim information using configured signing key.
      * <p>
      * If a {@link JwtClaimsValidator} is available then JWT claims map is passed to it for further
@@ -58,4 +75,21 @@ public interface JwtService {
      * an indication of failure so that caller can take action accordingly, such has setting 401 status.
      */
     boolean verifyJwt(String jwt);
+
+    /**
+     * Validate the claims information passed.
+     *
+     * @param claims Caller supplied JWT claims map
+     * @since 1.1.0.Final
+     */
+    default void validateClaims(Map<String, Object> claims) {
+        Assert.notEmpty(claims, "JWT claims map can't be null or empty!!");
+        claims.forEach((claim, value) -> {
+            if (value instanceof String) {
+                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
+            } else {
+                Assert.notNull(value, String.format("%s can't be null!!", claim));
+            }
+        });
+    }
 }

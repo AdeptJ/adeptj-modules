@@ -35,7 +35,7 @@ import static com.adeptj.modules.commons.utils.Constants.EQ;
  */
 public final class DataSources {
 
-    public static HikariDataSource createDataSource(DataSourceConfig config) {
+    public static HikariDataSource newDataSource(DataSourceConfig config) {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName(config.poolName());
         hikariConfig.setJdbcUrl(config.jdbcUrl());
@@ -52,7 +52,7 @@ public final class DataSources {
                 .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
                 .forEach(entry -> {
                     String[] mapping = entry.split(EQ);
-                    hikariConfig.getDataSourceProperties().put(mapping[0], mapping[1]);
+                    hikariConfig.addDataSourceProperty(mapping[0], mapping[1]);
                 });
         return new HikariDataSource(hikariConfig);
     }

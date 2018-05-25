@@ -24,8 +24,8 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules</artifactId>
-        <version>1.0.4.Final</version>
-
+        <version>1.0.13.Final</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-data-api</artifactId>
     <version>1.0.0.Final</version>
@@ -41,7 +41,7 @@
 
         <plugins>
 
-        <!-- Below BND plugin is required to process the OSGi Annotation-->
+            <!-- Below BND plugin is required to process the OSGi Annotation-->
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
@@ -97,6 +97,88 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.diana</groupId>
+            <artifactId>diana-core</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.diana</groupId>
+            <artifactId>diana-key-value</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.diana</groupId>
+            <artifactId>diana-document</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.diana</groupId>
+            <artifactId>diana-column</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.diana</groupId>
+            <artifactId>diana-driver-commons</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.artemis</groupId>
+            <artifactId>artemis-core</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.artemis</groupId>
+            <artifactId>artemis-document</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.artemis</groupId>
+            <artifactId>artemis-key-value</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.artemis</groupId>
+            <artifactId>artemis-configuration</artifactId>
+            <version>0.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.dataformat</groupId>
+                    <artifactId>jackson-dataformat-yaml</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.artemis</groupId>
+            <artifactId>artemis-column</artifactId>
+            <version>0.0.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jnosql.artemis</groupId>
+            <artifactId>artemis-validation</artifactId>
+            <version>0.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

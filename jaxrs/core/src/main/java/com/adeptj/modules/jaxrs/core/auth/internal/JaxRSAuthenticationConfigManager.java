@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.core.auth.internal;
 
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationConfig;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.annotation.versioning.ProviderType;
@@ -62,12 +63,13 @@ public class JaxRSAuthenticationConfigManager {
         Validate.isTrue(StringUtils.isNotEmpty(username), "Username can't ne null!!");
         Validate.isTrue(StringUtils.isNotEmpty(password), "Password can't ne null!!");
         LOGGER.info("Creating JaxRSAuthenticationInfo for User: [{}]", username);
-        SimpleIdentityStore.INSTANCE.put(username, new JaxRSAuthenticationInfo(username, password.toCharArray()));
+        JaxRSAuthenticationInfoHolder.getInstance()
+                .addAuthInfo(username, new JaxRSAuthenticationInfo(SimpleCredentials.of(username, password.toCharArray())));
     }
 
     @Deactivate
     protected void stop(JaxRSAuthenticationConfig config) {
         LOGGER.info("JaxRSAuthenticationInfo removed for User: [{}]", config.username());
-        SimpleIdentityStore.INSTANCE.remove(config.username());
+        JaxRSAuthenticationInfoHolder.getInstance().removeAuthInfo(config.username());
     }
 }

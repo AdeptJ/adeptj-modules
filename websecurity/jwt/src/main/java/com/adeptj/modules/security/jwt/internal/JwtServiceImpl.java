@@ -25,8 +25,7 @@ import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
+import io.jsonwebtoken.lang.Assert;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -39,14 +38,18 @@ import org.slf4j.LoggerFactory;
 
 import java.security.Key;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -63,6 +66,10 @@ public class JwtServiceImpl implements JwtService {
     private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
 
     private static final String UNBIND_CLAIMS_VALIDATOR_SERVICE = "unbindClaimsValidator";
+
+    private List<String> defaultClaimsToValidate;
+
+    private TemporalUnit expirationTimeUnit;
 
     private JwtConfig jwtConfig;
 
@@ -84,7 +91,8 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String createJwt(String subject, Map<String, Object> claims) {
-        Validate.isTrue(StringUtils.isNotEmpty(subject), "Subject can't be blank!!");
+        Assert.hasText(subject, "Subject can't be blank!!");
+        this.validateClaims(claims);
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
@@ -92,8 +100,26 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(subject)
                 .setIssuer(this.jwtConfig.issuer())
                 .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(this.jwtConfig.expirationTime(), MINUTES)))
+                .setExpiration(Date.from(now.plus(this.jwtConfig.expirationTime(), this.expirationTimeUnit)))
                 .setId(UUID.randomUUID().toString())
+                .signWith(this.signatureAlgo, this.signingKey)
+                .compact();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String createJwt(Map<String, Object> claims) {
+        this.validateClaims(claims);
+        this.defaultClaimsToValidate.forEach(claim -> {
+            if (!claims.containsKey(claim)) {
+                throw new IllegalArgumentException(String.format("JWT claim [%s] not found in claims map!", claim));
+            }
+        });
+        return Jwts.builder()
+                .setHeaderParam(TYPE, JWT_TYPE)
+                .setClaims(claims)
                 .signWith(this.signatureAlgo, this.signingKey)
                 .compact();
     }
@@ -104,11 +130,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public boolean verifyJwt(String jwt) {
         try {
-            Validate.isTrue(StringUtils.isNotEmpty(jwt), "JWT can't be blank!!");
+            Assert.hasText(jwt, "JWT can't be blank!!");
             return Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
                     .setSigningKey(this.signingKey)
-                    .parse(jwt, JwtHandlerAdapters.createAdapter(this.jwtConfig.validateClaims(), this.claimsValidator));
+                    .parse(jwt, new ClaimsJwsHandler(this.jwtConfig, this.claimsValidator));
         } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {
@@ -138,6 +164,10 @@ public class JwtServiceImpl implements JwtService {
         this.jwtConfig = jwtConfig;
         this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
+        this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
+        // Noticed bad performance of Arrays.asList in lambda foreach, therefore creating a new ArrayList instead.
+        this.defaultClaimsToValidate = new ArrayList<>();
+        this.defaultClaimsToValidate.addAll(Arrays.asList(this.jwtConfig.defaultClaimsToValidate()));
     }
 
     @Modified

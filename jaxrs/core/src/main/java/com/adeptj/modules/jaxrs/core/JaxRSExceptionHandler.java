@@ -31,7 +31,7 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * An {@link ExceptionMapper} for JaxRSException.
+ * An {@link ExceptionMapper} for {@link JaxRSException}.
  * <p>
  * Sends the unhandled JaxRSException's message coming out of resource method calls
  * as JSON response if showException is set as true otherwise a generic error message is sent.
@@ -57,9 +57,9 @@ public class JaxRSExceptionHandler implements ExceptionMapper<JaxRSException> {
         String mediaType = exception.getMediaType();
         Object entity = exception.getEntity();
         if (entity == null) {
-            entity = new ErrorResponse(JSON_KEY_ERROR, exception, this.showException);
-            // if entity was not set then no point in considering the mediaType.
+            // if entity was not set then no point in considering the mediaType, set mediaType as application/json.
             mediaType = APPLICATION_JSON;
+            entity = new ErrorResponse(JSON_KEY_ERROR, exception, this.showException);
         }
         return Response.status(exception.getStatus())
                 .type(mediaType)

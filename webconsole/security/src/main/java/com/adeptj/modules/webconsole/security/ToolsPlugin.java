@@ -36,7 +36,9 @@ import static org.apache.felix.webconsole.WebConsoleConstants.PLUGIN_TITLE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true, service = Servlet.class,
+@Component(
+        immediate = true,
+        service = Servlet.class,
         property = {
                 PLUGIN_LABEL + "=" + "tools",
                 PLUGIN_TITLE + "=" + "AdeptJ Tools"

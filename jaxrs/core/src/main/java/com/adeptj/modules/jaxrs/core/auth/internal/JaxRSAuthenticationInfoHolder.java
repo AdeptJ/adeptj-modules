@@ -26,29 +26,33 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Map based identity store which stores {@link JaxRSAuthenticationInfo} created vis OSGi configs.
+ * Map based storage which stores {@link JaxRSAuthenticationInfo} created vis OSGi configs.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-enum SimpleIdentityStore {
+enum JaxRSAuthenticationInfoHolder {
 
     INSTANCE;
 
     private Map<String, JaxRSAuthenticationInfo> authInfoMap = new ConcurrentHashMap<>();
 
-    void put(String username, JaxRSAuthenticationInfo authInfo) {
+    void addAuthInfo(String username, JaxRSAuthenticationInfo authInfo) {
         if (this.authInfoMap.containsKey(username)) {
             throw new IllegalStateException(String.format("Username: [%s] already present!!", username));
         }
         this.authInfoMap.put(username, authInfo);
     }
 
-    JaxRSAuthenticationInfo get(String username) {
+    JaxRSAuthenticationInfo getAuthInfo(String username) {
         return this.authInfoMap.get(username);
     }
 
-    void remove(String username) {
+    void removeAuthInfo(String username) {
         this.authInfoMap.remove(username);
+    }
+
+    static JaxRSAuthenticationInfoHolder getInstance() {
+        return INSTANCE;
     }
 
 }
