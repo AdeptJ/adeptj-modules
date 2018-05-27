@@ -67,7 +67,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String UNBIND_CLAIMS_VALIDATOR_SERVICE = "unbindClaimsValidator";
 
-    private List<String> defaultClaimsToValidate;
+    private List<String> obligatoryClaims;
 
     private TemporalUnit expirationTimeUnit;
 
@@ -92,7 +92,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String createJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be blank!!");
-        this.validateClaims(claims);
+        this.checkClaims(claims);
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
@@ -111,12 +111,9 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String createJwt(Map<String, Object> claims) {
-        this.validateClaims(claims);
-        this.defaultClaimsToValidate.forEach(claim -> {
-            if (!claims.containsKey(claim)) {
-                throw new IllegalArgumentException(String.format("JWT claim [%s] not found in claims map!", claim));
-            }
-        });
+        this.checkClaims(claims);
+        this.obligatoryClaims.forEach(claim ->
+                Assert.isTrue(claims.containsKey(claim), String.format("JWT claim [%s] not found in claims map!", claim)));
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
@@ -146,7 +143,7 @@ public class JwtServiceImpl implements JwtService {
         return false;
     }
 
-    // ------------------ INTERNAL ------------------
+    // ------------------------------------ INTERNAL ------------------------------------
     // Component Lifecycle Methods
 
     protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
@@ -165,9 +162,7 @@ public class JwtServiceImpl implements JwtService {
         this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
         this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
-        // Noticed bad performance of Arrays.asList in lambda foreach, therefore creating a new ArrayList instead.
-        this.defaultClaimsToValidate = new ArrayList<>();
-        this.defaultClaimsToValidate.addAll(Arrays.asList(this.jwtConfig.defaultClaimsToValidate()));
+        this.obligatoryClaims = new ArrayList<>(Arrays.asList(this.jwtConfig.obligatoryClaims()));
     }
 
     @Modified

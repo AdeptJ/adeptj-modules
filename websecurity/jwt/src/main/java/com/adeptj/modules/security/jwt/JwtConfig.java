@@ -104,10 +104,10 @@ public @interface JwtConfig {
     String expirationTimeUnit();
 
     @AttributeDefinition(
-            name = "JWT default claims which need to be validated",
-            description = "JWT default claims which need to be validated"
+            name = "JWT default obligatory claims which need to be checked",
+            description = "JWT default obligatory claims which need to be checked for null and emptiness."
     )
-    String[] defaultClaimsToValidate() default {SUBJECT, ISSUER, ID, ISSUED_AT, EXPIRATION};
+    String[] obligatoryClaims() default {SUBJECT, ISSUER, ID, ISSUED_AT, EXPIRATION};
 
     @AttributeDefinition(
             name = "Validate JWT Claims",

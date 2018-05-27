@@ -82,7 +82,7 @@ public interface JwtService {
      * @param claims Caller supplied JWT claims map
      * @since 1.1.0.Final
      */
-    default void validateClaims(Map<String, Object> claims) {
+    default void checkClaims(Map<String, Object> claims) {
         Assert.notEmpty(claims, "JWT claims map can't be null or empty!!");
         claims.forEach((claim, value) -> {
             if (value instanceof String) {
