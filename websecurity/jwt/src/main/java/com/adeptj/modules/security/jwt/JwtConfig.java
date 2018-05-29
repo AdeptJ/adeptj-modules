@@ -96,12 +96,13 @@ public @interface JwtConfig {
             name = "JWT Expiration Time Unit",
             description = "JWT Expiration Time Unit in Java ChronoUnit.",
             options = {
-                    @Option(label = "MINUTES", value = "Minutes"),
-                    @Option(label = "SECONDS", value = "Seconds"),
-                    @Option(label = "HOURS", value = "Hours"),
+                    @Option(label = "Seconds", value = "SECONDS"),
+                    @Option(label = "Minutes", value = "MINUTES"),
+                    @Option(label = "Hours", value = "HOURS"),
+                    @Option(label = "Days", value = "DAYS"),
             }
     )
-    String expirationTimeUnit();
+    String expirationTimeUnit() default "MINUTES";
 
     @AttributeDefinition(
             name = "JWT default obligatory claims which need to be checked",

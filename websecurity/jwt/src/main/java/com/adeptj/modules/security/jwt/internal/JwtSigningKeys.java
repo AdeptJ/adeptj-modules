@@ -125,12 +125,13 @@ final class JwtSigningKeys {
         return keySpec;
     }
 
-    private static byte[] decodeKeyData(String keyData, boolean encrypted) {
-        return Base64.getDecoder().decode(keyData
-                .replace(encrypted ? ENCRYPTED_KEY_HEADER : KEY_HEADER, EMPTY)
-                .replace(encrypted ? ENCRYPTED_KEY_FOOTER : KEY_FOOTER, EMPTY)
+    private static byte[] decodeKeyData(String keyData, boolean encryptedKey) {
+        byte[] keyBytes = keyData
+                .replace(encryptedKey ? ENCRYPTED_KEY_HEADER : KEY_HEADER, EMPTY)
+                .replace(encryptedKey ? ENCRYPTED_KEY_FOOTER : KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)
                 .trim()
-                .getBytes(UTF_8));
+                .getBytes(UTF_8);
+        return Base64.getDecoder().decode(keyBytes);
     }
 }

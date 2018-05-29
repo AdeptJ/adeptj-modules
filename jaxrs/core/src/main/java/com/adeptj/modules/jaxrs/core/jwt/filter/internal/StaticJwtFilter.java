@@ -19,6 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
+import com.adeptj.modules.jaxrs.core.JaxRSProvider;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
@@ -26,7 +27,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsExtension;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -47,7 +47,7 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxrsExtension
+@JaxRSProvider(name = "StaticJwtFilter")
 @RequiresJwt
 @Priority(AUTHENTICATION)
 @Provider

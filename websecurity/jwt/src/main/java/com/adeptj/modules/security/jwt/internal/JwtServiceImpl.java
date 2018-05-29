@@ -28,7 +28,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -36,6 +35,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -61,7 +61,9 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Component(configurationPolicy = REQUIRE)
 public class JwtServiceImpl implements JwtService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String CLAIM_NOT_FOUND_MSG = "JWT claim [%s] not found in claims map!";
 
     private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
 
@@ -75,7 +77,7 @@ public class JwtServiceImpl implements JwtService {
 
     private SignatureAlgorithm signatureAlgo;
 
-    private volatile Key signingKey;
+    private Key signingKey;
 
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
@@ -112,8 +114,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String createJwt(Map<String, Object> claims) {
         this.checkClaims(claims);
-        this.obligatoryClaims.forEach(claim ->
-                Assert.isTrue(claims.containsKey(claim), String.format("JWT claim [%s] not found in claims map!", claim)));
+        this.obligatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
@@ -143,7 +144,7 @@ public class JwtServiceImpl implements JwtService {
         return false;
     }
 
-    // ------------------------------------ INTERNAL ------------------------------------
+    // ---------------------------------------------- INTERNAL ----------------------------------------------
     // Component Lifecycle Methods
 
     protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
@@ -163,14 +164,5 @@ public class JwtServiceImpl implements JwtService {
         this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
         this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
         this.obligatoryClaims = new ArrayList<>(Arrays.asList(this.jwtConfig.obligatoryClaims()));
-    }
-
-    @Modified
-    protected void updated(JwtConfig jwtConfig) {
-        LOGGER.info("In updated,recreating the signing Key!!");
-        this.jwtConfig = null;
-        this.signatureAlgo = null;
-        this.signingKey = null;
-        this.start(jwtConfig);
     }
 }

@@ -19,6 +19,7 @@
 */
 package com.adeptj.modules.jaxrs.core.resource;
 
+import com.adeptj.modules.jaxrs.core.JaxRSResource;
 import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
@@ -34,7 +35,6 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.osgi.service.metatype.annotations.Designate;
 
 import javax.validation.constraints.NotEmpty;
@@ -56,7 +56,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxrsResource
+@JaxRSResource(name = "crypto")
 @Path("/auth")
 @Designate(ocd = JwtCookieConfig.class)
 @Component(immediate = true, service = JwtResource.class)

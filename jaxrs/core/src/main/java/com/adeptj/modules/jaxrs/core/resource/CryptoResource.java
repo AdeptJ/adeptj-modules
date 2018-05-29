@@ -22,10 +22,10 @@ package com.adeptj.modules.jaxrs.core.resource;
 
 import com.adeptj.modules.commons.utils.service.CryptoService;
 import com.adeptj.modules.commons.utils.service.SaltHashPair;
+import com.adeptj.modules.jaxrs.core.JaxRSResource;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsResource;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
@@ -48,7 +48,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxrsResource
+@JaxRSResource(name = "crypto")
 @Path("/utils/crypto")
 @Component(immediate = true, service = CryptoResource.class)
 public class CryptoResource {

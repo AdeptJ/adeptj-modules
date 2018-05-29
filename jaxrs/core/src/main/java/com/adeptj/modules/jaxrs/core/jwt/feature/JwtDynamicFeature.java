@@ -20,13 +20,13 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.feature;
 
+import com.adeptj.modules.jaxrs.core.JaxRSProvider;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jaxrs.whiteboard.propertytypes.JaxrsExtension;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ import static org.apache.commons.lang3.StringUtils.containsAny;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxrsExtension
+@JaxRSProvider(name = "JwtDynamicFeature")
 @Provider
 @Designate(ocd = JwtDynamicFeatureConfig.class)
 @Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
