@@ -227,12 +227,6 @@
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
                 <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-databind</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
