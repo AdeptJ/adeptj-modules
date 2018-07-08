@@ -69,13 +69,13 @@ final class ResteasyUtil {
 
     static void removeInternalValidators(ResteasyProviderFactory rpf) {
         try {
-            Map<?, ?> contextResolvers = Map.class.cast(invokeMethod(rpf, FORCE_ACCESS, METHOD_GET_CTX_RESOLVERS, null, null));
+            Map<?, ?> contextResolvers = (Map) invokeMethod(rpf, FORCE_ACCESS, METHOD_GET_CTX_RESOLVERS, null, null);
             LOGGER.info("ContextResolver(s) prior to removal: [{}]", contextResolvers.size());
             contextResolvers.remove(GeneralValidator.class);
             contextResolvers.remove(GeneralValidatorCDI.class);
             LOGGER.info("ContextResolver(s) after removal: [{}]", contextResolvers.size());
             Field field = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
-            Set<?> providerClasses = Set.class.cast(readField(field, rpf, FORCE_ACCESS));
+            Set<?> providerClasses = (Set) readField(field, rpf, FORCE_ACCESS);
             providerClasses.remove(org.jboss.resteasy.plugins.validation.ValidatorContextResolver.class);
             providerClasses.remove(ValidatorContextResolverCDI.class);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
@@ -89,7 +89,7 @@ final class ResteasyUtil {
         }
         try {
             Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
-            if (Set.class.cast(readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
+            if (((Set) readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
                 LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
             }
         } catch (IllegalArgumentException | IllegalAccessException ex) {

@@ -35,6 +35,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.NoProviderFoundException;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
+import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -47,7 +48,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 @Component(immediate = true)
 public class HibernateValidatorService implements ValidatorService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HibernateValidatorService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private ValidatorFactory validatorFactory;
 
@@ -69,7 +70,7 @@ public class HibernateValidatorService implements ValidatorService {
     @Override
     public <T> Set<ConstraintViolation<T>> validateProperty(T instance, String property) {
         Validate.notNull(instance, "Object to be validated can't be null!!");
-        Validate.isTrue(StringUtils.isNotEmpty(property), property, "property to validate can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(property), "property [%s] can't be blank!!", property);
         return this.validatorFactory.getValidator().validateProperty(instance, property);
     }
 
@@ -90,8 +91,7 @@ public class HibernateValidatorService implements ValidatorService {
         return validatorFactory;
     }
 
-    // --------------------------- INTERNAL ---------------------------
-    // ---------------- Component lifecycle methods -------------------
+    // --------------------------------------------------- INTERNAL ----------------------------------------------------
 
     @Activate
     protected void start() {
