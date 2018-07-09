@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +54,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Component(service = ResteasyLifecycle.class, configurationPolicy = REQUIRE)
 public class ResteasyLifecycle {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResteasyLifecycle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String JAXRS_RT_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
@@ -130,11 +131,10 @@ public class ResteasyLifecycle {
         return resteasyDispatcher;
     }
 
-    // --------------------------------------------------- INTERNAL ---------------------------------------------------
-    // ------------------------------------------ Component lifecycle methods -----------------------------------------
+    // --------------------------------------------------- INTERNAL ----------------------------------------------------
 
     @Activate
-    protected void activate(BundleContext bundleContext, ResteasyConfig config) {
+    protected void start(BundleContext bundleContext, ResteasyConfig config) {
         this.bundleContext = bundleContext;
         this.config = config;
         this.serviceTrackers = new ArrayList<>();

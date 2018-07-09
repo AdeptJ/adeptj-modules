@@ -23,6 +23,12 @@ package com.adeptj.modules.jaxrs.resteasy;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import static javax.ws.rs.HttpMethod.DELETE;
+import static javax.ws.rs.HttpMethod.GET;
+import static javax.ws.rs.HttpMethod.HEAD;
+import static javax.ws.rs.HttpMethod.OPTIONS;
+import static javax.ws.rs.HttpMethod.POST;
+import static javax.ws.rs.HttpMethod.PUT;
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CACHE_CONTROL;
@@ -71,7 +77,14 @@ public @interface ResteasyConfig {
                     + "or methods allowed when accessing the resource. "
                     + "This is used in response to a preflight request."
     )
-    String allowedMethods() default "GET,POST,PUT,OPTIONS,HEAD,DELETE";
+    String[] allowedMethods() default {
+            GET,
+            POST,
+            PUT,
+            DELETE,
+            OPTIONS,
+            HEAD
+    };
 
     @AttributeDefinition(
             name = "CORS Allowed Headers",

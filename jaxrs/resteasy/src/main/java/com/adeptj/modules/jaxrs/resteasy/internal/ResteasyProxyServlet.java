@@ -25,6 +25,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardFilterAsyncSupported;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -32,6 +34,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_PROXY_SERVLET_NAME;
@@ -61,7 +64,11 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
 )
 public class ResteasyProxyServlet extends HttpServlet {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private static final long serialVersionUID = -4415966373465265279L;
+
+    private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
 
     /**
      * Manages RESTEasy's lifecycle.
@@ -86,6 +93,9 @@ public class ResteasyProxyServlet extends HttpServlet {
      */
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
+        }
         this.resteasyLifecycle.getResteasyDispatcher().service(req.getMethod(), req, resp);
     }
 
