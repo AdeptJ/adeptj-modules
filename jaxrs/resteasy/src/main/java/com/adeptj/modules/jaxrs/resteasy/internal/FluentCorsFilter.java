@@ -70,7 +70,7 @@ class FluentCorsFilter {
         return this;
     }
 
-    CorsFilter build() {
+    CorsFilter corsFilter() {
         return corsFilter;
     }
 }

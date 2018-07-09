@@ -67,7 +67,7 @@ final class ResteasyUtil {
                         .allowedMethods(config.allowedMethods())
                         .allowedHeaders(config.allowedHeaders())
                         .allowedOrigins(config.allowedOrigins())
-                        .build());
+                        .corsFilter());
     }
 
     static void removeInternalValidators(ResteasyProviderFactory rpf) {
