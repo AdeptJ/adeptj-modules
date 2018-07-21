@@ -24,13 +24,13 @@ import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
+import com.adeptj.modules.data.jpa.JpaCallback;
 import com.adeptj.modules.data.jpa.QueryType;
 import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Map;
@@ -348,13 +348,12 @@ public interface JpaCrudRepository {
     <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
 
     /**
-     * Gets the {@link EntityManager}
-     * <p>
-     * Note: Caller should not maintain a reference of returned EntityManager instance.
-     * And it is the responsibility of caller to close the {@link EntityManager} to prevent
-     * resource leakage to happen.
+     * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager.
      *
-     * @return The {@link EntityManager} instance
+     * @param action      callback object that specifies the JPA action
+     * @param requiresTxn whether a JPA transaction is required or not
+     * @param <T>         the result type
+     * @return a result object returned by the action, or null
      */
-    EntityManager getEntityManager();
+    <T> T execute(JpaCallback<T> action, boolean requiresTxn);
 }

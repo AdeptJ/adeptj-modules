@@ -18,36 +18,27 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.logging.internal;
+package com.adeptj.modules.data.jpa;
 
-import org.osgi.service.log.LogEntry;
-import org.osgi.service.log.LogListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.persistence.EntityManager;
 
 /**
- * Simple implementation of OSGi {@link LogListener} which logs the given {@link LogEntry}
- * to underlying logging framework with the help of SLF4J.
+ * This is a functional interface and can therefore be used as the assignment target for a lambda expression or method reference.
+ * <p>
+ * Callback interface for JPA code. To be used with {@link com.adeptj.modules.data.jpa.api.JpaCrudRepository#execute} method.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class OSGiLogListener implements LogListener {
+@FunctionalInterface
+public interface JpaCallback<T> {
 
-    private static final String OSGI_LOGGER = "com.adeptj.modules.commons.osgi.logger";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OSGI_LOGGER);
-
-    @Override
-    public void logged(LogEntry entry) {
-        switch (entry.getLogLevel()) {
-            case ERROR:
-                LOGGER.error(entry.getMessage(), entry.getException());
-                break;
-            case WARN:
-                LOGGER.warn(entry.getMessage());
-                break;
-            default:
-                // do nothing, we are not interested in other log levels.
-        }
-    }
+    /**
+     * Gets called by {@link com.adeptj.modules.data.jpa.api.JpaCrudRepository#execute} with an active JPA EntityManager.
+     * <p>
+     * Caller does not need to care about activating or closing the EntityManager, or handling transactions.
+     *
+     * @param em an active EntityManager
+     * @return a result object, or null if none
+     */
+    T doInJpa(EntityManager em);
 }

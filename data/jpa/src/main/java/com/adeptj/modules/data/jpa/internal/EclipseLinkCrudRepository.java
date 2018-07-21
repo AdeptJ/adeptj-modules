@@ -4,6 +4,7 @@ import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
+import com.adeptj.modules.data.jpa.JpaCallback;
 import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.PersistenceException;
 import com.adeptj.modules.data.jpa.QueryType;
@@ -27,7 +28,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
 
@@ -621,9 +621,27 @@ public class EclipseLinkCrudRepository implements JpaCrudRepository {
      * {@inheritDoc}
      */
     @Override
-    public EntityManager getEntityManager() {
-        return EntityManager.class.cast(Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                new Class[]{EntityManager.class},
-                new EntityManagerInvocationHandler(this.emf.createEntityManager())));
+    public <T> T execute(JpaCallback<T> action, boolean requiresTxn) {
+        T result;
+        EntityManager em = null;
+        EntityTransaction txn = null;
+        try {
+            em = this.emf.createEntityManager();
+            if (requiresTxn) {
+                txn = JpaUtil.getTransaction(em);
+                result = action.doInJpa(em);
+                txn.commit();
+            } else {
+                result = action.doInJpa(em);
+            }
+        } catch (RuntimeException ex) {
+            JpaUtil.setRollbackOnly(txn);
+            LOGGER.error(ex.getMessage(), ex);
+            throw new PersistenceException(ex.getMessage(), ex);
+        } finally {
+            JpaUtil.rollbackTransaction(txn);
+            JpaUtil.closeEntityManager(em);
+        }
+        return result;
     }
 }

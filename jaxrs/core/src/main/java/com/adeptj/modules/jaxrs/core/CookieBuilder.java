@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.core;
 
 import javax.ws.rs.core.NewCookie;
 import java.util.Date;
+import java.util.Objects;
 
 import static javax.ws.rs.core.Cookie.DEFAULT_VERSION;
 
@@ -39,7 +40,7 @@ public class CookieBuilder {
     }
 
     public NewCookie getCookie() {
-        return cookie;
+        return Objects.requireNonNull(this.cookie, "NewCookie instance is uninitialized!!");
     }
 
     public static Builder builder() {

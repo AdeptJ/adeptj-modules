@@ -28,6 +28,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
@@ -144,8 +145,7 @@ public class JwtServiceImpl implements JwtService {
         return false;
     }
 
-    // ---------------------------------------------- INTERNAL ----------------------------------------------
-    // Component Lifecycle Methods
+    // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
 
     protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
         this.claimsValidator = claimsValidator;
@@ -157,8 +157,12 @@ public class JwtServiceImpl implements JwtService {
         }
     }
 
+    @Modified
     @Activate
     protected void start(JwtConfig jwtConfig) {
+        this.jwtConfig = null;
+        this.signatureAlgo = null;
+        this.signingKey = null;
         this.jwtConfig = jwtConfig;
         this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
