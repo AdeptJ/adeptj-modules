@@ -27,7 +27,9 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants.JAX_RS_EXTENSION;
+import static com.adeptj.modules.commons.utils.Constants.AESTRISK;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_PROVIDER_NAME;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVICE_TRACKER_FORMAT;
 
 /**
  * ProviderTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS &#064;Provider
@@ -39,7 +41,7 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProviderTracker.class);
 
-    private static final String PROVIDER_FILTER_EXPR = String.format("(%s=%s)", JAX_RS_EXTENSION, "true");
+    private static final String PROVIDER_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME, AESTRISK);
 
     private ResteasyProviderFactory providerFactory;
 

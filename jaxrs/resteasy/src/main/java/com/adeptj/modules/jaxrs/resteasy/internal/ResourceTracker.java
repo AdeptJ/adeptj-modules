@@ -27,7 +27,9 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants.JAX_RS_RESOURCE;
+import static com.adeptj.modules.commons.utils.Constants.AESTRISK;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_RESOURCE_NAME;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVICE_TRACKER_FORMAT;
 
 /**
  * ResourceTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS &#064;Path
@@ -41,7 +43,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceTracker.class);
 
-    private static final String RES_FILTER_EXPR = String.format("(%s=%s)", JAX_RS_RESOURCE, "true");
+    private static final String RES_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME, AESTRISK);
 
     private Registry registry;
 

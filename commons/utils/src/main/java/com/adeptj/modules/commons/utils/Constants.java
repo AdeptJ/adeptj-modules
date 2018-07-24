@@ -34,5 +34,7 @@ public final class Constants {
 
     public static final String COMMA = ",";
 
+    public static final String AESTRISK = "*";
+
     public static final String ASYNC_SUPPORTED_TRUE = "true";
 }

@@ -27,13 +27,18 @@ package com.adeptj.modules.jaxrs.core;
  */
 public final class JaxRSConstants {
 
+    // Just declaring constants, no instances required.
+    private JaxRSConstants() {
+    }
+
     public static final String JSON_KEY_ERROR = "ERROR";
 
     public static final int STATUS_SERVER_ERROR = 500;
 
     public static final String AUTH_SCHEME_BEARER = "Bearer";
 
-    // Just declaring constants, no instances required.
-    private JaxRSConstants() {
-    }
+    public static final String PROPERTY_PROVIDER_NAME = "osgi.jaxrs.provider.name";
+
+    public static final String PROPERTY_RESOURCE_NAME = "osgi.jaxrs.resource.name";
+
 }

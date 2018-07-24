@@ -41,4 +41,6 @@ final class ResteasyConstants {
     static final String RESTEASY_PROXY_SERVLET_NAME = "AdeptJ RESTEasy ProxyServlet";
 
     static final String SERVLET_URL_PATTERN = "/";
+
+    static final String SERVICE_TRACKER_FORMAT = "(%s=%s)";
 }

@@ -49,7 +49,7 @@ public class ToolsPlugin extends SimpleWebConsolePlugin {
     private static final long serialVersionUID = 8041033223220201144L;
 
     public ToolsPlugin() {
-        super("tools", "AdeptJ Tools", "Main", (String[]) null);
+        super("tools", "AdeptJ Tools", "Main", null);
     }
 
     @Override

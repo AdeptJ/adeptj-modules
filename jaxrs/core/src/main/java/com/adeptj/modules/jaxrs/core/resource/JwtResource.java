@@ -56,7 +56,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxRSResource(name = "crypto")
+@JaxRSResource(name = "jwt")
 @Path("/auth")
 @Designate(ocd = JwtCookieConfig.class)
 @Component(immediate = true, service = JwtResource.class)
