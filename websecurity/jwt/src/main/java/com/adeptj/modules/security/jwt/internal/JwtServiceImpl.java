@@ -95,7 +95,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String createJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be blank!!");
-        this.checkClaims(claims);
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
