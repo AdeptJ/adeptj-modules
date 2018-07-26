@@ -66,7 +66,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
             LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
             return null;
         } else if (ResteasyUtil.isNotAnnotatedWithPath(resource)) {
-            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", reference);
+            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", resource);
             return null;
         } else {
             LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
@@ -90,7 +90,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
         LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
         this.registry.removeRegistrations(service.getClass());
         if (ResteasyUtil.isNotAnnotatedWithPath(service)) {
-            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", reference);
+            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", service);
         } else {
             LOGGER.info("Adding JAX-RS Resource [{}] again!!", service);
             this.registry.addSingletonResource(service);

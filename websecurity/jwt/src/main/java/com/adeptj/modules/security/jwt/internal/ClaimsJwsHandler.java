@@ -28,8 +28,6 @@ import io.jsonwebtoken.JwtHandlerAdapter;
 import io.jsonwebtoken.MalformedJwtException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Map;
-
 /**
  * Simple implementation of {@link JwtHandlerAdapter}.
  *
@@ -53,7 +51,7 @@ final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
      * Checks the signature algorithm first and then validates the {@link Claims} via {@link JwtClaimsValidator}.
      *
      * @param jws the Json web signature.
-     * @return boolean to indicate the outcome of {@link JwtClaimsValidator#validate(Map)}.
+     * @return boolean to indicate the outcome of {@link JwtClaimsValidator#validate} method.
      */
     @Override
     public Boolean onClaimsJws(Jws<Claims> jws) {

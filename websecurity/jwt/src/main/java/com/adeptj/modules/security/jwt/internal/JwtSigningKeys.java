@@ -70,6 +70,8 @@ final class JwtSigningKeys {
 
     private static final String HMAC_SECRET_KEY_NULL_MSG = "hmacSecretKey can't be blank when algo is Hmac!!";
 
+    private static final String HMAC_SECRET_KEY_SIZE_MSG = "HMAC SecretKey size is less that the required!!";
+
     private static final String KEYPASS_NULL_MSG = "keyPassword can't be blank!!";
 
     private JwtSigningKeys() {
@@ -77,8 +79,8 @@ final class JwtSigningKeys {
 
     static Key createSigningKey(JwtConfig jwtConfig) {
         try {
-            Key hmacSigningKey = JwtSigningKeys.getHmacSigningKey(jwtConfig);
-            return hmacSigningKey == null ? JwtSigningKeys.getRsaSigningKey(jwtConfig) : hmacSigningKey;
+            Key hmacSigningKey = getHmacSigningKey(jwtConfig);
+            return hmacSigningKey == null ? getRsaSigningKey(jwtConfig) : hmacSigningKey;
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw new KeyInitializationException(ex.getMessage(), ex);
@@ -90,6 +92,7 @@ final class JwtSigningKeys {
         SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         if (signatureAlgo.isHmac()) {
             Validate.isTrue(StringUtils.isNotEmpty(jwtConfig.hmacSecretKey()), HMAC_SECRET_KEY_NULL_MSG);
+            Validate.isTrue(StringUtils.length(jwtConfig.hmacSecretKey()) >= jwtConfig.hmacKeySize(), HMAC_SECRET_KEY_SIZE_MSG);
             signingKey = new SecretKeySpec(Base64.getEncoder().encode(jwtConfig.hmacSecretKey().getBytes(UTF_8)),
                     signatureAlgo.getJcaName());
         }

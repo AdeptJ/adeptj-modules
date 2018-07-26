@@ -65,7 +65,7 @@ public class DataSourceManager {
                 .ifPresent(dataSource -> {
                     try {
                         dataSource.close();
-                        LOGGER.info("HikariDataSource: [{}] closed!!", dataSourceName);
+                        LOGGER.info("HikariDataSource: [{}] closed!!", dataSource.getPoolName());
                     } catch (Exception ex) { // NOSONAR
                         LOGGER.error("Exception while closing HikariDataSource!!", ex);
                     }

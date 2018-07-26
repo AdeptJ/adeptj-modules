@@ -36,7 +36,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hikaricp.version>3.0.0</hikaricp.version>
+        <hikaricp.version>3.2.0</hikaricp.version>
     </properties>
 
     <!-- Project Information -->
@@ -181,10 +181,6 @@
             <version>${hikaricp.version}</version>
             <scope>provided</scope>
             <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.javassist</groupId>
                     <artifactId>javassist</artifactId>

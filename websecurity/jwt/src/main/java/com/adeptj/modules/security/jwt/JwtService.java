@@ -54,7 +54,7 @@ public interface JwtService {
      * Create JWT from claims information passed.
      * <p>
      * Note: This method expects that caller should pass the default claims parameters in claims map
-     * such as "sub", "iss", "sub", "iat" etc.
+     * such as "sub", "iss", "exp", "iat", "jti" etc.
      * <p>
      * Default claims parameters from JwtConfig are not considered.
      *

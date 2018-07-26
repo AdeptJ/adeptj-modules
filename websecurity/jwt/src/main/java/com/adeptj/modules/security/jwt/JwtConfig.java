@@ -41,6 +41,8 @@ public @interface JwtConfig {
 
     long DEFAULT_EXPIRATION_TIME = 720L; // 1 day
 
+    int HMAC_DEFAULT_KEY_SIZE = 32; // 1 day
+
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
             description = "Signature Algorithm for JWT signing, only RSA and HmacSHA* are supported at this moment.",
@@ -85,6 +87,12 @@ public @interface JwtConfig {
             description = "Hmac Secret Key for JWT signing, leave it blank in case RSA algo is selected. "
     )
     String hmacSecretKey();
+
+    @AttributeDefinition(
+            name = "JWT Hmac Secret Key Size",
+            description = "Hmac Secret Key Size for JWT signing. "
+    )
+    int hmacKeySize() default HMAC_DEFAULT_KEY_SIZE;
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";

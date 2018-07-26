@@ -50,8 +50,8 @@ public final class DataSources {
         hikariConfig.setMaximumPoolSize(config.maximumPoolSize());
         Stream.of(config.dataSourceProperties())
                 .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
-                .forEach(entry -> {
-                    String[] mapping = entry.split(EQ);
+                .forEach(row -> {
+                    String[] mapping = row.split(EQ);
                     hikariConfig.addDataSourceProperty(mapping[0], mapping[1]);
                 });
         return new HikariDataSource(hikariConfig);

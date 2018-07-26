@@ -22,10 +22,9 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 import static com.adeptj.modules.commons.utils.Constants.COMMA;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * Utility to build Resteasy's {@link CorsFilter} in fluent style.
@@ -66,11 +65,11 @@ class FluentCorsFilter {
     }
 
     FluentCorsFilter allowedOrigins(String[] allowedOrigins) {
-        this.corsFilter.getAllowedOrigins().addAll(Stream.of(allowedOrigins).collect(toSet()));
+        this.corsFilter.getAllowedOrigins().addAll(Arrays.asList(allowedOrigins));
         return this;
     }
 
     CorsFilter corsFilter() {
-        return corsFilter;
+        return this.corsFilter;
     }
 }
