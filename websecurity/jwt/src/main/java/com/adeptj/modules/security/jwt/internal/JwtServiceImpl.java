@@ -104,7 +104,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.jwtConfig.expirationTime(), this.expirationTimeUnit)))
                 .setId(UUID.randomUUID().toString())
-                .signWith(this.signatureAlgo, this.signingKey)
+                .signWith(this.signingKey, this.signatureAlgo)
                 .compact();
     }
 
@@ -118,7 +118,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
-                .signWith(this.signatureAlgo, this.signingKey)
+                .signWith(this.signingKey, this.signatureAlgo)
                 .compact();
     }
 

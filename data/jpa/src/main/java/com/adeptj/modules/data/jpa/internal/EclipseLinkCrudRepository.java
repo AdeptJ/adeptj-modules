@@ -28,6 +28,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ import java.util.Map;
  */
 public class EclipseLinkCrudRepository implements JpaCrudRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EclipseLinkCrudRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final EntityManagerFactory emf;
 

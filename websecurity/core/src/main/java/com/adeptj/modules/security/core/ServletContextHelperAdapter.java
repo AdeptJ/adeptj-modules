@@ -72,6 +72,6 @@ public final class ServletContextHelperAdapter extends ServletContextHelper {
      */
     @Override
     public void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
-        super.finishSecurity(request, response);
+        this.authenticator.handleSecurity(request, response);
     }
 }
