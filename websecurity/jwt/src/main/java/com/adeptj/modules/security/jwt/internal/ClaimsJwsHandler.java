@@ -27,24 +27,38 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
 import io.jsonwebtoken.MalformedJwtException;
 import org.apache.commons.lang3.StringUtils;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+
+import java.util.Objects;
 
 /**
  * Simple implementation of {@link JwtHandlerAdapter}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
+@Component(service = ClaimsJwsHandler.class)
+public final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
 
-    private final boolean validateClaims;
+    private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
 
-    private final JwtClaimsValidator claimsValidator;
+    private static final String UNBIND_CLAIMS_VALIDATOR_SERVICE = "unbindClaimsValidator";
 
-    private final String algorithm;
+    private JwtConfig jwtConfig;
 
-    ClaimsJwsHandler(JwtConfig jwtConfig, JwtClaimsValidator claimsValidator) {
-        this.validateClaims = jwtConfig.validateClaims();
-        this.claimsValidator = claimsValidator;
-        this.algorithm = jwtConfig.signatureAlgo();
+    // As per Felix SCR, dynamic references should be declared as volatile.
+    @Reference(
+            cardinality = ReferenceCardinality.OPTIONAL,
+            policy = ReferencePolicy.DYNAMIC,
+            bind = BIND_CLAIMS_VALIDATOR_SERVICE,
+            unbind = UNBIND_CLAIMS_VALIDATOR_SERVICE
+    )
+    private volatile JwtClaimsValidator claimsValidator;
+
+    void setJwtConfig(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
     }
 
     /**
@@ -55,9 +69,23 @@ final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
      */
     @Override
     public Boolean onClaimsJws(Jws<Claims> jws) {
-        if (!StringUtils.equals(this.algorithm, jws.getHeader().getAlgorithm())) {
-            throw new MalformedJwtException(String.format("SignatureAlgorithm must be [%s]!!", this.algorithm));
+        if (!StringUtils.equals(this.jwtConfig.signatureAlgo(), jws.getHeader().getAlgorithm())) {
+            throw new MalformedJwtException(String.format("SignatureAlgorithm must be [%s]!!",
+                    this.jwtConfig.signatureAlgo()));
         }
-        return !this.validateClaims || this.claimsValidator != null && this.claimsValidator.validate(jws.getBody());
+        return !this.jwtConfig.invokeClaimsValidator()
+                || this.claimsValidator != null && this.claimsValidator.validate(jws.getBody());
+    }
+
+    // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
+
+    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
+        this.claimsValidator = claimsValidator;
+    }
+
+    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
+        if (Objects.equals(claimsValidator, this.claimsValidator)) {
+            this.claimsValidator = null;
+        }
     }
 }

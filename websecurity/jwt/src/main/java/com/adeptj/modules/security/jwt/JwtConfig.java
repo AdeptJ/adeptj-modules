@@ -119,10 +119,10 @@ public @interface JwtConfig {
     String[] obligatoryClaims() default {SUBJECT, ISSUER, ID, ISSUED_AT, EXPIRATION};
 
     @AttributeDefinition(
-            name = "Validate JWT Claims",
+            name = "Invoke JwtClaimsValidator",
             description = "Whether to validate the JWT claims further via a JwtClaimsValidator after successful parsing."
     )
-    boolean validateClaims();
+    boolean invokeClaimsValidator();
 
     @AttributeDefinition(name = "Print JwtException Trace", description = "Whether to print JwtException Trace.")
     boolean printJwtExceptionTrace() default true;

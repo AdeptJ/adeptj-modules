@@ -22,7 +22,6 @@ package com.adeptj.modules.security.jwt.internal;
 
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
-import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
@@ -30,8 +29,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +38,11 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
@@ -66,10 +62,6 @@ public class JwtServiceImpl implements JwtService {
 
     private static final String CLAIM_NOT_FOUND_MSG = "JWT claim [%s] not found in claims map!";
 
-    private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
-
-    private static final String UNBIND_CLAIMS_VALIDATOR_SERVICE = "unbindClaimsValidator";
-
     private List<String> obligatoryClaims;
 
     private TemporalUnit expirationTimeUnit;
@@ -80,14 +72,8 @@ public class JwtServiceImpl implements JwtService {
 
     private Key signingKey;
 
-    // As per Felix SCR, dynamic references should be declared as volatile.
-    @Reference(
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC,
-            bind = BIND_CLAIMS_VALIDATOR_SERVICE,
-            unbind = UNBIND_CLAIMS_VALIDATOR_SERVICE
-    )
-    private volatile JwtClaimsValidator claimsValidator;
+    @Reference
+    private ClaimsJwsHandler jwtHandler;
 
     /**
      * {@inheritDoc}
@@ -132,7 +118,7 @@ public class JwtServiceImpl implements JwtService {
             return Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
                     .setSigningKey(this.signingKey)
-                    .parse(jwt, new ClaimsJwsHandler(this.jwtConfig, this.claimsValidator));
+                    .parse(jwt, this.jwtHandler);
         } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
             if (this.jwtConfig.printJwtExceptionTrace()) {
@@ -146,16 +132,6 @@ public class JwtServiceImpl implements JwtService {
 
     // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
 
-    protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
-        this.claimsValidator = claimsValidator;
-    }
-
-    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
-        if (Objects.equals(claimsValidator, this.claimsValidator)) {
-            this.claimsValidator = null;
-        }
-    }
-
     @Modified
     @Activate
     protected void start(JwtConfig jwtConfig) {
@@ -166,6 +142,7 @@ public class JwtServiceImpl implements JwtService {
         this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
         this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
-        this.obligatoryClaims = new ArrayList<>(Arrays.asList(this.jwtConfig.obligatoryClaims()));
+        this.obligatoryClaims = Collections.unmodifiableList(Arrays.asList(this.jwtConfig.obligatoryClaims()));
+        this.jwtHandler.setJwtConfig(this.jwtConfig);
     }
 }

@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jjwt.version>0.10.1</jjwt.version>
+        <jjwt.version>0.10.2</jjwt.version>
     </properties>
 
     <!-- Project Information -->
