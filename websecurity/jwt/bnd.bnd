@@ -20,8 +20,15 @@
 
 -dsannotations: *
 
+Include-Resource: jjwt-*.jar
+
+Bundle-ClassPath: ., jjwt-api-0.10.2.jar,\
+                     jjwt-impl-0.10.2.jar,\
+                     jjwt-jackson-0.10.2.jar
+
 Export-Package: com.adeptj.modules.security.jwt, \
                 com.adeptj.modules.security.jwt.validation
+
 Import-Package: org.apache.commons.io;version="[1.4,3)", \
                 *
 

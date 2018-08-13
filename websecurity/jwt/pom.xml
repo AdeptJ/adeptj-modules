@@ -176,14 +176,14 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
             <version>${jjwt.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
             <version>${jjwt.version}</version>
             <exclusions>
                 <exclusion>
@@ -196,7 +196,7 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
             <version>${jjwt.version}</version>
         </dependency>
 

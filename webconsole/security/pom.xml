@@ -35,6 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <felix.webconsole.version>4.3.4</felix.webconsole.version>
     </properties>
 
     <!-- Project Information -->

@@ -49,7 +49,6 @@ import java.util.Optional;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.BIND_JWT_SERVICE;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.UNBIND_JWT_SERVICE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 /**
  * JAX-RS resource for issuance and verification of JWT.
@@ -106,13 +105,13 @@ public class JwtResource {
      * <p>
      * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link StaticJwtFilter}
      *
-     * @return response 200 if {@link StaticJwtFilter} was able to verify the Jwt issued earlier.
+     * @return response 204 if {@link StaticJwtFilter} was able to verify the Jwt issued earlier.
      */
-    @RequiresJwt
     @GET
     @Path("/jwt/verify")
+    @RequiresJwt
     public Response verifyJwt() {
-        return JaxRSResponses.ok("Jwt verified successfully!!", TEXT_PLAIN);
+        return Response.noContent().build();
     }
 
     // -------------------- INTERNAL --------------------
