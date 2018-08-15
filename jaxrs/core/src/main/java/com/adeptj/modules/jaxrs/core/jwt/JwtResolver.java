@@ -20,52 +20,41 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.CookieBuilder;
-import com.adeptj.modules.jaxrs.core.JaxRSResponses;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.apache.commons.lang3.StringUtils.SPACE;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
- * Utility resolves Jwt either from request headers or from cookies only if not found in headers
- * and depending upon the outcome further pass the jwt to {@link JwtService} for verification.
+ * Utility resolves Jwt either from request headers or cookies.
  * <p>
- * Also sets response header(401) if JWT is null/empty or JwtService finds token to be malformed, expired etc.
+ * Here is the resolution process.
+ * <p>
+ * 1. Check if the cookie mechanism is enabled.
+ * 2. If enabled then look into cookies
+ * 3. If still not found then look into headers.
+ * <p>
+ * Depending upon the outcome, pass the jwt to {@link JwtService} for verification.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JwtUtil {
+public final class JwtResolver {
 
     private static final int JWT_START_POS = 7;
 
-    public static void resolveAndVerifyJwt(ContainerRequestContext requestContext, JwtService jwtService) {
-        String jwt = resolveJwt(requestContext);
-        // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
-        // 401 is better suited for token verification failure.
-        if (StringUtils.isEmpty(jwt) || !jwtService.verifyJwt(jwt)) {
-            requestContext.abortWith(JaxRSResponses.unauthorized());
-        }
+    // Just static utilities, no instance needed.
+    private JwtResolver() {
     }
 
-    public static Response responseWithJwt(String jwt) {
-        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
-        return cookieConfig.enabled()
-                ? JaxRSResponses.okWithCookie(newJwtCookie(jwt, cookieConfig))
-                : JaxRSResponses.okWithHeader(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt);
-    }
-
-    private static String resolveJwt(ContainerRequestContext requestContext) {
+    public static String resolve(ContainerRequestContext requestContext) {
         String jwt = null;
         // if JwtCookieConfig is enabled then always resolve the Jwt from cookies first.
-        if (JwtCookieConfigHolder.getInstance().getJwtCookieConfig().enabled()) {
+        if (JwtCookieConfigHolder.getInstance().isJwtCookieEnabled()) {
             jwt = resolveFromCookies(requestContext);
         }
         return StringUtils.isEmpty(jwt) ? resolveFromHeaders(requestContext) : jwt;
@@ -76,32 +65,13 @@ public final class JwtUtil {
     }
 
     private static String resolveFromCookies(ContainerRequestContext requestContext) {
-        Cookie jwtCookie = requestContext
-                .getCookies()
+        Cookie jwtCookie = requestContext.getCookies()
                 .get(JwtCookieConfigHolder.getInstance().getJwtCookieConfig().name());
-        return jwtCookie == null ? null : cleanseJwt(jwtCookie.getValue());
+        return jwtCookie == null ? EMPTY : cleanseJwt(jwtCookie.getValue());
     }
 
     private static String cleanseJwt(String jwt) {
         return StringUtils.startsWith(jwt, AUTH_SCHEME_BEARER) ?
                 StringUtils.substring(jwt, JWT_START_POS) : StringUtils.trim(jwt);
-    }
-
-    private static NewCookie newJwtCookie(String jwt, JwtCookieConfig cookieConfig) {
-        return CookieBuilder.builder()
-                .name(cookieConfig.name())
-                .value(jwt)
-                .domain(cookieConfig.domain())
-                .path(cookieConfig.path())
-                .comment(cookieConfig.comment())
-                .maxAge(cookieConfig.maxAge())
-                .secure(cookieConfig.secure())
-                .httpOnly(cookieConfig.httpOnly())
-                .build()
-                .getCookie();
-    }
-
-    // Just static utilities, no instance needed.
-    private JwtUtil() {
     }
 }

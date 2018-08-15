@@ -18,27 +18,39 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.auth;
+package com.adeptj.modules.commons.utils;
 
-import org.apache.commons.lang3.Validate;
-
-import java.util.HashMap;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
- * AuthenticationInfo holding {@link SimpleCredentials} and other arbitrary data for JWT based JAX-RS resource authorization.
+ * Utility for providing execution time in different {@link java.util.concurrent.TimeUnit}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JaxRSAuthenticationInfo extends HashMap<String, Object> {
+public final class TimeUtil {
 
-    private SimpleCredentials credentials;
-
-    public JaxRSAuthenticationInfo(SimpleCredentials credentials) {
-        Validate.notNull(credentials, "SimpleCredentials can't be null!!");
-        this.credentials = credentials;
+    // No instances, just utility methods.
+    private TimeUtil() {
     }
 
-    public SimpleCredentials getCredentials() {
-        return credentials;
+    /**
+     * Returns elapsed time in milliseconds from the provided time in nanoseconds.
+     *
+     * @param startTime time in nanoseconds
+     * @return elapsed time in milliseconds
+     */
+    public static long elapsedMillis(final long startTime) {
+        return NANOSECONDS.toMillis(System.nanoTime() - startTime);
+    }
+
+    /**
+     * Returns elapsed time in seconds from the provided time in milliseconds.
+     *
+     * @param startTime time in milliseconds
+     * @return elapsed time in seconds
+     */
+    public static long elapsedSeconds(final long startTime) {
+        return MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
     }
 }

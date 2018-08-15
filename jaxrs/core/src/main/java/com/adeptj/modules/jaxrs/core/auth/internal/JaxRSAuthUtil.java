@@ -21,41 +21,31 @@
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
 import com.adeptj.modules.commons.utils.Loggers;
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
+import org.slf4j.Logger;
 
 /**
- * Utility methods for {@link JaxRSAuthenticationInfo} and {@link JaxRSAuthenticationRealm}
+ * Utility methods for {@link JaxRSAuthenticationOutcome} and {@link JaxRSAuthenticationRealm}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 final class JaxRSAuthUtil {
 
+    private static final Logger LOGGER = Loggers.get(JaxRSAuthUtil.class);
+
     private JaxRSAuthUtil() {
     }
 
-    static JaxRSAuthenticationInfo getJaxRSAuthInfo(JaxRSAuthenticationRealm realm, String username, String password) {
-        JaxRSAuthenticationInfo authInfo = null;
+    static JaxRSAuthenticationOutcome getJaxRSAuthOutcome(JaxRSAuthenticationRealm realm, SimpleCredentials credentials) {
+        JaxRSAuthenticationOutcome outcome = null;
         try {
-            authInfo = realm.getAuthenticationInfo(username, password);
+            outcome = realm.authenticate(credentials);
         } catch (Exception ex) { // NOSONAR
-            // Gulping everything so that next realms(if any) getAuthInfo a chance.
-            Loggers.get(JaxRSAuthUtil.class).error(ex.getMessage(), ex);
+            // Gulping everything so that next realms(if any) get a chance.
+            LOGGER.error(ex.getMessage(), ex);
         }
-        return authInfo;
-    }
-
-    static JaxRSAuthenticationInfo validateCredentials(String username, String password) {
-        JaxRSAuthenticationInfo authInfo = JaxRSAuthenticationInfoHolder.getInstance().getAuthInfo(username);
-        if (authInfo == null) {
-            return null;
-        }
-        SimpleCredentials credentials = authInfo.getCredentials();
-        return StringUtils.equals(credentials.getUsername(), username)
-                && Arrays.equals(password.toCharArray(), credentials.getPassword()) ? authInfo : null;
+        return outcome;
     }
 }

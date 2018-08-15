@@ -42,6 +42,8 @@ public final class OSGiUtil {
 
     private static final String FILTER_AND = "(&(";
 
+    private static final String FILTER_OR = "(|(";
+
     private static final String EQ = "=";
 
     private static final String ASTERISK = "*";
@@ -60,9 +62,24 @@ public final class OSGiUtil {
         return bundle.getHeaders().get(FRAGMENT_HOST) == null;
     }
 
-    public static Filter specificServiceFilter(BundleContext context, Class<?> objectClass, String filterExpr) {
+    public static Filter specificServiceAndFilter(BundleContext context, Class<?> objectClass, String filterExpr) {
         try {
             return context.createFilter(FILTER_AND +
+                    OBJECTCLASS +
+                    EQ +
+                    objectClass.getName() +
+                    PARENTHESIS_CLOSE +
+                    filterExpr +
+                    PARENTHESIS_CLOSE);
+        } catch (InvalidSyntaxException ex) {
+            // Filter expression is malformed, not RFC-1960 based Filter.
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    public static Filter specificServiceOrFilter(BundleContext context, Class<?> objectClass, String filterExpr) {
+        try {
+            return context.createFilter(FILTER_OR +
                     OBJECTCLASS +
                     EQ +
                     objectClass.getName() +

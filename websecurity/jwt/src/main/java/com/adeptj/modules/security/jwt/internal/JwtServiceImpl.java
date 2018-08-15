@@ -22,6 +22,7 @@ package com.adeptj.modules.security.jwt.internal;
 
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
+import com.adeptj.modules.security.jwt.JwtUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
@@ -60,8 +61,6 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String CLAIM_NOT_FOUND_MSG = "JWT claim [%s] not found in claims map!";
-
     private List<String> obligatoryClaims;
 
     private TemporalUnit expirationTimeUnit;
@@ -99,8 +98,7 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String createJwt(Map<String, Object> claims) {
-        this.checkClaims(claims);
-        this.obligatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
+        JwtUtil.checkClaims(claims, this.obligatoryClaims);
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
@@ -143,6 +141,6 @@ public class JwtServiceImpl implements JwtService {
         this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
         this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
         this.obligatoryClaims = Collections.unmodifiableList(Arrays.asList(this.jwtConfig.obligatoryClaims()));
-        this.jwtHandler.setJwtConfig(this.jwtConfig);
+        this.jwtHandler.setInvokeClaimsValidator(this.jwtConfig.invokeClaimsValidator());
     }
 }

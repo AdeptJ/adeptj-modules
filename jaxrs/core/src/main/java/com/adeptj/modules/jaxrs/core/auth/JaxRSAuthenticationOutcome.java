@@ -18,46 +18,19 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.auth;
 
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
-
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import java.util.HashMap;
 
 /**
- * Utilities for JAX-RS {@link Response}
+ * JaxRSAuthenticationOutcome holding arbitrary data for JWT based JAX-RS resource authorization.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JaxRSResponses {
+public class JaxRSAuthenticationOutcome extends HashMap<String, Object> {
 
-    private JaxRSResponses() {
-    }
-
-    public static Response okWithCookie(NewCookie cookie) {
-        return Response.ok().cookie(cookie).build();
-    }
-
-    public static Response okWithHeader(String name, String value) {
-        return Response.ok().header(name, value).build();
-    }
-
-    public static Response ok(Object entity, String type) {
-        return Response.ok(entity).type(type).build();
-    }
-
-    public static Response unavailable() {
-        return Response.status(SERVICE_UNAVAILABLE).build();
-    }
-
-    public static Response unauthorized() {
-        return Response.status(UNAUTHORIZED).build();
-    }
-
-    public static Response forbidden() {
-        return Response.status(FORBIDDEN).build();
+    public JaxRSAuthenticationOutcome addAttribute(String name, Object value) {
+        super.put(name, value);
+        return this;
     }
 }

@@ -21,7 +21,7 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.Functions;
-import com.adeptj.modules.commons.utils.Times;
+import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
@@ -92,7 +92,7 @@ public class ResteasyLifecycle {
                 ResteasyUtil.registerInternalProviders(rpf, this.config, this.validatorService.getValidatorFactory());
                 this.serviceTrackers.add(new ProviderTracker(this.bundleContext, rpf));
                 this.serviceTrackers.add(new ResourceTracker(this.bundleContext, dispatcher.getRegistry()));
-                LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, Times.elapsedMillis(startTime));
+                LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
                 throw new ResteasyBootstrapException(ex.getMessage(), ex);

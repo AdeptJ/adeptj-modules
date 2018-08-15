@@ -17,15 +17,16 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.jaxrs.core.resource;
 
 import com.adeptj.modules.jaxrs.core.JaxRSResource;
-import com.adeptj.modules.jaxrs.core.JaxRSResponses;
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
+import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.jwt.JaxRSUtil;
 import com.adeptj.modules.jaxrs.core.jwt.JwtCookieConfig;
 import com.adeptj.modules.jaxrs.core.jwt.JwtCookieConfigHolder;
-import com.adeptj.modules.jaxrs.core.jwt.JwtUtil;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
@@ -44,11 +45,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
-import java.util.Optional;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.BIND_JWT_SERVICE;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.UNBIND_JWT_SERVICE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
+import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * JAX-RS resource for issuance and verification of JWT.
@@ -60,9 +62,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 @Designate(ocd = JwtCookieConfig.class)
 @Component(immediate = true, service = JwtResource.class)
 public class JwtResource {
-
-    @Reference
-    private JaxRSAuthenticator authenticator;
 
     /**
      * The {@link JwtService} is optionally referenced.
@@ -78,6 +77,12 @@ public class JwtResource {
     )
     private volatile JwtService jwtService;
 
+    /**
+     * The JaxRSAuthenticator reference;
+     */
+    @Reference
+    private JaxRSAuthenticator authenticator;
+
 
     /**
      * Create Jwt for the username with given credentials.
@@ -92,12 +97,12 @@ public class JwtResource {
     public Response createJwt(@NotEmpty @FormParam("username") String username,
                               @NotEmpty @FormParam("password") String password) {
         if (this.jwtService == null) {
-            return JaxRSResponses.unavailable();
+            return Response.status(SERVICE_UNAVAILABLE).build();
         }
-        Optional<JaxRSAuthenticationInfo> optionalAuthInfo = this.authenticator.handleSecurity(username, password);
-        return optionalAuthInfo.isPresent()
-                ? JwtUtil.responseWithJwt(this.jwtService.createJwt(username, optionalAuthInfo.get()))
-                : JaxRSResponses.unauthorized();
+        JaxRSAuthenticationOutcome outcome = this.authenticator.handleSecurity(SimpleCredentials.of(username, password));
+        return outcome == null
+                ? Response.status(UNAUTHORIZED).build()
+                : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
     }
 
     /**
@@ -126,13 +131,9 @@ public class JwtResource {
         this.jwtService = null;
     }
 
+    @Modified
     @Activate
     protected void start(JwtCookieConfig cookieConfig) {
-        JwtCookieConfigHolder.getInstance().setJwtCookieConfig(cookieConfig);
-    }
-
-    @Modified
-    protected void updated(JwtCookieConfig cookieConfig) {
         JwtCookieConfigHolder.getInstance().setJwtCookieConfig(cookieConfig);
     }
 }

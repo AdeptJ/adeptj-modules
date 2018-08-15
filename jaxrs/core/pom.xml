@@ -28,7 +28,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-jaxrs-core</artifactId>
-    <version>1.1.1.Final</version>
+    <version>2.0.0.Final</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: Core</name>
     <description>AdeptJ Modules :: JAX-RS :: Core</description>

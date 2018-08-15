@@ -20,21 +20,44 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import javax.ws.rs.NameBinding;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import com.adeptj.modules.jaxrs.core.CookieBuilder;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
+
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
- * Annotation to be used by JAX-RS resources which require to be protected via JWT.
+ * Utilities for JAX-RS {@link Response}, {@link NewCookie} etc.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@NameBinding
-@Retention(RUNTIME)
-@Target({TYPE, METHOD})
-public @interface RequiresJwt {
+public final class JaxRSUtil {
+
+    // Just static utilities, no instance needed.
+    private JaxRSUtil() {
+    }
+
+    public static Response createResponseWithJwt(String jwt) {
+        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
+        return cookieConfig.enabled()
+                ? Response.ok().cookie(newJwtCookie(jwt, cookieConfig)).build()
+                : Response.ok().header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt).build();
+    }
+
+    private static NewCookie newJwtCookie(String jwt, JwtCookieConfig cookieConfig) {
+        return CookieBuilder.builder()
+                .name(cookieConfig.name())
+                .value(jwt)
+                .domain(cookieConfig.domain())
+                .path(cookieConfig.path())
+                .comment(cookieConfig.comment())
+                .maxAge(cookieConfig.maxAge())
+                .secure(cookieConfig.secure())
+                .httpOnly(cookieConfig.httpOnly())
+                .build()
+                .getCookie();
+    }
 }

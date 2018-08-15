@@ -33,12 +33,19 @@ public enum JwtCookieConfigHolder {
 
     private volatile JwtCookieConfig jwtCookieConfig;
 
+    private volatile boolean jwtCookieEnabled;
+
     public JwtCookieConfig getJwtCookieConfig() {
         return jwtCookieConfig;
     }
 
+    public boolean isJwtCookieEnabled() {
+        return jwtCookieEnabled;
+    }
+
     public void setJwtCookieConfig(JwtCookieConfig jwtCookieConfig) {
         this.jwtCookieConfig = jwtCookieConfig;
+        this.jwtCookieEnabled = jwtCookieConfig.enabled();
     }
 
     public static JwtCookieConfigHolder getInstance() {

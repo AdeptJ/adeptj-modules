@@ -25,19 +25,19 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
- * JaxRSAuthenticationConfig.
+ * AdeptJ JAX-RS Credentials Configurations.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
 @ObjectClassDefinition(
-        name = "AdeptJ JAX-RS AuthenticationInfo Configurations",
-        description = "AdeptJ JAX-RS Auth Configs"
+        name = "AdeptJ JAX-RS Credentials Configurations",
+        description = "AdeptJ JAX-RS Credentials Configurations"
 )
-public @interface JaxRSAuthenticationConfig {
+public @interface JaxRSCredentialsConfig {
 
-    @AttributeDefinition(name = "Username", description = "Username for JWT issuance")
+    @AttributeDefinition(name = "Username", description = "Username to be authenticated.")
     String username();
 
-    @AttributeDefinition(name = "Password", description = "Password of username provided", type = PASSWORD)
+    @AttributeDefinition(name = "Password", description = "Password of username provided.", type = PASSWORD)
     String password();
 }

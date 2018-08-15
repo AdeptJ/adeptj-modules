@@ -21,7 +21,6 @@
 package com.adeptj.modules.security.jwt;
 
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
-import io.jsonwebtoken.lang.Assert;
 import org.osgi.annotation.versioning.ProviderType;
 
 import java.util.Map;
@@ -75,21 +74,4 @@ public interface JwtService {
      * an indication of failure so that caller can take action accordingly, such has setting 401 status.
      */
     boolean verifyJwt(String jwt);
-
-    /**
-     * Validate the claims information passed.
-     *
-     * @param claims Caller supplied JWT claims map
-     * @since 1.1.0.Final
-     */
-    default void checkClaims(Map<String, Object> claims) {
-        Assert.notEmpty(claims, "JWT claims map can't be null or empty!!");
-        claims.forEach((claim, value) -> {
-            if (value instanceof String) {
-                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
-            } else {
-                Assert.notNull(value, String.format("%s can't be null!!", claim));
-            }
-        });
-    }
 }

@@ -20,43 +20,10 @@
 
 package com.adeptj.modules.jaxrs.core;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
- * ErrorResponse to return in case of exception arise out of resource methods.
+ * Marker interface will act as a service base of all the JAX-RS resources registered.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ErrorResponse {
-
-    static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it.Please try again later!!";
-
-    private String status;
-
-    private String message;
-
-    public ErrorResponse(String status, Exception ex, boolean showException) {
-        this.status = status;
-        if (showException) {
-            this.message = StringUtils.isEmpty(ex.getMessage()) ? DEFAULT_ERROR_MSG : ex.getMessage();
-        } else {
-            this.message = DEFAULT_ERROR_MSG;
-        }
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+public interface BaseResource {
 }

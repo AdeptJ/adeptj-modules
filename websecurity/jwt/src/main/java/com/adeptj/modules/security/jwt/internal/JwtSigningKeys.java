@@ -22,9 +22,9 @@ package com.adeptj.modules.security.jwt.internal;
 
 import com.adeptj.modules.security.jwt.JwtConfig;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +91,8 @@ final class JwtSigningKeys {
         Key signingKey = null;
         SignatureAlgorithm signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
         if (signatureAlgo.isHmac()) {
-            Validate.isTrue(StringUtils.isNotEmpty(jwtConfig.hmacSecretKey()), HMAC_SECRET_KEY_NULL_MSG);
-            Validate.isTrue(StringUtils.length(jwtConfig.hmacSecretKey()) >= jwtConfig.hmacKeySize(), HMAC_SECRET_KEY_SIZE_MSG);
+            Assert.hasText(jwtConfig.hmacSecretKey(), HMAC_SECRET_KEY_NULL_MSG);
+            Assert.isTrue(jwtConfig.hmacSecretKey().length() >= jwtConfig.hmacKeySize(), HMAC_SECRET_KEY_SIZE_MSG);
             signingKey = new SecretKeySpec(Base64.getEncoder().encode(jwtConfig.hmacSecretKey().getBytes(UTF_8)),
                     signatureAlgo.getJcaName());
         }
@@ -106,16 +106,15 @@ final class JwtSigningKeys {
         }
         LOGGER.info("Loading signing key: [{}]", keyFileLocation);
         try (InputStream is = Files.newInputStream(Paths.get(keyFileLocation))) {
-            String algorithm = SignatureAlgorithm.forName(jwtConfig.signatureAlgo()).getFamilyName();
-            return KeyFactory.getInstance(algorithm)
-                    .generatePrivate(getEncodedKeySpec(jwtConfig.keyPassword(), IOUtils.toString(is, UTF_8)));
+            return KeyFactory.getInstance(SignatureAlgorithm.forName(jwtConfig.signatureAlgo()).getFamilyName())
+                    .generatePrivate(getEncodedKeySpec(IOUtils.toString(is, UTF_8), jwtConfig.keyPassword()));
         }
     }
 
-    private static EncodedKeySpec getEncodedKeySpec(String keyPassword, String keyData) throws Exception { // NOSONAR
+    private static EncodedKeySpec getEncodedKeySpec(String keyData, String keyPassword) throws Exception { // NOSONAR
         EncodedKeySpec keySpec;
         if (StringUtils.startsWith(keyData, ENCRYPTED_KEY_HEADER)) {
-            Validate.isTrue(StringUtils.isNotEmpty(keyPassword), KEYPASS_NULL_MSG);
+            Assert.hasText(keyPassword, KEYPASS_NULL_MSG);
             EncryptedPrivateKeyInfo keyInfo = new EncryptedPrivateKeyInfo(decodeKeyData(keyData, true));
             SecretKey secretKey = SecretKeyFactory.getInstance(keyInfo.getAlgName())
                     .generateSecret(new PBEKeySpec(keyPassword.toCharArray()));
@@ -129,12 +128,11 @@ final class JwtSigningKeys {
     }
 
     private static byte[] decodeKeyData(String keyData, boolean encryptedKey) {
-        byte[] keyBytes = keyData
+        return Base64.getDecoder().decode(keyData
                 .replace(encryptedKey ? ENCRYPTED_KEY_HEADER : KEY_HEADER, EMPTY)
                 .replace(encryptedKey ? ENCRYPTED_KEY_FOOTER : KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)
                 .trim()
-                .getBytes(UTF_8);
-        return Base64.getDecoder().decode(keyBytes);
+                .getBytes(UTF_8));
     }
 }

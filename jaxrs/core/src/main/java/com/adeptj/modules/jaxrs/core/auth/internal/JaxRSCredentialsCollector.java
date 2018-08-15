@@ -20,39 +20,35 @@
 
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
+import org.osgi.service.component.annotations.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Map based storage which stores {@link JaxRSAuthenticationInfo} created vis OSGi configs.
+ * Collects the credentials config created vis OSGi web console.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-enum JaxRSAuthenticationInfoHolder {
+@Component(service = JaxRSCredentialsCollector.class)
+public class JaxRSCredentialsCollector {
 
-    INSTANCE;
+    private final List<SimpleCredentials> credentials = new ArrayList<>();
 
-    private Map<String, JaxRSAuthenticationInfo> authInfoMap = new ConcurrentHashMap<>();
-
-    void addAuthInfo(String username, JaxRSAuthenticationInfo authInfo) {
-        if (this.authInfoMap.containsKey(username)) {
-            throw new IllegalStateException(String.format("Username: [%s] already present!!", username));
+    void addCredentials(SimpleCredentials simpleCredentials) {
+        if (this.matchCredentials(simpleCredentials)) {
+            throw new IllegalStateException(String.format("Username: [%s] already present!!", simpleCredentials.getUsername()));
         }
-        this.authInfoMap.put(username, authInfo);
+        this.credentials.add(simpleCredentials);
     }
 
-    JaxRSAuthenticationInfo getAuthInfo(String username) {
-        return this.authInfoMap.get(username);
+    void removeCredentials(SimpleCredentials simpleCredentials) {
+        this.credentials.remove(simpleCredentials);
     }
 
-    void removeAuthInfo(String username) {
-        this.authInfoMap.remove(username);
+    boolean matchCredentials(SimpleCredentials simpleCredentials) {
+        return this.credentials.contains(simpleCredentials);
     }
-
-    static JaxRSAuthenticationInfoHolder getInstance() {
-        return INSTANCE;
-    }
-
 }

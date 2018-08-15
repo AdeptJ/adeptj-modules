@@ -20,13 +20,10 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
-import io.jsonwebtoken.MalformedJwtException;
-import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -46,7 +43,7 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
 
     private static final String UNBIND_CLAIMS_VALIDATOR_SERVICE = "unbindClaimsValidator";
 
-    private JwtConfig jwtConfig;
+    private volatile boolean invokeClaimsValidator;
 
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
@@ -57,10 +54,6 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
     )
     private volatile JwtClaimsValidator claimsValidator;
 
-    void setJwtConfig(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
-    }
-
     /**
      * Checks the signature algorithm first and then validates the {@link Claims} via {@link JwtClaimsValidator}.
      *
@@ -69,12 +62,11 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
      */
     @Override
     public Boolean onClaimsJws(Jws<Claims> jws) {
-        if (!StringUtils.equals(this.jwtConfig.signatureAlgo(), jws.getHeader().getAlgorithm())) {
-            throw new MalformedJwtException(String.format("SignatureAlgorithm must be [%s]!!",
-                    this.jwtConfig.signatureAlgo()));
-        }
-        return !this.jwtConfig.invokeClaimsValidator()
-                || this.claimsValidator != null && this.claimsValidator.validate(jws.getBody());
+        return !this.invokeClaimsValidator || this.claimsValidator != null && this.claimsValidator.validate(jws.getBody());
+    }
+
+    void setInvokeClaimsValidator(boolean invokeClaimsValidator) {
+        this.invokeClaimsValidator = invokeClaimsValidator;
     }
 
     // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------

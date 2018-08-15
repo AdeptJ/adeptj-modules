@@ -20,12 +20,16 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import com.adeptj.modules.jaxrs.core.JaxRSResponses;
-import com.adeptj.modules.jaxrs.core.jwt.JwtUtil;
+import com.adeptj.modules.jaxrs.core.jwt.JwtResolver;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Response;
+
+import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * Interface helping in exposing {@link JwtFilter} as a service in OSGi service registry.
@@ -49,9 +53,14 @@ public interface JwtFilter extends ContainerRequestFilter {
 
     default void doFilter(ContainerRequestContext requestContext, JwtService jwtService) {
         if (jwtService == null) {
-            requestContext.abortWith(JaxRSResponses.unavailable());
+            requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
         } else {
-            JwtUtil.resolveAndVerifyJwt(requestContext, jwtService);
+            String jwt = JwtResolver.resolve(requestContext);
+            // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
+            // 401 is better suited for token verification failure.
+            if (StringUtils.isEmpty(jwt) || !jwtService.verifyJwt(jwt)) {
+                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            }
         }
     }
 }

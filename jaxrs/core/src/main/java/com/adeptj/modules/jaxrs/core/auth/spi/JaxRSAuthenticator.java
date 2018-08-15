@@ -20,13 +20,12 @@
 
 package com.adeptj.modules.jaxrs.core.auth.spi;
 
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
+import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import org.osgi.annotation.versioning.ProviderType;
 
-import java.util.Optional;
-
 /**
- * Provides {@link JaxRSAuthenticationInfo} by querying all the registered JaxRSAuthenticationRealm.
+ * Provides {@link JaxRSAuthenticationOutcome} by querying all the registered JaxRSAuthenticationRealm.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -40,9 +39,8 @@ public interface JaxRSAuthenticator {
      * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by {@link JaxRSAuthenticator}
      * as it has no way to further validate the information returned by the implementations.
      *
-     * @param username the username submitted for authentication
-     * @param password the password string submitted for authentication
-     * @return Optional JaxRSAuthenticationInfo instance after credentials validation.
+     * @param credentials object containing the username and password submitted for authentication
+     * @return JaxRSAuthenticationOutcome instance after credentials validation.
      */
-    Optional<JaxRSAuthenticationInfo> handleSecurity(String username, String password);
+    JaxRSAuthenticationOutcome handleSecurity(SimpleCredentials credentials);
 }

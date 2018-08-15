@@ -20,37 +20,52 @@
 
 package com.adeptj.modules.jaxrs.core.auth;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
- * Represents simple user ID/password credentials.
+ * Represents simple username/password credentials.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class SimpleCredentials {
+public final class SimpleCredentials {
 
-    private String username;
+    private final String username;
 
-    private char[] password;
+    private final char[] password;
 
-    public SimpleCredentials(String username, char[] password) {
-        Validate.isTrue(StringUtils.isNotEmpty(username), "username can't be null or empty!!");
-        Validate.isTrue(ArrayUtils.isNotEmpty(password), "password can't be null or empty!!");
+    private SimpleCredentials(String username, char[] password) {
         this.username = username;
         this.password = password;
     }
 
-    public static SimpleCredentials of(String username, char[] password) {
-        return new SimpleCredentials(username, password);
+    public static SimpleCredentials of(String username, String password) {
+        return new SimpleCredentials(username, password.toCharArray());
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     public char[] getPassword() {
-        return password;
+        return this.password;
+    }
+
+    // ---------------- Generated -----------------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleCredentials that = (SimpleCredentials) o;
+        return Objects.equals(username, that.username) &&
+                Arrays.equals(password, that.password);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(username);
+        result = 31 * result + Arrays.hashCode(password);
+        return result;
     }
 }

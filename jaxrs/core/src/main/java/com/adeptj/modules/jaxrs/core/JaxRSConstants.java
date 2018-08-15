@@ -33,8 +33,6 @@ public final class JaxRSConstants {
 
     public static final String JSON_KEY_ERROR = "ERROR";
 
-    public static final int STATUS_SERVER_ERROR = 500;
-
     public static final String AUTH_SCHEME_BEARER = "Bearer";
 
     public static final String PROPERTY_PROVIDER_NAME = "osgi.jaxrs.provider.name";

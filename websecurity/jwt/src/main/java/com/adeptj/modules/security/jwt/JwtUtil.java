@@ -18,39 +18,41 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.utils;
+package com.adeptj.modules.security.jwt;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import io.jsonwebtoken.lang.Assert;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Utility for providing execution time in different {@link java.util.concurrent.TimeUnit}.
+ * JWT utilities.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class Times {
+public final class JwtUtil {
 
-    // No instances, just utility methods.
-    private Times() {
+    private static final String CLAIM_NOT_FOUND_MSG = "JWT claim [%s] not found in claims map!";
+
+    private JwtUtil() {
     }
 
     /**
-     * Returns elapsed time in milliseconds from the provided time in nanoseconds.
+     * Validate the claims information passed.
      *
-     * @param startTime time in nanoseconds
-     * @return elapsed time in milliseconds
+     * @param claims           Caller supplied JWT claims map
+     * @param obligatoryClaims obligatory claims that should be present in claims map.
+     * @since 1.1.0.Final
      */
-    public static long elapsedMillis(final long startTime) {
-        return NANOSECONDS.toMillis(System.nanoTime() - startTime);
-    }
-
-    /**
-     * Returns elapsed time in seconds from the provided time in milliseconds.
-     *
-     * @param startTime time in milliseconds
-     * @return elapsed time in seconds
-     */
-    public static long elapsedSeconds(final long startTime) {
-        return MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
+    public static void checkClaims(Map<String, Object> claims, List<String> obligatoryClaims) {
+        Assert.notEmpty(claims, "JWT claims map can't be null or empty!!");
+        claims.forEach((claim, value) -> {
+            if (value instanceof String) {
+                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
+            } else {
+                Assert.notNull(value, String.format("%s can't be null!!", claim));
+            }
+        });
+        obligatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
     }
 }

@@ -20,13 +20,14 @@
 
 package com.adeptj.modules.jaxrs.core.auth.api;
 
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
+import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.annotation.versioning.ConsumerType;
 
 /**
- * Authentication realm to be implemented by clients for providing JaxRSAuthenticationInfo.
+ * Authentication realm to be implemented by clients for providing {@link JaxRSAuthenticationOutcome}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -41,14 +42,14 @@ public interface JaxRSAuthenticationRealm {
     int priority();
 
     /**
-     * Provides a meaningful name which can be used by JaxRSAuthenticationRealm.
+     * Provides a meaningful name which can be used by {@link JaxRSAuthenticator}.
      *
      * @return a meaningful name.
      */
     String getName();
 
     /**
-     * Implementations should validate the credentials supplied and return the JaxRSAuthenticationInfo
+     * Implementations should validate the credentials supplied and return the JaxRSAuthenticationOutcome
      * populated with other useful information that can be put into it as it is a map.
      * This information is later used by {@link JwtService} for
      * putting this information in JWT claims.
@@ -57,9 +58,8 @@ public interface JaxRSAuthenticationRealm {
      * {@link JaxRSAuthenticator} as it has no way to validate the information
      * returned by the implementations.
      *
-     * @param username the username submitted for authentication
-     * @param password the password string submitted for authentication
-     * @return JaxRSAuthenticationInfo with credentials validated by the implementations.
+     * @param credentials object containing the username and password submitted for authentication
+     * @return JaxRSAuthenticationOutcome.
      */
-    JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password);
+    JaxRSAuthenticationOutcome authenticate(SimpleCredentials credentials);
 }

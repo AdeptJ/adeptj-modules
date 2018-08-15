@@ -20,19 +20,24 @@
 
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationInfo;
+import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
+import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * Default implementation of JaxRSAuthenticationRealm for creating {@link JaxRSAuthenticationInfo} instances
- * which are stored by {@link JaxRSAuthenticationInfoHolder}
- * for querying purpose in case no other implementation of {@link JaxRSAuthenticationRealm} is found.
+ * Default implementation of JaxRSAuthenticationRealm.
+ *
+ * Authenticates using the {@link JaxRSCredentialsCollector}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(immediate = true)
 public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm {
+
+    @Reference
+    private JaxRSCredentialsCollector credentialsCollector;
 
     /**
      * {@inheritDoc}
@@ -54,7 +59,7 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      * {@inheritDoc}
      */
     @Override
-    public JaxRSAuthenticationInfo getAuthenticationInfo(String username, String password) {
-        return JaxRSAuthUtil.validateCredentials(username, password);
+    public JaxRSAuthenticationOutcome authenticate(SimpleCredentials credentials) {
+        return this.credentialsCollector.matchCredentials(credentials) ? new JaxRSAuthenticationOutcome() : null;
     }
 }
