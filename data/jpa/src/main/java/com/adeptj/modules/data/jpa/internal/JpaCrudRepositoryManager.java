@@ -51,7 +51,7 @@ public class JpaCrudRepositoryManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaCrudRepositoryManager.class);
 
-    private static final String EMF_NULL_MSG = "Could not register EntityManagerFactory, most probably missing persistence.xml!!";
+    private static final String EMF_NULL_MSG = "Could not create EntityManagerFactory, most probably missing persistence.xml!!";
 
     private BundleContext bundleContext;
 

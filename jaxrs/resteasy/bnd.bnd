@@ -29,8 +29,6 @@
                  *
 
 Import-Package: \
-  !org.apache.http.impl.nio.client, \
-  !org.apache.http.nio.client.methods, \
   com.fasterxml.jackson.jaxrs.xml,\
   javax.annotation;\
   javax.annotation.sql;\
