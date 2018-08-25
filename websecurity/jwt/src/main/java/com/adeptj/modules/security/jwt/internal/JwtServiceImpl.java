@@ -100,7 +100,7 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String createJwt(Map<String, Object> claims) {
-        JwtUtil.checkClaims(claims, this.obligatoryClaims);
+        JwtUtil.assertClaims(claims, this.obligatoryClaims);
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)

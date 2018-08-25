@@ -38,13 +38,13 @@ public final class JwtUtil {
     }
 
     /**
-     * Validate the claims information passed.
+     * Validates the claim information passed.
      *
      * @param claims           Caller supplied JWT claims map
      * @param obligatoryClaims obligatory claims that should be present in claims map.
      * @since 1.1.0.Final
      */
-    public static void checkClaims(Map<String, Object> claims, List<String> obligatoryClaims) {
+    public static void assertClaims(Map<String, Object> claims, List<String> obligatoryClaims) {
         Assert.notEmpty(claims, "JWT claims map can't be null or empty!!");
         claims.forEach((claim, value) -> {
             if (value instanceof String) {
