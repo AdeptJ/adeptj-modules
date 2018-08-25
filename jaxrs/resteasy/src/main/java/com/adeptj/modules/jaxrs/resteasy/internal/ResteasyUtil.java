@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.ValidatorFactory;
 import javax.ws.rs.Path;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -51,7 +52,7 @@ import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
  */
 final class ResteasyUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResteasyUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private ResteasyUtil() {
     }
@@ -77,7 +78,7 @@ final class ResteasyUtil {
             contextResolvers.remove(GeneralValidator.class);
             contextResolvers.remove(GeneralValidatorCDI.class);
             LOGGER.info("ContextResolver(s) after removal: [{}]", contextResolvers.size());
-            Field field = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
+            Field field = getDeclaredField(rpf.getClass(), FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
             Set<?> providerClasses = (Set) readField(field, rpf, FORCE_ACCESS);
             providerClasses.remove(org.jboss.resteasy.plugins.validation.ValidatorContextResolver.class);
             providerClasses.remove(ValidatorContextResolverCDI.class);
@@ -92,7 +93,7 @@ final class ResteasyUtil {
             return;
         }
         try {
-            Field providers = getDeclaredField(ResteasyProviderFactory.class, FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
+            Field providers = getDeclaredField(providerFactory.getClass(), FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
             if (((Set) readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
                 LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
             }

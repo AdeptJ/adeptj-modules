@@ -27,6 +27,8 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
+
 import static com.adeptj.modules.commons.utils.Constants.AESTRISK;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_PROVIDER_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVICE_TRACKER_FORMAT;
@@ -39,7 +41,7 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVI
  */
 public class ProviderTracker extends ServiceTracker<Object, Object> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProviderTracker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String PROVIDER_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME, AESTRISK);
 
