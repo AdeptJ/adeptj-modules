@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
-import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ final class JpaCrudRepositories {
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaCrudRepositories.class);
 
     static ServiceRegistration<JpaCrudRepository> register(String unitName, EntityManagerFactory emf, BundleContext ctx) {
-        Dictionary<String, String> properties = new Hashtable<>();
+        Hashtable<String, String> properties = new Hashtable<>();
         properties.put(SERVICE_VENDOR, "AdeptJ");
         properties.put(SERVICE_PID, EclipseLinkCrudRepository.class.getName());
         properties.put(SERVICE_DESCRIPTION, "AdeptJ JpaCrudRepository(EclipseLink)");

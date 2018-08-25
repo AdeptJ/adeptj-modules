@@ -71,6 +71,8 @@ public class JwtServiceImpl implements JwtService {
 
     private Key signingKey;
 
+    private Key verificationKey;
+
     @Reference
     private ClaimsJwsHandler jwtHandler;
 
@@ -115,7 +117,7 @@ public class JwtServiceImpl implements JwtService {
             Assert.hasText(jwt, "JWT can't be blank!!");
             return Jwts.parser()
                     .requireIssuer(this.jwtConfig.issuer())
-                    .setSigningKey(this.signingKey)
+                    .setSigningKey(this.verificationKey)
                     .parse(jwt, this.jwtHandler);
         } catch (RuntimeException ex) { // NOSONAR
             // For reducing noise in the logs, set this config to false.
@@ -136,9 +138,16 @@ public class JwtServiceImpl implements JwtService {
         this.jwtConfig = null;
         this.signatureAlgo = null;
         this.signingKey = null;
+        this.verificationKey = null;
         this.jwtConfig = jwtConfig;
         this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-        this.signingKey = JwtSigningKeys.createSigningKey(jwtConfig);
+        if (this.signatureAlgo.isHmac()) {
+            this.signingKey = JwtSigningKeys.createHmacSigningKey(jwtConfig.hmacSecretKey(), this.signatureAlgo);
+            this.verificationKey = this.signingKey;
+        } else {
+            this.signingKey = JwtSigningKeys.createRsaSigningKey(jwtConfig);
+            this.verificationKey = JwtSigningKeys.createRsaVerificationKey(jwtConfig);
+        }
         this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
         this.obligatoryClaims = Collections.unmodifiableList(Arrays.asList(this.jwtConfig.obligatoryClaims()));
         this.jwtHandler.setInvokeClaimsValidator(this.jwtConfig.invokeClaimsValidator());

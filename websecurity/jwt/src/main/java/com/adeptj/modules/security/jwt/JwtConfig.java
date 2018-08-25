@@ -39,9 +39,7 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 @ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for JWT Service")
 public @interface JwtConfig {
 
-    long DEFAULT_EXPIRATION_TIME = 720L; // 1 day
-
-    int HMAC_DEFAULT_KEY_SIZE = 32; // 1 day
+    long DEFAULT_EXPIRATION_TIME = 720L;
 
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
@@ -61,7 +59,13 @@ public @interface JwtConfig {
             name = "RSA PrivateKey File Location",
             description = "Location of PrivateKey file (PEM-encoded PKCS#8 format) on file system for JWT signing."
     )
-    String keyFileLocation();
+    String privateKeyFileLocation();
+
+    @AttributeDefinition(
+            name = "RSA PublicKey File Location",
+            description = "Location of PublicKey file (PEM-encoded X.509 format) on file system for JWT verification."
+    )
+    String publicKeyFileLocation();
 
     @AttributeDefinition(
             name = "RSA PrivateKey Password",
@@ -71,28 +75,28 @@ public @interface JwtConfig {
     String keyPassword();
 
     @AttributeDefinition(
-            name = "RSA PrivateKey Search User Home",
-            description = "Whether to search the RSA PrivateKey in user home directory."
+            name = "RSA Private/Public Key Search User Home",
+            description = "Whether to search the RSA Private/Public Key in user home directory."
     )
-    boolean searchKeyInUserHome() default true;
+    boolean searchKeysInUserHome() default true;
 
     @AttributeDefinition(
-            name = "RSA PrivateKey Search Default Name",
+            name = "Default RSA PrivateKey Name",
             description = "Default name of the RSA PrivateKey to search in user home directory"
     )
-    String defaultKeyName() default "jwt.pem";
+    String defaultPrivateKeyName() default "jwt-private.pem";
+
+    @AttributeDefinition(
+            name = "Default RSA PublicKey Name",
+            description = "Default name of the RSA PublicKey to search in user home directory"
+    )
+    String defaultPublicKeyName() default "jwt-public.pem";
 
     @AttributeDefinition(
             name = "JWT Hmac Secret Key",
             description = "Hmac Secret Key for JWT signing, leave it blank in case RSA algo is selected. "
     )
     String hmacSecretKey();
-
-    @AttributeDefinition(
-            name = "JWT Hmac Secret Key Size",
-            description = "Hmac Secret Key Size for JWT signing. "
-    )
-    int hmacKeySize() default HMAC_DEFAULT_KEY_SIZE;
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";

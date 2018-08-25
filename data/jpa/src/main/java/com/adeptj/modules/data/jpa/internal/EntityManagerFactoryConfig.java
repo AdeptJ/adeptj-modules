@@ -118,9 +118,9 @@ public @interface EntityManagerFactoryConfig {
             description = "JPA L2 Caching Strategy",
             options = {
                     @Option(label = "ENABLE_SELECTIVE", value = "ENABLE_SELECTIVE"),
-                    @Option(label = "NONE", value = "NONE"),
                     @Option(label = "DISABLE_SELECTIVE", value = "DISABLE_SELECTIVE"),
                     @Option(label = "ALL", value = "ALL"),
+                    @Option(label = "NONE", value = "NONE"),
                     @Option(label = "UNSPECIFIED", value = "UNSPECIFIED")
             })
     String sharedCacheMode();
