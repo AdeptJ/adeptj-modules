@@ -70,8 +70,8 @@ public interface JwtService {
      * validation of claims.
      *
      * @param jwt claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
-     * @return A boolean indicating {@link JwtService} was able to parse the JWT or not, a false should be treated as
-     * an indication of failure so that caller can take action accordingly, such has setting 401 status.
+     * @return extended claims map with extra information such as roles etc. if a {@link JwtClaimsValidator} is available,
+     * otherwise the Jwt {@link io.jsonwebtoken.Claims} map itself is returned.
      */
-    boolean verifyJwt(String jwt);
+    ExtendedJwtClaims verifyJwt(String jwt);
 }

@@ -21,12 +21,16 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtResolver;
+import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
+import com.adeptj.modules.security.jwt.ExtendedJwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -57,8 +61,12 @@ public interface JwtFilter extends ContainerRequestFilter {
             String jwt = JwtResolver.resolve(requestContext);
             // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
             // 401 is better suited for token verification failure.
-            if (!jwtService.verifyJwt(jwt)) {
+            ExtendedJwtClaims claims = jwtService.verifyJwt(jwt);
+            if (StringUtils.isEmpty(claims.getSubject())) {
                 requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+            } else {
+                requestContext.setSecurityContext(new JwtSecurityContext(claims.getSubject(), claims.getRoles(),
+                        requestContext.getSecurityContext().isSecure(), AUTH_SCHEME_TOKEN));
             }
         }
     }

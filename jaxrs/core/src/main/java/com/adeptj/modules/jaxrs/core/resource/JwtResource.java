@@ -44,7 +44,9 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.BIND_JWT_SERVICE;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.UNBIND_JWT_SERVICE;
@@ -83,6 +85,9 @@ public class JwtResource {
     @Reference
     private JaxRSAuthenticator authenticator;
 
+    @Context
+    private SecurityContext securityContext;
+
 
     /**
      * Create Jwt for the username with given credentials.
@@ -116,7 +121,7 @@ public class JwtResource {
     @Path("/jwt/verify")
     @RequiresJwt
     public Response verifyJwt() {
-        return Response.noContent().build();
+        return Response.ok("Verified subject: " + this.securityContext.getUserPrincipal().getName()).build();
     }
 
     // -------------------- INTERNAL --------------------

@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
+import com.adeptj.modules.security.jwt.ExtendedJwtClaims;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -37,7 +38,7 @@ import java.util.Objects;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(service = ClaimsJwsHandler.class)
-public final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
+public final class ClaimsJwsHandler extends JwtHandlerAdapter<ExtendedJwtClaims> {
 
     private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
 
@@ -58,11 +59,14 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<Boolean> {
      * Checks the signature algorithm first and then validates the {@link Claims} via {@link JwtClaimsValidator}.
      *
      * @param jws the Json web signature.
-     * @return boolean to indicate the outcome of {@link JwtClaimsValidator#validate} method.
+     * @return extended claims map with extra information such as roles etc. if any, to indicate the outcome
+     * of {@link JwtClaimsValidator#validate} method.
      */
     @Override
-    public Boolean onClaimsJws(Jws<Claims> jws) {
-        return !this.invokeClaimsValidator || this.claimsValidator != null && this.claimsValidator.validate(jws.getBody());
+    public ExtendedJwtClaims onClaimsJws(Jws<Claims> jws) {
+        return new ExtendedJwtClaims()
+                .addClaims(this.invokeClaimsValidator && this.claimsValidator != null ? this.claimsValidator.validate(jws.getBody())
+                        : jws.getBody());
     }
 
     void setInvokeClaimsValidator(boolean invokeClaimsValidator) {

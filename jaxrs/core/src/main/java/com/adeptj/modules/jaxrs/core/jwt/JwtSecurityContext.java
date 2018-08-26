@@ -18,27 +18,54 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.jwt;
+
+import javax.ws.rs.core.SecurityContext;
+import java.security.Principal;
+import java.util.Set;
 
 /**
- * Constants for Jax-RS modules.
+ * JAX-RS {@link SecurityContext}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JaxRSConstants {
+public class JwtSecurityContext implements SecurityContext {
 
-    // Just declaring constants, no instances required.
-    private JaxRSConstants() {
+    private String subject;
+
+    private Set<String> roles;
+
+    private boolean secure;
+
+    private String authScheme;
+
+    public JwtSecurityContext(String subject, Set<String> roles, boolean secure, String authScheme) {
+        this.subject = subject;
+        this.roles = roles;
+        this.secure = secure;
+        this.authScheme = authScheme;
     }
 
-    public static final String JSON_KEY_ERROR = "ERROR";
+    @Override
+    public Principal getUserPrincipal() {
+        return () -> this.subject;
+    }
 
-    public static final String AUTH_SCHEME_BEARER = "Bearer";
+    @Override
+    public boolean isUserInRole(String role) {
+        if (this.roles == null || this.roles.isEmpty()) {
+            return false;
+        }
+        return this.roles.contains(role);
+    }
 
-    public static final String AUTH_SCHEME_TOKEN = "TOKEN";
+    @Override
+    public boolean isSecure() {
+        return this.secure;
+    }
 
-    public static final String PROPERTY_PROVIDER_NAME = "osgi.jaxrs.provider.name";
-
-    public static final String PROPERTY_RESOURCE_NAME = "osgi.jaxrs.resource.name";
-
+    @Override
+    public String getAuthenticationScheme() {
+        return this.authScheme;
+    }
 }

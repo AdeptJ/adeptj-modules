@@ -18,27 +18,48 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.security.jwt;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static io.jsonwebtoken.Claims.SUBJECT;
 
 /**
- * Constants for Jax-RS modules.
+ * Extended claims map with extra information such as roles etc. if any.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JaxRSConstants {
+public class ExtendedJwtClaims {
 
-    // Just declaring constants, no instances required.
-    private JaxRSConstants() {
+    private String subject;
+
+    private Set<String> roles;
+
+    private Map<String, Object> claims;
+
+    public ExtendedJwtClaims() {
+        this.claims = new HashMap<>();
     }
 
-    public static final String JSON_KEY_ERROR = "ERROR";
+    public String getSubject() {
+        return subject;
+    }
 
-    public static final String AUTH_SCHEME_BEARER = "Bearer";
+    public Map<String, Object> getClaims() {
+        return claims;
+    }
 
-    public static final String AUTH_SCHEME_TOKEN = "TOKEN";
+    public Set<String> getRoles() {
+        return roles;
+    }
 
-    public static final String PROPERTY_PROVIDER_NAME = "osgi.jaxrs.provider.name";
-
-    public static final String PROPERTY_RESOURCE_NAME = "osgi.jaxrs.resource.name";
-
+    @SuppressWarnings("unchecked")
+    public ExtendedJwtClaims addClaims(Map<String, Object> claims) {
+        this.claims.putAll(claims);
+        this.subject = (String) this.claims.get(SUBJECT);
+        this.roles = (Set<String>) this.claims.get("roles");
+        return this;
+    }
 }

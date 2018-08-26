@@ -48,9 +48,9 @@ public interface JwtClaimsValidator {
      * Any public claims like username, roles and other important information can be validated as per need.
      *
      * @param claims the JWT claims
-     * @return validation status, whether the validation was successful or not
+     * @return extended claims map with extra information such as roles etc. if any.
      * @throws ClaimsValidationException in case of exceptional scenarios caller must wrap the original exception
      *                                   in ClaimsValidationException and rethrow.
      */
-    boolean validate(Map<String, Object> claims) throws ClaimsValidationException;
+    Map<String, Object> validate(Map<String, Object> claims) throws ClaimsValidationException;
 }
