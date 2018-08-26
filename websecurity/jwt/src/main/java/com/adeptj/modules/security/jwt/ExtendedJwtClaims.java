@@ -39,10 +39,6 @@ public class ExtendedJwtClaims {
 
     private Map<String, Object> claims;
 
-    public ExtendedJwtClaims() {
-        this.claims = new HashMap<>();
-    }
-
     public String getSubject() {
         return subject;
     }
@@ -57,6 +53,9 @@ public class ExtendedJwtClaims {
 
     @SuppressWarnings("unchecked")
     public ExtendedJwtClaims addClaims(Map<String, Object> claims) {
+        if (this.claims == null) {
+            this.claims = new HashMap<>();
+        }
         this.claims.putAll(claims);
         this.subject = (String) this.claims.get(SUBJECT);
         this.roles = (Set<String>) this.claims.get("roles");
