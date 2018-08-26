@@ -115,7 +115,7 @@ public class JwtResource {
      * <p>
      * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link StaticJwtFilter}
      *
-     * @return response 204 if {@link StaticJwtFilter} was able to verify the Jwt issued earlier.
+     * @return response 200 if {@link StaticJwtFilter} was able to verify the Jwt issued earlier.
      */
     @GET
     @Path("/jwt/verify")

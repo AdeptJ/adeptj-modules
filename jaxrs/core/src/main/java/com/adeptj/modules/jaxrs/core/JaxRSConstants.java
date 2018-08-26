@@ -37,6 +37,8 @@ public final class JaxRSConstants {
 
     public static final String AUTH_SCHEME_TOKEN = "TOKEN";
 
+    public static final String CLAIMS_REQ_ATTR = "com.adeptj.modules.security.jwt.ExtendedJwtClaims";
+
     public static final String PROPERTY_PROVIDER_NAME = "osgi.jaxrs.provider.name";
 
     public static final String PROPERTY_RESOURCE_NAME = "osgi.jaxrs.resource.name";

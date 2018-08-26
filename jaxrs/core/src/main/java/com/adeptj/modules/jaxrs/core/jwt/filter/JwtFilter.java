@@ -31,6 +31,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.CLAIMS_REQ_ATTR;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -65,6 +66,7 @@ public interface JwtFilter extends ContainerRequestFilter {
             if (StringUtils.isEmpty(claims.getSubject())) {
                 requestContext.abortWith(Response.status(UNAUTHORIZED).build());
             } else {
+                requestContext.setProperty(CLAIMS_REQ_ATTR, claims.getClaims());
                 requestContext.setSecurityContext(new JwtSecurityContext(claims.getSubject(), claims.getRoles(),
                         requestContext.getSecurityContext().isSecure(), AUTH_SCHEME_TOKEN));
             }
