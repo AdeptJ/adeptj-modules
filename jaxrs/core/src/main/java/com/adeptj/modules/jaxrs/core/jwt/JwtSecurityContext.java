@@ -22,7 +22,7 @@ package com.adeptj.modules.jaxrs.core.jwt;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
-import java.util.Set;
+import java.util.List;
 
 /**
  * JAX-RS {@link SecurityContext}.
@@ -33,13 +33,13 @@ public class JwtSecurityContext implements SecurityContext {
 
     private String subject;
 
-    private Set<String> roles;
+    private List<String> roles;
 
     private boolean secure;
 
     private String authScheme;
 
-    public JwtSecurityContext(String subject, Set<String> roles, boolean secure, String authScheme) {
+    public JwtSecurityContext(String subject, List<String> roles, boolean secure, String authScheme) {
         this.subject = subject;
         this.roles = roles;
         this.secure = secure;

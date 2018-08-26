@@ -21,8 +21,8 @@
 package com.adeptj.modules.security.jwt;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static io.jsonwebtoken.Claims.SUBJECT;
 
@@ -35,7 +35,7 @@ public class ExtendedJwtClaims {
 
     private String subject;
 
-    private Set<String> roles;
+    private List<String> roles;
 
     private Map<String, Object> claims;
 
@@ -47,7 +47,7 @@ public class ExtendedJwtClaims {
         return claims;
     }
 
-    public Set<String> getRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 
@@ -58,7 +58,7 @@ public class ExtendedJwtClaims {
         }
         this.claims.putAll(claims);
         this.subject = (String) this.claims.get(SUBJECT);
-        this.roles = (Set<String>) this.claims.get("roles");
+        this.roles = (List<String>) this.claims.get("roles");
         return this;
     }
 }

@@ -26,6 +26,9 @@ import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Default implementation of JaxRSAuthenticationRealm.
  *
@@ -60,6 +63,10 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public JaxRSAuthenticationOutcome authenticate(SimpleCredentials credentials) {
-        return this.credentialsCollector.matchCredentials(credentials) ? new JaxRSAuthenticationOutcome() : null;
+        List<String> roles = new ArrayList<>();
+        roles.add(credentials.getUsername());
+        roles.add("OSGiAdmin");
+        JaxRSAuthenticationOutcome outcome = new JaxRSAuthenticationOutcome().addAttribute("roles", roles);
+        return this.credentialsCollector.matchCredentials(credentials) ? outcome : null;
     }
 }
