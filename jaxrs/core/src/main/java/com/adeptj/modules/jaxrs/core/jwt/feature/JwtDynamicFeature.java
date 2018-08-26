@@ -101,9 +101,7 @@ public class JwtDynamicFeature implements DynamicFeature {
                 });
     }
 
-    // -------------------- INTERNAL --------------------
-
-    // Component Lifecycle Methods
+    // ---------------------------------------- OSGi INTERNAL ----------------------------------------
 
     @Activate
     protected void start(JwtDynamicFeatureConfig config) {
