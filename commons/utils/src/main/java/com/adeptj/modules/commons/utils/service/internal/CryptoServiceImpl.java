@@ -122,7 +122,8 @@ public class CryptoServiceImpl implements CryptoService {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         return StringUtils.equals(saltHashPair.getHash(), this.getHashedText(plainText, saltHashPair.getSalt()));
     }
-// -------------- INTERNAL --------------
+
+    // ------------------------------------------ OSGi INTERNAL ------------------------------------------
 
     @Activate
     protected void start(CryptoConfig cryptoConfig) {

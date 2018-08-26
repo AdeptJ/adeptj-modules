@@ -15,7 +15,7 @@ public @interface JaxRSResource {
     /**
      * Prefix for the property name. This value is prepended to each property name.
      */
-    String PREFIX_ = "osgi.jaxrs.resource.";
+    String PREFIX_ = "osgi.jaxrs.resource."; // NOSONAR
 
     // This is a marker annotation.
 

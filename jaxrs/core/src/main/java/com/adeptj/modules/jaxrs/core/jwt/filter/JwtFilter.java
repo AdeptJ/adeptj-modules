@@ -22,7 +22,6 @@ package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtResolver;
 import com.adeptj.modules.security.jwt.JwtService;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -58,7 +57,7 @@ public interface JwtFilter extends ContainerRequestFilter {
             String jwt = JwtResolver.resolve(requestContext);
             // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
             // 401 is better suited for token verification failure.
-            if (StringUtils.isEmpty(jwt) || !jwtService.verifyJwt(jwt)) {
+            if (!jwtService.verifyJwt(jwt)) {
                 requestContext.abortWith(Response.status(UNAUTHORIZED).build());
             }
         }

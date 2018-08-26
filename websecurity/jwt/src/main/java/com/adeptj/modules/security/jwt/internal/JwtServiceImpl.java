@@ -26,6 +26,7 @@ import com.adeptj.modules.security.jwt.JwtUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
+import io.jsonwebtoken.security.SignatureException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -40,7 +41,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -140,16 +140,22 @@ public class JwtServiceImpl implements JwtService {
         this.signingKey = null;
         this.verificationKey = null;
         this.jwtConfig = jwtConfig;
-        this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-        if (this.signatureAlgo.isHmac()) {
-            this.signingKey = JwtSigningKeys.createHmacSigningKey(jwtConfig.hmacSecretKey(), this.signatureAlgo);
-            this.verificationKey = this.signingKey;
-        } else {
-            this.signingKey = JwtSigningKeys.createRsaSigningKey(jwtConfig);
-            this.verificationKey = JwtSigningKeys.createRsaVerificationKey(jwtConfig);
+        try {
+            this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
+            if (this.signatureAlgo.isHmac()) {
+                this.signingKey = JwtSigningKeys.createHmacSigningKey(jwtConfig.hmacSecretKey(), this.signatureAlgo);
+                // In case of HMAC, the signing and verification keys are same.
+                this.verificationKey = this.signingKey;
+            } else {
+                this.signingKey = JwtSigningKeys.createRsaSigningKey(jwtConfig);
+                this.verificationKey = JwtSigningKeys.createRsaVerificationKey(jwtConfig);
+            }
+            this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
+            this.obligatoryClaims = Arrays.asList(this.jwtConfig.obligatoryClaims());
+            this.jwtHandler.setInvokeClaimsValidator(this.jwtConfig.invokeClaimsValidator());
+        } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
+            LOGGER.info("Couldn't start the JwtService!!", ex);
+            throw ex;
         }
-        this.expirationTimeUnit = ChronoUnit.valueOf(this.jwtConfig.expirationTimeUnit());
-        this.obligatoryClaims = Collections.unmodifiableList(Arrays.asList(this.jwtConfig.obligatoryClaims()));
-        this.jwtHandler.setInvokeClaimsValidator(this.jwtConfig.invokeClaimsValidator());
     }
 }

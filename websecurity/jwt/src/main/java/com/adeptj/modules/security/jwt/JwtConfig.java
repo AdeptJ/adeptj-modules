@@ -94,7 +94,7 @@ public @interface JwtConfig {
 
     @AttributeDefinition(
             name = "JWT Hmac Secret Key",
-            description = "Hmac Secret Key for JWT signing, leave it blank in case RSA algo is selected. "
+            description = "Hmac Secret Key for JWT signing/verification, leave it blank in case RSA algo is selected. "
     )
     String hmacSecretKey();
 

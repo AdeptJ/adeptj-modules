@@ -99,8 +99,13 @@ final class JwtSigningKeys {
     }
 
     static Key createHmacSigningKey(String hmacSecretKey, SignatureAlgorithm algorithm) {
-        Assert.hasText(hmacSecretKey, HMAC_SECRET_KEY_NULL_MSG);
-        return new SecretKeySpec(Base64.getEncoder().encode(hmacSecretKey.getBytes(UTF_8)), algorithm.getJcaName());
+        try {
+            Assert.hasText(hmacSecretKey, HMAC_SECRET_KEY_NULL_MSG);
+            return new SecretKeySpec(Base64.getEncoder().encode(hmacSecretKey.getBytes(UTF_8)), algorithm.getJcaName());
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+            throw new KeyInitializationException(ex.getMessage(), ex);
+        }
     }
 
     private static Key getRsaSigningKey(JwtConfig jwtConfig) throws Exception { // NOSONAR

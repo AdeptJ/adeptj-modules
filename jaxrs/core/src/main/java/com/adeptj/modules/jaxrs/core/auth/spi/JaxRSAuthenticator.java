@@ -36,8 +36,8 @@ public interface JaxRSAuthenticator {
      * Validates the provided credentials by querying all the registered JaxRSAuthenticationRealm.
      * If any of the realm return a non null JaxRSAuthenticationInfo then no further realms are queried.
      * <p>
-     * Note: Just the presence of non null JaxRSAuthenticationInfo will be treated a valid auth info by {@link JaxRSAuthenticator}
-     * as it has no way to further validate the information returned by the implementations.
+     * Note: Just the presence of non null JaxRSAuthenticationOutcome will be treated a valid auth info by {@link JaxRSAuthenticator}
+     * as it has no further way to validate the information returned by the implementations.
      *
      * @param credentials object containing the username and password submitted for authentication
      * @return JaxRSAuthenticationOutcome instance after credentials validation.
