@@ -85,10 +85,6 @@ public class JwtResource {
     @Reference
     private JaxRSAuthenticator authenticator;
 
-    @Context
-    private SecurityContext securityContext;
-
-
     /**
      * Create Jwt for the username with given credentials.
      *
@@ -120,8 +116,8 @@ public class JwtResource {
     @GET
     @Path("/jwt/verify")
     @RequiresJwt
-    public Response verifyJwt() {
-        return Response.ok("Verified subject: " + this.securityContext.getUserPrincipal().getName()).build();
+    public Response verifyJwt(@Context SecurityContext securityContext) {
+        return Response.ok("Verified subject: " + securityContext.getUserPrincipal().getName()).build();
     }
 
     // -------------------- INTERNAL --------------------
