@@ -20,27 +20,29 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import org.osgi.service.component.annotations.ComponentPropertyType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX;
+
 /**
- * Constants for RESTEasy modules.
+ * {@link ComponentPropertyType} for RESTEasy's mapping prefix property.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class ResteasyConstants {
+@ComponentPropertyType
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+public @interface ResteasyServletMappingPrefix {
 
-    private ResteasyConstants() {
-    }
+    /**
+     * Prefix for the property name. This value is prepended to each property name.
+     */
+    String PREFIX_ = HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX; // NOSONAR
 
-    static final String METHOD_GET_CTX_RESOLVERS = "getContextResolvers";
-
-    static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
-
-    static final String FIELD_PROVIDER_CLASSES = "providerClasses";
-
-    static final boolean FORCE_ACCESS = true;
-
-    static final String RESTEASY_PROXY_SERVLET_NAME = "AdeptJ RESTEasy ProxyServlet";
-
-    static final String RESTEASY_DISPATCHER_SERVLET_PATH = "/";
-
-    static final String SERVICE_TRACKER_FORMAT = "(%s=%s)";
+    String value();
 }

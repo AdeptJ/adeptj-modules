@@ -20,7 +20,11 @@
 
 -metatypeannotations: *
 
+-metatypeannotations-options: version;minimum=1.4.0
+
 -dsannotations: *
+
+-dsannotations-options: version;minimum=1.4.0
 
 -includeresource: resteasy-*.jar;apache-mime4j-*.jar;lib:=true
 

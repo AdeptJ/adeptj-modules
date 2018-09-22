@@ -36,16 +36,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.commons.utils.Constants.EQ;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DISPATCHER_SERVLET_PATH;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_PROXY_SERVLET_NAME;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVLET_URL_PATTERN;
-import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
-import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX;
 
 
 /**
- * ResteasyProxyServlet wraps RESTEasy's HttpServlet30Dispatcher so that Servlet 3.0 Async behaviour can be leveraged.
+ * ResteasyProxyServlet delegates request processing to RESTEasy's HttpServlet30Dispatcher.
  * <p>
  * RESTEasy's bootstrapping is delegated to {@link ResteasyLifecycle} which also registers the ServiceTracker for
  * JAX-RS resources and providers.
@@ -53,15 +50,10 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
  * @author Rakesh.Kumar, AdeptJ
  */
 @HttpWhiteboardServletName(RESTEASY_PROXY_SERVLET_NAME)
-@HttpWhiteboardServletPattern(SERVLET_URL_PATTERN)
+@HttpWhiteboardServletPattern(RESTEASY_DISPATCHER_SERVLET_PATH)
 @HttpWhiteboardFilterAsyncSupported
-@Component(
-        service = Servlet.class,
-        scope = PROTOTYPE,
-        property = {
-                HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + RESTEASY_SERVLET_MAPPING_PREFIX + EQ + SERVLET_URL_PATTERN
-        }
-)
+@ResteasyServletMappingPrefix(RESTEASY_DISPATCHER_SERVLET_PATH)
+@Component(service = Servlet.class, scope = PROTOTYPE)
 public class ResteasyProxyServlet extends HttpServlet {
 
     private static final long serialVersionUID = -4415966373465265279L;
@@ -71,7 +63,8 @@ public class ResteasyProxyServlet extends HttpServlet {
     private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
 
     /**
-     * Manages RESTEasy's lifecycle.
+     * Service is statically injected so that this servlet doesn't get initialized until the reference
+     * to {@link ResteasyLifecycle} becomes available which also manages RESTEasy's lifecycle.
      */
     @Reference
     private ResteasyLifecycle resteasyLifecycle; // NOSONAR
