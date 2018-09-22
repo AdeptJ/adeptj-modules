@@ -64,9 +64,9 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
 )
 public class ResteasyProxyServlet extends HttpServlet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private static final long serialVersionUID = -4415966373465265279L;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
 
@@ -74,7 +74,7 @@ public class ResteasyProxyServlet extends HttpServlet {
      * Manages RESTEasy's lifecycle.
      */
     @Reference
-    private ResteasyLifecycle resteasyLifecycle;
+    private ResteasyLifecycle resteasyLifecycle; // NOSONAR
 
     /**
      * Delegates the RESTEasy's bootstrap process in {@link ResteasyLifecycle#start(ServletConfig)}
@@ -96,7 +96,7 @@ public class ResteasyProxyServlet extends HttpServlet {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
         }
-        this.resteasyLifecycle.getResteasyDispatcher().service(req.getMethod(), req, resp);
+        this.resteasyLifecycle.getResteasyServletDispatcher().service(req.getMethod(), req, resp);
     }
 
     /**

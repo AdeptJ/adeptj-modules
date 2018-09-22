@@ -61,14 +61,14 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
      */
     @Override
     public Object addingService(ServiceReference<Object> reference) {
-        Object resource = super.addingService(reference);
-        if (resource == null) {
+        Object provider = super.addingService(reference);
+        if (provider == null) {
             LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
-        } else {
-            LOGGER.info("Adding JAX-RS Provider: [{}]", resource);
-            this.providerFactory.register(resource);
+            return null;
         }
-        return resource;
+        LOGGER.info("Adding JAX-RS Provider: [{}]", provider);
+        this.providerFactory.register(provider);
+        return provider;
     }
 
     /**

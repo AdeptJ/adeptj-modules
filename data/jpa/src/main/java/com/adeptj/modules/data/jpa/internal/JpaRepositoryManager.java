@@ -22,7 +22,7 @@ package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.commons.ds.api.DataSourceProvider;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
-import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
+import com.adeptj.modules.data.jpa.api.JpaRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -42,14 +42,14 @@ import javax.validation.ValidatorFactory;
 import java.util.Optional;
 
 /**
- * Manages the lifecycle of {@link EntityManagerFactory} and {@link JpaCrudRepository}
+ * Manages the lifecycle of {@link EntityManagerFactory} and {@link JpaRepository}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = JpaCrudRepositoryManager.class)
-public class JpaCrudRepositoryManager {
+@Component(service = JpaRepositoryManager.class)
+public class JpaRepositoryManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaCrudRepositoryManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepositoryManager.class);
 
     private static final String EMF_NULL_MSG = "Could not create EntityManagerFactory, most probably missing persistence.xml!!";
 
@@ -62,7 +62,7 @@ public class JpaCrudRepositoryManager {
     private ValidatorService validatorService;
 
 
-    Pair<EntityManagerFactory, ServiceRegistration<JpaCrudRepository>> create(EntityManagerFactoryConfig config) {
+    Pair<EntityManagerFactory, ServiceRegistration<JpaRepository>> create(EntityManagerFactoryConfig config) {
         EntityManagerFactory emf = null;
         try {
             String unitName = config.unitName();
@@ -75,7 +75,7 @@ public class JpaCrudRepositoryManager {
                 throw new IllegalStateException(EMF_NULL_MSG);
             }
             LOGGER.info("EntityManagerFactory [{}] created for PersistenceUnit: [{}]", emf, unitName);
-            return ImmutablePair.of(emf, JpaCrudRepositories.register(unitName, emf, this.bundleContext));
+            return ImmutablePair.of(emf, JpaRepositories.register(unitName, emf, this.bundleContext));
         } catch (Exception ex) { // NOSONAR
             LOGGER.error("Exception occurred while creating EntityManagerFactory!!", ex);
             // Close the EntityManagerFactory if it was created earlier but exception occurred later.
@@ -85,9 +85,9 @@ public class JpaCrudRepositoryManager {
         }
     }
 
-    void dispose(String unitName, Pair<EntityManagerFactory, ServiceRegistration<JpaCrudRepository>> pair) {
+    void dispose(String unitName, Pair<EntityManagerFactory, ServiceRegistration<JpaRepository>> pair) {
         LOGGER.info("Disposing JpaCrudRepository for PersistenceUnit: [{}]", unitName);
-        JpaCrudRepositories.unregister(unitName, pair.getRight());
+        JpaRepositories.unregister(unitName, pair.getRight());
         LOGGER.info("Closing EntityManagerFactory against PersistenceUnit: [{}]", unitName);
         try {
             Optional.ofNullable(pair.getLeft()).ifPresent(EntityManagerFactory::close);

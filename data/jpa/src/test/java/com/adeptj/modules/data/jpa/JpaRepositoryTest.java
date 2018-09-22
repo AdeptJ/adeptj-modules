@@ -20,9 +20,9 @@
 
 package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
+import com.adeptj.modules.data.jpa.api.JpaRepository;
 import com.adeptj.modules.data.jpa.entity.User;
-import com.adeptj.modules.data.jpa.internal.EclipseLinkCrudRepository;
+import com.adeptj.modules.data.jpa.internal.EclipseLinkRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -39,16 +39,16 @@ import java.util.List;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Disabled
-public class JpaCrudRepositoryTest {
+public class JpaRepositoryTest {
 
     private static EntityManagerFactory emf;
 
-    private static JpaCrudRepository crudRepository;
+    private static JpaRepository crudRepository;
 
     @BeforeAll
     public static void init() throws Exception {
         emf = Persistence.createEntityManagerFactory("AdeptJ_PU");
-        crudRepository = new EclipseLinkCrudRepository(emf);
+        crudRepository = new EclipseLinkRepository(emf);
     }
 
     @AfterAll

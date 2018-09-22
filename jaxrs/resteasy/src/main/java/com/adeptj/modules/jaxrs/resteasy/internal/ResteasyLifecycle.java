@@ -64,7 +64,7 @@ public class ResteasyLifecycle {
 
     private BundleContext bundleContext;
 
-    private HttpServlet30Dispatcher resteasyDispatcher;
+    private HttpServlet30Dispatcher resteasyServletDispatcher;
 
     /**
      * Statically injected ValidatorService, this component will not resolve until one is provided.
@@ -82,14 +82,14 @@ public class ResteasyLifecycle {
     void start(ServletConfig servletConfig) {
         Functions.execute(this.getClass().getClassLoader(), () -> {
             try {
-                final long startTime = System.nanoTime();
+                long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyDispatcher = new HttpServlet30Dispatcher();
-                this.resteasyDispatcher.init(servletConfig);
-                Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
+                this.resteasyServletDispatcher = new HttpServlet30Dispatcher();
+                this.resteasyServletDispatcher.init(servletConfig);
+                Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
                 ResteasyProviderFactory rpf = dispatcher.getProviderFactory();
-                ResteasyUtil.removeInternalValidators(rpf);
-                ResteasyUtil.registerInternalProviders(rpf, this.config, this.validatorService.getValidatorFactory());
+                ResteasyUtil.removeDefaultValidatorContextResolvers(rpf);
+                ResteasyUtil.registerProviders(rpf, this.config, this.validatorService.getValidatorFactory());
                 this.serviceTrackers.add(new ProviderTracker(this.bundleContext, rpf));
                 this.serviceTrackers.add(new ResourceTracker(this.bundleContext, dispatcher.getRegistry()));
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
@@ -118,7 +118,7 @@ public class ResteasyLifecycle {
                         LOGGER.error("Exception while closing ServiceTracker instances!!", ex);
                     }
                 });
-        this.resteasyDispatcher.destroy();
+        this.resteasyServletDispatcher.destroy();
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 
@@ -127,11 +127,11 @@ public class ResteasyLifecycle {
      *
      * @return RESTEasy's {@link HttpServlet30Dispatcher}
      */
-    HttpServlet30Dispatcher getResteasyDispatcher() {
-        return resteasyDispatcher;
+    HttpServlet30Dispatcher getResteasyServletDispatcher() {
+        return resteasyServletDispatcher;
     }
 
-    // --------------------------------------------------- INTERNAL ----------------------------------------------------
+    // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
 
     @Activate
     protected void start(BundleContext bundleContext, ResteasyConfig config) {

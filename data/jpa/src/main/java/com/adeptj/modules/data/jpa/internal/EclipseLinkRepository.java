@@ -12,7 +12,7 @@ import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
-import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
+import com.adeptj.modules.data.jpa.api.JpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +33,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of {@link JpaCrudRepository} based on EclipseLink JPA Reference Implementation
+ * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
  * <p>
  * This will be registered with the OSGi service registry whenever there is a new EntityManagerFactory configuration
- * saved by {@link JpaCrudRepositoryFactory}
+ * saved by {@link JpaRepositoryFactory}
  * <p>
  * Therefore there will be a separate service for each PersistenceUnit.
  * <p>
- * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaCrudRepository}
+ * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaRepository}
  *
  * <code>
  * &#064;Reference(target="(osgi.unit.name=pu)")
@@ -49,13 +49,13 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class EclipseLinkCrudRepository implements JpaCrudRepository {
+public class EclipseLinkRepository implements JpaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final EntityManagerFactory emf;
 
-    public EclipseLinkCrudRepository(EntityManagerFactory emf) {
+    public EclipseLinkRepository(EntityManagerFactory emf) {
         this.emf = emf;
     }
 

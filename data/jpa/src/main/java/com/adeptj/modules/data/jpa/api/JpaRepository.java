@@ -45,7 +45,7 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JpaCrudRepository {
+public interface JpaRepository {
 
     /**
      * Inserts the given JPA entity in DB.
@@ -150,7 +150,7 @@ public interface JpaCrudRepository {
     /**
      * Finds the given JPA entity using Criteria API. Helpful wherever pagination is required.
      * <p>
-     * First the no. of records can be checked using {@link JpaCrudRepository#count(Class)} method
+     * First the no. of records can be checked using {@link JpaRepository#count(Class)} method
      * and then the pagination query can be fired.
      *
      * @param criteria Object composed of the JPA entity class.
@@ -199,7 +199,7 @@ public interface JpaCrudRepository {
      * <p>
      * Note: Should never be called for large number of rows.
      * <p>
-     * First the no. of records can be checked using {@link JpaCrudRepository#count(Class)} method
+     * First the no. of records can be checked using {@link JpaRepository#count(Class)} method
      * and then the pagination query can be fired.
      *
      * @param entity    the JPA entity class object

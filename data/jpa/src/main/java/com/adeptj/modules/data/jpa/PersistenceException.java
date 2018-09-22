@@ -20,8 +20,10 @@
 
 package com.adeptj.modules.data.jpa;
 
+import com.adeptj.modules.data.jpa.api.JpaRepository;
+
 /**
- * Exception thrown by {@link com.adeptj.modules.data.jpa.api.JpaCrudRepository} methods.
+ * Exception thrown by {@link JpaRepository} methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

@@ -1,6 +1,6 @@
 package com.adeptj.modules.data.jpa.internal;
 
-import com.adeptj.modules.data.jpa.api.JpaCrudRepository;
+import com.adeptj.modules.data.jpa.api.JpaRepository;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -16,26 +16,26 @@ import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
 /**
- * This class is a utility which registers the {@link JpaCrudRepository} with OSGi service registry whenever
- * there is a new EntityManagerFactory configuration saved by {@link JpaCrudRepositoryFactory}
+ * This class is a utility which registers the {@link JpaRepository} with OSGi service registry whenever
+ * there is a new EntityManagerFactory configuration saved by {@link JpaRepositoryFactory}
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-final class JpaCrudRepositories {
+final class JpaRepositories {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaCrudRepositories.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepositories.class);
 
-    static ServiceRegistration<JpaCrudRepository> register(String unitName, EntityManagerFactory emf, BundleContext ctx) {
+    static ServiceRegistration<JpaRepository> register(String unitName, EntityManagerFactory emf, BundleContext ctx) {
         Hashtable<String, String> properties = new Hashtable<>();
         properties.put(SERVICE_VENDOR, "AdeptJ");
-        properties.put(SERVICE_PID, EclipseLinkCrudRepository.class.getName());
+        properties.put(SERVICE_PID, EclipseLinkRepository.class.getName());
         properties.put(SERVICE_DESCRIPTION, "AdeptJ JpaCrudRepository(EclipseLink)");
         properties.put(JPA_UNIT_NAME, unitName);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
-        return ctx.registerService(JpaCrudRepository.class, new EclipseLinkCrudRepository(emf), properties);
+        return ctx.registerService(JpaRepository.class, new EclipseLinkRepository(emf), properties);
     }
 
-    static void unregister(String unitName, ServiceRegistration<JpaCrudRepository> crudRepository) {
+    static void unregister(String unitName, ServiceRegistration<JpaRepository> crudRepository) {
         Optional.ofNullable(crudRepository).ifPresent(cr -> {
             try {
                 cr.unregister();

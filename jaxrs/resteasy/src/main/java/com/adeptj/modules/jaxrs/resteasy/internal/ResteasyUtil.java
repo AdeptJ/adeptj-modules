@@ -58,30 +58,30 @@ final class ResteasyUtil {
     private ResteasyUtil() {
     }
 
-    static void registerInternalProviders(ResteasyProviderFactory rpf, ResteasyConfig config, ValidatorFactory vf) {
+    static void registerProviders(ResteasyProviderFactory rpf, ResteasyConfig config, ValidatorFactory vf) {
         rpf.register(new ValidatorContextResolver(vf))
                 .register(new DefaultExceptionHandler(config.showException()))
                 .register(new JaxRSExceptionHandler(config.showException()))
                 .register(new WebApplicationExceptionHandler(config.showException()))
-                .register(new FluentCorsFilter()
+                .register(CorsFilterBuilder.newBuilder()
                         .allowCredentials(config.allowCredentials())
                         .corsMaxAge(config.corsMaxAge())
                         .exposedHeaders(config.exposedHeaders())
                         .allowedMethods(config.allowedMethods())
                         .allowedHeaders(config.allowedHeaders())
                         .allowedOrigins(config.allowedOrigins())
-                        .corsFilter());
+                        .build());
     }
 
-    static void removeInternalValidators(ResteasyProviderFactory rpf) {
+    static void removeDefaultValidatorContextResolvers(ResteasyProviderFactory rpf) {
         try {
             Map<?, ?> contextResolvers = (Map) invokeMethod(rpf, FORCE_ACCESS, METHOD_GET_CTX_RESOLVERS, null, null);
             LOGGER.info("ContextResolver(s) prior to removal: [{}]", contextResolvers.size());
             contextResolvers.remove(GeneralValidator.class);
             contextResolvers.remove(GeneralValidatorCDI.class);
             LOGGER.info("ContextResolver(s) after removal: [{}]", contextResolvers.size());
-            Field field = getDeclaredField(rpf.getClass(), FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
-            Set<?> providerClasses = (Set) readField(field, rpf, FORCE_ACCESS);
+            Field providerClassesField = getDeclaredField(rpf.getClass(), FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
+            Set<?> providerClasses = (Set) readField(providerClassesField, rpf, FORCE_ACCESS);
             providerClasses.remove(org.jboss.resteasy.plugins.validation.ValidatorContextResolver.class);
             providerClasses.remove(ValidatorContextResolverCDI.class);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
@@ -90,10 +90,6 @@ final class ResteasyUtil {
     }
 
     static void removeJaxRSProvider(ResteasyProviderFactory providerFactory, Object provider) {
-        if (provider == null) {
-            LOGGER.warn("JAX-RS Provider is null!!");
-            return;
-        }
         try {
             Field providers = getDeclaredField(providerFactory.getClass(), FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
             if (((Set) readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
@@ -105,6 +101,6 @@ final class ResteasyUtil {
     }
 
     static boolean isNotAnnotatedWithPath(Object resource) {
-        return resource == null || !resource.getClass().isAnnotationPresent(Path.class);
+        return !resource.getClass().isAnnotationPresent(Path.class);
     }
 }

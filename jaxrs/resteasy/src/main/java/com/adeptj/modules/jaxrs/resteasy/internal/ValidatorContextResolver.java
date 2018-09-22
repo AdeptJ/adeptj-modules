@@ -25,7 +25,6 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 import javax.validation.ValidatorFactory;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.util.Collections;
 import java.util.EnumSet;
 
 import static javax.validation.executable.ExecutableType.CONSTRUCTORS;
@@ -52,8 +51,7 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
         // Not doing the type check of passed Class object as RESTEasy passes null
         // while processing resource methods at bootstrap time.
         if (this.validator == null) {
-            this.validator = new GeneralValidatorImpl(this.validatorFactory, true,
-                    Collections.unmodifiableSet(EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS)));
+            this.validator = new GeneralValidatorImpl(this.validatorFactory, true, EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS));
         }
         return this.validator;
     }

@@ -31,45 +31,49 @@ import static com.adeptj.modules.commons.utils.Constants.COMMA;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class FluentCorsFilter {
+class CorsFilterBuilder {
 
     private CorsFilter corsFilter;
 
-    FluentCorsFilter() {
+    private CorsFilterBuilder() {
         this.corsFilter = new CorsFilter();
     }
 
-    FluentCorsFilter allowCredentials(boolean allowCredentials) {
+    static CorsFilterBuilder newBuilder() {
+        return new CorsFilterBuilder();
+    }
+
+    CorsFilterBuilder allowCredentials(boolean allowCredentials) {
         this.corsFilter.setAllowCredentials(allowCredentials);
         return this;
     }
 
-    FluentCorsFilter corsMaxAge(int corsMaxAge) {
+    CorsFilterBuilder corsMaxAge(int corsMaxAge) {
         this.corsFilter.setCorsMaxAge(corsMaxAge);
         return this;
     }
 
-    FluentCorsFilter exposedHeaders(String[] exposedHeaders) {
+    CorsFilterBuilder exposedHeaders(String[] exposedHeaders) {
         this.corsFilter.setExposedHeaders(String.join(COMMA, exposedHeaders));
         return this;
     }
 
-    FluentCorsFilter allowedMethods(String[] allowedMethods) {
+    CorsFilterBuilder allowedMethods(String[] allowedMethods) {
         this.corsFilter.setAllowedMethods(String.join(COMMA, allowedMethods));
         return this;
     }
 
-    FluentCorsFilter allowedHeaders(String[] allowedHeaders) {
+    CorsFilterBuilder allowedHeaders(String[] allowedHeaders) {
         this.corsFilter.setAllowedHeaders(String.join(COMMA, allowedHeaders));
         return this;
     }
 
-    FluentCorsFilter allowedOrigins(String[] allowedOrigins) {
+    CorsFilterBuilder allowedOrigins(String[] allowedOrigins) {
         this.corsFilter.getAllowedOrigins().addAll(Arrays.asList(allowedOrigins));
         return this;
     }
 
-    CorsFilter corsFilter() {
+    CorsFilter build() {
         return this.corsFilter;
     }
 }
