@@ -58,10 +58,14 @@ public interface JwtFilter extends ContainerRequestFilter {
     default void doFilter(ContainerRequestContext requestContext, JwtService jwtService) {
         if (jwtService == null) {
             requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
+            return;
+        }
+        String jwt = JwtResolver.resolve(requestContext);
+        // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
+        // 401 is better suited for token verification failure.
+        if (StringUtils.isEmpty(jwt)) {
+            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         } else {
-            String jwt = JwtResolver.resolve(requestContext);
-            // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
-            // 401 is better suited for token verification failure.
             ExtendedJwtClaims claims = jwtService.verifyJwt(jwt);
             if (StringUtils.isEmpty(claims.getSubject())) {
                 requestContext.abortWith(Response.status(UNAUTHORIZED).build());
