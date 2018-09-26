@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -43,7 +44,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Provider
 public class DefaultExceptionHandler implements ExceptionMapper<ApplicationException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private boolean showException;
 

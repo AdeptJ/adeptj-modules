@@ -21,6 +21,7 @@
 package com.adeptj.modules.jaxrs.core.resource;
 
 import com.adeptj.modules.commons.utils.service.CryptoService;
+import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.jaxrs.core.JaxRSResource;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import org.osgi.service.component.annotations.Component;
@@ -66,6 +67,7 @@ public class CryptoResource {
     @Produces(APPLICATION_JSON)
     @RequiresJwt
     public Response createSaltHashPair(@NotEmpty @FormParam("plainText") String plainText) {
-        return Response.ok((this.cryptoService.getSaltHashPair(plainText))).build();
+        throw JaxRSException.builder().message("ISE!!").build();
+        //return Response.ok((this.cryptoService.getSaltHashPair(plainText))).build();
     }
 }

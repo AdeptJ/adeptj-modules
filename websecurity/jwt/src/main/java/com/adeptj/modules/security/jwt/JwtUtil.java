@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public final class JwtUtil {
 
-    private static final String CLAIM_NOT_FOUND_MSG = "JWT claim [%s] not found in claims map!";
+    private static final String CLAIM_NOT_FOUND_MSG = "JWT claim [%s] not found in claims map!!";
 
     private JwtUtil() {
     }

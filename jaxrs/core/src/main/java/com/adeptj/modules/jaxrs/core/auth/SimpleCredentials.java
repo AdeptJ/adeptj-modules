@@ -58,8 +58,7 @@ public final class SimpleCredentials {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SimpleCredentials that = (SimpleCredentials) o;
-        return Objects.equals(username, that.username) &&
-                Arrays.equals(password, that.password);
+        return Objects.equals(username, that.username) && Arrays.equals(password, that.password);
     }
 
     @Override

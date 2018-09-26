@@ -43,65 +43,38 @@ public @interface JwtConfig {
 
     @AttributeDefinition(
             name = "JWT Signature Algorithm",
-            description = "Signature Algorithm for JWT signing, only RSA and HmacSHA* are supported at this moment.",
+            description = "Signature Algorithm for JWT signing, only RSA is supported at this moment.",
             options = {
                     @Option(label = "RSA 256", value = "RS256"),
                     @Option(label = "RSA 384", value = "RS384"),
                     @Option(label = "RSA 512", value = "RS512"),
-                    @Option(label = "HMAC SHA256", value = "HS256"),
-                    @Option(label = "HMAC SHA384", value = "HS384"),
-                    @Option(label = "HMAC SHA512", value = "HS512"),
             }
     )
     String signatureAlgo();
 
     @AttributeDefinition(
-            name = "RSA PrivateKey File Location",
-            description = "Location of PrivateKey file (PEM-encoded PKCS#8 format) on file system for JWT signing."
+            name = "RSA PrivateKey(Signing Key)",
+            description = "PrivateKey data (PEM-encoded PKCS#8 format) for JWT signing."
     )
-    String privateKeyFileLocation();
+    String privateKey();
 
     @AttributeDefinition(
-            name = "RSA PublicKey File Location",
-            description = "Location of PublicKey file (PEM-encoded X.509 format) on file system for JWT verification."
+            name = "RSA PublicKey(Verification Key)",
+            description = "PublicKey data (PEM-encoded X.509 format) for JWT verification."
     )
-    String publicKeyFileLocation();
+    String publicKey();
 
     @AttributeDefinition(
             name = "RSA PrivateKey Password",
             description = "Pass phrase of the RSA PrivateKey",
             type = PASSWORD
     )
-    String keyPassword();
-
-    @AttributeDefinition(
-            name = "RSA Private/Public Key Search User Home",
-            description = "Whether to search the RSA Private/Public Key in user home directory."
-    )
-    boolean searchKeysInUserHome() default true;
-
-    @AttributeDefinition(
-            name = "Default RSA PrivateKey Name",
-            description = "Default name of the RSA PrivateKey to search in user home directory"
-    )
-    String defaultPrivateKeyName() default "jwt-private.pem";
-
-    @AttributeDefinition(
-            name = "Default RSA PublicKey Name",
-            description = "Default name of the RSA PublicKey to search in user home directory"
-    )
-    String defaultPublicKeyName() default "jwt-public.pem";
-
-    @AttributeDefinition(
-            name = "JWT Hmac Secret Key",
-            description = "Hmac Secret Key for JWT signing/verification, leave it blank in case RSA algo is selected. "
-    )
-    String hmacSecretKey();
+    String privateKeyPassword();
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";
 
-    @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time as per expirationTimeUnit.")
+    @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes.")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
 
     @AttributeDefinition(
@@ -120,14 +93,20 @@ public @interface JwtConfig {
             name = "JWT default obligatory claims which need to be checked",
             description = "JWT default obligatory claims which need to be checked for null and emptiness."
     )
-    String[] obligatoryClaims() default {SUBJECT, ISSUER, ID, ISSUED_AT, EXPIRATION};
+    String[] obligatoryClaims() default {
+            SUBJECT,
+            ISSUER,
+            ID,
+            ISSUED_AT,
+            EXPIRATION
+    };
 
     @AttributeDefinition(
             name = "Invoke JwtClaimsValidator",
-            description = "Whether to validate the JWT claims further via a JwtClaimsValidator after successful parsing."
+            description = "Whether to validate the JWT claims via a JwtClaimsValidator after successful parsing."
     )
     boolean invokeClaimsValidator();
 
-    @AttributeDefinition(name = "Print JwtException Trace", description = "Whether to print JwtException Trace.")
-    boolean printJwtExceptionTrace() default true;
+    @AttributeDefinition(name = "Suppress JwtException Trace", description = "Whether to suppress JwtException Trace.")
+    boolean suppressJwtExceptionTrace();
 }

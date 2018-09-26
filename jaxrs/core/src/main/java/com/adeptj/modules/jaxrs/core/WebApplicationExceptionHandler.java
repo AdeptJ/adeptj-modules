@@ -24,10 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.lang.invoke.MethodHandles;
 
 /**
  * An {@link ExceptionMapper} for {@link WebApplicationException}.
@@ -40,7 +40,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class WebApplicationExceptionHandler implements ExceptionMapper<WebApplicationException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebApplicationExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private boolean logException;
 
@@ -53,13 +53,6 @@ public class WebApplicationExceptionHandler implements ExceptionMapper<WebApplic
         if (this.logException) {
             LOGGER.error(exception.getMessage(), exception);
         }
-        Response response = exception.getResponse();
-        if (response == null) {
-            response = Response.serverError()
-                    .type(MediaType.TEXT_PLAIN_TYPE)
-                    .entity(ErrorResponse.DEFAULT_ERROR_MSG)
-                    .build();
-        }
-        return response;
+        return exception.getResponse();
     }
 }

@@ -18,8 +18,8 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Designate(ocd = ExecutorServiceConfig.class, factory = true)
 @Component(
         immediate = true,
-        name = "",
-        property = SERVICE_PID + EQ + "",
+        name = "ExecutorServiceFactory.factory",
+        property = SERVICE_PID + EQ + "ExecutorServiceFactory.factory",
         configurationPolicy = REQUIRE
 )
 public class ExecutorServiceFactory {
