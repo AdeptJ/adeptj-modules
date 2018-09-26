@@ -20,6 +20,10 @@
 
 package com.adeptj.modules.security.jwt;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +36,10 @@ import static io.jsonwebtoken.Claims.SUBJECT;
  * @author Rakesh.Kumar, AdeptJ
  */
 public class ExtendedJwtClaims {
+
+    private static final String KEY_ROLES = "roles";
+
+    private static final String REGEX_COMMA = ",";
 
     private String subject;
 
@@ -51,14 +59,17 @@ public class ExtendedJwtClaims {
         return roles;
     }
 
-    @SuppressWarnings("unchecked")
     public ExtendedJwtClaims addClaims(Map<String, Object> claims) {
         if (this.claims == null) {
             this.claims = new HashMap<>();
         }
         this.claims.putAll(claims);
         this.subject = (String) this.claims.get(SUBJECT);
-        this.roles = (List<String>) this.claims.get("roles");
+        if (StringUtils.isEmpty((String) this.claims.get(KEY_ROLES))) {
+            this.roles = new ArrayList<>();
+        } else {
+            this.roles = Arrays.asList(((String) this.claims.get(KEY_ROLES)).split(REGEX_COMMA));
+        }
         return this;
     }
 }

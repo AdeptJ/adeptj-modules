@@ -67,8 +67,12 @@ public interface JwtFilter extends ContainerRequestFilter {
                 requestContext.abortWith(Response.status(UNAUTHORIZED).build());
             } else {
                 requestContext.setProperty(CLAIMS_REQ_ATTR, claims.getClaims());
-                requestContext.setSecurityContext(new JwtSecurityContext(claims.getSubject(), claims.getRoles(),
-                        requestContext.getSecurityContext().isSecure(), AUTH_SCHEME_TOKEN));
+                requestContext.setSecurityContext(JwtSecurityContext.builder()
+                        .subject(claims.getSubject())
+                        .roles(claims.getRoles())
+                        .secure(requestContext.getSecurityContext().isSecure())
+                        .authScheme(AUTH_SCHEME_TOKEN)
+                        .build());
             }
         }
     }
