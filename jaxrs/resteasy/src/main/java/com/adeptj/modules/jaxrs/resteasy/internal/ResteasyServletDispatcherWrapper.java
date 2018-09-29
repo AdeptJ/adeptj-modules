@@ -60,8 +60,7 @@ public class ResteasyServletDispatcherWrapper extends HttpServlet30Dispatcher {
     @Override
     public void destroy() {
         super.destroy();
-        ServletConfig servletConfig = (ServletConfig) this.getDispatcher().getDefaultContextObjects().get(ServletConfig.class);
-        servletConfig.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
+        this.getServletConfig().getServletContext().removeAttribute(ResteasyDeployment.class.getName());
         LOGGER.info("Removed [org.jboss.resteasy.spi.ResteasyDeployment] form ServletContext attributes!!");
     }
 }
