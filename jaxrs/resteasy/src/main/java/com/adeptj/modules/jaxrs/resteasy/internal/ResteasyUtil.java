@@ -33,18 +33,8 @@ import org.slf4j.LoggerFactory;
 import javax.validation.ValidatorFactory;
 import javax.ws.rs.Path;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
-
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD_PROVIDER_CLASSES;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FIELD_PROVIDER_INSTANCES;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.FORCE_ACCESS;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.METHOD_GET_CTX_RESOLVERS;
-import static org.apache.commons.lang3.reflect.FieldUtils.getDeclaredField;
-import static org.apache.commons.lang3.reflect.FieldUtils.readField;
-import static org.apache.commons.lang3.reflect.MethodUtils.invokeMethod;
 
 /**
  * Utilities for RESTEasy bootstrap process.
@@ -73,30 +63,27 @@ final class ResteasyUtil {
                         .build());
     }
 
-    static void removeDefaultValidatorContextResolvers(ResteasyProviderFactory rpf) {
-        try {
-            Map<?, ?> contextResolvers = (Map) invokeMethod(rpf, FORCE_ACCESS, METHOD_GET_CTX_RESOLVERS, null, null);
-            LOGGER.info("ContextResolver(s) prior to removal: [{}]", contextResolvers.size());
-            contextResolvers.remove(GeneralValidator.class);
-            contextResolvers.remove(GeneralValidatorCDI.class);
-            LOGGER.info("ContextResolver(s) after removal: [{}]", contextResolvers.size());
-            Field providerClassesField = getDeclaredField(rpf.getClass(), FIELD_PROVIDER_CLASSES, FORCE_ACCESS);
-            Set<?> providerClasses = (Set) readField(providerClassesField, rpf, FORCE_ACCESS);
-            providerClasses.remove(org.jboss.resteasy.plugins.validation.ValidatorContextResolver.class);
-            providerClasses.remove(ValidatorContextResolverCDI.class);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
-            LOGGER.error("Exception while removing RESTEasy Validators", ex);
-        }
+    static void removeDefaultValidators(ResteasyProviderFactoryWrapper rpf) {
+        Map<Class<?>, ?> contextResolvers = rpf.getContextResolvers();
+        LOGGER.info("ContextResolver(s) prior to removal: [{}]", contextResolvers.size());
+        contextResolvers.remove(GeneralValidator.class);
+        contextResolvers.remove(GeneralValidatorCDI.class);
+        LOGGER.info("ContextResolver(s) after removal: [{}]", contextResolvers.size());
     }
 
-    static void removeJaxRSProvider(ResteasyProviderFactory providerFactory, Object provider) {
-        try {
-            Field providers = getDeclaredField(providerFactory.getClass(), FIELD_PROVIDER_INSTANCES, FORCE_ACCESS);
-            if (((Set) readField(providers, providerFactory, FORCE_ACCESS)).remove(provider)) {
-                LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
-            }
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            LOGGER.error("Exception while removing JAX-RS Provider!!", ex);
+    static void removeProviderClasses(ResteasyProviderFactoryWrapper rpf) {
+        Set<Class<?>> providerClasses = rpf.getProviderClasses();
+        LOGGER.info("ProviderClasses prior to removal: [{}]", providerClasses.size());
+        providerClasses.remove(ValidatorContextResolver.class);
+        providerClasses.remove(ValidatorContextResolverCDI.class);
+        LOGGER.info("ProviderClasses after removal: [{}]", providerClasses.size());
+    }
+
+    static void removeJaxRSProvider(ResteasyProviderFactoryWrapper rpfWrapper, Object provider) {
+        if (rpfWrapper.getProviderInstances().remove(provider)) {
+            LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
+        } else {
+            LOGGER.warn("Could not remove JAX-RS Provider: [{}]", provider);
         }
     }
 

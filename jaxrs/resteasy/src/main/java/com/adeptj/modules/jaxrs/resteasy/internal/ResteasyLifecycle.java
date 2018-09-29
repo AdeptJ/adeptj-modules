@@ -27,7 +27,6 @@ import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -64,7 +63,7 @@ public class ResteasyLifecycle {
 
     private BundleContext bundleContext;
 
-    private HttpServlet30Dispatcher resteasyServletDispatcher;
+    private ResteasyServletDispatcherWrapper resteasyServletDispatcher;
 
     /**
      * Statically injected ValidatorService, this component will not resolve until one is provided.
@@ -84,11 +83,12 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyServletDispatcher = new HttpServlet30Dispatcher();
+                this.resteasyServletDispatcher = new ResteasyServletDispatcherWrapper();
                 this.resteasyServletDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
-                ResteasyProviderFactory rpf = dispatcher.getProviderFactory();
-                ResteasyUtil.removeDefaultValidatorContextResolvers(rpf);
+                ResteasyProviderFactoryWrapper rpf = (ResteasyProviderFactoryWrapper) dispatcher.getProviderFactory();
+                ResteasyUtil.removeDefaultValidators(rpf);
+                ResteasyUtil.removeProviderClasses(rpf);
                 ResteasyUtil.registerProviders(rpf, this.config, this.validatorService.getValidatorFactory());
                 this.serviceTrackers.add(new ProviderTracker(this.bundleContext, rpf));
                 this.serviceTrackers.add(new ResourceTracker(this.bundleContext, dispatcher.getRegistry()));
@@ -127,7 +127,7 @@ public class ResteasyLifecycle {
      *
      * @return RESTEasy's {@link HttpServlet30Dispatcher}
      */
-    HttpServlet30Dispatcher getResteasyServletDispatcher() {
+    ResteasyServletDispatcherWrapper getResteasyServletDispatcher() {
         return resteasyServletDispatcher;
     }
 
