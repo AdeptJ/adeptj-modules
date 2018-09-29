@@ -22,7 +22,7 @@ package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtResolver;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
-import com.adeptj.modules.security.jwt.ExtendedJwtClaims;
+import com.adeptj.modules.security.jwt.ClaimsDecorator;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,17 +66,16 @@ public interface JwtFilter extends ContainerRequestFilter {
         if (StringUtils.isEmpty(jwt)) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         } else {
-            ExtendedJwtClaims claims = jwtService.verifyJwt(jwt);
-            if (StringUtils.isEmpty(claims.getSubject())) {
+            ClaimsDecorator claimsDecorator = jwtService.verifyJwt(jwt);
+            if (StringUtils.isEmpty(claimsDecorator.getSubject())) {
                 requestContext.abortWith(Response.status(UNAUTHORIZED).build());
             } else {
-                requestContext.setProperty(CLAIMS_REQ_ATTR, claims.getClaims());
-                requestContext.setSecurityContext(JwtSecurityContext.builder()
-                        .subject(claims.getSubject())
-                        .roles(claims.getRoles())
-                        .secure(requestContext.getSecurityContext().isSecure())
-                        .authScheme(AUTH_SCHEME_TOKEN)
-                        .build());
+                requestContext.setProperty(CLAIMS_REQ_ATTR, claimsDecorator.getClaims());
+                requestContext.setSecurityContext(JwtSecurityContext.newSecurityContext()
+                        .withSubject(claimsDecorator.getSubject())
+                        .withRoles(claimsDecorator.getRoles())
+                        .withSecure(requestContext.getSecurityContext().isSecure())
+                        .withAuthScheme(AUTH_SCHEME_TOKEN));
             }
         }
     }

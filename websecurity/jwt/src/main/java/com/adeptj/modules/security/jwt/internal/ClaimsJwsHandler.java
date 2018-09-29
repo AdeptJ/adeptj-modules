@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.security.jwt.ExtendedJwtClaims;
+import com.adeptj.modules.security.jwt.ClaimsDecorator;
 import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -38,7 +38,7 @@ import java.util.Objects;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(service = ClaimsJwsHandler.class)
-public final class ClaimsJwsHandler extends JwtHandlerAdapter<ExtendedJwtClaims> {
+public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
 
     private static final String BIND_CLAIMS_VALIDATOR_SERVICE = "bindClaimsValidator";
 
@@ -63,8 +63,8 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<ExtendedJwtClaims>
      * of {@link JwtClaimsValidator#validate} method.
      */
     @Override
-    public ExtendedJwtClaims onClaimsJws(Jws<Claims> jws) {
-        return new ExtendedJwtClaims()
+    public ClaimsDecorator onClaimsJws(Jws<Claims> jws) {
+        return new ClaimsDecorator()
                 .addClaims(this.invokeClaimsValidator && this.claimsValidator != null ? this.claimsValidator.validate(jws.getBody())
                         : jws.getBody());
     }

@@ -70,8 +70,8 @@ public interface JwtService {
      * validation of claims.
      *
      * @param jwt claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
-     * @return extended claims map with extra information such as roles etc. if a {@link JwtClaimsValidator} is available,
+     * @return decorated claims map with extra information such as roles etc. if a {@link JwtClaimsValidator} is available,
      * otherwise the Jwt {@link io.jsonwebtoken.Claims} map itself is returned.
      */
-    ExtendedJwtClaims verifyJwt(String jwt);
+    ClaimsDecorator verifyJwt(String jwt);
 }

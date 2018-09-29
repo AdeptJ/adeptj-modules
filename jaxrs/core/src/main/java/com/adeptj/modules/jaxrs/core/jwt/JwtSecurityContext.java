@@ -22,7 +22,7 @@ package com.adeptj.modules.jaxrs.core.jwt;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
-import java.util.List;
+import java.util.Set;
 
 /**
  * JAX-RS {@link SecurityContext}.
@@ -33,21 +33,37 @@ public class JwtSecurityContext implements SecurityContext {
 
     private String subject;
 
-    private List<String> roles;
+    private Set<String> roles;
 
     private boolean secure;
 
     private String authScheme;
 
-    private JwtSecurityContext(String subject, List<String> roles, boolean secure, String authScheme) {
-        this.subject = subject;
-        this.roles = roles;
-        this.secure = secure;
-        this.authScheme = authScheme;
+    private JwtSecurityContext() {
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static JwtSecurityContext newSecurityContext() {
+        return new JwtSecurityContext();
+    }
+
+    public JwtSecurityContext withSubject(String subject) {
+        this.subject = subject;
+        return this;
+    }
+
+    public JwtSecurityContext withRoles(Set<String> roles) {
+        this.roles = roles;
+        return this;
+    }
+
+    public JwtSecurityContext withSecure(boolean secure) {
+        this.secure = secure;
+        return this;
+    }
+
+    public JwtSecurityContext withAuthScheme(String authScheme) {
+        this.authScheme = authScheme;
+        return this;
     }
 
     @Override
@@ -71,40 +87,5 @@ public class JwtSecurityContext implements SecurityContext {
     @Override
     public String getAuthenticationScheme() {
         return this.authScheme;
-    }
-
-    public static class Builder {
-
-        private String subject;
-
-        private List<String> roles;
-
-        private boolean secure;
-
-        private String authScheme;
-
-        public Builder subject(String subject) {
-            this.subject = subject;
-            return this;
-        }
-
-        public Builder roles(List<String> roles) {
-            this.roles = roles;
-            return this;
-        }
-
-        public Builder secure(boolean secure) {
-            this.secure = secure;
-            return this;
-        }
-
-        public Builder authScheme(String authScheme) {
-            this.authScheme = authScheme;
-            return this;
-        }
-
-        public JwtSecurityContext build() {
-            return new JwtSecurityContext(this.subject, this.roles, this.secure, this.authScheme);
-        }
     }
 }

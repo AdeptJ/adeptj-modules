@@ -22,20 +22,19 @@ package com.adeptj.modules.security.jwt;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static io.jsonwebtoken.Claims.SUBJECT;
 
 /**
- * Extended claims map with extra information such as roles etc. if any.
+ * Decorates claims map with extra information such as roles etc. if any.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ExtendedJwtClaims {
+public class ClaimsDecorator {
 
     private static final String KEY_ROLES = "roles";
 
@@ -43,7 +42,7 @@ public class ExtendedJwtClaims {
 
     private String subject;
 
-    private List<String> roles;
+    private Set<String> roles;
 
     private Map<String, Object> claims;
 
@@ -55,21 +54,17 @@ public class ExtendedJwtClaims {
         return claims;
     }
 
-    public List<String> getRoles() {
+    public Set<String> getRoles() {
         return roles;
     }
 
-    public ExtendedJwtClaims addClaims(Map<String, Object> claims) {
-        if (this.claims == null) {
-            this.claims = new HashMap<>();
+    public ClaimsDecorator addClaims(Map<String, Object> claims) {
+        JwtUtil.assertClaims(claims);
+        this.subject = (String) claims.get(SUBJECT);
+        if (StringUtils.isNotEmpty((String) claims.get(KEY_ROLES))) {
+            this.roles = new HashSet<>(Arrays.asList(((String) claims.get(KEY_ROLES)).split(REGEX_COMMA)));
         }
-        this.claims.putAll(claims);
-        this.subject = (String) this.claims.get(SUBJECT);
-        if (StringUtils.isEmpty((String) this.claims.get(KEY_ROLES))) {
-            this.roles = new ArrayList<>();
-        } else {
-            this.roles = Arrays.asList(((String) this.claims.get(KEY_ROLES)).split(REGEX_COMMA));
-        }
+        this.claims = claims;
         return this;
     }
 }

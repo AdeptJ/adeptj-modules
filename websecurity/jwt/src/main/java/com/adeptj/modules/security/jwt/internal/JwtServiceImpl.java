@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.security.jwt.ExtendedJwtClaims;
+import com.adeptj.modules.security.jwt.ClaimsDecorator;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
@@ -116,7 +116,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public ExtendedJwtClaims verifyJwt(String jwt) {
+    public ClaimsDecorator verifyJwt(String jwt) {
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");
             return Jwts.parser()
@@ -130,7 +130,7 @@ public class JwtServiceImpl implements JwtService {
                 LOGGER.error(ex.getMessage(), ex);
             }
         }
-        return new ExtendedJwtClaims();
+        return new ClaimsDecorator();
     }
 
     // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
