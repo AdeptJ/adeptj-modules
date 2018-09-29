@@ -20,44 +20,41 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.core.ErrorResponse;
-import org.jboss.resteasy.spi.ApplicationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.resteasy.core.MediaTypeMap;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
-import java.lang.invoke.MethodHandles;
-
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import javax.ws.rs.ext.ContextResolver;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
- * An {@link ExceptionMapper} for ApplicationException.
- * <p>
- * Sends the unhandled exception's message coming out of resource method calls as JSON response if showException
- * is set as true otherwise a generic error message is sent.
+ * This class extends {@link ResteasyProviderFactory} and acts as a decorator.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Provider
-public class DefaultExceptionHandler implements ExceptionMapper<ApplicationException> {
+public class ResteasyProviderFactoryDecorator extends ResteasyProviderFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    void removeContextResolvers(Class<?>... contextResolvers) {
+        Stream.of(contextResolvers).forEach(this.getContextResolvers()::remove);
+    }
 
-    private boolean showException;
-
-    DefaultExceptionHandler(boolean showException) {
-        this.showException = showException;
+    void removeProviderClasses(Class<?>... providerClasses) {
+        Stream.of(providerClasses).forEach(this.getProviderClasses()::remove);
     }
 
     @Override
-    public Response toResponse(ApplicationException exception) {
-        LOGGER.error(exception.getMessage(), exception);
-        return Response.serverError()
-                .type(APPLICATION_JSON)
-                .entity(new ErrorResponse(JSON_KEY_ERROR, exception, this.showException))
-                .build();
+    public Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers() {
+        return super.getContextResolvers();
+    }
+
+    @Override
+    public Set<Class<?>> getProviderClasses() {
+        return this.providerClasses;
+    }
+
+    @Override
+    public Set<Object> getProviderInstances() {
+        return this.providerInstances;
     }
 }

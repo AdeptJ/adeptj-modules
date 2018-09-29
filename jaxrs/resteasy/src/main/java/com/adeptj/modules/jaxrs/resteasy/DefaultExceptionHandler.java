@@ -18,34 +18,46 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
+package com.adeptj.modules.jaxrs.resteasy;
 
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import com.adeptj.modules.jaxrs.core.ErrorResponse;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.ext.ContextResolver;
-import java.util.Map;
-import java.util.Set;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import java.lang.invoke.MethodHandles;
+
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * ResteasyProviderFactoryWrapper.
+ * An {@link ExceptionMapper} for ApplicationException.
+ * <p>
+ * Sends the unhandled exception's message coming out of resource method calls as JSON response if showException
+ * is set as true otherwise a generic error message is sent.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResteasyProviderFactoryWrapper extends ResteasyProviderFactory {
+@Provider
+public class DefaultExceptionHandler implements ExceptionMapper<ApplicationException> {
 
-    @Override
-    public Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers() {
-        return super.getContextResolvers();
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private boolean showException;
+
+    public DefaultExceptionHandler(boolean showException) {
+        this.showException = showException;
     }
 
     @Override
-    public Set<Class<?>> getProviderClasses() {
-        return this.providerClasses;
-    }
-
-    @Override
-    public Set<Object> getProviderInstances() {
-        return this.providerInstances;
+    public Response toResponse(ApplicationException exception) {
+        LOGGER.error(exception.getMessage(), exception);
+        return Response.serverError()
+                .type(APPLICATION_JSON)
+                .entity(new ErrorResponse(JSON_KEY_ERROR, exception, this.showException))
+                .build();
     }
 }

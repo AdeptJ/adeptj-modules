@@ -26,7 +26,6 @@ import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -63,7 +62,7 @@ public class ResteasyLifecycle {
 
     private BundleContext bundleContext;
 
-    private ResteasyServletDispatcherWrapper resteasyServletDispatcher;
+    private ResteasyServletDispatcher resteasyServletDispatcher;
 
     /**
      * Statically injected ValidatorService, this component will not resolve until one is provided.
@@ -83,10 +82,10 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyServletDispatcher = new ResteasyServletDispatcherWrapper();
+                this.resteasyServletDispatcher = new ResteasyServletDispatcher();
                 this.resteasyServletDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
-                ResteasyProviderFactoryWrapper rpf = (ResteasyProviderFactoryWrapper) dispatcher.getProviderFactory();
+                ResteasyProviderFactoryDecorator rpf = (ResteasyProviderFactoryDecorator) dispatcher.getProviderFactory();
                 ResteasyUtil.removeDefaultValidators(rpf);
                 ResteasyUtil.removeProviderClasses(rpf);
                 ResteasyUtil.registerProviders(rpf, this.config, this.validatorService.getValidatorFactory());
@@ -123,11 +122,11 @@ public class ResteasyLifecycle {
     }
 
     /**
-     * Gets the RESTEasy's {@link HttpServlet30Dispatcher}
+     * Gets the {@link ResteasyServletDispatcher}
      *
-     * @return RESTEasy's {@link HttpServlet30Dispatcher}
+     * @return {@link ResteasyServletDispatcher}
      */
-    ResteasyServletDispatcherWrapper getResteasyServletDispatcher() {
+    ResteasyServletDispatcher getResteasyServletDispatcher() {
         return resteasyServletDispatcher;
     }
 

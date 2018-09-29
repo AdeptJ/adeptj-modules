@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ErrorResponse {
 
-    private static final String DEFAULT_ERROR_MSG = "Something bad happened, we are looking into it.Please try again later!!";
+    private static final String DEFAULT_ERROR_MSG = "Unexpected error, we are looking into it. Please try again later!!";
 
     private String status;
 
@@ -48,15 +48,7 @@ public class ErrorResponse {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getMessage() {
         return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }

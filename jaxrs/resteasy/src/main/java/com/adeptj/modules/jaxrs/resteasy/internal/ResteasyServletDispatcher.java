@@ -34,19 +34,27 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
- * ResteasyServletDispatcherWrapper.
+ * This class extends RESTEasy's {@link HttpServlet30Dispatcher} and does following.
+ * <p>
+ * 1. In {@link ResteasyServletDispatcher#init(ServletConfig)} create {@link ResteasyDeployment} and start it.
+ * 2. Set the {@link ResteasyDeployment} as a servlet context attribute to be used by further bootstrapping process.
+ * 3. Call {@link HttpServlet30Dispatcher#init(ServletConfig)} to do further bootstrapping.
+ * 4. Once RESTEasy's {@link HttpServlet30Dispatcher} fully initialized, {@link #service(HttpServletRequest, HttpServletResponse)}
+ * method becomes ready for request processing.
+ * 5. {@link #destroy()} method stops the {@link ResteasyDeployment} and removes the corresponding servlet context attribute.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResteasyServletDispatcherWrapper extends HttpServlet30Dispatcher {
+public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
+
+    private static final long serialVersionUID = 983150981041495057L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        ServletBootstrap bootstrap = new ServletBootstrap(servletConfig);
-        ResteasyDeployment deployment = bootstrap.createDeployment();
-        deployment.setProviderFactory(new ResteasyProviderFactoryWrapper());
+        ResteasyDeployment deployment = new ServletBootstrap(servletConfig).createDeployment();
+        deployment.setProviderFactory(new ResteasyProviderFactoryDecorator());
         deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         servletConfig.getServletContext().setAttribute(ResteasyDeployment.class.getName(), deployment);
@@ -54,8 +62,8 @@ public class ResteasyServletDispatcherWrapper extends HttpServlet30Dispatcher {
     }
 
     @Override
-    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.service(req, resp);
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        super.service(req.getMethod(), req, resp);
     }
 
     @Override
