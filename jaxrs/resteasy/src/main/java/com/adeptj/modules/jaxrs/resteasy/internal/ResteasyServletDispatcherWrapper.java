@@ -48,6 +48,7 @@ public class ResteasyServletDispatcherWrapper extends HttpServlet30Dispatcher {
         ResteasyDeployment deployment = bootstrap.createDeployment();
         deployment.setProviderFactory(new ResteasyProviderFactoryWrapper());
         deployment.start();
+        LOGGER.info("ResteasyDeployment started!!");
         servletConfig.getServletContext().setAttribute(ResteasyDeployment.class.getName(), deployment);
         super.init(servletConfig);
     }
