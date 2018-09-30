@@ -25,6 +25,7 @@ import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -44,8 +45,6 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
 
     private static final String UNBIND_CLAIMS_VALIDATOR_SERVICE = "unbindClaimsValidator";
 
-    private volatile boolean invokeClaimsValidator;
-
     // As per Felix SCR, dynamic references should be declared as volatile.
     @Reference(
             cardinality = ReferenceCardinality.OPTIONAL,
@@ -54,6 +53,8 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
             unbind = UNBIND_CLAIMS_VALIDATOR_SERVICE
     )
     private volatile JwtClaimsValidator claimsValidator;
+
+    private JwtClaimsValidator defaultValidator;
 
     /**
      * Checks the signature algorithm first and then validates the {@link Claims} via {@link JwtClaimsValidator}.
@@ -65,16 +66,18 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
     @Override
     public ClaimsDecorator onClaimsJws(Jws<Claims> jws) {
         JwtClaimsValidator validator = this.claimsValidator;
-        boolean validateClaims = this.invokeClaimsValidator;
-        return new ClaimsDecorator().addClaims(validateClaims && validator != null ? validator.validate(jws.getBody())
-                : jws.getBody());
-    }
-
-    void setInvokeClaimsValidator(boolean invokeClaimsValidator) {
-        this.invokeClaimsValidator = invokeClaimsValidator;
+        if (validator == null) {
+            validator = this.defaultValidator;
+        }
+        return new ClaimsDecorator().addClaims(validator.validate(jws.getBody()));
     }
 
     // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
+
+    @Activate
+    protected void start() {
+        this.defaultValidator = (claims) -> claims;
+    }
 
     protected void bindClaimsValidator(JwtClaimsValidator claimsValidator) {
         this.claimsValidator = claimsValidator;

@@ -154,7 +154,6 @@ public class JwtServiceImpl implements JwtService {
             this.signingKey = JwtSigningKeys.createRsaSigningKey(jwtConfig);
             this.verificationKey = JwtSigningKeys.createRsaVerificationKey(jwtConfig);
             this.obligatoryClaims = Arrays.asList(jwtConfig.obligatoryClaims());
-            this.jwtHandler.setInvokeClaimsValidator(jwtConfig.invokeClaimsValidator());
         } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error("Couldn't start the JwtService!!", ex);
             throw ex;

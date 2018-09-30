@@ -101,12 +101,6 @@ public @interface JwtConfig {
             EXPIRATION
     };
 
-    @AttributeDefinition(
-            name = "Invoke JwtClaimsValidator",
-            description = "Whether to validate the JWT claims via a JwtClaimsValidator after successful parsing."
-    )
-    boolean invokeClaimsValidator();
-
     @AttributeDefinition(name = "Suppress JwtException Trace", description = "Whether to suppress JwtException Trace.")
     boolean suppressJwtExceptionTrace();
 }
