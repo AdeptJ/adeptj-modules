@@ -85,7 +85,7 @@ public class ResteasyLifecycle {
                 this.resteasyServletDispatcher = new ResteasyServletDispatcher();
                 this.resteasyServletDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
-                ResteasyProviderFactoryDecorator rpf = (ResteasyProviderFactoryDecorator) dispatcher.getProviderFactory();
+                ResteasyProviderFactoryDecorator rpf = ResteasyProviderFactoryDecorator.of(dispatcher.getProviderFactory());
                 ResteasyUtil.removeDefaultValidators(rpf);
                 ResteasyUtil.removeProviderClasses(rpf);
                 ResteasyUtil.registerProviders(rpf, this.config, this.validatorService.getValidatorFactory());

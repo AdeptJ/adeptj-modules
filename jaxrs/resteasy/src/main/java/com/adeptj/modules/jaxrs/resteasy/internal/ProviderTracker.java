@@ -62,6 +62,7 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     @Override
     public Object addingService(ServiceReference<Object> reference) {
         Object provider = super.addingService(reference);
+        // Quickly return null so that ServiceTracker will not track the instance.
         if (provider == null) {
             LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
             return null;

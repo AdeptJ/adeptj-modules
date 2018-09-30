@@ -35,6 +35,10 @@ import java.util.stream.Stream;
  */
 public class ResteasyProviderFactoryDecorator extends ResteasyProviderFactory {
 
+    static ResteasyProviderFactoryDecorator of(ResteasyProviderFactory providerFactory) {
+        return (ResteasyProviderFactoryDecorator) providerFactory;
+    }
+
     void removeContextResolvers(Class<?>... contextResolvers) {
         Stream.of(contextResolvers).forEach(this.getContextResolvers()::remove);
     }

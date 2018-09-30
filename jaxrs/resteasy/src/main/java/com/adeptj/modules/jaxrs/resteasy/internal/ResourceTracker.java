@@ -65,6 +65,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
     @Override
     public Object addingService(ServiceReference<Object> reference) {
         Object resource = super.addingService(reference);
+        // Quickly return null so that ServiceTracker will not track the instance.
         if (resource == null) {
             LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
             return null;

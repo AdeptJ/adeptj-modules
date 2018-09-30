@@ -30,14 +30,6 @@ final class ResteasyConstants {
     private ResteasyConstants() {
     }
 
-    static final String METHOD_GET_CTX_RESOLVERS = "getContextResolvers";
-
-    static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
-
-    static final String FIELD_PROVIDER_CLASSES = "providerClasses";
-
-    static final boolean FORCE_ACCESS = true;
-
     static final String RESTEASY_PROXY_SERVLET_NAME = "AdeptJ RESTEasy ProxyServlet";
 
     static final String RESTEASY_DISPATCHER_SERVLET_PATH = "/";

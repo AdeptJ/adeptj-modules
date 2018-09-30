@@ -30,7 +30,8 @@
 -includeresource: resteasy-*.jar;apache-mime4j-*.jar;lib:=true
 
 -exportcontents: com.adeptj.modules.jaxrs.resteasy,\
-                 !com.adeptj.modules.jaxrs.resteasy.internal
+                 !com.adeptj.modules.jaxrs.resteasy.internal, \
+                 *
 
 Import-Package: \
   com.fasterxml.jackson.jaxrs.xml,\
