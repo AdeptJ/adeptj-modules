@@ -25,19 +25,29 @@ import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
  * Default implementation of JaxRSAuthenticationRealm.
  * <p>
- * Authenticates using the {@link JaxRSCredentialsCollector}
+ * Authenticates using the {@link SimpleCredentials} obtained via {@link JaxRSCredentialsFactory}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(immediate = true)
 public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm {
 
-    @Reference
-    private JaxRSCredentialsCollector credentialsCollector;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private List<SimpleCredentials> credentials = new CopyOnWriteArrayList<>();
 
     /**
      * {@inheritDoc}
@@ -60,8 +70,30 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
      */
     @Override
     public JaxRSAuthenticationOutcome authenticate(SimpleCredentials credentials) {
-        return this.credentialsCollector.matchCredentials(credentials)
-                ? new JaxRSAuthenticationOutcome().addAttribute("roles", String.join(",", credentials.getUsername(), "OSGiAdmin"))
-                : null;
+        return this.credentials.stream()
+                .filter(credentials::equals)
+                .map(sc -> new JaxRSAuthenticationOutcome()
+                        .addAttribute("roles", String.join(",", credentials.getUsername(), "OSGiAdmin")))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
+
+    @Reference(service = JaxRSCredentialsFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindJaxRSCredentialsFactory(JaxRSCredentialsFactory credentialsFactory) {
+        SimpleCredentials simpleCredentials = credentialsFactory.getSimpleCredentials();
+        LOGGER.info("Creating {}", simpleCredentials);
+        if (this.credentials.contains(simpleCredentials)) {
+            LOGGER.warn("Username: [{}] already present, ignoring these credentials!!", simpleCredentials.getUsername());
+            return;
+        }
+        this.credentials.add(simpleCredentials);
+    }
+
+    protected void unbindJaxRSCredentialsFactory(JaxRSCredentialsFactory factory) {
+        SimpleCredentials simpleCredentials = factory.getSimpleCredentials();
+        LOGGER.info("Deleting {}", simpleCredentials);
+        this.credentials.remove(simpleCredentials);
     }
 }

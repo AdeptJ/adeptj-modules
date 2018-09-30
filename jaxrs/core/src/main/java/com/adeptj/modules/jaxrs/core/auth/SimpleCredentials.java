@@ -43,6 +43,10 @@ public final class SimpleCredentials {
         return new SimpleCredentials(username, password.toCharArray());
     }
 
+    public static SimpleCredentials of(String username, char[] password) {
+        return new SimpleCredentials(username, password);
+    }
+
     public String getUsername() {
         return this.username;
     }
@@ -58,13 +62,18 @@ public final class SimpleCredentials {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SimpleCredentials that = (SimpleCredentials) o;
-        return Objects.equals(username, that.username) && Arrays.equals(password, that.password);
+        return Objects.equals(this.username, that.username) && Arrays.equals(this.password, that.password);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(username);
-        result = 31 * result + Arrays.hashCode(password);
+        int result = Objects.hash(this.username);
+        result = 31 * result + Arrays.hashCode(this.password);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SimpleCredentials for: [%s]", this.username);
     }
 }

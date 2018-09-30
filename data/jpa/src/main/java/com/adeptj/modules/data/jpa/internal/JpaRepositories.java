@@ -10,8 +10,10 @@ import javax.persistence.EntityManagerFactory;
 import java.util.Hashtable;
 import java.util.Optional;
 
+import static org.osgi.framework.Constants.SCOPE_BUNDLE;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_PID;
+import static org.osgi.framework.Constants.SERVICE_SCOPE;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
@@ -31,6 +33,7 @@ final class JpaRepositories {
         properties.put(SERVICE_PID, EclipseLinkRepository.class.getName());
         properties.put(SERVICE_DESCRIPTION, "AdeptJ JpaCrudRepository(EclipseLink)");
         properties.put(JPA_UNIT_NAME, unitName);
+        properties.put(SERVICE_SCOPE, SCOPE_BUNDLE);
         LOGGER.info("Registering JpaCrudRepository For PersistenceUnit: [{}]", unitName);
         return ctx.registerService(JpaRepository.class, new EclipseLinkRepository(emf), properties);
     }

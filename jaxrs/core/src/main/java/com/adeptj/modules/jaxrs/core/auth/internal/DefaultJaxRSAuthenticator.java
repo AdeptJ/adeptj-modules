@@ -29,7 +29,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -49,10 +48,6 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
             policy = ReferencePolicy.DYNAMIC
     )
     private volatile List<JaxRSAuthenticationRealm> authRealms;
-
-    public DefaultJaxRSAuthenticator() {
-        this.authRealms = new ArrayList<>();
-    }
 
     /**
      * {@inheritDoc}

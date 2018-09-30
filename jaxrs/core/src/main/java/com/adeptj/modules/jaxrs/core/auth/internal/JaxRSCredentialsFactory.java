@@ -28,10 +28,7 @@ import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.jaxrs.core.auth.internal.JaxRSCredentialsFactory.COMPONENT_NAME;
@@ -46,18 +43,22 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @ProviderType
 @Designate(ocd = JaxRSCredentialsConfig.class, factory = true)
 @Component(
+        service = JaxRSCredentialsFactory.class,
         name = COMPONENT_NAME,
         property = SERVICE_PID + EQ + COMPONENT_NAME,
         configurationPolicy = REQUIRE
 )
 public class JaxRSCredentialsFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JaxRSCredentialsFactory.class);
+    static final String COMPONENT_NAME = "com.adeptj.modules.jaxrs.core.JaxRSCredentials.factory";
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.jaxrs.core.JaxRSCredentialsFactory.factory";
+    private String username;
 
-    @Reference
-    private JaxRSCredentialsCollector credentialsCollector;
+    private char[] password;
+
+    SimpleCredentials getSimpleCredentials() {
+        return SimpleCredentials.of(this.username, this.password);
+    }
 
     @Activate
     protected void start(JaxRSCredentialsConfig config) {
@@ -65,13 +66,13 @@ public class JaxRSCredentialsFactory {
         String password = config.password();
         Validate.isTrue(StringUtils.isNotEmpty(username), "Username can't be blank!!");
         Validate.isTrue(StringUtils.isNotEmpty(password), "Password can't be blank!!");
-        LOGGER.info("Creating Credentials for User: [{}]", username);
-        this.credentialsCollector.addCredentials(SimpleCredentials.of(username, password));
+        this.username = username;
+        this.password = password.toCharArray();
     }
 
     @Deactivate
-    protected void stop(JaxRSCredentialsConfig config) {
-        this.credentialsCollector.removeCredentials(SimpleCredentials.of(config.username(), config.password()));
-        LOGGER.info("Removed Credentials for User: [{}]", config.username());
+    protected void stop() {
+        this.username = null;
+        this.password = null;
     }
 }
