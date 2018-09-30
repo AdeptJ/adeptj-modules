@@ -43,15 +43,9 @@ public final class JwtUtil {
      * @param claims Caller supplied JWT claims map
      * @since 1.1.0.Final
      */
-    static void assertClaims(Map<String, Object> claims) {
+    public static void assertClaims(Map<String, Object> claims) {
         Assert.notEmpty(claims, "Claims map can't be null or empty!!");
-        claims.forEach((claim, value) -> {
-            if (value instanceof String) {
-                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
-            } else {
-                Assert.notNull(value, String.format("%s can't be null!!", claim));
-            }
-        });
+        doAssertClaims(claims);
     }
 
     /**
@@ -63,6 +57,11 @@ public final class JwtUtil {
      */
     public static void assertClaims(Map<String, Object> claims, List<String> obligatoryClaims) {
         Assert.notEmpty(claims, "JWT claims map can't be null or empty!!");
+        doAssertClaims(claims);
+        obligatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
+    }
+
+    private static void doAssertClaims(Map<String, Object> claims) {
         claims.forEach((claim, value) -> {
             if (value instanceof String) {
                 Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
@@ -70,6 +69,5 @@ public final class JwtUtil {
                 Assert.notNull(value, String.format("%s can't be null!!", claim));
             }
         });
-        obligatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
     }
 }

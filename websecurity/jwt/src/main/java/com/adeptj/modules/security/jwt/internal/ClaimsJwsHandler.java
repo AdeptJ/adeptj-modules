@@ -64,9 +64,10 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
      */
     @Override
     public ClaimsDecorator onClaimsJws(Jws<Claims> jws) {
-        return new ClaimsDecorator()
-                .addClaims(this.invokeClaimsValidator && this.claimsValidator != null ? this.claimsValidator.validate(jws.getBody())
-                        : jws.getBody());
+        JwtClaimsValidator validator = this.claimsValidator;
+        boolean validateClaims = this.invokeClaimsValidator;
+        return new ClaimsDecorator().addClaims(validateClaims && validator != null ? validator.validate(jws.getBody())
+                : jws.getBody());
     }
 
     void setInvokeClaimsValidator(boolean invokeClaimsValidator) {
@@ -79,7 +80,7 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
         this.claimsValidator = claimsValidator;
     }
 
-    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) { // NOSONAR
+    protected void unbindClaimsValidator(JwtClaimsValidator claimsValidator) {
         if (Objects.equals(claimsValidator, this.claimsValidator)) {
             this.claimsValidator = null;
         }

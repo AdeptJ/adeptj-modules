@@ -86,6 +86,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String createJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be blank!!");
+        JwtUtil.assertClaims(claims);
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
@@ -122,7 +123,7 @@ public class JwtServiceImpl implements JwtService {
             return Jwts.parser()
                     .setSigningKey(this.verificationKey)
                     .parse(jwt, this.jwtHandler);
-        } catch (RuntimeException ex) { // NOSONAR
+        } catch (Exception ex) { // NOSONAR
             // For reducing noise in the logs, set this config to true.
             if (this.suppressJwtExceptionTrace) {
                 LOGGER.error(ex.getMessage());
