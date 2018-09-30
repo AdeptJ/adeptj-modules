@@ -18,47 +18,44 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.ds.internal;
+package com.adeptj.modules.commons.jdbc.internal;
 
-import com.adeptj.modules.commons.ds.DataSourceConfig;
-import org.osgi.service.component.annotations.Activate;
+import com.adeptj.modules.commons.jdbc.DataSourceNotConfiguredException;
+import com.adeptj.modules.commons.jdbc.DataSourceService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.Designate;
 
-import static com.adeptj.modules.commons.ds.internal.DataSourceFactory.COMPONENT_NAME;
-import static com.adeptj.modules.commons.utils.Constants.EQ;
-import static org.osgi.framework.Constants.SERVICE_PID;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
+import javax.sql.DataSource;
+import java.util.Optional;
 
 /**
- * A factory for creating {@link com.zaxxer.hikari.HikariDataSource} instances.
+ * Provides {@link com.zaxxer.hikari.HikariDataSource} as the JDBC {@link DataSource} implementation.
+ * <p>
+ * The {@link com.zaxxer.hikari.HikariDataSource} is configured by the {@link DataSourceManager}.
+ * <p>
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = DataSourceConfig.class, factory = true)
-@Component(
-        service = DataSourceFactory.class,
-        immediate = true,
-        name = COMPONENT_NAME,
-        property = SERVICE_PID + EQ + COMPONENT_NAME,
-        configurationPolicy = REQUIRE
-)
-public class DataSourceFactory {
+@Component(service = DataSourceService.class)
+public class HikariDataSourceService implements DataSourceService {
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
+    private static final String JDBC_DS_NOT_CONFIGURED_MSG = "HikariDataSource: [%s] is not configured!!";
 
+    /**
+     * Statically referenced OSGi service.
+     */
     @Reference
     private DataSourceManager dataSourceManager;
 
-    @Activate
-    protected void start(DataSourceConfig config) {
-        this.dataSourceManager.createDataSource(config);
-    }
-
-    @Deactivate
-    protected void stop(DataSourceConfig config) {
-        this.dataSourceManager.closeDataSource(config.poolName());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataSource getDataSource(String name) {
+        Validate.isTrue(StringUtils.isNotEmpty(name), "name can't be blank!!");
+        return Optional.ofNullable(this.dataSourceManager.getDataSource(name))
+                .orElseThrow(() -> new DataSourceNotConfiguredException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, name)));
     }
 }

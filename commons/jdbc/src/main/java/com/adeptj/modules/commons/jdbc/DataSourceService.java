@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,34 +16,28 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.adeptj</groupId>
-        <artifactId>adeptj-modules</artifactId>
-        <version>1.0.13.Final</version>
-        <relativePath>../parent/pom.xml</relativePath>
-    </parent>
-    <artifactId>adeptj-modules-commons</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Commons :: Builder</name>
-    <description>AdeptJ Modules :: Commons :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.commons.jdbc;
 
-        <module>utils</module>
-        <module>validator</module>
-        <module>datasource</module>
-        <module>jdbc</module>
-        <module>logging</module>
-        <module>scheduler</module>
-        <module>xslt</module>
+import org.osgi.annotation.versioning.ProviderType;
 
-    </modules>
+import javax.sql.DataSource;
 
-</project>
+/**
+ * DataSourceService interface for providing JDBC DataSource.
+ *
+ * @author Rakesh.Kumar, AdeptJ.
+ */
+@ProviderType
+public interface DataSourceService {
+
+    /**
+     * Returns the configured {@link DataSource} instance against the name passed.
+     *
+     * @param name the name of the JDBC pool.
+     * @return The configured {@link DataSource} instance against the name passed.
+     * @throws DataSourceNotConfiguredException if {@link DataSource} is not configured.
+     */
+    DataSource getDataSource(String name) throws DataSourceNotConfiguredException;
+}

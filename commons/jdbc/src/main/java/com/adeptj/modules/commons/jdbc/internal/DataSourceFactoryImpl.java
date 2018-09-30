@@ -18,17 +18,19 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.ds.internal;
+package com.adeptj.modules.commons.jdbc.internal;
 
-import com.adeptj.modules.commons.ds.DataSourceConfig;
+import com.adeptj.modules.commons.jdbc.DataSourceConfig;
+import com.adeptj.modules.commons.jdbc.DataSourceFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 
-import static com.adeptj.modules.commons.ds.internal.DataSourceFactory.COMPONENT_NAME;
-import static com.adeptj.modules.commons.utils.Constants.EQ;
+import javax.sql.DataSource;
+
+import static com.adeptj.modules.commons.jdbc.internal.DataSourceFactoryImpl.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -42,15 +44,20 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
         service = DataSourceFactory.class,
         immediate = true,
         name = COMPONENT_NAME,
-        property = SERVICE_PID + EQ + COMPONENT_NAME,
+        property = SERVICE_PID + "=" + COMPONENT_NAME,
         configurationPolicy = REQUIRE
 )
-public class DataSourceFactory {
+public class DataSourceFactoryImpl implements DataSourceFactory {
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
+    static final String COMPONENT_NAME = "com.adeptj.modules.commons.jdbc.DataSource.factory";
 
     @Reference
     private DataSourceManager dataSourceManager;
+
+    @Override
+    public DataSource getDataSource() {
+        return null;
+    }
 
     @Activate
     protected void start(DataSourceConfig config) {

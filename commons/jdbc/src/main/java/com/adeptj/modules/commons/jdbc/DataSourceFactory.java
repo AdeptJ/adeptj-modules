@@ -18,47 +18,16 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.ds.internal;
+package com.adeptj.modules.commons.jdbc;
 
-import com.adeptj.modules.commons.ds.DataSourceConfig;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.metatype.annotations.Designate;
-
-import static com.adeptj.modules.commons.ds.internal.DataSourceFactory.COMPONENT_NAME;
-import static com.adeptj.modules.commons.utils.Constants.EQ;
-import static org.osgi.framework.Constants.SERVICE_PID;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
+import javax.sql.DataSource;
 
 /**
  * A factory for creating {@link com.zaxxer.hikari.HikariDataSource} instances.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = DataSourceConfig.class, factory = true)
-@Component(
-        service = DataSourceFactory.class,
-        immediate = true,
-        name = COMPONENT_NAME,
-        property = SERVICE_PID + EQ + COMPONENT_NAME,
-        configurationPolicy = REQUIRE
-)
-public class DataSourceFactory {
+public interface DataSourceFactory {
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.commons.ds.DataSourceProvider.factory";
-
-    @Reference
-    private DataSourceManager dataSourceManager;
-
-    @Activate
-    protected void start(DataSourceConfig config) {
-        this.dataSourceManager.createDataSource(config);
-    }
-
-    @Deactivate
-    protected void stop(DataSourceConfig config) {
-        this.dataSourceManager.closeDataSource(config.poolName());
-    }
+    DataSource getDataSource();
 }

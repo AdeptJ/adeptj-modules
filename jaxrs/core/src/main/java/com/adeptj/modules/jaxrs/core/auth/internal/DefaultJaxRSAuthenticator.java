@@ -26,35 +26,34 @@ import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
  * Provides {@link JaxRSAuthenticationOutcome} by querying all the registered {@link JaxRSAuthenticationRealm}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
+@Component
 public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
 
-    // As per Felix SCR, dynamic references should be declared as volatile.
-    @Reference(
-            service = JaxRSAuthenticationRealm.class,
-            cardinality = ReferenceCardinality.MULTIPLE,
-            policy = ReferencePolicy.DYNAMIC
-    )
-    private volatile List<JaxRSAuthenticationRealm> authRealms;
+    /**
+     * As per Felix SCR, dynamic references should be declared as volatile.
+     */
+    @Reference(service = JaxRSAuthenticationRealm.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    private volatile List<JaxRSAuthenticationRealm> authenticationRealms;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public JaxRSAuthenticationOutcome handleSecurity(SimpleCredentials credentials) {
-        return this.authRealms.stream()
+        return this.authenticationRealms.stream()
                 .sorted(Comparator.comparingInt(JaxRSAuthenticationRealm::priority).reversed())
                 .map(realm -> JaxRSAuthUtil.getJaxRSAuthOutcome(realm, credentials))
                 .filter(Objects::nonNull)
