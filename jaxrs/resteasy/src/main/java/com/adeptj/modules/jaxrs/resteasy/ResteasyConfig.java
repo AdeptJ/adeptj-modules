@@ -123,8 +123,8 @@ public @interface ResteasyConfig {
     // Common configs
 
     @AttributeDefinition(
-            name = "Show Exception Message as JSON",
-            description = "Whether to show exception message in error response"
+            name = "DefaultExceptionHandler Send Exception Message",
+            description = "Whether to send exception message in error response from DefaultExceptionHandler."
     )
-    boolean showException() default true;
+    boolean sendExceptionMsg() default true;
 }

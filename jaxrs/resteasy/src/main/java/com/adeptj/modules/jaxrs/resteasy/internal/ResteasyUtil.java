@@ -47,7 +47,7 @@ final class ResteasyUtil {
 
     static void registerProviders(ResteasyProviderFactory rpf, ResteasyConfig config, ValidatorFactory vf) {
         rpf.register(new ValidatorContextResolver(vf))
-                .register(new DefaultExceptionHandler(config.showException()))
+                .register(new DefaultExceptionHandler(config.sendExceptionMsg()))
                 .register(CorsFilterBuilder.newBuilder()
                         .allowCredentials(config.allowCredentials())
                         .corsMaxAge(config.corsMaxAge())

@@ -31,24 +31,17 @@ public class ErrorResponse {
 
     private static final String DEFAULT_ERROR_MSG = "Unexpected error, we are looking into it. Please try again later!!";
 
-    private String status;
+    private String error;
 
-    private String message;
-
-    public ErrorResponse(String status, Exception ex, boolean showException) {
-        this.status = status;
-        if (showException) {
-            this.message = StringUtils.isEmpty(ex.getMessage()) ? DEFAULT_ERROR_MSG : ex.getMessage();
+    public ErrorResponse(Exception ex, boolean sendExceptionMsg) {
+        if (sendExceptionMsg) {
+            this.error = StringUtils.isEmpty(ex.getMessage()) ? DEFAULT_ERROR_MSG : ex.getMessage();
         } else {
-            this.message = DEFAULT_ERROR_MSG;
+            this.error = DEFAULT_ERROR_MSG;
         }
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public String getMessage() {
-        return message;
+    public String getError() {
+        return error;
     }
 }

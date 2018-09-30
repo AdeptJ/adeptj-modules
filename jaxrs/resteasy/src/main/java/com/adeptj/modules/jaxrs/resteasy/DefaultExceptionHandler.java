@@ -30,13 +30,12 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.JSON_KEY_ERROR;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * An {@link ExceptionMapper} for ApplicationException.
  * <p>
- * Sends the unhandled exception's message coming out of resource method calls as JSON response if showException
+ * Sends the unhandled exception's message coming out of resource method calls as JSON response if sendExceptionMsg
  * is set as true otherwise a generic error message is sent.
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -46,10 +45,10 @@ public class DefaultExceptionHandler implements ExceptionMapper<ApplicationExcep
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private boolean showException;
+    private boolean sendExceptionMsg;
 
-    public DefaultExceptionHandler(boolean showException) {
-        this.showException = showException;
+    public DefaultExceptionHandler(boolean sendExceptionMsg) {
+        this.sendExceptionMsg = sendExceptionMsg;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class DefaultExceptionHandler implements ExceptionMapper<ApplicationExcep
         LOGGER.error(exception.getMessage(), exception);
         return Response.serverError()
                 .type(APPLICATION_JSON)
-                .entity(new ErrorResponse(JSON_KEY_ERROR, exception, this.showException))
+                .entity(new ErrorResponse(exception, this.sendExceptionMsg))
                 .build();
     }
 }
