@@ -34,8 +34,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.metatype.annotations.Designate;
 
 import javax.validation.constraints.NotEmpty;
@@ -48,11 +46,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.BIND_JWT_SERVICE;
-import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.UNBIND_JWT_SERVICE;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
+import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * JAX-RS resource for issuance and verification of JWT.
@@ -71,12 +70,7 @@ public class JwtResource {
      * <p>
      * Note: As per Felix SCR, dynamic references should be declared as volatile.
      */
-    @Reference(
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC,
-            bind = BIND_JWT_SERVICE,
-            unbind = UNBIND_JWT_SERVICE
-    )
+    @Reference(cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
     private volatile JwtService jwtService;
 
     /**
@@ -120,17 +114,7 @@ public class JwtResource {
         return Response.ok("Verified subject: " + securityContext.getUserPrincipal().getName()).build();
     }
 
-    // -------------------- INTERNAL --------------------
-
-    // Component Lifecycle Methods
-
-    protected void bindJwtService(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
-
-    protected void unbindJwtService(JwtService jwtService) { // NOSONAR
-        this.jwtService = null;
-    }
+    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
 
     @Modified
     @Activate
