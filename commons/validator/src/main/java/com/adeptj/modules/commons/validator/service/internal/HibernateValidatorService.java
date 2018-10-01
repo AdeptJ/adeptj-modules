@@ -24,7 +24,6 @@ import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.parameternameprovider.ParanamerParameterNameProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -45,7 +44,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
+@Component
 public class HibernateValidatorService implements ValidatorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -99,7 +98,6 @@ public class HibernateValidatorService implements ValidatorService {
             final long startTime = System.nanoTime();
             this.validatorFactory = Validation.byProvider(HibernateValidator.class)
                     .configure()
-                    .parameterNameProvider(new ParanamerParameterNameProvider())
                     .buildValidatorFactory();
             long endTime = System.nanoTime() - startTime;
             LOGGER.info("HibernateValidator initialized in [{}] ms!!", NANOSECONDS.toMillis(endTime));
