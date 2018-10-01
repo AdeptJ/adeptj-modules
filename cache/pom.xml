@@ -37,9 +37,7 @@
 
     <modules>
 
-        <module>api</module>
         <module>caffeine</module>
-        <module>ehcache</module>
 
     </modules>
 

@@ -21,7 +21,6 @@
 package com.adeptj.modules.aws.s3;
 
 import com.adeptj.modules.aws.s3.api.StorageService;
-import com.adeptj.modules.jaxrs.core.JaxRSException;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -38,7 +37,6 @@ import java.io.ByteArrayInputStream;
 
 import static com.adeptj.modules.aws.s3.UploadResource.AWS_S3_ROOT;
 import static com.adeptj.modules.aws.s3.UploadResource.RESOURCE_BASE;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.STATUS_SERVER_ERROR;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 /**
@@ -64,24 +62,15 @@ public class UploadResource {
     @Consumes(MULTIPART_FORM_DATA)
     @RequiresJwt
     public Response uploadFile(@MultipartForm S3UploadForm form) {
-        try {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength((long) form.getData().length);
-            this.storageService.uploadFile(S3Request.builder()
-                    .bucketName(form.getBucketName())
-                    .key(form.getKey())
-                    .data(new BufferedInputStream(new ByteArrayInputStream(form.getData())))
-                    .metadata(metadata)
-                    .cannedACL(CannedAccessControlList.valueOf(form.getAccess()))
-                    .build());
-            return Response.ok("File uploaded successfully!!").build();
-        } catch (Exception ex) { // NOSONAR
-            throw JaxRSException.builder()
-                    .message(ex.getMessage())
-                    .cause(ex)
-                    .status(STATUS_SERVER_ERROR)
-                    .logException(true)
-                    .build();
-        }
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength((long) form.getData().length);
+        this.storageService.uploadFile(S3Request.builder()
+                .bucketName(form.getBucketName())
+                .key(form.getKey())
+                .data(new BufferedInputStream(new ByteArrayInputStream(form.getData())))
+                .metadata(metadata)
+                .cannedACL(CannedAccessControlList.valueOf(form.getAccess()))
+                .build());
+        return Response.ok("File uploaded successfully!!").build();
     }
 }

@@ -42,8 +42,6 @@
         <module>datasource</module>
         <module>jdbc</module>
         <module>logging</module>
-        <module>scheduler</module>
-        <module>xslt</module>
 
     </modules>
 
