@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
-import com.adeptj.modules.commons.ds.api.DataSourceProvider;
+import com.adeptj.modules.commons.jdbc.DataSourceService;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.api.JpaRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +56,7 @@ public class JpaRepositoryManager {
     private BundleContext bundleContext;
 
     @Reference
-    private DataSourceProvider dataSourceProvider;
+    private DataSourceService dataSourceService;
 
     @Reference
     private ValidatorService validatorService;
@@ -68,7 +68,7 @@ public class JpaRepositoryManager {
             String unitName = config.unitName();
             Validate.isTrue(StringUtils.isNotEmpty(unitName), "unitName can't be blank!!");
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-            DataSource ds = this.dataSourceProvider.getDataSource(config.dataSourceName());
+            DataSource ds = this.dataSourceService.getDataSource(config.dataSourceName());
             ValidatorFactory vf = this.validatorService.getValidatorFactory();
             emf = new PersistenceProvider().createEntityManagerFactory(unitName, JpaProperties.create(config, ds, vf));
             if (emf == null) {

@@ -190,21 +190,21 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
-            <version>1.0.2.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-commons-datasource</artifactId>
             <version>1.1.0.Final</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-jdbc</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-validator</artifactId>
-            <version>1.0.1.Final</version>
+            <version>1.0.2.Final</version>
             <scope>provided</scope>
         </dependency>
 

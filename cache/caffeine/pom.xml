@@ -120,12 +120,5 @@
             <version>${caffeine.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-cache-api</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
 </project>

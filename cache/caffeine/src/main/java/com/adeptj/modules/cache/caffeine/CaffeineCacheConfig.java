@@ -1,4 +1,4 @@
-package com.adeptj.modules.cache.caffeine.internal;
+package com.adeptj.modules.cache.caffeine;
 
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 

@@ -18,10 +18,8 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine.internal;
+package com.adeptj.modules.cache.caffeine;
 
-import com.adeptj.modules.cache.api.Cache;
-import com.adeptj.modules.cache.api.CacheProvider;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -30,10 +28,10 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 
-import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheProvider.COMPONENT_NAME;
+import static com.adeptj.modules.cache.caffeine.CaffeineCacheProvider.COMPONENT_NAME;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -49,23 +47,19 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
         property = SERVICE_PID + "=" + COMPONENT_NAME,
         configurationPolicy = REQUIRE
 )
-public class CaffeineCacheProvider implements CacheProvider {
+public class CaffeineCacheProvider implements CacheService {
 
     static final String COMPONENT_NAME = "com.adeptj.modules.cache.caffeine.CacheProvider.factory";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CaffeineCacheProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
 
     @Override
-    public String getName() {
-        return "CAFFEINE";
-    }
-
-    @Override
-    public <K, V> Optional<Cache<K, V>> getCache(String name, Class<K> keyType, Class<V> valueType) {
-        return Optional.of(new CaffeineCache<>(Caffeine.newBuilder()
+    public <K, V> Cache<K, V> getCache(String name) {
+        return new CaffeineCache<>(Caffeine.newBuilder()
                 .maximumSize(10_000)
                 .expireAfterWrite(10, TimeUnit.MINUTES)
-                .build()));
+                .build());
     }
 
     @Activate

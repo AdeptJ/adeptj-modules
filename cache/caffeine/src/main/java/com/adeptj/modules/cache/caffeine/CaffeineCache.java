@@ -18,9 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine.internal;
-
-import com.adeptj.modules.cache.api.Cache;
+package com.adeptj.modules.cache.caffeine;
 
 import java.util.Collection;
 import java.util.Set;
