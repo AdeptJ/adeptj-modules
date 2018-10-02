@@ -116,8 +116,7 @@ public class CookieBuilder {
         }
 
         public CookieBuilder build() {
-            return new CookieBuilder(new NewCookie(this.name, this.value, this.path, this.domain,
-                    DEFAULT_VERSION,
+            return new CookieBuilder(new NewCookie(this.name, this.value, this.path, this.domain, DEFAULT_VERSION,
                     this.comment,
                     this.maxAge,
                     this.expiry,

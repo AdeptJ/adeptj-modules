@@ -18,9 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.validation;
+package com.adeptj.modules.security.jwt;
 
-import com.adeptj.modules.security.jwt.JwtService;
+import com.adeptj.modules.security.jwt.validation.ClaimsValidationException;
 import org.osgi.annotation.versioning.ConsumerType;
 
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
  * Service interface for validating the JWT claims(Registered as well as public).
  * <p>
  * This is injected as an optional service in {@link JwtService}, therefore the claims are only
- * validated if an implementation of {@link JwtClaimsValidator} is available in OSGi service registry.
+ * validated if an implementation of {@link JwtClaimsIntrospector} is available in OSGi service registry.
  * <p>
  * Callers should inspect the claims passed and validate claims values as per their need,
  * if everything is fine then must return true otherwise false.
@@ -37,8 +37,7 @@ import java.util.Map;
  * @author Rakesh.Kumar, AdeptJ
  */
 @ConsumerType
-@FunctionalInterface
-public interface JwtClaimsValidator {
+public interface JwtClaimsIntrospector {
 
     /**
      * Validate the JWT claims passed.
@@ -49,9 +48,9 @@ public interface JwtClaimsValidator {
      * Any public claims like username, roles and other important information can be validated as per need.
      *
      * @param claims the JWT claims
-     * @return extended claims map with extra information such as roles etc. if any.
+     * @return boolean to indicate if claims passed were good..
      * @throws ClaimsValidationException in case of exceptional scenarios caller must wrap the original exception
      *                                   in ClaimsValidationException and rethrow.
      */
-    Map<String, Object> validate(Map<String, Object> claims) throws ClaimsValidationException;
+    boolean introspect(Map<String, Object> claims) throws ClaimsValidationException;
 }

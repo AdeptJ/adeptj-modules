@@ -37,7 +37,7 @@ public interface DataSourceService {
      *
      * @param name the name of the JDBC pool.
      * @return The configured {@link DataSource} instance against the name passed.
-     * @throws DataSourceNotConfiguredException if {@link DataSource} is not configured.
+     * @throws IllegalStateException if {@link DataSource} is not configured.
      */
-    DataSource getDataSource(String name) throws DataSourceNotConfiguredException;
+    DataSource getDataSource(String name);
 }

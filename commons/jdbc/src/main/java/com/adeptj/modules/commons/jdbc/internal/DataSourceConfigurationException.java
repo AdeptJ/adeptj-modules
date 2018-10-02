@@ -18,18 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc;
+package com.adeptj.modules.commons.jdbc.internal;
 
 /**
- * Thrown when an instance of {@link com.zaxxer.hikari.HikariDataSource} is requested even before it is configured.
+ * Thrown from {@link DataSourceProvider} when the DataSource is being configured in start method.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class DataSourceNotConfiguredException extends RuntimeException {
+class DataSourceConfigurationException extends RuntimeException {
 
     private static final long serialVersionUID = -4649854107775357466L;
 
-    public DataSourceNotConfiguredException(String message) {
-        super(message);
+    DataSourceConfigurationException(Exception ex) {
+        super(ex);
     }
 }

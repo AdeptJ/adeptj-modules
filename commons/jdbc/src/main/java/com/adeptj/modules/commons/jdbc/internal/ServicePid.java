@@ -18,16 +18,24 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc;
+package com.adeptj.modules.commons.jdbc.internal;
 
-import javax.sql.DataSource;
+import org.osgi.service.component.annotations.ComponentPropertyType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A factory for creating {@link com.zaxxer.hikari.HikariDataSource} instances.
+ * {@link ComponentPropertyType} for service pid property.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface DataSourceFactory {
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+@ComponentPropertyType
+public @interface ServicePid {
 
-    DataSource getDataSource();
+    String value();
 }

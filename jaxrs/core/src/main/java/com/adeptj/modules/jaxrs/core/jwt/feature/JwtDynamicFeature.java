@@ -35,6 +35,7 @@ import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
+import java.lang.invoke.MethodHandles;
 import java.util.stream.Stream;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
@@ -54,10 +55,10 @@ import static org.apache.commons.lang3.StringUtils.containsAny;
 @JaxRSProvider(name = "JwtDynamicFeature")
 @Provider
 @Designate(ocd = JwtDynamicFeatureConfig.class)
-@Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class JwtDynamicFeature implements DynamicFeature {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtDynamicFeature.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String EQ = "=";
 

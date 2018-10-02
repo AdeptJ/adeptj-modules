@@ -72,7 +72,7 @@ public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
         return new ClaimsDecorator().addClaims(validator.validate(jws.getBody()));
     }
 
-    // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
+    // <------------------------------------------------ OSGi INTERNAL ------------------------------------------------>
 
     @Activate
     protected void start() {

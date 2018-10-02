@@ -21,17 +21,20 @@
 package com.adeptj.modules.commons.jdbc.internal;
 
 import com.adeptj.modules.commons.jdbc.DataSourceConfig;
-import com.adeptj.modules.commons.jdbc.DataSourceFactory;
+import com.adeptj.modules.commons.jdbc.DataSources;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
+import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceFactoryImpl.COMPONENT_NAME;
-import static org.osgi.framework.Constants.SERVICE_PID;
+import static com.adeptj.modules.commons.jdbc.internal.DataSourceProvider.COMPONENT_NAME;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -39,33 +42,55 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ServicePid(COMPONENT_NAME)
 @Designate(ocd = DataSourceConfig.class, factory = true)
-@Component(
-        service = DataSourceFactory.class,
-        immediate = true,
-        name = COMPONENT_NAME,
-        property = SERVICE_PID + "=" + COMPONENT_NAME,
-        configurationPolicy = REQUIRE
-)
-public class DataSourceFactoryImpl implements DataSourceFactory {
+@Component(service = DataSourceProvider.class, name = COMPONENT_NAME, configurationPolicy = REQUIRE)
+public class DataSourceProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final String COMPONENT_NAME = "com.adeptj.modules.commons.jdbc.DataSource.factory";
 
-    @Reference
-    private DataSourceManager dataSourceManager;
+    private HikariDataSource dataSource;
 
-    @Override
-    public DataSource getDataSource() {
-        return null;
+    HikariDataSource getDataSource() {
+        return this.dataSource;
     }
 
+    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
+
+    /**
+     * Initialize the {@link HikariDataSource} using the configuration passed.
+     *
+     * @param config the Hikari {@link DataSourceConfig}
+     * @throws DataSourceConfigurationException so that component activation fails and SCR ignores the service.
+     */
     @Activate
     protected void start(DataSourceConfig config) {
-        this.dataSourceManager.createDataSource(config);
+        try {
+            String poolName = config.poolName();
+            Validate.isTrue(StringUtils.isNotEmpty(poolName), "JDBC Pool Name can't be blank!!");
+            this.dataSource = DataSources.newDataSource(config);
+            LOGGER.info("HikariDataSource: [{}] initialized!!", poolName);
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+            throw new DataSourceConfigurationException(ex);
+        }
     }
 
+    /**
+     * Close the {@link HikariDataSource}.
+     *
+     * @param config the Hikari {@link DataSourceConfig}
+     */
     @Deactivate
     protected void stop(DataSourceConfig config) {
-        this.dataSourceManager.closeDataSource(config.poolName());
+        try {
+            this.dataSource.close();
+            LOGGER.info("HikariDataSource: [{}] closed!!", config.poolName());
+            this.dataSource = null;
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+        }
     }
 }
