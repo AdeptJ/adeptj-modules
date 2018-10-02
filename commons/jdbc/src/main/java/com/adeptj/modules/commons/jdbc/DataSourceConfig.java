@@ -66,6 +66,9 @@ public @interface DataSourceConfig {
 
     boolean DEFAULT_AUTO_COMMIT = true;
 
+    // name hint non editable property
+    String webconsole_configurationFactory_nameHint() default "JDBC DataSource: {" + "poolName" + "}"; // NOSONAR
+
     @AttributeDefinition(name = POOL_NAME, description = "DataSource Pool Name")
     String poolName();
 
