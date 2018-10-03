@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.commons.jdbc.internal;
 
-import com.adeptj.modules.commons.jdbc.DataSourceConfig;
-import com.adeptj.modules.commons.jdbc.DataSources;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;

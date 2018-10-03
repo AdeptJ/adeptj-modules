@@ -131,6 +131,13 @@
                     <target>${jdk.version}</target>
                 </configuration>
             </plugin>
+
+            <!-- AdeptJ maven plugin for bundle installation etc -->
+            <plugin>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-maven-plugin</artifactId>
+                <version>${adeptj-maven-plugin.version}</version>
+            </plugin>
         </plugins>
 
     </build>

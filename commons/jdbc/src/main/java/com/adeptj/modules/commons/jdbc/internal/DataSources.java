@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc;
+package com.adeptj.modules.commons.jdbc.internal;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -31,9 +31,9 @@ import java.util.stream.Stream;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class DataSources {
+final class DataSources {
 
-    public static HikariDataSource newDataSource(DataSourceConfig config) {
+    static HikariDataSource newDataSource(DataSourceConfig config) {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName(config.poolName());
         hikariConfig.setJdbcUrl(config.jdbcUrl());

@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc;
+package com.adeptj.modules.commons.jdbc.internal;
 
 /**
  * Constants for {@link com.zaxxer.hikari.HikariDataSource} properties.

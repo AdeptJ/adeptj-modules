@@ -45,7 +45,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = DataSourceService.class, immediate = true)
+@Component(service = DataSourceService.class)
 public class HikariDataSourceService implements DataSourceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
