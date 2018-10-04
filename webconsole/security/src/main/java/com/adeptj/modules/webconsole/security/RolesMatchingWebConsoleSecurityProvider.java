@@ -24,6 +24,7 @@ import org.apache.felix.webconsole.WebConsoleSecurityProvider;
 import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.metatype.annotations.Designate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,8 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
 
     private String redirectURI;
 
+    // <------------------------ WebConsoleSecurityProvider2 ---------------------------->
+
     /**
      * Role [OSGiAdmin] is already set by Undertow SecurityHandler.
      */
@@ -58,6 +61,25 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
     public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
         return Stream.of(this.roles).anyMatch(request::isUserInRole);
     }
+
+    // <------------------------ WebConsoleSecurityProvider3 ---------------------------->
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        // Note: Semantics of this method states that Session invalidation should not happen here.
+        // Not using response.sendRedirect due to exception handling we need to do, avoiding that.
+        // Set the status to [302] and location header to [/tools/logout] so that browser could redirect there.
+        // AuthServlet will take care of Session invalidation later.
+        request.removeAttribute(REMOTE_USER);
+        request.removeAttribute(AUTHORIZATION);
+        response.setStatus(SC_FOUND);
+        response.setHeader(HEADER_LOC, this.redirectURI);
+    }
+
+    // <---------------------- Below two methods from WebConsoleSecurityProvider never get called --------------------->
 
     /**
      * {@inheritDoc}
@@ -75,24 +97,10 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        // Note: Semantics of this method states that Session invalidation should not happen here.
-        // Not using response.sendRedirect due to exception handling we need to do, avoiding that.
-        // Set the status to [302] and location header to [/tools/logout] so that browser could redirect there.
-        // AuthServlet will take care of Session invalidation later.
-        request.removeAttribute(REMOTE_USER);
-        request.removeAttribute(AUTHORIZATION);
-        response.setStatus(SC_FOUND);
-        response.setHeader(HEADER_LOC, this.redirectURI);
-    }
-
-    // LifeCycle methods
+    // <------------------------------------------------ OSGi Internal ------------------------------------------------>
 
     @Activate
+    @Modified
     protected void start(WebConsoleSecurityConfig config) {
         this.roles = config.roles();
         this.redirectURI = config.redirectURI();
