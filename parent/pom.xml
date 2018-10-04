@@ -37,11 +37,21 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <adeptj-maven-plugin.version>1.0.3.Final</adeptj-maven-plugin.version>
+
+        <!-- AdeptJ Maven Plugin properties start -->
+
+        <adeptj-maven-plugin.version>1.0.4.Final</adeptj-maven-plugin.version>
         <adeptj.console.url>http://localhost:9007/system/console</adeptj.console.url>
         <adeptj.auth.url>http://localhost:9007/auth/j_security_check</adeptj.auth.url>
         <adeptj.user>admin</adeptj.user>
         <adeptj.password>admin</adeptj.password>
+
+        <!-- AdeptJ Maven Plugin properties end -->
+
+        <!-- AdeptJ Modules dependencies -->
+        <adeptj-modules-commons-utils.version>1.1.0.Final</adeptj-modules-commons-utils.version>
+        <adeptj-modules-commons-crypto.version>1.0.0.Final</adeptj-modules-commons-crypto.version>
+        <adeptj-modules-commons-validator.version>1.0.2.Final</adeptj-modules-commons-validator.version>
     </properties>
 
     <!-- Project Information -->
@@ -217,6 +227,27 @@
                         <artifactId>jboss-servlet-api_3.1_spec</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-modules-commons-utils</artifactId>
+                <version>${adeptj-modules-commons-utils.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-modules-commons-validator</artifactId>
+                <version>${adeptj-modules-commons-validator.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-modules-commons-crypto</artifactId>
+                <version>${adeptj-modules-commons-crypto.version}</version>
+                <scope>provided</scope>
             </dependency>
 
         </dependencies>
