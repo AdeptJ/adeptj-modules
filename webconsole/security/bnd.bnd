@@ -16,6 +16,14 @@
 #                                                                          #
 ############################################################################
 
+-metatypeannotations: *
+
+-metatypeannotations-options: version;minimum=1.4.0
+
+-dsannotations: *
+
+-dsannotations-options: version;minimum=1.4.0
+
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ WebConsole
