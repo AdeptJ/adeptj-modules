@@ -20,16 +20,22 @@
 
 package com.adeptj.modules.commons.utils;
 
+import org.osgi.service.component.annotations.ComponentPropertyType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Exception thrown by {@link com.adeptj.modules.commons.utils.service.CryptoService}
+ * {@link ComponentPropertyType} for service pid property.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class CryptoException extends RuntimeException {
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+@ComponentPropertyType
+public @interface ServicePid {
 
-    private static final long serialVersionUID = 7698185120915491624L;
-
-    public CryptoException(Throwable cause) {
-        super(cause);
-    }
+    String value();
 }

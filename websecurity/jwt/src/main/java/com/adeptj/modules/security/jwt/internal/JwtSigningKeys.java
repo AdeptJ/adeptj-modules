@@ -74,12 +74,12 @@ final class JwtSigningKeys {
     private JwtSigningKeys() {
     }
 
-    static PrivateKey createRsaSigningKey(JwtConfig jwtConfig) {
+    static PrivateKey createRsaSigningKey(JwtConfig jwtConfig, SignatureAlgorithm signatureAlgo) {
         LOGGER.info("Creating RSA signing key!!");
+        String keyData = jwtConfig.privateKey();
+        Assert.hasText(keyData, "PrivateKey data can't be blank!!");
         try {
-            SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-            KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgorithm.getFamilyName());
-            String keyData = jwtConfig.privateKey();
+            KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgo.getFamilyName());
             if (StringUtils.startsWith(keyData, PRIVATE_ENCRYPTED_KEY_HEADER)) {
                 LOGGER.info("Creating PKCS8EncodedKeySpec from private [encrypted] key !!");
                 Assert.hasText(jwtConfig.privateKeyPassword(), KEYPASS_NULL_MSG);
@@ -100,12 +100,12 @@ final class JwtSigningKeys {
         }
     }
 
-    static PublicKey createRsaVerificationKey(JwtConfig jwtConfig) {
+    static PublicKey createRsaVerificationKey(SignatureAlgorithm signatureAlgo, String publicKey) {
         LOGGER.info("Creating RSA verification key!!");
+        Assert.hasText(publicKey, "PublicKey data can't be blank!!");
         try {
-            SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
-            KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgorithm.getFamilyName());
-            byte[] publicKeyData = Base64.getDecoder().decode(jwtConfig.publicKey()
+            KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgo.getFamilyName());
+            byte[] publicKeyData = Base64.getDecoder().decode(publicKey
                     .replace(PUB_KEY_HEADER, EMPTY)
                     .replace(PUB_KEY_FOOTER, EMPTY)
                     .replaceAll(REGEX_SPACE, EMPTY)

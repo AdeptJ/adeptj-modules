@@ -18,13 +18,13 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.utils.service.internal;
+package com.adeptj.modules.commons.crypto.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * OSGi Configuration for {@link com.adeptj.modules.commons.utils.service.CryptoService}
+ * OSGi Configuration for {@link com.adeptj.modules.commons.crypto.CryptoService}
  *
  * @author Rakesh.Kumar, AdeptJ
  */

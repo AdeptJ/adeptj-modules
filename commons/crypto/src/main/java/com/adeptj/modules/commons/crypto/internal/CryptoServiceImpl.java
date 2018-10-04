@@ -20,11 +20,10 @@
 
 package com.adeptj.modules.commons.utils.service.internal;
 
-import com.adeptj.modules.commons.utils.CryptoException;
-import com.adeptj.modules.commons.utils.Loggers;
-import com.adeptj.modules.commons.utils.Randomizer;
-import com.adeptj.modules.commons.utils.service.CryptoService;
-import com.adeptj.modules.commons.utils.service.SaltHashPair;
+import com.adeptj.modules.commons.crypto.CryptoException;
+import com.adeptj.modules.commons.crypto.CryptoService;
+import com.adeptj.modules.commons.crypto.SaltHashPair;
+import com.adeptj.modules.commons.crypto.internal.CryptoConfig;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -33,11 +32,13 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.lang.invoke.MethodHandles;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
@@ -52,9 +53,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class CryptoServiceImpl implements CryptoService {
 
-    private static final Logger LOGGER = Loggers.get(MethodHandles.lookup());
+    private static final Logger LOGGER = LoggerFactory.getLogger((MethodHandles.lookup().lookupClass()));
 
     private static final String PLAINTEXT_NULL_MSG = "plainText can't be blank!!";
+
+    private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
 
     private CryptoConfig cryptoConfig;
 
@@ -63,7 +66,9 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public byte[] getSaltBytes() {
-        return Randomizer.getRandomBytes(this.cryptoConfig.saltSize());
+        byte[] saltBytes = new byte[this.cryptoConfig.saltSize()];
+        DEFAULT_SECURE_RANDOM.nextBytes(saltBytes);
+        return saltBytes;
     }
 
     /**
@@ -80,7 +85,7 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public byte[] getHashedBytes(String plainText, byte[] salt) {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
-        Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt can't be empty!!");
+        Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt array can't be empty!!");
         try {
             KeySpec keySpec = new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
                     this.cryptoConfig.keyLength());
@@ -93,12 +98,16 @@ public class CryptoServiceImpl implements CryptoService {
         }
     }
 
+    @Override
+    public byte[] getHashedBytes(String plainText, String salt) {
+        return this.getHashedBytes(plainText, salt.getBytes(UTF_8));
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String getHashedText(String plainText, String salt) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
         return this.encodeToString(this.getHashedBytes(plainText, salt.getBytes(UTF_8)), UTF_8);
     }
@@ -108,7 +117,6 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public SaltHashPair getSaltHashPair(String plainText) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         byte[] saltBytes = this.getSaltBytes();
         return new SaltHashPair(this.encodeToString(saltBytes, UTF_8),
                 this.encodeToString(this.getHashedBytes(plainText, saltBytes), UTF_8));
@@ -119,7 +127,6 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public boolean compareHashes(SaltHashPair saltHashPair, String plainText) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
         return StringUtils.equals(saltHashPair.getHash(), this.getHashedText(plainText, saltHashPair.getSalt()));
     }
 

@@ -33,6 +33,7 @@
     <modules>
 
         <module>utils</module>
+        <module>crypto</module>
         <module>validator</module>
         <module>datasource</module>
         <module>jdbc</module>

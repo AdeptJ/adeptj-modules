@@ -39,6 +39,9 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 @ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for JWT Service")
 public @interface JwtConfig {
 
+    /**
+     * Default Jwt expiration time is 12 Hours.
+     */
     long DEFAULT_EXPIRATION_TIME = 720L;
 
     @AttributeDefinition(
@@ -59,35 +62,23 @@ public @interface JwtConfig {
     String privateKey();
 
     @AttributeDefinition(
+            name = "RSA PrivateKey Password",
+            description = "Pass phrase of the RSA PrivateKey, leave unaltered if not a password protected key.",
+            type = PASSWORD
+    )
+    String privateKeyPassword();
+
+    @AttributeDefinition(
             name = "RSA PublicKey(Verification Key)",
             description = "PublicKey data (PEM-encoded X.509 format) for JWT verification."
     )
     String publicKey();
-
-    @AttributeDefinition(
-            name = "RSA PrivateKey Password",
-            description = "Pass phrase of the RSA PrivateKey",
-            type = PASSWORD
-    )
-    String privateKeyPassword();
 
     @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
     String issuer() default "AdeptJ Runtime";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes.")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
-
-    @AttributeDefinition(
-            name = "JWT Expiration Time Unit",
-            description = "JWT Expiration Time Unit in Java ChronoUnit.",
-            options = {
-                    @Option(label = "Seconds", value = "SECONDS"),
-                    @Option(label = "Minutes", value = "MINUTES"),
-                    @Option(label = "Hours", value = "HOURS"),
-                    @Option(label = "Days", value = "DAYS"),
-            }
-    )
-    String expirationTimeUnit() default "MINUTES";
 
     @AttributeDefinition(
             name = "JWT default obligatory claims which need to be checked",

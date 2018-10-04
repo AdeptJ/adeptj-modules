@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.utils.service;
+package com.adeptj.modules.commons.crypto;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;

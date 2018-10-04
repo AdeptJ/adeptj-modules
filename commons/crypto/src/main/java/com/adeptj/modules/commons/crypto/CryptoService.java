@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.utils.service;
+package com.adeptj.modules.commons.crypto;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
@@ -50,9 +50,19 @@ public interface CryptoService {
      * @param plainText the text to be hashed.
      * @param salt      the salt to be added for hashing.
      * @return hashed bytes after applying the given salt.
-     * @throws com.adeptj.modules.commons.utils.CryptoException when could not create the hashed bytes.
+     * @throws com.adeptj.modules.commons.crypto.CryptoException when could not create the hashed bytes.
      */
     byte[] getHashedBytes(String plainText, byte[] salt);
+
+    /**
+     * Generates random hashed bytes using PBKDF2WithHmacSHA256 algo.
+     *
+     * @param plainText the text to be hashed.
+     * @param salt      the salt to be added for hashing.
+     * @return hashed bytes after applying the given salt.
+     * @throws com.adeptj.modules.commons.crypto.CryptoException when could not create the hashed bytes.
+     */
+    byte[] getHashedBytes(String plainText, String salt);
 
     /**
      * Generates random hashed text using PBKDF2WithHmacSHA256 algo.

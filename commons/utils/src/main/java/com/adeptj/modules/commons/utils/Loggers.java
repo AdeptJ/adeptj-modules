@@ -36,8 +36,8 @@ public final class Loggers {
     private Loggers() {
     }
 
-    public static Logger get(MethodHandles.Lookup creationContext) {
-        return LoggerFactory.getLogger(creationContext.lookupClass());
+    public static Logger get(MethodHandles.Lookup lookup) {
+        return LoggerFactory.getLogger(lookup.lookupClass());
     }
 
     public static <T> Logger get(Class<T> type) {

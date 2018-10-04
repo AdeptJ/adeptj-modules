@@ -18,25 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.utils;
+package com.adeptj.modules.commons.crypto;
 
 /**
- * Utility methods to deal with exceptions.
+ * Exception thrown by {@link com.adeptj.modules.commons.crypto.CryptoService}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class Exceptions {
+public class CryptoException extends RuntimeException {
 
-    private Exceptions() {
-    }
+    private static final long serialVersionUID = 7698185120915491624L;
 
-    /**
-     * Wraps the given exception in a {@link RuntimeException} and rethrow.
-     *
-     * @param ex the given exception.
-     * @return RuntimeException wrapping the original exception.
-     */
-    public static RuntimeException toUnchecked(Exception ex) {
-        return new RuntimeException(ex);
+    public CryptoException(Throwable cause) {
+        super(cause);
     }
 }

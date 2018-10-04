@@ -5,7 +5,7 @@
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
-#    you may not use this logFile except in compliance with the License.         #
+#    you may not use this file except in compliance with the License.         #
 #    You may obtain a copy of the License at                                  #
 #                                                                             #
 #        http://www.apache.org/licenses/LICENSE-2.0                           #
@@ -27,15 +27,70 @@
         <version>1</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    <artifactId>adeptj-modules-commons-logging</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>adeptj-modules-commons-crypto</artifactId>
     <version>1.0.0.Final</version>
-    <name>AdeptJ Modules :: Commons :: OSGi Logging Bridge</name>
-    <description>Logging Bridge for forwarding OSGi logs to SLF4J logging backend.</description>
+    <packaging>jar</packaging>
+    <name>AdeptJ Modules :: Commons :: Crypto</name>
+    <description>AdeptJ Modules :: Commons :: Crypto Utilities</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <!-- Project Information -->
+    <organization>
+        <name>AdeptJ</name>
+        <url>http://www.adeptj.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>rakeshk15</id>
+            <name>Rakesh Kumar</name>
+            <email>irakeshk@outlook.com</email>
+            <url>https://www.linkedin.com/in/iamrakesh</url>
+            <organization>AdeptJ</organization>
+            <organizationUrl>http://www.adeptj.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+5:30</timezone>
+            <properties>
+                <picUrl>https://pbs.twimg.com/profile_images/946630807312928770/E18eB0ng.jpg</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <url>https://github.com/AdeptJ/adeptj-modules/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh-adeptj</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh-adeptj</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/AdeptJ/adeptj-modules</url>
+        <connection>scm:git:git@github.com:AdeptJ/adeptj-modules.git</connection>
+        <developerConnection>scm:git:git@github.com:AdeptJ/adeptj-modules.git</developerConnection>
+    </scm>
 
     <build>
 
@@ -75,11 +130,23 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-maven-plugin</artifactId>
+                <version>${adeptj-maven-plugin.version}</version>
+            </plugin>
+
         </plugins>
 
     </build>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
@@ -100,5 +167,6 @@
         </dependency>
 
     </dependencies>
+
 
 </project>

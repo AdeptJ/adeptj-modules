@@ -35,7 +35,7 @@ import org.slf4j.Logger;
  * The registered {@link LogListener} accepts the {@link LogEntry} which contains information
  * such as human readable message, exception etc.
  * <p>
- * This information is sent to the SLF4J {@link Logger} to log with ERROR or WARN log levels.
+ * This information is sent to the SLF4J {@link Logger} to log with ERROR, WARN or DEBUG log levels.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -48,7 +48,7 @@ public class OSGiSLF4JLoggingBridge {
     private final LogListener logListener;
 
     public OSGiSLF4JLoggingBridge() {
-        this.logListener = new OSGiLogListener();
+        this.logListener = new SLF4JLogger();
     }
 
     // Component Lifecycle Methods

@@ -41,7 +41,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +49,7 @@ import java.util.UUID;
 
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -69,7 +69,7 @@ public class JwtServiceImpl implements JwtService {
 
     private List<String> obligatoryClaims;
 
-    private Duration duration;
+    private Duration expirationDuration;
 
     private SignatureAlgorithm signatureAlgo;
 
@@ -94,7 +94,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(subject)
                 .setIssuer(this.issuer)
                 .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(this.duration)))
+                .setExpiration(Date.from(now.plus(this.expirationDuration)))
                 .setId(UUID.randomUUID().toString())
                 .signWith(this.signingKey, this.signatureAlgo)
                 .compact();
@@ -134,26 +134,26 @@ public class JwtServiceImpl implements JwtService {
         return new ClaimsDecorator();
     }
 
-    // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
+    // <------------------------------------------------ OSGi INTERNAL ------------------------------------------------>
 
     @Modified
     @Activate
-    protected void start(JwtConfig jwtConfig) {
+    protected void start(JwtConfig config) {
         this.signatureAlgo = null;
         this.signingKey = null;
         this.verificationKey = null;
-        this.duration = null;
+        this.expirationDuration = null;
         this.issuer = null;
         this.suppressJwtExceptionTrace = false;
         try {
-            this.issuer = jwtConfig.issuer();
-            this.duration = Duration.of(jwtConfig.expirationTime(), ChronoUnit.valueOf(jwtConfig.expirationTimeUnit()));
-            this.suppressJwtExceptionTrace = jwtConfig.suppressJwtExceptionTrace();
-            this.signatureAlgo = SignatureAlgorithm.forName(jwtConfig.signatureAlgo());
+            this.issuer = config.issuer();
+            this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
+            this.suppressJwtExceptionTrace = config.suppressJwtExceptionTrace();
+            this.signatureAlgo = SignatureAlgorithm.forName(config.signatureAlgo());
             LOGGER.info("JWT SignatureAlgorithm: [{}]", this.signatureAlgo.getJcaName());
-            this.signingKey = JwtSigningKeys.createRsaSigningKey(jwtConfig);
-            this.verificationKey = JwtSigningKeys.createRsaVerificationKey(jwtConfig);
-            this.obligatoryClaims = Arrays.asList(jwtConfig.obligatoryClaims());
+            this.signingKey = JwtSigningKeys.createRsaSigningKey(config, this.signatureAlgo);
+            this.verificationKey = JwtSigningKeys.createRsaVerificationKey(this.signatureAlgo, config.publicKey());
+            this.obligatoryClaims = Arrays.asList(config.obligatoryClaims());
         } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error("Couldn't start the JwtService!!", ex);
             throw ex;
