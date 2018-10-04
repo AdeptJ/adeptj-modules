@@ -24,8 +24,6 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Private-Package: com.adeptj.modules.commons.logging.internal
-
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ Commons

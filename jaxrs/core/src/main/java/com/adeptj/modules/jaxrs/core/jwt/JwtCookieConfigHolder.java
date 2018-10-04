@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.resource.JwtResource;
-
 /**
  * Provides the {@link JwtCookieConfig} configured by {@link JwtResource} component.
  *

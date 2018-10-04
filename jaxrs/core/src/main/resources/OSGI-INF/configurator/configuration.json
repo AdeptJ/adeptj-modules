@@ -1,7 +1,0 @@
-{
-  "com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature" : {
-        "resourceVsMethodsMapping" : [
-          "com.adeptj.modules.jaxrs.core.resource.CryptoResource=*"
-        ]
-  }
-}

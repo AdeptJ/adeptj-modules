@@ -18,16 +18,12 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.resource;
+package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.jaxrs.core.JaxRSResource;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
-import com.adeptj.modules.jaxrs.core.jwt.JaxRSUtil;
-import com.adeptj.modules.jaxrs.core.jwt.JwtCookieConfig;
-import com.adeptj.modules.jaxrs.core.jwt.JwtCookieConfigHolder;
-import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;

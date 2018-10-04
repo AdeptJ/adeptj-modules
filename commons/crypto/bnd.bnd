@@ -18,11 +18,13 @@
 
 -metatypeannotations: *
 
+-metatypeannotations-options: version;minimum=1.4.0
+
 -dsannotations: *
 
-Export-Package: com.adeptj.modules.commons.crypto
+-dsannotations-options: version;minimum=1.4.0
 
-Private-Package: com.adeptj.modules.commons.crypto.internal
+Export-Package: com.adeptj.modules.commons.crypto
 
 Bundle-Name: ${project.name}
 

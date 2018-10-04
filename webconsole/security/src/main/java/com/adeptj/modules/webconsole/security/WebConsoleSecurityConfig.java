@@ -1,4 +1,3 @@
-
 /*
 ###############################################################################
 #                                                                             #
@@ -46,7 +45,7 @@ public @interface WebConsoleSecurityConfig {
             description = "Security roles required by WebConsoleSecurityProvider for auth purpose.",
             cardinality = CARDINALITY
     )
-    String[] roles() default ROLE_OSGI_ADMIN;
+    String[] roles() default {ROLE_OSGI_ADMIN,};
 
     @AttributeDefinition(
             name = "Logout Redirect URI",

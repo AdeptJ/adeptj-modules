@@ -22,7 +22,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardFilterAsyncSupported;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
  */
 @HttpWhiteboardServletName(RESTEASY_PROXY_SERVLET_NAME)
 @HttpWhiteboardServletPattern(RESTEASY_DISPATCHER_SERVLET_PATH)
-@HttpWhiteboardFilterAsyncSupported
+@HttpWhiteboardServletAsyncSupported
 @ResteasyServletMappingPrefix(RESTEASY_DISPATCHER_SERVLET_PATH)
 @Component(service = Servlet.class, scope = PROTOTYPE)
 public class ResteasyProxyServlet extends HttpServlet {

@@ -28,33 +28,32 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.apache.felix.webconsole.WebConsoleConstants.PLUGIN_LABEL;
-import static org.apache.felix.webconsole.WebConsoleConstants.PLUGIN_TITLE;
-
 /**
  * AdeptJ Tools Plugin.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(
-        immediate = true,
-        service = Servlet.class,
-        property = {
-                PLUGIN_LABEL + "=" + "tools",
-                PLUGIN_TITLE + "=" + "AdeptJ Tools"
-        }
-)
+@WebConsolePlugin(label = ToolsPlugin.LABEL, title = ToolsPlugin.TITLE)
+@Component(immediate = true, service = Servlet.class)
 public class ToolsPlugin extends SimpleWebConsolePlugin {
 
     private static final long serialVersionUID = 8041033223220201144L;
 
+    private static final String CATEGORY = "Main";
+
+    private static final String REDIRECT_URI = "/tools/dashboard";
+
+    static final String LABEL = "tools";
+
+    static final String TITLE = "AdeptJ Tools";
+
     public ToolsPlugin() {
-        super("tools", "AdeptJ Tools", "Main", null);
+        super(LABEL, TITLE, CATEGORY, null);
     }
 
     @Override
     protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        res.sendRedirect("/tools/dashboard");
+        res.sendRedirect(REDIRECT_URI);
     }
 
 }

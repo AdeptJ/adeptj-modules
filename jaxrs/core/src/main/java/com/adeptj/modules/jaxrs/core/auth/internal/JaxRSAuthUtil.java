@@ -20,11 +20,13 @@
 
 package com.adeptj.modules.jaxrs.core.auth.internal;
 
-import com.adeptj.modules.commons.utils.Loggers;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Utility methods for {@link JaxRSAuthenticationOutcome} and {@link JaxRSAuthenticationRealm}
@@ -33,7 +35,7 @@ import org.slf4j.Logger;
  */
 final class JaxRSAuthUtil {
 
-    private static final Logger LOGGER = Loggers.get(JaxRSAuthUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private JaxRSAuthUtil() {
     }

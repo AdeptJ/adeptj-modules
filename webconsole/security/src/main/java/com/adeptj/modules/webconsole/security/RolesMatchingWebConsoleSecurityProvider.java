@@ -28,20 +28,20 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static javax.servlet.http.HttpServletResponse.SC_FOUND;
 import static org.osgi.service.http.HttpContext.AUTHORIZATION;
 import static org.osgi.service.http.HttpContext.REMOTE_USER;
 
 /**
- * Felix {@link WebConsoleSecurityProvider} implementation.
+ * Felix {@link WebConsoleSecurityProvider} implementation which matches the roles set in request with the configured ones.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = WebConsoleSecurityConfig.class)
 @Component(immediate = true, service = WebConsoleSecurityProvider.class)
-public class DefaultWebConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
+public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
 
     private static final String HEADER_LOC = "Location";
 
@@ -56,7 +56,7 @@ public class DefaultWebConsoleSecurityProvider implements WebConsoleSecurityProv
      */
     @Override
     public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
-        return Arrays.stream(this.roles).anyMatch(request::isUserInRole);
+        return Stream.of(this.roles).anyMatch(request::isUserInRole);
     }
 
     /**

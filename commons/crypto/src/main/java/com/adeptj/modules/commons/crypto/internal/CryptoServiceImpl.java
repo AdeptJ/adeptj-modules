@@ -18,12 +18,11 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.utils.service.internal;
+package com.adeptj.modules.commons.crypto.internal;
 
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.SaltHashPair;
-import com.adeptj.modules.commons.crypto.internal.CryptoConfig;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;

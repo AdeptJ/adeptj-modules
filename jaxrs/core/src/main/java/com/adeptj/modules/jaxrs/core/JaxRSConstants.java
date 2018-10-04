@@ -31,8 +31,6 @@ public final class JaxRSConstants {
     private JaxRSConstants() {
     }
 
-    public static final String JSON_KEY_ERROR = "ERROR";
-
     public static final String AUTH_SCHEME_BEARER = "Bearer";
 
     public static final String AUTH_SCHEME_TOKEN = "TOKEN";

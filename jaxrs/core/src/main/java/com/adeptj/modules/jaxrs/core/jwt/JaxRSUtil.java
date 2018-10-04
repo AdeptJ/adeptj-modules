@@ -34,13 +34,13 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JaxRSUtil {
+final class JaxRSUtil {
 
     // Just static utilities, no instance needed.
     private JaxRSUtil() {
     }
 
-    public static Response createResponseWithJwt(String jwt) {
+    static Response createResponseWithJwt(String jwt) {
         JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
         return cookieConfig.enabled()
                 ? Response.ok().cookie(newJwtCookie(jwt, cookieConfig)).build()
