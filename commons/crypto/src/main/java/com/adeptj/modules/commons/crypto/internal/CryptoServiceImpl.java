@@ -41,7 +41,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
  * Service implementation for generating random salt and hashed text using PBKDF2WithHmacSHA* algo.
@@ -75,7 +75,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String getSaltText() {
-        return this.encodeToString(this.getSaltBytes(), UTF_8);
+        return this.encodeToString(this.getSaltBytes(), US_ASCII);
     }
 
     /**
@@ -99,7 +99,7 @@ public class CryptoServiceImpl implements CryptoService {
 
     @Override
     public byte[] getHashedBytes(String plainText, String salt) {
-        return this.getHashedBytes(plainText, salt.getBytes(UTF_8));
+        return this.getHashedBytes(plainText, salt.getBytes(US_ASCII));
     }
 
     /**
@@ -108,7 +108,7 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public String getHashedText(String plainText, String salt) {
         Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
-        return this.encodeToString(this.getHashedBytes(plainText, salt.getBytes(UTF_8)), UTF_8);
+        return this.encodeToString(this.getHashedBytes(plainText, salt.getBytes(US_ASCII)), US_ASCII);
     }
 
     /**
@@ -117,8 +117,8 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public SaltHashPair getSaltHashPair(String plainText) {
         byte[] saltBytes = this.getSaltBytes();
-        return new SaltHashPair(this.encodeToString(saltBytes, UTF_8),
-                this.encodeToString(this.getHashedBytes(plainText, saltBytes), UTF_8));
+        return new SaltHashPair(this.encodeToString(saltBytes, US_ASCII),
+                this.encodeToString(this.getHashedBytes(plainText, saltBytes), US_ASCII));
     }
 
     /**

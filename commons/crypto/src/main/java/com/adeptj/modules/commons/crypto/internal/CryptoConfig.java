@@ -22,6 +22,7 @@ package com.adeptj.modules.commons.crypto.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.osgi.service.metatype.annotations.Option;
 
 /**
  * OSGi Configuration for {@link com.adeptj.modules.commons.crypto.CryptoService}
@@ -54,7 +55,12 @@ public @interface CryptoConfig {
 
     @AttributeDefinition(
             name = "Secret Key Algo",
-            description = "Algo to generate the hash, only [PBKDF2WithHmacSHA*] is supported at this moment."
+            description = "Algo to generate the hash, only [PBKDF2WithHmacSHA*] is supported at this moment.",
+            options = {
+                    @Option(label = "PBKDF2 HmacSHA256", value = "PBKDF2WithHmacSHA256"),
+                    @Option(label = "PBKDF2 HmacSHA384", value = "PBKDF2WithHmacSHA384"),
+                    @Option(label = "PBKDF2 HmacSHA512", value = "PBKDF2WithHmacSHA512")
+            }
     )
     String secretKeyAlgo() default "PBKDF2WithHmacSHA256";
 }
