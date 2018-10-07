@@ -18,48 +18,31 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.logging.internal;
+package com.adeptj.modules.commons.utils.annotation;
 
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.log.LogEntry;
-import org.osgi.service.log.LogListener;
-import org.osgi.service.log.LogReaderService;
-import org.slf4j.Logger;
+import org.osgi.service.component.annotations.ComponentPropertyType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * OSGi component registers a {@link LogListener} with {@link LogReaderService}.
- * <p>
- * The registered {@link LogListener} accepts the {@link LogEntry} which contains information
- * such as human readable message, exception etc.
- * <p>
- * This information is sent to the SLF4J {@link Logger} to log with ERROR, WARN or DEBUG log levels.
+ * {@link ComponentPropertyType} for Felix WebConsole plugin properties.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
-public class OSGiSLF4JLoggingBridge {
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+@ComponentPropertyType
+public @interface WebConsolePlugin {
 
-    @Reference
-    private LogReaderService logReaderService;
+    /**
+     * Prefix for the property name. This value is prepended to each property name.
+     */
+    String PREFIX_ = "felix.webconsole."; // NOSONAR
 
-    private final LogListener logListener;
+    String label();
 
-    public OSGiSLF4JLoggingBridge() {
-        this.logListener = new SLF4JLogger();
-    }
-
-    // Component Lifecycle Methods
-
-    @Activate
-    protected void start() {
-        this.logReaderService.addLogListener(this.logListener);
-    }
-
-    @Deactivate
-    protected void stop() {
-        this.logReaderService.removeLogListener(this.logListener);
-    }
+    String title();
 }

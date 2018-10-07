@@ -18,39 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.logging.internal;
+@Capability(namespace = IMPLEMENTATION_NAMESPACE, name = "osgi.jpa", version = "1.0.0")
+package com.adeptj.modules.data.jpa;
 
-import org.osgi.service.log.LogEntry;
-import org.osgi.service.log.LogListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.annotation.bundle.Capability;
 
-/**
- * Simple implementation of OSGi {@link LogListener} which logs the given {@link LogEntry} to underlying logging
- * framework with the help of SLF4J.
- *
- * @author Rakesh.Kumar, AdeptJ
- */
-public class SLF4JLogger implements LogListener {
-
-    private static final String OSGI_LOGGER_NAME = "com.adeptj.modules.commons.logging.osgi.Logger";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(OSGI_LOGGER_NAME);
-
-    @Override
-    public void logged(LogEntry entry) {
-        switch (entry.getLogLevel()) {
-            case ERROR:
-                LOGGER.error(entry.getMessage(), entry.getException());
-                break;
-            case WARN:
-                LOGGER.warn(entry.getMessage());
-                break;
-            case DEBUG:
-                LOGGER.debug(entry.getMessage());
-                break;
-            default:
-                // do nothing, we are not interested in other log levels.
-        }
-    }
-}
+import static org.osgi.namespace.implementation.ImplementationNamespace.IMPLEMENTATION_NAMESPACE;

@@ -28,7 +28,7 @@ import java.util.Base64;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface CryptoService {
+public interface HashingService {
 
     /**
      * Generates a random salt as byte array.
@@ -43,6 +43,16 @@ public interface CryptoService {
      * @return a random salt as text.
      */
     String getSaltText();
+
+    /**
+     * Generates random hashed bytes using PBKDF2WithHmacSHA256 algo.
+     *
+     * @param plainText the text to be hashed as a char array.
+     * @param salt      the salt to be added for hashing.
+     * @return hashed bytes after applying the given salt.
+     * @throws com.adeptj.modules.commons.crypto.CryptoException when could not create the hashed bytes.
+     */
+    byte[] getHashedBytes(char[] plainText, byte[] salt);
 
     /**
      * Generates random hashed bytes using PBKDF2WithHmacSHA256 algo.
@@ -69,7 +79,7 @@ public interface CryptoService {
      *
      * @param plainText the text to be hashed.
      * @param salt      the salt to be added for hashing.
-     * @return hashed bytes after applying the given salt.
+     * @return hashed text after applying the given salt.
      */
     String getHashedText(String plainText, String salt);
 

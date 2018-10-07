@@ -18,24 +18,44 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.utils;
+package com.adeptj.modules.commons.logging;
 
-import org.osgi.service.component.annotations.ComponentPropertyType;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogListener;
+import org.osgi.service.log.LogReaderService;
+import org.slf4j.Logger;
 
 /**
- * {@link ComponentPropertyType} for service pid property.
+ * OSGi component registers a {@link LogListener} with {@link LogReaderService}.
+ * <p>
+ * The registered {@link LogListener} accepts the {@link LogEntry} which contains information
+ * such as human readable message, exception etc.
+ * <p>
+ * This information is sent to the SLF4J {@link Logger} to log with ERROR, WARN or DEBUG log levels.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Retention(RetentionPolicy.CLASS)
-@Target(ElementType.TYPE)
-@ComponentPropertyType
-public @interface ServicePid {
+@Component(immediate = true)
+public class LogListenerManager {
 
-    String value();
+    @Reference
+    private LogReaderService logReaderService;
+
+    private final LogListener logListener = new LogEntryConsumer();
+
+    // Component Lifecycle Methods
+
+    @Activate
+    protected void start() {
+        this.logReaderService.addLogListener(this.logListener);
+    }
+
+    @Deactivate
+    protected void stop() {
+        this.logReaderService.removeLogListener(this.logListener);
+    }
 }

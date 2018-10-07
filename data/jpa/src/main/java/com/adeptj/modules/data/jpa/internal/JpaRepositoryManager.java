@@ -28,18 +28,31 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.persistence.jpa.PersistenceProvider;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.validation.ValidatorFactory;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static org.osgi.namespace.implementation.ImplementationNamespace.IMPLEMENTATION_NAMESPACE;
 
 /**
  * Manages the lifecycle of {@link EntityManagerFactory} and {@link JpaRepository}
@@ -49,11 +62,15 @@ import java.util.Optional;
 @Component(service = JpaRepositoryManager.class)
 public class JpaRepositoryManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaRepositoryManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String EMF_NULL_MSG = "Could not create EntityManagerFactory, most probably missing persistence.xml!!";
 
     private BundleContext bundleContext;
+
+    private BundleTracker<Bundle> tracker;
+
+    private List<Bundle> jpaClients;
 
     @Reference
     private DataSourceService dataSourceService;
@@ -101,5 +118,60 @@ public class JpaRepositoryManager {
     @Activate
     protected void start(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+        this.tracker = new BundleTracker<>(bundleContext,
+                Bundle.ACTIVE | Bundle.STARTING | Bundle.STOPPING | Bundle.RESOLVED | Bundle.INSTALLED,
+                new BundleTrackerCustomizer<Bundle>() {
+                    @Override
+                    public Bundle addingBundle(Bundle bundle, BundleEvent event) {
+                        int state = bundle.getState();
+                        if (state == Bundle.ACTIVE) {
+                            LOGGER.info("Checking bundle: {}", bundle);
+                            BundleWiring wiring = bundle.adapt(BundleWiring.class);
+                            List<BundleWire> wires = wiring.getRequiredWires(IMPLEMENTATION_NAMESPACE);
+                            if (wires != null && !wires.isEmpty()) {
+                                for (BundleWire wire : wires) {
+                                    Map<String, String> directives = wire.getRequirement().getDirectives();
+                                    if (directives != null && !directives.isEmpty()) {
+                                        if (StringUtils.contains(directives.get("filter"), "osgi.implementation=osgi.jpa")) {
+                                            JpaRepositoryManager.this.jpaClients.add(bundle);
+                                            return bundle;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public void modifiedBundle(Bundle bundle, BundleEvent event, Bundle object) {
+
+                    }
+
+                    @Override
+                    public void removedBundle(Bundle bundle, BundleEvent event, Bundle object) {
+                        if (bundle.getState() == Bundle.UNINSTALLED) {
+                            BundleWiring wiring = bundle.adapt(BundleWiring.class);
+                            List<BundleWire> wires = wiring.getRequiredWires(IMPLEMENTATION_NAMESPACE);
+                            if (wires != null && !wires.isEmpty()) {
+                                for (BundleWire wire : wires) {
+                                    Map<String, String> directives = wire.getRequirement().getDirectives();
+                                    if (directives != null && !directives.isEmpty()) {
+                                        if (StringUtils.contains(directives.get("filter"), "osgi.implementation=osgi.jpa")) {
+                                            JpaRepositoryManager.this.jpaClients.remove(bundle);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+        this.tracker.open();
+        this.jpaClients = new ArrayList<>();
+    }
+
+    @Deactivate
+    protected void stop(BundleContext bundleContext) {
+        this.tracker.close();
     }
 }

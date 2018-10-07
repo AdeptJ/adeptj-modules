@@ -20,20 +20,21 @@
 
 package com.adeptj.modules.commons.crypto.internal;
 
+import com.adeptj.modules.commons.crypto.HashingService;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
 /**
- * OSGi Configuration for {@link com.adeptj.modules.commons.crypto.CryptoService}
+ * OSGi Configuration for {@link HashingService}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
         name = "AdeptJ Crypto Configuration",
-        description = "Configuration for the CryptoService"
+        description = "Configuration for the HashingService"
 )
-public @interface CryptoConfig {
+public @interface EncryptionConfig {
 
     @AttributeDefinition(
             name = "Salt Size",
@@ -63,4 +64,14 @@ public @interface CryptoConfig {
             }
     )
     String secretKeyAlgo() default "PBKDF2WithHmacSHA256";
+
+    @AttributeDefinition(
+            name = "Charset to encode",
+            description = "Charset to encode the salt and plain text",
+            options = {
+                    @Option(label = "US ASCII", value = "US-ASCII"),
+                    @Option(label = "UTF 8", value = "UTF-8"),
+            }
+    )
+    String charsetToEncode() default "US-ASCII";
 }

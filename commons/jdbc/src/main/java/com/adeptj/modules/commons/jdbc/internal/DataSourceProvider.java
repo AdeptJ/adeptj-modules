@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.jdbc.internal;
 
+import com.adeptj.modules.commons.utils.annotation.ServicePid;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -32,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceProvider.COMPONENT_NAME;
+import static com.adeptj.modules.commons.jdbc.internal.DataSourceProvider.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -40,14 +41,14 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ServicePid(COMPONENT_NAME)
+@ServicePid(PID)
 @Designate(ocd = DataSourceConfig.class, factory = true)
-@Component(service = DataSourceProvider.class, name = COMPONENT_NAME, configurationPolicy = REQUIRE)
+@Component(service = DataSourceProvider.class, name = PID, configurationPolicy = REQUIRE)
 public class DataSourceProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.commons.jdbc.DataSource.factory";
+    static final String PID = "com.adeptj.modules.commons.jdbc.DataSource.factory";
 
     private HikariDataSource dataSource;
 

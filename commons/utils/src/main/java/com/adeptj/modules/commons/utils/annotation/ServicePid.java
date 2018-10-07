@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.internal;
+package com.adeptj.modules.commons.utils.annotation;
 
 import org.osgi.service.component.annotations.ComponentPropertyType;
 

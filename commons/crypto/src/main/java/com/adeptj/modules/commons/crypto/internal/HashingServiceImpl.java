@@ -21,7 +21,7 @@
 package com.adeptj.modules.commons.crypto.internal;
 
 import com.adeptj.modules.commons.crypto.CryptoException;
-import com.adeptj.modules.commons.crypto.CryptoService;
+import com.adeptj.modules.commons.crypto.HashingService;
 import com.adeptj.modules.commons.crypto.SaltHashPair;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,21 +36,19 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-
-import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
  * Service implementation for generating random salt and hashed text using PBKDF2WithHmacSHA* algo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = CryptoConfig.class)
+@Designate(ocd = HashingConfig.class)
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class CryptoServiceImpl implements CryptoService {
+public class HashingServiceImpl implements HashingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger((MethodHandles.lookup().lookupClass()));
 
@@ -58,14 +56,22 @@ public class CryptoServiceImpl implements CryptoService {
 
     private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
 
-    private CryptoConfig cryptoConfig;
+    private int saltSize;
+
+    private int iterationCount;
+
+    private int keyLength;
+
+    private String secretKeyAlgo;
+
+    private Charset charset;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public byte[] getSaltBytes() {
-        byte[] saltBytes = new byte[this.cryptoConfig.saltSize()];
+        byte[] saltBytes = new byte[this.saltSize];
         DEFAULT_SECURE_RANDOM.nextBytes(saltBytes);
         return saltBytes;
     }
@@ -75,7 +81,21 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String getSaltText() {
-        return this.encodeToString(this.getSaltBytes(), US_ASCII);
+        return this.encodeToString(this.getSaltBytes(), this.charset);
+    }
+
+    @Override
+    public byte[] getHashedBytes(char[] plainText, byte[] salt) {
+        Validate.isTrue(ArrayUtils.isNotEmpty(plainText), "plainText array can't be empty!!");
+        Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt array can't be empty!!");
+        try {
+            return SecretKeyFactory.getInstance(this.secretKeyAlgo)
+                    .generateSecret(new PBEKeySpec(plainText, salt, this.iterationCount, this.keyLength))
+                    .getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            LOGGER.error("Exception while generating hashed bytes!!", ex);
+            throw new CryptoException(ex);
+        }
     }
 
     /**
@@ -84,22 +104,13 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public byte[] getHashedBytes(String plainText, byte[] salt) {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), PLAINTEXT_NULL_MSG);
-        Validate.isTrue(ArrayUtils.isNotEmpty(salt), "salt array can't be empty!!");
-        try {
-            KeySpec keySpec = new PBEKeySpec(plainText.toCharArray(), salt, this.cryptoConfig.iterationCount(),
-                    this.cryptoConfig.keyLength());
-            return SecretKeyFactory.getInstance(this.cryptoConfig.secretKeyAlgo())
-                    .generateSecret(keySpec)
-                    .getEncoded();
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            LOGGER.error("Exception while generating hashed bytes!!", ex);
-            throw new CryptoException(ex);
-        }
+        return this.getHashedBytes(plainText.toCharArray(), salt);
     }
 
     @Override
     public byte[] getHashedBytes(String plainText, String salt) {
-        return this.getHashedBytes(plainText, salt.getBytes(US_ASCII));
+        Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
+        return this.getHashedBytes(plainText, salt.getBytes(this.charset));
     }
 
     /**
@@ -107,8 +118,7 @@ public class CryptoServiceImpl implements CryptoService {
      */
     @Override
     public String getHashedText(String plainText, String salt) {
-        Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
-        return this.encodeToString(this.getHashedBytes(plainText, salt.getBytes(US_ASCII)), US_ASCII);
+        return this.encodeToString(this.getHashedBytes(plainText, salt), this.charset);
     }
 
     /**
@@ -117,8 +127,8 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public SaltHashPair getSaltHashPair(String plainText) {
         byte[] saltBytes = this.getSaltBytes();
-        return new SaltHashPair(this.encodeToString(saltBytes, US_ASCII),
-                this.encodeToString(this.getHashedBytes(plainText, saltBytes), US_ASCII));
+        return new SaltHashPair(this.encodeToString(saltBytes, this.charset),
+                this.encodeToString(this.getHashedBytes(plainText, saltBytes), this.charset));
     }
 
     /**
@@ -129,10 +139,14 @@ public class CryptoServiceImpl implements CryptoService {
         return StringUtils.equals(saltHashPair.getHash(), this.getHashedText(plainText, saltHashPair.getSalt()));
     }
 
-    // ------------------------------------------ OSGi INTERNAL ------------------------------------------
+    // <------------------------------------------ OSGi INTERNAL ------------------------------------------>
 
     @Activate
-    protected void start(CryptoConfig cryptoConfig) {
-        this.cryptoConfig = cryptoConfig;
+    protected void start(HashingConfig hashingConfig) {
+        this.saltSize = hashingConfig.saltSize();
+        this.iterationCount = hashingConfig.iterationCount();
+        this.keyLength = hashingConfig.keyLength();
+        this.secretKeyAlgo = hashingConfig.secretKeyAlgo();
+        this.charset = Charset.forName(hashingConfig.charsetToEncode());
     }
 }

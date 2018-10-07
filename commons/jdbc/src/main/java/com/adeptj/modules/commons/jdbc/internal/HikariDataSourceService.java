@@ -66,6 +66,8 @@ public class HikariDataSourceService implements DataSourceService {
                 .orElseThrow(() -> new IllegalStateException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, name)));
     }
 
+    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
+
     @Reference(service = DataSourceProvider.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindDataSourceProvider(DataSourceProvider provider) {
         LOGGER.info("Adding DataSource: [{}]", provider.getDataSource().getPoolName());

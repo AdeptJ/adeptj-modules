@@ -46,7 +46,7 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
         name = "AdeptJ JDBC DataSource Configurations",
         description = "Configurations for JDBC DataSource(HikariDataSource)."
 )
-@interface DataSourceConfig {
+public @interface DataSourceConfig {
 
     long DEFAULT_CONN_TIMEOUT = 30000L;
 
