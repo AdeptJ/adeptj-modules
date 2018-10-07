@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.resteasy.DefaultExceptionHandler;
+import com.adeptj.modules.jaxrs.resteasy.ApplicationExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -47,7 +47,7 @@ final class ResteasyUtil {
 
     static void registerProviders(ResteasyProviderFactory rpf, ResteasyConfig config, ValidatorFactory vf) {
         rpf.register(new ValidatorContextResolver(vf))
-                .register(new DefaultExceptionHandler(config.sendExceptionMsg()))
+                .register(new ApplicationExceptionMapper(config.sendExceptionTrace()))
                 .register(CorsFilterBuilder.newBuilder()
                         .allowCredentials(config.allowCredentials())
                         .corsMaxAge(config.corsMaxAge())

@@ -18,30 +18,47 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.resteasy;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jboss.resteasy.spi.ApplicationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+import java.lang.invoke.MethodHandles;
+
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 /**
- * ErrorResponse to return in case of exception arise out of resource methods.
+ * An {@link ExceptionMapper} for RESTEasy's {@link ApplicationException}.
+ * <p>
+ * Sends the unhandled exception's trace coming out of resource method calls in response if sendExceptionTrace
+ * is set as true otherwise a generic error message is sent.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ErrorResponse {
+@Provider
+public class ApplicationExceptionMapper implements ExceptionMapper<ApplicationException> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String DEFAULT_ERROR_MSG = "Unexpected error, we are looking into it. Please try again later!!";
 
-    private String error;
+    private boolean sendExceptionTrace;
 
-    public ErrorResponse(Exception ex, boolean sendExceptionMsg) {
-        if (sendExceptionMsg) {
-            this.error = StringUtils.isEmpty(ex.getMessage()) ? DEFAULT_ERROR_MSG : ex.getMessage();
-        } else {
-            this.error = DEFAULT_ERROR_MSG;
-        }
+    public ApplicationExceptionMapper(boolean sendExceptionTrace) {
+        this.sendExceptionTrace = sendExceptionTrace;
     }
 
-    public String getError() {
-        return error;
+    @Override
+    public Response toResponse(ApplicationException exception) {
+        LOGGER.error(exception.getMessage(), exception);
+        return Response.serverError()
+                .type(TEXT_PLAIN)
+                .entity(this.sendExceptionTrace ? ExceptionUtils.getStackTrace(exception) : DEFAULT_ERROR_MSG)
+                .build();
     }
 }

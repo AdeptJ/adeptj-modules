@@ -123,8 +123,8 @@ public @interface ResteasyConfig {
     // Common configs
 
     @AttributeDefinition(
-            name = "DefaultExceptionHandler Send Exception Message",
-            description = "Whether to send exception message in error response from DefaultExceptionHandler."
+            name = "Send Exception Trace",
+            description = "Whether to send exception trace in response from ApplicationExceptionMapper."
     )
-    boolean sendExceptionMsg() default true;
+    boolean sendExceptionTrace() default true;
 }

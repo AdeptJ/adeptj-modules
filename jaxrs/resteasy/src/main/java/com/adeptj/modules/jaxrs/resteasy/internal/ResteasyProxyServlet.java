@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -86,10 +85,8 @@ public class ResteasyProxyServlet extends HttpServlet {
      * @throws IOException exception thrown by RESTEasy's HttpServlet30Dispatcher
      */
     @Override
-    public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
-        }
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
         try {
             this.resteasyLifecycle.getResteasyServletDispatcher().service(req, resp);
         } catch (Exception ex) { // NOSONAR
