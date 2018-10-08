@@ -65,7 +65,7 @@ public class ResteasyLifecycle {
     private ResteasyServletDispatcher resteasyServletDispatcher;
 
     /**
-     * Statically injected ValidatorService, this component will not resolve until one is provided.
+     * Statically injected ValidatorService, this component will not extract until one is provided.
      */
     @Reference
     private ValidatorService validatorService;

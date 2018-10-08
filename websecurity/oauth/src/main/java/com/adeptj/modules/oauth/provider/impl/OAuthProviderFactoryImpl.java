@@ -74,8 +74,13 @@ public class OAuthProviderFactoryImpl implements OAuthProviderFactory {
         String apiSecret = (String) properties.get("");
         String callbackURL = (String) properties.get("");
         LOGGER.info("Configs for pid: [{}]", pid);
-        this.providers.put(pid, new OAuthProvider.Builder().providerName(providerName).apiKey(apiKey)
-                .apiSecret(apiSecret).callbackURL(callbackURL).api(LinkedInApi20.instance()).build());
+        this.providers.put(pid, OAuthProvider.builder()
+                .providerName(providerName)
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+                .callbackURL(callbackURL)
+                .api(LinkedInApi20.instance())
+                .build());
         this.providerNamePidMappings.put(providerName, pid);
         LOGGER.info("Provider name to PID Map: [{}]", this.providerNamePidMappings);
     }

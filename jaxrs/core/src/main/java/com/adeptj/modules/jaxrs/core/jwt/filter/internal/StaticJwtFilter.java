@@ -38,8 +38,8 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
 
 /**
  * This filter will kick in for any resource class/method that is annotated with {@link RequiresJwt}.
- * Filter will try to resolve the Jwt first from HTTP Authorization header and if that resolves to null
- * then try to resolve from Cookies.
+ * Filter will try to extract the Jwt first from HTTP Authorization header and if that resolves to null
+ * then try to extract from Cookies.
  * <p>
  * A Cookie named as per configuration should be present in request.
  * <p>

@@ -67,6 +67,10 @@ public class OAuthProvider {
 		return api;
 	}
 
+	public static Builder builder() {
+	    return new Builder();
+    }
+
 	/**
 	 * OAuthProvider.Builder
 	 * 

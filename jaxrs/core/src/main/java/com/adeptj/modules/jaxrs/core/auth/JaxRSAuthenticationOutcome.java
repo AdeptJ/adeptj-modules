@@ -29,6 +29,8 @@ import java.util.HashMap;
  */
 public class JaxRSAuthenticationOutcome extends HashMap<String, Object> {
 
+    private static final long serialVersionUID = 7103662084651804227L;
+
     public JaxRSAuthenticationOutcome addAttribute(String name, Object value) {
         super.put(name, value);
         return this;

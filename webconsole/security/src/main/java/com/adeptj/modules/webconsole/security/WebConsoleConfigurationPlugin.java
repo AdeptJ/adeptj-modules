@@ -20,29 +20,31 @@
 
 package com.adeptj.modules.webconsole.security;
 
-import org.osgi.service.component.annotations.ComponentPropertyType;
+import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
+import com.adeptj.runtime.tools.OSGiConsolePasswordVault;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.ConfigurationPlugin;
+import org.osgi.service.component.annotations.Component;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Dictionary;
+
+import static com.adeptj.modules.webconsole.security.WebConsoleConfigurationPlugin.OSGI_MGR_PID;
 
 /**
- * {@link ComponentPropertyType} for Felix WebConsole plugin properties.
+ * This {@link ConfigurationPlugin} targets Felix OsgiManager to get the password property.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Retention(RetentionPolicy.CLASS)
-@Target(ElementType.TYPE)
-@ComponentPropertyType
-public @interface WebConsolePlugin {
+@ConfigurationPluginProperties(cm_target = OSGI_MGR_PID, service_cmRanking = 100)
+@Component()
+public class WebConsoleConfigurationPlugin implements ConfigurationPlugin {
 
-    /**
-     * Prefix for the property name. This value is prepended to each property name.
-     */
-    String PREFIX_ = "felix.webconsole."; // NOSONAR
+    private static final String CFG_PWD = "password";
 
-    String label();
+    static final String OSGI_MGR_PID = "org.apache.felix.webconsole.internal.servlet.OsgiManager";
 
-    String title();
+    @Override
+    public void modifyConfiguration(ServiceReference<?> reference, Dictionary<String, Object> properties) {
+        OSGiConsolePasswordVault.getInstance().setPassword((String) properties.get(CFG_PWD));
+    }
 }

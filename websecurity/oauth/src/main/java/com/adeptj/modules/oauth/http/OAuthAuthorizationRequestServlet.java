@@ -55,8 +55,10 @@ public class OAuthAuthorizationRequestServlet extends HttpServlet {
         LOGGER.info("OAuthProvider: [{}]", provider);
         OAuth20Service oauth2Service = this.providerFactory.getOAuth2Service(providerName);
         if (oauth2Service == null) {
-            oauth2Service = new ServiceBuilder(provider.getApiKey()).apiSecret(provider.getApiSecret())
-                    .callback(provider.getCallbackURL()).build(provider.getApi());
+            oauth2Service = new ServiceBuilder(provider.getApiKey())
+                    .apiSecret(provider.getApiSecret())
+                    .callback(provider.getCallbackURL())
+                    .build(provider.getApi());
             this.providerFactory.addOAuth2Service(providerName, oauth2Service);
         }
         String authorizationUrl = oauth2Service.getAuthorizationUrl();

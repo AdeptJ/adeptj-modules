@@ -31,9 +31,9 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
- * Utility resolves Jwt either from request headers or cookies.
+ * Utility extracts Jwt either from request headers or cookies.
  * <p>
- * Here is the resolution process.
+ * Here is the extraction process.
  * <p>
  * 1. Check if the cookie mechanism is enabled.
  * 2. If enabled then look into cookies
@@ -43,31 +43,31 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JwtResolver {
+public final class JwtExtractor {
 
     private static final int JWT_START_POS = 7;
 
     // Just static utilities, no instance needed.
-    private JwtResolver() {
+    private JwtExtractor() {
     }
 
-    public static String resolve(ContainerRequestContext requestContext) {
+    public static String extract(ContainerRequestContext requestContext) {
         String jwt = null;
-        // if JwtCookieConfig is enabled then always resolve the Jwt from cookies first.
+        // if JwtCookieConfig is enabled then always extract the Jwt from cookies first.
         if (JwtCookieConfigHolder.getInstance().isJwtCookieEnabled()) {
-            jwt = resolveFromCookies(requestContext);
+            jwt = extractFromCookies(requestContext);
         }
-        return StringUtils.isEmpty(jwt) ? resolveFromHeaders(requestContext) : jwt;
+        return StringUtils.isEmpty(jwt) ? extractFromHeaders(requestContext) : jwt;
     }
 
-    private static String resolveFromHeaders(ContainerRequestContext requestContext) {
-        return cleanseJwt(requestContext.getHeaders().getFirst(AUTHORIZATION));
-    }
-
-    private static String resolveFromCookies(ContainerRequestContext requestContext) {
+    private static String extractFromCookies(ContainerRequestContext requestContext) {
         Cookie jwtCookie = requestContext.getCookies()
                 .get(JwtCookieConfigHolder.getInstance().getJwtCookieConfig().name());
         return jwtCookie == null ? EMPTY : cleanseJwt(jwtCookie.getValue());
+    }
+
+    private static String extractFromHeaders(ContainerRequestContext requestContext) {
+        return cleanseJwt(requestContext.getHeaders().getFirst(AUTHORIZATION));
     }
 
     private static String cleanseJwt(String jwt) {

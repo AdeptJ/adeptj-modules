@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.webconsole.security;
 
+import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
 import org.apache.felix.webconsole.SimpleWebConsolePlugin;
 import org.osgi.service.component.annotations.Component;
 

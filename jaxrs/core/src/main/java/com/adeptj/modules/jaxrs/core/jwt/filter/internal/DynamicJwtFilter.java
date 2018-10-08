@@ -34,8 +34,8 @@ import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter
 
 /**
  * This filter will kick in for resource classes and methods configured by JwtDynamicFeature.
- * Filter will try to resolve the Jwt from HTTP Authorization header first and if that resolves to null
- * then try to resolve from Cookies.
+ * Filter will try to extract the Jwt from HTTP Authorization header first and if that resolves to null
+ * then try to extract from Cookies.
  * However, in case JwtCookieConfig#enabled returns true then the functionality reversed.
  * <p>
  * A Cookie named as per configuration should be present in request.

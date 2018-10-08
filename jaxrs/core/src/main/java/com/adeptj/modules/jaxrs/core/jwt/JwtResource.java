@@ -24,7 +24,6 @@ import com.adeptj.modules.jaxrs.core.JaxRSResource;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
-import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -35,12 +34,9 @@ import org.osgi.service.metatype.annotations.Designate;
 import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
@@ -55,7 +51,7 @@ import static org.osgi.service.component.annotations.ReferencePolicyOption.GREED
  * @author Rakesh.Kumar, AdeptJ
  */
 @JaxRSResource(name = "jwt")
-@Path("/auth")
+@Path("/auth/jwt")
 @Designate(ocd = JwtCookieConfig.class)
 @Component(immediate = true, service = JwtResource.class)
 public class JwtResource {
@@ -83,7 +79,7 @@ public class JwtResource {
      * @return JAX-RS Response either having a Jwt or Http error 503
      */
     @POST
-    @Path("/jwt/create")
+    @Path("/create")
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response createJwt(@NotEmpty @FormParam("username") String username,
                               @NotEmpty @FormParam("password") String password) {
@@ -94,20 +90,6 @@ public class JwtResource {
         return outcome == null
                 ? Response.status(UNAUTHORIZED).build()
                 : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
-    }
-
-    /**
-     * This resource method exists to verify the Jwt issued earlier. Should not be called by clients directly.
-     * <p>
-     * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link StaticJwtFilter}
-     *
-     * @return response 200 if {@link StaticJwtFilter} was able to verify the Jwt issued earlier.
-     */
-    @GET
-    @Path("/jwt/verify")
-    @RequiresJwt
-    public Response verifyJwt(@Context SecurityContext securityContext) {
-        return Response.ok("Verified subject: " + securityContext.getUserPrincipal().getName()).build();
     }
 
     // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
