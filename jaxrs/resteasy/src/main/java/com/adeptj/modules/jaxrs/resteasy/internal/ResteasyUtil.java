@@ -41,7 +41,7 @@ final class ResteasyUtil {
     private ResteasyUtil() {
     }
 
-    static CorsFilter newCorsFilter(ResteasyConfig config) {
+    static CorsFilter buildCorsFilter(ResteasyConfig config) {
         return CorsFilterBuilder.newBuilder()
                 .allowCredentials(config.allowCredentials())
                 .corsMaxAge(config.corsMaxAge())

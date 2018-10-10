@@ -90,7 +90,7 @@ public class ResteasyLifecycle {
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
                         .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new ApplicationExceptionMapper(this.config.sendExceptionTrace()))
-                        .register(ResteasyUtil.newCorsFilter(this.config));
+                        .register(ResteasyUtil.buildCorsFilter(this.config));
                 this.serviceTrackers.add(new ProviderTracker(this.bundleContext, providerFactory));
                 this.serviceTrackers.add(new ResourceTracker(this.bundleContext, dispatcher.getRegistry()));
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
