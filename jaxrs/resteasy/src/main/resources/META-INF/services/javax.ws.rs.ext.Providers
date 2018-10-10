@@ -1,4 +1,1 @@
-org.jboss.resteasy.plugins.interceptors.encoding.AcceptEncodingGZIPFilter
-org.jboss.resteasy.plugins.interceptors.encoding.GZIPDecodingInterceptor
-org.jboss.resteasy.plugins.interceptors.encoding.GZIPEncodingInterceptor
-org.jboss.resteasy.plugins.interceptors.RoleBasedSecurityFeature
+com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider

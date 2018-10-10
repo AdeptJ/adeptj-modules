@@ -52,7 +52,7 @@ import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 @HttpWhiteboardServletName(RESTEASY_PROXY_SERVLET_NAME)
 @HttpWhiteboardServletPattern(RESTEASY_DISPATCHER_SERVLET_PATH)
 @HttpWhiteboardServletAsyncSupported
-@ResteasyServletMappingPrefix(RESTEASY_DISPATCHER_SERVLET_PATH)
+@ResteasyServletInitParameters
 @Component(service = Servlet.class, scope = PROTOTYPE)
 public class ResteasyProxyServlet extends HttpServlet {
 

@@ -35,4 +35,6 @@ final class ResteasyConstants {
     static final String RESTEASY_DISPATCHER_SERVLET_PATH = "/";
 
     static final String SERVICE_TRACKER_FORMAT = "(%s=%s)";
+
+    static final String VALUE_TRUE = "true";
 }
