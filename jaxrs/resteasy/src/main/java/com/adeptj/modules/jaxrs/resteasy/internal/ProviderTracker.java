@@ -81,7 +81,7 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
         LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
-        this.removeProvider(this.providerFactory, service);
+        this.removeProvider(service);
         LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
         this.providerFactory.register(service);
     }
@@ -96,11 +96,11 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     public void removedService(ServiceReference<Object> reference, Object service) {
         super.removedService(reference, service);
         LOGGER.info("Removing JAX-RS Provider: [{}]", service);
-        this.removeProvider(this.providerFactory, service);
+        this.removeProvider(service);
     }
 
-    private void removeProvider(ResteasyProviderFactory providerFactory, Object provider) {
-        if (providerFactory.getProviderInstances().remove(provider)) {
+    private void removeProvider(Object provider) {
+        if (this.providerFactory.getProviderInstances().remove(provider)) {
             LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
         } else {
             LOGGER.warn("Could not remove JAX-RS Provider: [{}]", provider);
