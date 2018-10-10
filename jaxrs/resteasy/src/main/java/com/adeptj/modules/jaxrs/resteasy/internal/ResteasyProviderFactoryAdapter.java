@@ -17,44 +17,34 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import javax.validation.ValidatorFactory;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-import java.util.EnumSet;
-
-import static javax.validation.executable.ExecutableType.CONSTRUCTORS;
-import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
+import java.util.Set;
 
 /**
- * JAX-RS default ContextResolver for RESTEasy's {@link GeneralValidator}.
+ * The {@link ResteasyProviderFactory} adapter provides the accessibility to {@link #providerClasses}
+ * and {@link #providerInstances} which are used in adding and removing the provider instances through
+ * OSGi {@link org.osgi.util.tracker.ServiceTracker} mechanism.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Provider
-public class ValidatorContextResolver implements ContextResolver<GeneralValidator> {
+public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
 
-    private volatile GeneralValidator validator;
-
-    private ValidatorFactory validatorFactory;
-
-    ValidatorContextResolver(ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
+    // syntactic sugar?
+    static ResteasyProviderFactoryAdapter of(ResteasyProviderFactory providerFactory) {
+        return (ResteasyProviderFactoryAdapter) providerFactory;
     }
 
     @Override
-    public GeneralValidator getContext(Class<?> type) {
-        /*
-         *  Not doing the type check of passed Class object as RESTEasy passes null while processing resource methods
-         *  at bootstrap time.
-         */
-        if (this.validator == null) {
-            this.validator = new GeneralValidatorImpl(this.validatorFactory, true, EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS));
-        }
-        return this.validator;
+    public Set<Class<?>> getProviderClasses() {
+        return this.providerClasses;
+    }
+
+    @Override
+    public Set<Object> getProviderInstances() {
+        return this.providerInstances;
     }
 }

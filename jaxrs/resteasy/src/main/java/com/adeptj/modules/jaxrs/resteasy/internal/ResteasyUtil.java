@@ -20,16 +20,12 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.resteasy.ApplicationExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
-import org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI;
+import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
-import org.jboss.resteasy.spi.validation.GeneralValidatorCDI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.ValidatorFactory;
 import javax.ws.rs.Path;
 import java.lang.invoke.MethodHandles;
 
@@ -45,32 +41,18 @@ final class ResteasyUtil {
     private ResteasyUtil() {
     }
 
-    static void registerProviders(ResteasyProviderFactory rpf, ResteasyConfig config, ValidatorFactory vf) {
-        rpf.register(new ValidatorContextResolver(vf))
-                .register(new ApplicationExceptionMapper(config.sendExceptionTrace()))
-                .register(CorsFilterBuilder.newBuilder()
-                        .allowCredentials(config.allowCredentials())
-                        .corsMaxAge(config.corsMaxAge())
-                        .exposedHeaders(config.exposedHeaders())
-                        .allowedMethods(config.allowedMethods())
-                        .allowedHeaders(config.allowedHeaders())
-                        .allowedOrigins(config.allowedOrigins())
-                        .build());
+    static CorsFilter newCorsFilter(ResteasyConfig config) {
+        return CorsFilterBuilder.newBuilder()
+                .allowCredentials(config.allowCredentials())
+                .corsMaxAge(config.corsMaxAge())
+                .exposedHeaders(config.exposedHeaders())
+                .allowedMethods(config.allowedMethods())
+                .allowedHeaders(config.allowedHeaders())
+                .allowedOrigins(config.allowedOrigins())
+                .build();
     }
 
-    static void removeDefaultValidators(ResteasyProviderFactoryDecorator providerFactory) {
-        LOGGER.info("ContextResolver(s) prior to removal: [{}]", providerFactory.getContextResolvers().size());
-        providerFactory.removeContextResolvers(GeneralValidator.class, GeneralValidatorCDI.class);
-        LOGGER.info("ContextResolver(s) after removal: [{}]", providerFactory.getContextResolvers().size());
-    }
-
-    static void removeProviderClasses(ResteasyProviderFactoryDecorator providerFactory) {
-        LOGGER.info("ProviderClasses prior to removal: [{}]", providerFactory.getProviderClasses().size());
-        providerFactory.removeProviderClasses(ValidatorContextResolver.class, ValidatorContextResolverCDI.class);
-        LOGGER.info("ProviderClasses after removal: [{}]", providerFactory.getProviderClasses().size());
-    }
-
-    static void removeJaxRSProvider(ResteasyProviderFactoryDecorator providerFactory, Object provider) {
+    static void removeProvider(ResteasyProviderFactory providerFactory, Object provider) {
         if (providerFactory.getProviderInstances().remove(provider)) {
             LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
         } else {

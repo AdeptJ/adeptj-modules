@@ -45,9 +45,9 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
 
     private static final String PROVIDER_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME, ASTERISK);
 
-    private ResteasyProviderFactoryDecorator providerFactory;
+    private ResteasyProviderFactory providerFactory;
 
-    ProviderTracker(BundleContext context, ResteasyProviderFactoryDecorator providerFactory) {
+    ProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
         super(context, OSGiUtil.anyServiceFilter(context, PROVIDER_FILTER_EXPR), null);
         this.providerFactory = providerFactory;
         this.open();
@@ -81,7 +81,7 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
         LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
-        ResteasyUtil.removeJaxRSProvider(this.providerFactory, service);
+        ResteasyUtil.removeProvider(this.providerFactory, service);
         LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
         this.providerFactory.register(service);
     }
@@ -96,6 +96,6 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     public void removedService(ServiceReference<Object> reference, Object service) {
         super.removedService(reference, service);
         LOGGER.info("Removing JAX-RS Provider: [{}]", service);
-        ResteasyUtil.removeJaxRSProvider(this.providerFactory, service);
+        ResteasyUtil.removeProvider(this.providerFactory, service);
     }
 }

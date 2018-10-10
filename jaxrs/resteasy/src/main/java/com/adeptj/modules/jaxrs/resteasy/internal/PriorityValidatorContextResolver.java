@@ -17,48 +17,47 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import org.jboss.resteasy.core.MediaTypeMap;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
+import org.jboss.resteasy.spi.validation.GeneralValidator;
 
+import javax.annotation.Priority;
+import javax.validation.ValidatorFactory;
 import javax.ws.rs.ext.ContextResolver;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
+import javax.ws.rs.ext.Provider;
+import java.util.EnumSet;
+
+import static com.adeptj.modules.jaxrs.resteasy.internal.PriorityValidatorContextResolver.PRIORITY;
+import static javax.validation.executable.ExecutableType.CONSTRUCTORS;
+import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
 
 /**
- * This class extends {@link ResteasyProviderFactory} and acts as a decorator.
+ * Priority based ContextResolver for RESTEasy's {@link GeneralValidator}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResteasyProviderFactoryDecorator extends ResteasyProviderFactory {
+@Priority(PRIORITY)
+@Provider
+public class PriorityValidatorContextResolver implements ContextResolver<GeneralValidator> {
 
-    static ResteasyProviderFactoryDecorator of(ResteasyProviderFactory providerFactory) {
-        return (ResteasyProviderFactoryDecorator) providerFactory;
-    }
+    static final int PRIORITY = 4500;
 
-    void removeContextResolvers(Class<?>... contextResolvers) {
-        Stream.of(contextResolvers).forEach(this.getContextResolvers()::remove);
-    }
+    private GeneralValidator validator;
 
-    void removeProviderClasses(Class<?>... providerClasses) {
-        Stream.of(providerClasses).forEach(this.getProviderClasses()::remove);
-    }
+    private ValidatorFactory validatorFactory;
 
-    @Override
-    public Map<Class<?>, MediaTypeMap<SortedKey<ContextResolver>>> getContextResolvers() {
-        return super.getContextResolvers();
+    PriorityValidatorContextResolver(ValidatorFactory validatorFactory) {
+        this.validatorFactory = validatorFactory;
     }
 
     @Override
-    public Set<Class<?>> getProviderClasses() {
-        return this.providerClasses;
-    }
-
-    @Override
-    public Set<Object> getProviderInstances() {
-        return this.providerInstances;
+    public GeneralValidator getContext(Class<?> type) {
+        // Not doing the type check of passed Class object as RESTEasy passes null while processing resource methods
+        // at bootstrap time.
+        if (this.validator == null) {
+            this.validator = new GeneralValidatorImpl(this.validatorFactory, true, EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS));
+        }
+        return this.validator;
     }
 }

@@ -23,9 +23,11 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
+import com.adeptj.modules.jaxrs.resteasy.ApplicationExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -85,11 +87,11 @@ public class ResteasyLifecycle {
                 this.resteasyServletDispatcher = new ResteasyServletDispatcher();
                 this.resteasyServletDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
-                ResteasyProviderFactoryDecorator rpf = ResteasyProviderFactoryDecorator.of(dispatcher.getProviderFactory());
-                ResteasyUtil.removeDefaultValidators(rpf);
-                ResteasyUtil.removeProviderClasses(rpf);
-                ResteasyUtil.registerProviders(rpf, this.config, this.validatorService.getValidatorFactory());
-                this.serviceTrackers.add(new ProviderTracker(this.bundleContext, rpf));
+                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
+                        .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()))
+                        .register(new ApplicationExceptionMapper(this.config.sendExceptionTrace()))
+                        .register(ResteasyUtil.newCorsFilter(this.config));
+                this.serviceTrackers.add(new ProviderTracker(this.bundleContext, providerFactory));
                 this.serviceTrackers.add(new ResourceTracker(this.bundleContext, dispatcher.getRegistry()));
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
