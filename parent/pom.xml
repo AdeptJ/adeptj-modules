@@ -51,7 +51,7 @@
         <!-- AdeptJ Modules dependencies -->
         <adeptj-modules-commons-utils.version>1.1.0.Final</adeptj-modules-commons-utils.version>
         <adeptj-modules-commons-crypto.version>1.0.0.Final</adeptj-modules-commons-crypto.version>
-        <adeptj-modules-commons-validator.version>1.0.2.Final</adeptj-modules-commons-validator.version>
+        <adeptj-modules-commons-validator.version>1.0.3.Final</adeptj-modules-commons-validator.version>
     </properties>
 
     <!-- Project Information -->

@@ -42,8 +42,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
+import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * ResteasyLifecycle: Bootstraps RESTEasy Framework, open/close ServiceTracker for JAX-RS providers and resources
@@ -64,12 +66,12 @@ public class ResteasyLifecycle {
 
     private BundleContext bundleContext;
 
-    private ResteasyServletDispatcher resteasyServletDispatcher;
+    private ResteasyServletDispatcher resteasyDispatcher;
 
     /**
-     * Statically injected ValidatorService, this component will not extract until one is provided.
+     * Statically injected ValidatorService, this component will not become active until one is provided.
      */
-    @Reference
+    @Reference(policyOption = GREEDY)
     private ValidatorService validatorService;
 
     /**
@@ -81,12 +83,14 @@ public class ResteasyLifecycle {
      */
     void start(ServletConfig servletConfig) {
         Functions.execute(this.getClass().getClassLoader(), () -> {
+            AtomicBoolean resteasyDispatcherInitialized = new AtomicBoolean();
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyServletDispatcher = new ResteasyServletDispatcher();
-                this.resteasyServletDispatcher.init(servletConfig);
-                Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
+                this.resteasyDispatcher = new ResteasyServletDispatcher();
+                this.resteasyDispatcher.init(servletConfig);
+                resteasyDispatcherInitialized.set(true);
+                Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
                         .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new ApplicationExceptionMapper(this.config.sendExceptionTrace()))
@@ -96,6 +100,13 @@ public class ResteasyLifecycle {
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
+                // Rationale: do proper cleanup by calling destroy if init was called on ResteasyServletDispatcher.
+                // otherwise we get a java.lang.ClassCastException when ListenerBootstrap tries to get
+                // the ResteasyDeployment from ServletContext because the ServletContext still holds the
+                // old reference to ResteasyDeployment which causes a CCE.
+                if (resteasyDispatcherInitialized.get()) {
+                    this.resteasyDispatcher.destroy();
+                }
                 throw new ResteasyBootstrapException(ex.getMessage(), ex);
             }
         });
@@ -119,7 +130,7 @@ public class ResteasyLifecycle {
                         LOGGER.error("Exception while closing ServiceTracker instances!!", ex);
                     }
                 });
-        this.resteasyServletDispatcher.destroy();
+        this.resteasyDispatcher.destroy();
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 
@@ -128,8 +139,8 @@ public class ResteasyLifecycle {
      *
      * @return {@link ResteasyServletDispatcher}
      */
-    ResteasyServletDispatcher getResteasyServletDispatcher() {
-        return resteasyServletDispatcher;
+    ResteasyServletDispatcher getResteasyDispatcher() {
+        return resteasyDispatcher;
     }
 
     // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------

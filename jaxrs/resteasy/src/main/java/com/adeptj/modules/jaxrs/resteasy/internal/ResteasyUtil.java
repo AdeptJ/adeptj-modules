@@ -22,7 +22,9 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 
+import javax.servlet.ServletConfig;
 import javax.ws.rs.Path;
 
 /**
@@ -33,6 +35,10 @@ import javax.ws.rs.Path;
 final class ResteasyUtil {
 
     private ResteasyUtil() {
+    }
+
+    static void removeResteasyDeployment(ServletConfig config) {
+        config.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
     }
 
     static CorsFilter buildCorsFilter(ResteasyConfig config) {

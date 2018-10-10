@@ -183,6 +183,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-validator</artifactId>
+            <version>1.0.3.Final</version>
             <scope>provided</scope>
         </dependency>
 
@@ -503,6 +504,12 @@
                     <artifactId>jboss-servlet-api_3.1_spec</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-tracing-api</artifactId>
+            <version>1.0.0.Beta1</version>
         </dependency>
 
     </dependencies>

@@ -88,7 +88,7 @@ public class ResteasyProxyServlet extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
         try {
-            this.resteasyLifecycle.getResteasyServletDispatcher().service(req, resp);
+            this.resteasyLifecycle.getResteasyDispatcher().service(req, resp);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
