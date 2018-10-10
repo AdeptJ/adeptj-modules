@@ -25,23 +25,12 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import java.util.Set;
 
 /**
- * The {@link ResteasyProviderFactory} adapter provides the accessibility to {@link #providerClasses}
- * and {@link #providerInstances} which are used in adding and removing the provider instances through
- * OSGi {@link org.osgi.util.tracker.ServiceTracker} mechanism.
+ * The {@link ResteasyProviderFactory} adapter provides the access to {@link #providerInstances} which is used in adding
+ * and removing the provider instances through OSGi {@link org.osgi.util.tracker.ServiceTracker} mechanism.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
-
-    // syntactic sugar?
-    static ResteasyProviderFactoryAdapter of(ResteasyProviderFactory providerFactory) {
-        return (ResteasyProviderFactoryAdapter) providerFactory;
-    }
-
-    @Override
-    public Set<Class<?>> getProviderClasses() {
-        return this.providerClasses;
-    }
 
     @Override
     public Set<Object> getProviderInstances() {
