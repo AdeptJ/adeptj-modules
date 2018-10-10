@@ -22,12 +22,8 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Path;
-import java.lang.invoke.MethodHandles;
 
 /**
  * Utilities for RESTEasy bootstrap process.
@@ -35,8 +31,6 @@ import java.lang.invoke.MethodHandles;
  * @author Rakesh.Kumar, AdeptJ
  */
 final class ResteasyUtil {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private ResteasyUtil() {
     }
@@ -50,14 +44,6 @@ final class ResteasyUtil {
                 .allowedHeaders(config.allowedHeaders())
                 .allowedOrigins(config.allowedOrigins())
                 .build();
-    }
-
-    static void removeProvider(ResteasyProviderFactory providerFactory, Object provider) {
-        if (providerFactory.getProviderInstances().remove(provider)) {
-            LOGGER.info("Removed JAX-RS Provider: [{}]", provider);
-        } else {
-            LOGGER.warn("Could not remove JAX-RS Provider: [{}]", provider);
-        }
     }
 
     static boolean isNotAnnotatedWithPath(Object resource) {
