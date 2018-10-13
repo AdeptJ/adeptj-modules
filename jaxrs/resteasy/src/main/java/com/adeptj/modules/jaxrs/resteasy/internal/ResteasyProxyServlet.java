@@ -20,21 +20,19 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DISPATCHER_SERVLET_PATH;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_PROXY_SERVLET_NAME;
@@ -42,25 +40,21 @@ import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 
 
 /**
- * ResteasyProxyServlet delegates request processing to RESTEasy's HttpServlet30Dispatcher.
+ * ResteasyProxyServlet delegates request processing to {@link ResteasyServletDispatcher}.
  * <p>
  * RESTEasy's bootstrapping is delegated to {@link ResteasyLifecycle} which also registers the ServiceTracker for
  * JAX-RS resources and providers.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ResteasyServletInitParameters
+@HttpWhiteboardServletAsyncSupported
 @HttpWhiteboardServletName(RESTEASY_PROXY_SERVLET_NAME)
 @HttpWhiteboardServletPattern(RESTEASY_DISPATCHER_SERVLET_PATH)
-@HttpWhiteboardServletAsyncSupported
-@ResteasyServletInitParameters
 @Component(service = Servlet.class, scope = PROTOTYPE)
 public class ResteasyProxyServlet extends HttpServlet {
 
     private static final long serialVersionUID = -4415966373465265279L;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
 
     /**
      * Service is statically injected so that this servlet doesn't get initialized until the reference
@@ -70,29 +64,28 @@ public class ResteasyProxyServlet extends HttpServlet {
     private ResteasyLifecycle resteasyLifecycle; // NOSONAR
 
     /**
-     * Delegates the RESTEasy's bootstrap process in {@link ResteasyLifecycle#start(ServletConfig)}
+     * Delegates the RESTEasy's bootstrap process in {@link ResteasyLifecycle#start}
      */
     @Override
     public void init() {
-        this.resteasyLifecycle.start(this.getServletConfig());
+        try {
+            this.resteasyLifecycle.start(this.getServletConfig());
+        } catch (ResteasyBootstrapException ex) {
+            this.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
+            throw ex;
+        }
     }
 
     /**
-     * Dispatches the request to RESTEasy's HttpServlet30Dispatcher.
+     * Dispatches the request to {@link ResteasyServletDispatcher}.
      *
      * @param req  current request to a resource method
      * @param resp required to set status code, content etc.
-     * @throws IOException exception thrown by RESTEasy's HttpServlet30Dispatcher
+     * @throws IOException exception thrown by {@link ResteasyServletDispatcher}
      */
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
-        try {
-            this.resteasyLifecycle.getResteasyDispatcher().service(req, resp);
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-            throw ex;
-        }
+        this.resteasyLifecycle.getResteasyDispatcher().service(req, resp);
     }
 
     /**
@@ -101,5 +94,6 @@ public class ResteasyProxyServlet extends HttpServlet {
     @Override
     public void destroy() {
         this.resteasyLifecycle.stop();
+        this.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
     }
 }

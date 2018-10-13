@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
+import com.adeptj.modules.commons.utils.annotation.ServicePid;
 import com.adeptj.modules.data.jpa.api.JpaRepository;
 import org.apache.commons.lang3.tuple.Pair;
 import org.osgi.framework.ServiceRegistration;
@@ -31,9 +32,7 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import javax.persistence.EntityManagerFactory;
 
-import static com.adeptj.modules.commons.utils.Constants.EQ;
-import static com.adeptj.modules.data.jpa.internal.JpaRepositoryFactory.COMPONENT_NAME;
-import static org.osgi.framework.Constants.SERVICE_PID;
+import static com.adeptj.modules.data.jpa.internal.JpaRepositoryFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -41,16 +40,12 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ServicePid(PID)
 @Designate(ocd = EntityManagerFactoryConfig.class, factory = true)
-@Component(
-        immediate = true,
-        name = COMPONENT_NAME,
-        property = SERVICE_PID + EQ + COMPONENT_NAME,
-        configurationPolicy = REQUIRE
-)
+@Component(immediate = true, name = PID, configurationPolicy = REQUIRE)
 public class JpaRepositoryFactory {
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.data.jpa.JpaRepository.factory";
+    static final String PID = "com.adeptj.modules.data.jpa.JpaRepository.factory";
 
     private Pair<EntityManagerFactory, ServiceRegistration<JpaRepository>> pair;
 

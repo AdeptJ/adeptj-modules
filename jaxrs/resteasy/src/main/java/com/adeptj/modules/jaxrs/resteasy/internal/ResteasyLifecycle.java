@@ -21,13 +21,13 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.Functions;
+import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.ApplicationExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.core.Dispatcher;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,10 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
@@ -60,7 +56,7 @@ public class ResteasyLifecycle {
 
     private static final String JAXRS_RT_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
-    private List<ServiceTracker<Object, Object>> serviceTrackers;
+    private ServiceTracker<Object, Object> compositeTracker;
 
     private ResteasyConfig config;
 
@@ -75,7 +71,7 @@ public class ResteasyLifecycle {
     private ValidatorService validatorService;
 
     /**
-     * Bootstraps the RESTEasy Framework using Bundle's ClassLoader as the context ClassLoader because
+     * Bootstraps the RESTEasy Framework using this Bundle's ClassLoader as the context ClassLoader because
      * we need to find the providers specified in the file [META-INF/services/javax.ws.rs.Providers] file
      * which will not be visible to the original context ClassLoader which is the application ClassLoader itself.
      *
@@ -83,30 +79,21 @@ public class ResteasyLifecycle {
      */
     void start(ServletConfig servletConfig) {
         Functions.execute(this.getClass().getClassLoader(), () -> {
-            AtomicBoolean resteasyDispatcherInitialized = new AtomicBoolean();
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
                 this.resteasyDispatcher = new ResteasyServletDispatcher();
                 this.resteasyDispatcher.init(servletConfig);
-                resteasyDispatcherInitialized.set(true);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
-                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
+                dispatcher.getProviderFactory()
                         .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new ApplicationExceptionMapper(this.config.sendExceptionTrace()))
-                        .register(ResteasyUtil.buildCorsFilter(this.config));
-                this.serviceTrackers.add(new ProviderTracker(this.bundleContext, providerFactory));
-                this.serviceTrackers.add(new ResourceTracker(this.bundleContext, dispatcher.getRegistry()));
+                        .registerProviderInstance(ResteasyUtil.buildCorsFilter(this.config));
+                this.compositeTracker = new CompositeTracker(this.bundleContext, dispatcher);
+                this.compositeTracker.open();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
-                // Rationale: do proper cleanup by calling destroy if init was called on ResteasyServletDispatcher.
-                // otherwise we get a java.lang.ClassCastException when ListenerBootstrap tries to get
-                // the ResteasyDeployment from ServletContext because the ServletContext still holds the
-                // old reference to ResteasyDeployment which causes a CCE.
-                if (resteasyDispatcherInitialized.get()) {
-                    this.resteasyDispatcher.destroy();
-                }
                 throw new ResteasyBootstrapException(ex.getMessage(), ex);
             }
         });
@@ -116,20 +103,11 @@ public class ResteasyLifecycle {
      * The ResteasyLifecycle will first close the {@link org.osgi.util.tracker.ServiceTracker} instances so that
      * the OSGi service instances can be released.
      * <p>
-     * Finally call HttpServlet30Dispatcher#destroy so that RESTEasy can be shutdown gracefully.
+     * Finally call {@link ResteasyServletDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
      */
     void stop() {
-        this.serviceTrackers
-                .stream()
-                .filter(Objects::nonNull)
-                .forEach(serviceTracker -> {
-                    // Don't want the ServiceTracker#close call to prevent RESTEasy to do proper cleanup.
-                    try {
-                        serviceTracker.close();
-                    } catch (Exception ex) { // NOSONAR
-                        LOGGER.error("Exception while closing ServiceTracker instances!!", ex);
-                    }
-                });
+        // Don't want the ServiceTracker#close call to prevent RESTEasy to do proper cleanup.
+        OSGiUtil.closeQuietly(this.compositeTracker);
         this.resteasyDispatcher.destroy();
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
@@ -143,12 +121,11 @@ public class ResteasyLifecycle {
         return resteasyDispatcher;
     }
 
-    // ------------------------------------------------- OSGi INTERNAL -------------------------------------------------
+    // <------------------------------------------------ OSGi INTERNAL ------------------------------------------------>
 
     @Activate
     protected void start(BundleContext bundleContext, ResteasyConfig config) {
         this.bundleContext = bundleContext;
         this.config = config;
-        this.serviceTrackers = new ArrayList<>();
     }
 }

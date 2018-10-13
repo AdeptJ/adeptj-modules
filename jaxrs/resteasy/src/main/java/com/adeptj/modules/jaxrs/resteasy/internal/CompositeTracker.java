@@ -20,6 +20,9 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.OSGiUtil;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -29,8 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.commons.utils.Constants.ASTERISK;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_PROVIDER_NAME;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_RESOURCE_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVICE_TRACKER_FORMAT;
 
 /**
@@ -39,18 +42,20 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVI
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ProviderTracker extends ServiceTracker<Object, Object> {
+public class CompositeTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String PROVIDER_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME, ASTERISK);
+    private static final String FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME, PROPERTY_RESOURCE_NAME);
 
     private final ResteasyProviderFactory providerFactory;
 
-    ProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
-        super(context, OSGiUtil.anyServiceFilter(context, PROVIDER_FILTER_EXPR), null);
-        this.providerFactory = providerFactory;
-        this.open();
+    private final Registry registry;
+
+    CompositeTracker(BundleContext context, Dispatcher dispatcher) {
+        super(context, OSGiUtil.anyServiceFilter(context, FILTER_EXPR), null);
+        this.providerFactory = dispatcher.getProviderFactory();
+        this.registry = dispatcher.getRegistry();
     }
 
     /**
@@ -61,15 +66,23 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
      */
     @Override
     public Object addingService(ServiceReference<Object> reference) {
-        Object provider = super.addingService(reference);
+        Object service = super.addingService(reference);
         // Quickly return null so that ServiceTracker will not track the instance.
-        if (provider == null) {
-            LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
+        if (service == null) {
+            LOGGER.warn("OSGi service is null for ServiceReference: {}", reference);
             return null;
         }
-        LOGGER.info("Adding JAX-RS Provider: [{}]", provider);
-        this.providerFactory.registerProviderInstance(provider);
-        return provider;
+        if (ArrayUtils.contains(reference.getPropertyKeys(), PROPERTY_PROVIDER_NAME)) {
+            LOGGER.info("Adding JAX-RS Provider: [{}]", service);
+            this.providerFactory.registerProviderInstance(service);
+            return service;
+        }
+        if (ResteasyUtil.isPathAnnotationPresent(service)) {
+            LOGGER.info("Adding JAX-RS Resource: [{}]", service);
+            this.registry.addSingletonResource(service);
+            return service;
+        }
+        return null;
     }
 
     /**
@@ -80,12 +93,19 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
      */
     @Override
     public void modifiedService(ServiceReference<Object> reference, Object service) {
-        LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
-        if (this.providerFactory.getProviderInstances().remove(service)) {
-            LOGGER.info("Removed JAX-RS Provider: [{}]", service);
+        if (ArrayUtils.contains(reference.getPropertyKeys(), PROPERTY_PROVIDER_NAME)) {
+            LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
+            if (this.providerFactory.getProviderInstances().remove(service)) {
+                LOGGER.info("Removed JAX-RS Provider: [{}]", service);
+            }
+            LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
+            this.providerFactory.registerProviderInstance(service);
+        } else {
+            LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
+            this.registry.removeRegistrations(service.getClass());
+            LOGGER.info("Adding JAX-RS Resource [{}] again!!", service);
+            this.registry.addSingletonResource(service);
         }
-        LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
-        this.providerFactory.registerProviderInstance(service);
     }
 
     /**
@@ -97,9 +117,14 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     @Override
     public void removedService(ServiceReference<Object> reference, Object service) {
         super.removedService(reference, service);
-        LOGGER.info("Removing JAX-RS Provider: [{}]", service);
-        if (this.providerFactory.getProviderInstances().remove(service)) {
-            LOGGER.info("Removed JAX-RS Provider: [{}]", service);
+        if (ArrayUtils.contains(reference.getPropertyKeys(), PROPERTY_PROVIDER_NAME)) {
+            LOGGER.info("Removing JAX-RS Provider: [{}]", service);
+            if (this.providerFactory.getProviderInstances().remove(service)) {
+                LOGGER.info("Removed JAX-RS Provider: [{}]", service);
+            }
+        } else {
+            LOGGER.info("Removing JAX-RS Resource: [{}]", service);
+            this.registry.removeRegistrations(service.getClass());
         }
     }
 }

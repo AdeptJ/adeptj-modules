@@ -36,12 +36,12 @@ import java.lang.invoke.MethodHandles;
 /**
  * This class extends RESTEasy's {@link HttpServlet30Dispatcher} and does following.
  * <p>
- * 1. In {@link ResteasyServletDispatcher#init(ServletConfig)} create {@link ResteasyDeployment} and start it.
+ * 1. In {@link ResteasyServletDispatcher#init} create {@link ResteasyDeployment} and start it.
  * 2. Set the {@link ResteasyDeployment} as a servlet context attribute to be used by further bootstrapping process.
- * 3. Call {@link HttpServlet30Dispatcher#init(ServletConfig)} to do further bootstrapping.
- * 4. Once RESTEasy's {@link HttpServlet30Dispatcher} fully initialized, {@link #service(HttpServletRequest, HttpServletResponse)}
- * method becomes ready for request processing.
- * 5. {@link #destroy()} method stops the {@link ResteasyDeployment} and removes the corresponding servlet context attribute.
+ * 3. Call {@link HttpServlet30Dispatcher#init} to do further bootstrapping.
+ * 4. Once RESTEasy's {@link HttpServlet30Dispatcher} fully initialized, {@link #service} method becomes ready for
+ * request processing.
+ * 5. {@link #destroy()} method stops the {@link ResteasyDeployment}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -50,6 +50,8 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     private static final long serialVersionUID = 983150981041495057L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -63,13 +65,25 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        super.service(req.getMethod(), req, resp);
+        LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
+        try {
+            super.service(req.getMethod(), req, resp);
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
     @Override
     public void destroy() {
-        super.destroy();
-        ResteasyUtil.removeResteasyDeployment(this.getServletConfig());
-        LOGGER.info("Removed [org.jboss.resteasy.spi.ResteasyDeployment] form ServletContext attributes!!");
+        if (this.servletContainerDispatcher == null) {
+            LOGGER.warn("ServletContainerDispatcher was not initialized!!");
+        } else {
+            try {
+                super.destroy();
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error(ex.getMessage(), ex);
+            }
+        }
     }
 }

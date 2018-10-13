@@ -79,7 +79,6 @@ public class JwtResource {
      * @return JAX-RS Response either having a Jwt or Http error 503
      */
     @POST
-    @Path("/create")
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response createJwt(@NotEmpty @FormParam("username") String username,
                               @NotEmpty @FormParam("password") String password) {
@@ -87,7 +86,7 @@ public class JwtResource {
             return Response.status(SERVICE_UNAVAILABLE).build();
         }
         JaxRSAuthenticationOutcome outcome = this.authenticator.handleSecurity(SimpleCredentials.of(username, password));
-        return outcome == null
+        return outcome == null || outcome.isEmpty()
                 ? Response.status(UNAUTHORIZED).build()
                 : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
     }

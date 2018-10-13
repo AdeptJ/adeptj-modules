@@ -29,6 +29,8 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import java.util.Optional;
 
+import static com.adeptj.modules.commons.utils.Constants.ASTERISK;
+import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static org.osgi.framework.Constants.FRAGMENT_HOST;
 import static org.osgi.framework.Constants.OBJECTCLASS;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -43,10 +45,6 @@ public final class OSGiUtil {
     private static final String FILTER_AND = "(&(";
 
     private static final String FILTER_OR = "(|(";
-
-    private static final String EQ = "=";
-
-    private static final String ASTERISK = "*";
 
     private static final String PARENTHESIS_CLOSE = ")";
 
@@ -107,15 +105,19 @@ public final class OSGiUtil {
         }
     }
 
-    public <S, T> void close(ServiceTracker<S, T> tracker) {
-        tracker.close();
+    public static <S, T> void close(ServiceTracker<S, T> tracker) {
+        if (tracker != null) {
+            tracker.close();
+        }
     }
 
-    public <S, T> void closeQuietly(ServiceTracker<S, T> tracker) {
-        try {
-            tracker.close();
-        } catch (Exception ex) { // NOSONAR
-            // Ignore, anyway Framework is managing it as the Tracked service is being removed from service registry.
+    public static <S, T> void closeQuietly(ServiceTracker<S, T> tracker) {
+        if (tracker != null) {
+            try {
+                tracker.close();
+            } catch (Exception ex) { // NOSONAR
+                // Ignore, anyway Framework is managing it as the Tracked service is being removed from service registry.
+            }
         }
     }
 

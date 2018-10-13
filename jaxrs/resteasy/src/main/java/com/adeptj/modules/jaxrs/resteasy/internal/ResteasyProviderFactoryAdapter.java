@@ -32,6 +32,11 @@ import java.util.Set;
  */
 public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
 
+    /**
+     * See class header for description.
+     *
+     * @return the provider instances.
+     */
     @Override
     public Set<Object> getProviderInstances() {
         return this.providerInstances;

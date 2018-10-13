@@ -44,9 +44,9 @@ public @interface ResteasyServletInitParameters {
     /**
      * Prefix for the property name. This value is prepended to each property name.
      */
-    String PREFIX_ = HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX; // NOSONAR
+    String PREFIX_ = HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX + "resteasy."; // NOSONAR
 
-    String resteasy_servlet_mapping_prefix() default RESTEASY_DISPATCHER_SERVLET_PATH; // NOSONAR
+    String servlet_mapping_prefix() default RESTEASY_DISPATCHER_SERVLET_PATH; // NOSONAR
 
-    String resteasy_role_based_security() default VALUE_TRUE; // NOSONAR
+    String role_based_security() default VALUE_TRUE; // NOSONAR
 }

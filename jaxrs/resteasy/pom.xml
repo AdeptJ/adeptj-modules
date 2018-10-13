@@ -296,6 +296,10 @@
                     <artifactId>jboss-logging-processor</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.jboss.resteasy</groupId>
+                    <artifactId>resteasy-jaxrs-services</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.jboss.spec.javax.ws.rs</groupId>
                     <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
                 </exclusion>

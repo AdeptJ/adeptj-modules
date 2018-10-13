@@ -20,7 +20,6 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.OSGiUtil;
-import com.adeptj.modules.jaxrs.core.BaseResource;
 import org.jboss.resteasy.spi.Registry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -48,10 +47,10 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     private static final String RES_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME, ASTERISK);
 
-    private Registry registry;
+    private final Registry registry;
 
     ResourceTracker(BundleContext context, Registry registry) {
-        super(context, OSGiUtil.specificServiceOrFilter(context, BaseResource.class, RES_FILTER_EXPR), null);
+        super(context, OSGiUtil.anyServiceFilter(context, RES_FILTER_EXPR), null);
         this.registry = registry;
         this.open();
     }
@@ -70,13 +69,13 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
             LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
             return null;
         }
-        if (ResteasyUtil.isNotAnnotatedWithPath(resource)) {
-            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", resource);
-            return null;
+        if (ResteasyUtil.isPathAnnotationPresent(resource)) {
+            LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
+            this.registry.addSingletonResource(resource);
+            return resource;
         }
-        LOGGER.info("Adding JAX-RS Resource: [{}]", resource);
-        this.registry.addSingletonResource(resource);
-        return resource;
+        LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", resource);
+        return null;
     }
 
     /**
@@ -89,12 +88,8 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
     public void modifiedService(ServiceReference<Object> reference, Object service) {
         LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
         this.registry.removeRegistrations(service.getClass());
-        if (ResteasyUtil.isNotAnnotatedWithPath(service)) {
-            LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", service);
-        } else {
-            LOGGER.info("Adding JAX-RS Resource [{}] again!!", service);
-            this.registry.addSingletonResource(service);
-        }
+        LOGGER.info("Adding JAX-RS Resource [{}] again!!", service);
+        this.registry.addSingletonResource(service);
     }
 
     /**
