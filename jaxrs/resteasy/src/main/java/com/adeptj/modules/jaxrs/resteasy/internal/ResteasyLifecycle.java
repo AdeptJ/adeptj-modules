@@ -106,6 +106,8 @@ public class ResteasyLifecycle {
      * the OSGi service instances can be released.
      * <p>
      * Finally call {@link ResteasyServletDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
+     *
+     * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void stop(ServletConfig servletConfig) {
         if (this.serviceTrackers != null) {
