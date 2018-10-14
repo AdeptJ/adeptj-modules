@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.commons.utils.Constants.ASTERISK;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_PROVIDER_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVICE_TRACKER_FORMAT;
 
@@ -43,7 +42,7 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String PROVIDER_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME, ASTERISK);
+    private static final String PROVIDER_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME);
 
     private final ResteasyProviderFactory providerFactory;
 
@@ -70,22 +69,6 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
         LOGGER.info("Adding JAX-RS Provider: [{}]", provider);
         this.providerFactory.registerProviderInstance(provider);
         return provider;
-    }
-
-    /**
-     * Removes the given provider from RESTEasy {@link ResteasyProviderFactory} and registers again the modified service.
-     *
-     * @param reference the OSGi service reference of JAX-RS Provider.
-     * @param service   the OSGi service of JAX-RS Provider.
-     */
-    @Override
-    public void modifiedService(ServiceReference<Object> reference, Object service) {
-        LOGGER.info("Service is modified, removing JAX-RS Provider: [{}]", service);
-        if (this.providerFactory.getProviderInstances().remove(service)) {
-            LOGGER.info("Removed JAX-RS Provider: [{}]", service);
-        }
-        LOGGER.info("Adding JAX-RS Provider again: [{}]", service);
-        this.providerFactory.registerProviderInstance(service);
     }
 
     /**

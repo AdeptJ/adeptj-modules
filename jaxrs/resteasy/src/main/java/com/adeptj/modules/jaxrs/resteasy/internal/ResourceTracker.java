@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.commons.utils.Constants.ASTERISK;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_RESOURCE_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVICE_TRACKER_FORMAT;
 
@@ -45,7 +44,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String RES_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME, ASTERISK);
+    private static final String RES_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME);
 
     private final Registry registry;
 
@@ -76,20 +75,6 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
         }
         LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", resource);
         return null;
-    }
-
-    /**
-     * Removes the given resource from RESTEasy {@link Registry} and registers again the modified service.
-     *
-     * @param reference the OSGi service reference of JAX-RS resource.
-     * @param service   the OSGi service of JAX-RS resource.
-     */
-    @Override
-    public void modifiedService(ServiceReference<Object> reference, Object service) {
-        LOGGER.info("Service is modified, removing JAX-RS Resource: [{}]", service);
-        this.registry.removeRegistrations(service.getClass());
-        LOGGER.info("Adding JAX-RS Resource [{}] again!!", service);
-        this.registry.addSingletonResource(service);
     }
 
     /**

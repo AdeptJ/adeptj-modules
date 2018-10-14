@@ -24,6 +24,9 @@ import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 
 import javax.ws.rs.Path;
+import java.util.Arrays;
+
+import static com.adeptj.modules.commons.utils.Constants.COMMA;
 
 /**
  * Utilities for RESTEasy bootstrap process.
@@ -32,20 +35,18 @@ import javax.ws.rs.Path;
  */
 final class ResteasyUtil {
 
-    private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
-
     private ResteasyUtil() {
     }
 
-    static CorsFilter buildCorsFilter(ResteasyConfig config) {
-        return CorsFilterBuilder.newBuilder()
-                .allowCredentials(config.allowCredentials())
-                .corsMaxAge(config.corsMaxAge())
-                .exposedHeaders(config.exposedHeaders())
-                .allowedMethods(config.allowedMethods())
-                .allowedHeaders(config.allowedHeaders())
-                .allowedOrigins(config.allowedOrigins())
-                .build();
+    static CorsFilter newCorsFilter(ResteasyConfig config) {
+        CorsFilter corsFilter = new CorsFilter();
+        corsFilter.setAllowCredentials(config.allowCredentials());
+        corsFilter.setCorsMaxAge(config.corsMaxAge());
+        corsFilter.setExposedHeaders(String.join(COMMA, config.exposedHeaders()));
+        corsFilter.setAllowedMethods(String.join(COMMA, config.allowedMethods()));
+        corsFilter.setAllowedHeaders(String.join(COMMA, config.allowedHeaders()));
+        corsFilter.getAllowedOrigins().addAll(Arrays.asList(config.allowedOrigins()));
+        return corsFilter;
     }
 
     static boolean isPathAnnotationPresent(Object resource) {

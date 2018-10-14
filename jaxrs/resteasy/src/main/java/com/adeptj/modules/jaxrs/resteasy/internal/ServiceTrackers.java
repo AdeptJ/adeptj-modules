@@ -17,63 +17,36 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import org.jboss.resteasy.plugins.interceptors.CorsFilter;
-
-import java.util.Arrays;
-
-import static com.adeptj.modules.commons.utils.Constants.COMMA;
+import com.adeptj.modules.commons.utils.OSGiUtil;
+import org.jboss.resteasy.core.Dispatcher;
+import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * Utility to build Resteasy's {@link CorsFilter} in fluent style.
+ * Helper that manages the lifecycle of {@link ServiceTracker} objects for JAX-RS resources and providers.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class CorsFilterBuilder {
+class ServiceTrackers {
 
-    private CorsFilter corsFilter;
+    private final ServiceTracker<Object, Object> providerTracker;
 
-    private CorsFilterBuilder() {
-        this.corsFilter = new CorsFilter();
+    private final ServiceTracker<Object, Object> resourceTracker;
+
+    ServiceTrackers(BundleContext context, Dispatcher dispatcher) {
+        this.providerTracker = new ProviderTracker(context, dispatcher.getProviderFactory());
+        this.resourceTracker = new ResourceTracker(context, dispatcher.getRegistry());
     }
 
-    static CorsFilterBuilder newBuilder() {
-        return new CorsFilterBuilder();
+    void openAll() {
+        this.providerTracker.open();
+        this.resourceTracker.open();
     }
 
-    CorsFilterBuilder allowCredentials(boolean allowCredentials) {
-        this.corsFilter.setAllowCredentials(allowCredentials);
-        return this;
-    }
-
-    CorsFilterBuilder corsMaxAge(int corsMaxAge) {
-        this.corsFilter.setCorsMaxAge(corsMaxAge);
-        return this;
-    }
-
-    CorsFilterBuilder exposedHeaders(String[] exposedHeaders) {
-        this.corsFilter.setExposedHeaders(String.join(COMMA, exposedHeaders));
-        return this;
-    }
-
-    CorsFilterBuilder allowedMethods(String[] allowedMethods) {
-        this.corsFilter.setAllowedMethods(String.join(COMMA, allowedMethods));
-        return this;
-    }
-
-    CorsFilterBuilder allowedHeaders(String[] allowedHeaders) {
-        this.corsFilter.setAllowedHeaders(String.join(COMMA, allowedHeaders));
-        return this;
-    }
-
-    CorsFilterBuilder allowedOrigins(String[] allowedOrigins) {
-        this.corsFilter.getAllowedOrigins().addAll(Arrays.asList(allowedOrigins));
-        return this;
-    }
-
-    CorsFilter build() {
-        return this.corsFilter;
+    void closeAll() {
+        OSGiUtil.closeQuietly(this.providerTracker);
+        OSGiUtil.closeQuietly(this.resourceTracker);
     }
 }

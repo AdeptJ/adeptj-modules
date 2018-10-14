@@ -21,19 +21,19 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.Functions;
-import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.ApplicationExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.core.Dispatcher;
+import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
- * ResteasyLifecycle: Bootstraps RESTEasy Framework, open/close ServiceTracker for JAX-RS providers and resources
+ * ResteasyLifecycle: Bootstraps RESTEasy Framework, open/close ServiceTracker for JAX-RS providers and resources.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -56,11 +56,13 @@ public class ResteasyLifecycle {
 
     private static final String JAXRS_RT_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
-    private ServiceTracker<Object, Object> compositeTracker;
+    private boolean sendExceptionTrace;
 
-    private ResteasyConfig config;
+    private ServiceTrackers serviceTrackers;
 
     private BundleContext bundleContext;
+
+    private CorsFilter corsFilter;
 
     private ResteasyServletDispatcher resteasyDispatcher;
 
@@ -87,10 +89,10 @@ public class ResteasyLifecycle {
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 dispatcher.getProviderFactory()
                         .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()))
-                        .register(new ApplicationExceptionMapper(this.config.sendExceptionTrace()))
-                        .registerProviderInstance(ResteasyUtil.buildCorsFilter(this.config));
-                this.compositeTracker = new CompositeTracker(this.bundleContext, dispatcher);
-                this.compositeTracker.open();
+                        .register(new ApplicationExceptionMapper(this.sendExceptionTrace))
+                        .register(this.corsFilter);
+                this.serviceTrackers = new ServiceTrackers(this.bundleContext, dispatcher);
+                this.serviceTrackers.openAll();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
@@ -100,15 +102,17 @@ public class ResteasyLifecycle {
     }
 
     /**
-     * The ResteasyLifecycle will first close the {@link org.osgi.util.tracker.ServiceTracker} instances so that
+     * The ResteasyLifecycle will first closeAll the {@link org.osgi.util.tracker.ServiceTracker} instances so that
      * the OSGi service instances can be released.
      * <p>
      * Finally call {@link ResteasyServletDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
      */
-    void stop() {
-        // Don't want the ServiceTracker#close call to prevent RESTEasy to do proper cleanup.
-        OSGiUtil.closeQuietly(this.compositeTracker);
+    void stop(ServletConfig servletConfig) {
+        if (this.serviceTrackers != null) {
+            this.serviceTrackers.closeAll();
+        }
         this.resteasyDispatcher.destroy();
+        servletConfig.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 
@@ -126,6 +130,7 @@ public class ResteasyLifecycle {
     @Activate
     protected void start(BundleContext bundleContext, ResteasyConfig config) {
         this.bundleContext = bundleContext;
-        this.config = config;
+        this.corsFilter = ResteasyUtil.newCorsFilter(config);
+        this.sendExceptionTrace = config.sendExceptionTrace();
     }
 }

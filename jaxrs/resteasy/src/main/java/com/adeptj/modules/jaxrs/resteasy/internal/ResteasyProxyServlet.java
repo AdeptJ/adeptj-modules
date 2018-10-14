@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
@@ -71,7 +70,7 @@ public class ResteasyProxyServlet extends HttpServlet {
         try {
             this.resteasyLifecycle.start(this.getServletConfig());
         } catch (ResteasyBootstrapException ex) {
-            this.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
+            this.resteasyLifecycle.stop(this.getServletConfig());
             throw ex;
         }
     }
@@ -89,11 +88,10 @@ public class ResteasyProxyServlet extends HttpServlet {
     }
 
     /**
-     * Shutdown RESTEasy framework and close all the resource and provider trackers.
+     * Shutdown RESTEasy framework and closeAll all the resource and provider trackers.
      */
     @Override
     public void destroy() {
-        this.resteasyLifecycle.stop();
-        this.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
+        this.resteasyLifecycle.stop(this.getServletConfig());
     }
 }

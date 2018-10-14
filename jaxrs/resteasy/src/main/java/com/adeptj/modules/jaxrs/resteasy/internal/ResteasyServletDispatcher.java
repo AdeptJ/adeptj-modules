@@ -77,7 +77,7 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     @Override
     public void destroy() {
         if (this.servletContainerDispatcher == null) {
-            LOGGER.warn("ServletContainerDispatcher was not initialized!!");
+            LOGGER.warn("RESTEasy ServletContainerDispatcher is yet to be initialized, can't invoke destroy!!");
         } else {
             try {
                 super.destroy();
