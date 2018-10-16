@@ -85,8 +85,9 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
         SimpleCredentials simpleCredentials = credentialsFactory.getSimpleCredentials();
         LOGGER.info("Creating {}", simpleCredentials);
         if (this.credentials.contains(simpleCredentials)) {
-            LOGGER.warn("Username: [{}] already present, ignoring these credentials!!", simpleCredentials.getUsername());
-            return;
+            String username = simpleCredentials.getUsername();
+            LOGGER.warn("Username: [{}] already present, ignoring these credentials!!", username);
+            throw new IllegalStateException(String.format("Username: [%s] already present, ignoring these credentials!!", username));
         }
         this.credentials.add(simpleCredentials);
     }

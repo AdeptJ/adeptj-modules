@@ -38,12 +38,12 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
         name = "AdeptJ JWT DynamicFeature Configuration",
         description = "AdeptJ JWT DynamicFeature Configuration"
 )
-@interface JwtDynamicFeatureConfig {
+public @interface JwtDynamicFeatureConfig {
 
     @AttributeDefinition(
-            name = "Resource Vs Methods Mapping",
+            name = "DynamicJwtFilter Mapping",
             description = "JAX-RS Resource vs Methods Mapping, must be either in the format: FQCN=resourceMethod1,resourceMethod2,...n. "
                     + "or FQCN=*, in latter case the filter will be applied on all the resource methods."
     )
-    String[] resourceVsMethodsMapping() default {};
+    String[] filterMapping() default {};
 }

@@ -25,7 +25,7 @@ import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
@@ -42,9 +42,9 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static org.apache.commons.lang3.StringUtils.containsAny;
 
 /**
- * A {@link DynamicFeature} that enables the {@link JwtFilter} for the configured JAX-RS resourceVsMethodsMapping.
+ * A {@link DynamicFeature} that enables the {@link JwtFilter} for the configured JAX-RS filterMapping.
  * <p>
- * Note: AX-RS resource to methods resourceVsMethodsMapping must be provided before bootstrapping RESTEasy.
+ * Note: AX-RS resource to methods filterMapping must be provided before bootstrapping RESTEasy.
  * {@link DynamicFeature#configure} will only be called once while RESTEasy bootstraps.
  * <p>
  * Therefore do not add any mapping once RESTEasy bootstrapped fully, those will be not be taken into account.
@@ -55,7 +55,7 @@ import static org.apache.commons.lang3.StringUtils.containsAny;
 @JaxRSProvider(name = "JwtDynamicFeature")
 @Provider
 @Designate(ocd = JwtDynamicFeatureConfig.class)
-@Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(immediate = true)
 public class JwtDynamicFeature implements DynamicFeature {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -71,19 +71,19 @@ public class JwtDynamicFeature implements DynamicFeature {
      * has to be applied on given methods, otherwise just provide the resource class's
      * fully qualified name equals to [*] itself will apply the filter on all the resource methods.
      */
-    private String[] resourceVsMethodsMapping;
+    private String[] filterMapping;
 
     /**
      * Inject {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter}
      */
-    @Reference(target = "(jwt.filter.name=dynamic)")
+    @Reference(target = "(jwt.filter.type=dynamic)")
     private JwtFilter dynamicJwtFilter;
 
     /**
      * Registers the {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter} for interception
      * in case of a match of configured resource class and methods.
      * <p>
-     * See documentation on {@link JwtDynamicFeature#resourceVsMethodsMapping} to know how the algo will work.
+     * See documentation on {@link JwtDynamicFeature#filterMapping} to know how the algo will work.
      *
      * @param resourceInfo containing the resource class and method
      * @param context      to register the DynamicJwtFilter for interception in case of a match
@@ -92,7 +92,7 @@ public class JwtDynamicFeature implements DynamicFeature {
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
         String resource = resourceInfo.getResourceClass().getName();
         String method = resourceInfo.getResourceMethod().getName();
-        Stream.of(this.resourceVsMethodsMapping)
+        Stream.of(this.filterMapping)
                 .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
                 .map(row -> row.split(EQ))
                 .filter(mapping -> resource.equals(mapping[0]) && containsAny(mapping[1], method, ASTERISK))
@@ -102,10 +102,11 @@ public class JwtDynamicFeature implements DynamicFeature {
                 });
     }
 
-    // ---------------------------------------- OSGi INTERNAL ----------------------------------------
+    // <---------------------------------------- OSGi INTERNAL ---------------------------------------->
 
+    @Modified
     @Activate
     protected void start(JwtDynamicFeatureConfig config) {
-        this.resourceVsMethodsMapping = config.resourceVsMethodsMapping();
+        this.filterMapping = config.filterMapping();
     }
 }

@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.security.jwt.ClaimsDecorator;
+import com.adeptj.modules.security.jwt.JwtClaims;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
@@ -30,16 +30,18 @@ import io.jsonwebtoken.JwtHandlerAdapter;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class ClaimsJwsHandler extends JwtHandlerAdapter<ClaimsDecorator> {
+final class ClaimsJwsHandler extends JwtHandlerAdapter<JwtClaims> {
 
     /**
-     * Simply returns the {@link ClaimsDecorator}.
+     * Simply returns the {@link JwtClaims}.
      *
      * @param jws the Json web signature.
-     * @return the {@link ClaimsDecorator}.
+     * @return the {@link JwtClaims}.
      */
     @Override
-    public ClaimsDecorator onClaimsJws(Jws<Claims> jws) {
-        return new ClaimsDecorator().addClaims(jws.getBody());
+    public JwtClaims onClaimsJws(Jws<Claims> jws) {
+        JwtClaims claims = new JwtClaims();
+        claims.putAll(jws.getBody());
+        return claims;
     }
 }

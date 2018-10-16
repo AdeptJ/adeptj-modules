@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.security.jwt;
 
-import com.adeptj.modules.security.jwt.validation.JwtClaimsValidator;
 import org.osgi.annotation.versioning.ProviderType;
 
 import java.util.Map;
@@ -65,13 +64,9 @@ public interface JwtService {
 
     /**
      * Verify the passed jwt claim information using configured signing key.
-     * <p>
-     * If a {@link JwtClaimsValidator} is available then JWT claims map is passed to it for further
-     * validation of claims.
      *
      * @param jwt claims information that has to be verified by the {@link io.jsonwebtoken.JwtParser}
-     * @return decorated claims map with extra information such as roles etc. if a {@link JwtClaimsValidator} is available,
-     * otherwise the Jwt {@link io.jsonwebtoken.Claims} map itself is returned.
+     * @return the {@link JwtClaims} object containing the claims information.
      */
-    ClaimsDecorator verifyJwt(String jwt);
+    JwtClaims verifyJwt(String jwt);
 }

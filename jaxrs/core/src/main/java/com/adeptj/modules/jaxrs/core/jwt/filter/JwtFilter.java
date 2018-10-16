@@ -20,20 +20,10 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import com.adeptj.modules.jaxrs.core.jwt.JwtExtractor;
-import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
-import com.adeptj.modules.security.jwt.ClaimsDecorator;
+import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.security.jwt.JwtService;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Response;
-
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.CLAIMS_REQ_ATTR;
-import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * Interface helping in exposing {@link JwtFilter} as a service in OSGi service registry.
@@ -51,32 +41,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  */
 public interface JwtFilter extends ContainerRequestFilter {
 
-    String BIND_JWT_SERVICE = "bindJwtService";
+    JwtService getJwtService();
 
-    String UNBIND_JWT_SERVICE = "unbindJwtService";
-
-    default void doFilter(ContainerRequestContext requestContext, JwtService jwtService) {
-        if (jwtService == null) {
-            requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
-            return;
-        }
-        String jwt = JwtExtractor.extract(requestContext);
-        // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
-        // 401 is better suited for token verification failure.
-        if (StringUtils.isEmpty(jwt)) {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-        } else {
-            ClaimsDecorator claimsDecorator = jwtService.verifyJwt(jwt);
-            if (StringUtils.isEmpty(claimsDecorator.getSubject())) {
-                requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-            } else {
-                requestContext.setProperty(CLAIMS_REQ_ATTR, claimsDecorator.getClaims());
-                requestContext.setSecurityContext(JwtSecurityContext.newSecurityContext()
-                        .withSubject(claimsDecorator.getSubject())
-                        .withRoles(claimsDecorator.getRoles())
-                        .withSecure(requestContext.getSecurityContext().isSecure())
-                        .withAuthScheme(AUTH_SCHEME_TOKEN));
-            }
-        }
-    }
+    JwtClaimsIntrospector getClaimsIntrospector();
 }

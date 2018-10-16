@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 
-import static com.adeptj.modules.jaxrs.core.auth.internal.JaxRSCredentialsFactory.COMPONENT_NAME;
+import static com.adeptj.modules.jaxrs.core.auth.internal.JaxRSCredentialsFactory.PID;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -43,13 +43,13 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Designate(ocd = JaxRSCredentialsConfig.class, factory = true)
 @Component(
         service = JaxRSCredentialsFactory.class,
-        name = COMPONENT_NAME,
-        property = SERVICE_PID + "=" + COMPONENT_NAME,
+        name = PID,
+        property = SERVICE_PID + "=" + PID,
         configurationPolicy = REQUIRE
 )
 public class JaxRSCredentialsFactory {
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.jaxrs.core.JaxRSCredentials.factory";
+    static final String PID = "com.adeptj.modules.jaxrs.core.JaxRSCredentials.factory";
 
     private String username;
 

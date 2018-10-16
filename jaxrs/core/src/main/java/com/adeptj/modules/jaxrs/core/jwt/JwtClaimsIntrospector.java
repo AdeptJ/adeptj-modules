@@ -18,53 +18,37 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt;
+package com.adeptj.modules.jaxrs.core.jwt;
 
-import org.apache.commons.lang3.StringUtils;
+import com.adeptj.modules.security.jwt.JwtService;
+import org.osgi.annotation.versioning.ConsumerType;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
-import static io.jsonwebtoken.Claims.SUBJECT;
 
 /**
- * Decorates claims map with extra information such as roles etc. if any.
+ * Service interface for introspecting the JWT claims(Registered as well as public).
+ * <p>
+ * This is injected as an optional service in {@link JwtService}, therefore the claims are only
+ * validated if an implementation of {@link JwtClaimsIntrospector} is available in OSGi service registry.
+ * <p>
+ * Callers should inspect the claims passed and validate claims values as per their need,
+ * if everything is fine then must return true otherwise false.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ClaimsDecorator {
+@ConsumerType
+public interface JwtClaimsIntrospector {
 
-    private static final String KEY_ROLES = "roles";
-
-    private static final String REGEX_COMMA = ",";
-
-    private String subject;
-
-    private Set<String> roles;
-
-    private Map<String, Object> claims;
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public Map<String, Object> getClaims() {
-        return claims;
-    }
-
-    public Set<String> getRoles() {
-        return roles;
-    }
-
-    public ClaimsDecorator addClaims(Map<String, Object> claims) {
-        JwtUtil.assertClaims(claims);
-        this.subject = (String) claims.get(SUBJECT);
-        if (StringUtils.isNotEmpty((String) claims.get(KEY_ROLES))) {
-            this.roles = new HashSet<>(Arrays.asList(((String) claims.get(KEY_ROLES)).split(REGEX_COMMA)));
-        }
-        this.claims = claims;
-        return this;
-    }
+    /**
+     * Introspect the JWT claims passed.
+     * <p>
+     * Registered Claims such as iss, sub, exp are already validated by {@link JwtService} while parsing the JWT,
+     * therefore should not be validated again.
+     * <p>
+     * Any public claims like username, roles and other important information can be introspected as per the need.
+     *
+     * @param claims the JWT claims
+     * @return boolean to indicate if claims passed were good.
+     */
+    boolean introspect(Map<String, Object> claims);
 }

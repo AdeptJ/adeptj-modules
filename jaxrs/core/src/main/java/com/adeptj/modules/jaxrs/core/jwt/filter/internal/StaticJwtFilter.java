@@ -20,21 +20,21 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
 import com.adeptj.modules.jaxrs.core.JaxRSProvider;
+import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 import javax.annotation.Priority;
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.ext.Provider;
-import java.util.Objects;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.FILTER_NAME;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
+import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
  * This filter will kick in for any resource class/method that is annotated with {@link RequiresJwt}.
@@ -52,38 +52,34 @@ import static javax.ws.rs.Priorities.AUTHENTICATION;
 @Priority(AUTHENTICATION)
 @Provider
 @Component(immediate = true, property = FILTER_NAME)
-public class StaticJwtFilter implements JwtFilter {
+public class StaticJwtFilter extends AbstractJwtFilter implements JwtFilter {
 
-    static final String FILTER_NAME = "jwt.filter.name=static";
+    static final String FILTER_NAME = "jwt.filter.type=static";
 
     /**
      * The {@link JwtService} is optionally referenced.
      * If unavailable this filter will set a Service Unavailable (503) status.
-     * <p>
-     * Note: As per Felix SCR, dynamic references should be declared as volatile.
      */
-    @Reference(
-            bind = BIND_JWT_SERVICE,
-            unbind = UNBIND_JWT_SERVICE,
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC
-    )
+    @Reference(cardinality = OPTIONAL, policy = DYNAMIC)
     private volatile JwtService jwtService;
 
+    @Reference(cardinality = OPTIONAL, policy = DYNAMIC)
+    private volatile JwtClaimsIntrospector claimsIntrospector;
+
     @Override
-    public void filter(ContainerRequestContext requestContext) {
-        this.doFilter(requestContext, this.jwtService);
+    public JwtService getJwtService() {
+        return this.jwtService;
     }
 
-    // ------------------------------------------ INTERNAL ------------------------------------------
-
-    protected void bindJwtService(JwtService jwtService) {
-        this.jwtService = jwtService;
+    @Override
+    public JwtClaimsIntrospector getClaimsIntrospector() {
+        return this.claimsIntrospector;
     }
 
-    protected void unbindJwtService(JwtService jwtService) {
-        if (Objects.equals(jwtService, this.jwtService)) {
-            this.jwtService = null;
+    @Activate
+    protected void start() {
+        if (this.claimsIntrospector == null) {
+            this.claimsIntrospector = claims -> true;
         }
     }
 }

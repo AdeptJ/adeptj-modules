@@ -34,9 +34,12 @@ import org.osgi.service.metatype.annotations.Designate;
 import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
@@ -53,7 +56,7 @@ import static org.osgi.service.component.annotations.ReferencePolicyOption.GREED
 @JaxRSResource(name = "jwt")
 @Path("/auth/jwt")
 @Designate(ocd = JwtCookieConfig.class)
-@Component(immediate = true, service = JwtResource.class)
+@Component(service = JwtResource.class)
 public class JwtResource {
 
     /**
@@ -89,6 +92,26 @@ public class JwtResource {
         return outcome == null || outcome.isEmpty()
                 ? Response.status(UNAUTHORIZED).build()
                 : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
+    }
+
+    /**
+     * This resource method exists to verify the Jwt issued earlier. Should not be called by clients directly.
+     * <p>
+     * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter}
+     *
+     * @return response 200 if {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter} was able to verify the Jwt issued earlier.
+     */
+    @GET
+    @Path("/verify")
+    @RequiresJwt
+    public Response verifyJwt(@Context SecurityContext securityContext) {
+        return Response.ok("Verified subject: " + securityContext.getUserPrincipal().getName()).build();
+    }
+
+    @GET
+    @Path("/dynamic")
+    public Response hello(@Context SecurityContext securityContext) {
+        return Response.ok("Verified subject: " + securityContext.getUserPrincipal()).build();
     }
 
     // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->

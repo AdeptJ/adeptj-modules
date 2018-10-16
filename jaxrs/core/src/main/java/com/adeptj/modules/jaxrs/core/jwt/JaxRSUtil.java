@@ -25,9 +25,7 @@ import com.adeptj.modules.jaxrs.core.CookieBuilder;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.apache.commons.lang3.StringUtils.SPACE;
 
 /**
  * Utilities for JAX-RS {@link Response}, {@link NewCookie} etc.
@@ -44,7 +42,7 @@ final class JaxRSUtil {
         JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
         return cookieConfig.enabled()
                 ? Response.ok().cookie(newJwtCookie(jwt, cookieConfig)).build()
-                : Response.ok().header(AUTHORIZATION, AUTH_SCHEME_BEARER + SPACE + jwt).build();
+                : Response.ok().header(AUTHORIZATION, jwt).build();
     }
 
     private static NewCookie newJwtCookie(String jwt, JwtCookieConfig cookieConfig) {

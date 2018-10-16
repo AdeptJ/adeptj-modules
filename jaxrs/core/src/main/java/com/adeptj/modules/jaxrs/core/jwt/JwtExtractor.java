@@ -71,7 +71,8 @@ public final class JwtExtractor {
     }
 
     private static String cleanseJwt(String jwt) {
-        return StringUtils.startsWith(jwt, AUTH_SCHEME_BEARER) ?
-                StringUtils.substring(jwt, JWT_START_POS) : StringUtils.trim(jwt);
+        return StringUtils.startsWith(jwt, AUTH_SCHEME_BEARER)
+                ? StringUtils.substring(jwt, JWT_START_POS)
+                : StringUtils.trim(jwt);
     }
 }

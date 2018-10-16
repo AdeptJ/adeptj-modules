@@ -20,37 +20,35 @@
 
 package com.adeptj.modules.security.jwt;
 
-import com.adeptj.modules.security.jwt.validation.ClaimsValidationException;
-import org.osgi.annotation.versioning.ConsumerType;
+import java.util.HashMap;
 
-import java.util.Map;
+import static io.jsonwebtoken.Claims.AUDIENCE;
+import static io.jsonwebtoken.Claims.ID;
+import static io.jsonwebtoken.Claims.ISSUER;
+import static io.jsonwebtoken.Claims.SUBJECT;
 
 /**
- * Service interface for validating the JWT claims(Registered as well as public).
- * <p>
- * This is injected as an optional service in {@link JwtService}, therefore the claims are only
- * validated if an implementation of {@link JwtClaimsIntrospector} is available in OSGi service registry.
- * <p>
- * Callers should inspect the claims passed and validate claims values as per their need,
- * if everything is fine then must return true otherwise false.
+ * A simple map containing the JWT claims and accessor methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ConsumerType
-public interface JwtClaimsIntrospector {
+public class JwtClaims extends HashMap<String, Object> {
 
-    /**
-     * Validate the JWT claims passed.
-     * <p>
-     * Registered Claims such as iss, sub, exp are already validated by {@link JwtService} while parsing the JWT,
-     * therefore should not be validated again.
-     * <p>
-     * Any public claims like username, roles and other important information can be validated as per need.
-     *
-     * @param claims the JWT claims
-     * @return boolean to indicate if claims passed were good..
-     * @throws ClaimsValidationException in case of exceptional scenarios caller must wrap the original exception
-     *                                   in ClaimsValidationException and rethrow.
-     */
-    boolean introspect(Map<String, Object> claims) throws ClaimsValidationException;
+    private static final long serialVersionUID = -7433116694314910579L;
+
+    public String getSubject() {
+        return (String) this.get(SUBJECT);
+    }
+
+    public String getIssuer() {
+        return (String) this.get(ISSUER);
+    }
+
+    public String getAudience() {
+        return (String) this.get(AUDIENCE);
+    }
+
+    public String getId() {
+        return (String) this.get(ID);
+    }
 }
