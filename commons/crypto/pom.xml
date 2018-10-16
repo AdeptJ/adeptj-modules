@@ -166,6 +166,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bytes</artifactId>
+            <version>0.7.1</version>
+        </dependency>
+
     </dependencies>
 
 

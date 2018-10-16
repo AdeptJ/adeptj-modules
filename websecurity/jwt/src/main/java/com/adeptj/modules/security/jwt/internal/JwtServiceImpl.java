@@ -31,7 +31,6 @@ import io.jsonwebtoken.security.SignatureException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +76,6 @@ public class JwtServiceImpl implements JwtService {
 
     private PublicKey verificationKey;
 
-    @Reference
     private ClaimsJwsHandler jwtHandler;
 
     /**
@@ -154,6 +152,7 @@ public class JwtServiceImpl implements JwtService {
             this.signingKey = JwtSigningKeys.createRsaSigningKey(config, this.signatureAlgo);
             this.verificationKey = JwtSigningKeys.createRsaVerificationKey(this.signatureAlgo, config.publicKey());
             this.obligatoryClaims = Arrays.asList(config.obligatoryClaims());
+            this.jwtHandler = new ClaimsJwsHandler();
         } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error("Couldn't start the JwtService!!", ex);
             throw ex;

@@ -22,6 +22,7 @@ package com.adeptj.modules.commons.crypto.internal;
 
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.HashingService;
+import com.adeptj.modules.commons.crypto.Randomness;
 import com.adeptj.modules.commons.crypto.SaltHashPair;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +39,6 @@ import javax.crypto.spec.PBEKeySpec;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
 /**
@@ -53,8 +53,6 @@ public class HashingServiceImpl implements HashingService {
     private static final Logger LOGGER = LoggerFactory.getLogger((MethodHandles.lookup().lookupClass()));
 
     private static final String PLAINTEXT_NULL_MSG = "plainText can't be blank!!";
-
-    private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
 
     private int saltSize;
 
@@ -71,9 +69,7 @@ public class HashingServiceImpl implements HashingService {
      */
     @Override
     public byte[] getSaltBytes() {
-        byte[] saltBytes = new byte[this.saltSize];
-        DEFAULT_SECURE_RANDOM.nextBytes(saltBytes);
-        return saltBytes;
+        return Randomness.randomBytes(this.saltSize);
     }
 
     /**
@@ -142,11 +138,11 @@ public class HashingServiceImpl implements HashingService {
     // <------------------------------------------ OSGi INTERNAL ------------------------------------------>
 
     @Activate
-    protected void start(HashingConfig hashingConfig) {
-        this.saltSize = hashingConfig.saltSize();
-        this.iterationCount = hashingConfig.iterationCount();
-        this.keyLength = hashingConfig.keyLength();
-        this.secretKeyAlgo = hashingConfig.secretKeyAlgo();
-        this.charset = Charset.forName(hashingConfig.charsetToEncode());
+    protected void start(HashingConfig config) {
+        this.charset = Charset.forName(config.charsetToEncode());
+        this.saltSize = config.saltSize();
+        this.iterationCount = config.iterationCount();
+        this.keyLength = config.keyLength();
+        this.secretKeyAlgo = config.secretKeyAlgo();
     }
 }

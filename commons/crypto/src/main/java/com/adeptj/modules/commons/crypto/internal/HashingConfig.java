@@ -20,19 +20,18 @@
 
 package com.adeptj.modules.commons.crypto.internal;
 
-import com.adeptj.modules.commons.crypto.HashingService;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
 /**
- * OSGi Configuration for {@link HashingService}
+ * OSGi Configuration for {@link com.adeptj.modules.commons.crypto.HashingService}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ Crypto Configuration",
-        description = "Configuration for the HashingService"
+        name = "AdeptJ Crypto Hashing Configuration",
+        description = "Configuration for the AdeptJ HashingService"
 )
 public @interface HashingConfig {
 

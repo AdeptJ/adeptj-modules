@@ -18,48 +18,29 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.crypto.internal;
+package com.adeptj.modules.commons.crypto;
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.osgi.service.metatype.annotations.Option;
+import java.security.SecureRandom;
 
 /**
- * OSGi Configuration for {@link com.adeptj.modules.commons.crypto.EncryptionService}
+ * Provides random bytes using {@link SecureRandom}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ Crypto Encryption Configuration",
-        description = "Configuration for the AdeptJ EncryptionService"
-)
-public @interface EncryptionConfig {
+public class Randomness {
 
-    @AttributeDefinition(
-            name = "Key Size",
-            description = "The key length in bits for encryption key."
-    )
-    int keySize() default 128;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    @AttributeDefinition(
-            name = "Initialization Vector",
-            description = "The Initialization Vector."
-    )
-    String iv();
+    private Randomness() {
+    }
 
-    @AttributeDefinition(
-            name = "Encryption Key",
-            description = "The encryption key, which will be automatically generated and populate here."
-    )
-    String key();
+    public static byte[] randomBytes(int length) {
+        byte[] randomBytes = new byte[length];
+        SECURE_RANDOM.nextBytes(randomBytes);
+        return randomBytes;
+    }
 
-    @AttributeDefinition(
-            name = "Charset to encode",
-            description = "Charset to encode the salt and plain text",
-            options = {
-                    @Option(label = "US ASCII", value = "US-ASCII"),
-                    @Option(label = "UTF 8", value = "UTF-8"),
-            }
-    )
-    String charsetToEncode() default "US-ASCII";
+    public static void randomBytes(byte[] bytes) {
+        SECURE_RANDOM.nextBytes(bytes);
+    }
 }

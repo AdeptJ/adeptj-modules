@@ -61,12 +61,10 @@ public class JaxRSCredentialsFactory {
 
     @Activate
     protected void start(JaxRSCredentialsConfig config) {
-        String username = config.username();
-        String password = config.password();
-        Validate.isTrue(StringUtils.isNotEmpty(username), "Username can't be blank!!");
-        Validate.isTrue(StringUtils.isNotEmpty(password), "Password can't be blank!!");
-        this.username = username;
-        this.password = password.toCharArray();
+        Validate.isTrue(StringUtils.isNotEmpty(config.username()), "Username can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(config.password()), "Password can't be blank!!");
+        this.username = config.username();
+        this.password = config.password().toCharArray();
     }
 
     @Deactivate

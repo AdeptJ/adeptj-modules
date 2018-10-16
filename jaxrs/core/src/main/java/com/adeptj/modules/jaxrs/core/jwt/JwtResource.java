@@ -76,7 +76,7 @@ public class JwtResource {
      *
      * @param username the username submitted for authentication
      * @param password the password string submitted for authentication
-     * @return JAX-RS Response either having a Jwt or Http error 503
+     * @return JAX-RS Response either having a Jwt or Http error 401/503
      */
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
