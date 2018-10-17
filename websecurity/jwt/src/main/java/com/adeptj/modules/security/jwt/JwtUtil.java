@@ -57,12 +57,12 @@ public final class JwtUtil {
     /**
      * Validates the claim information passed.
      *
-     * @param claims           Caller supplied JWT claims map
-     * @param obligatoryClaims obligatory claims that should be present in claims map.
+     * @param claims          Caller supplied JWT claims map
+     * @param mandatoryClaims obligatory claims that should be present in claims map.
      * @since 1.1.0.Final
      */
-    public static void assertClaims(Map<String, Object> claims, List<String> obligatoryClaims) {
+    public static void assertClaims(Map<String, Object> claims, List<String> mandatoryClaims) {
         assertClaims(claims);
-        obligatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
+        mandatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
     }
 }

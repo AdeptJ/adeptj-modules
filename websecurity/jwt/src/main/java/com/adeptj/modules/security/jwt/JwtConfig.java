@@ -81,10 +81,10 @@ public @interface JwtConfig {
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
 
     @AttributeDefinition(
-            name = "JWT default obligatory claims which need to be checked",
-            description = "JWT default obligatory claims which need to be checked for null and emptiness."
+            name = "JWT default mandatory claims which need to be checked",
+            description = "JWT default mandatory claims which need to be checked for null and emptiness."
     )
-    String[] obligatoryClaims() default {
+    String[] mandatoryClaims() default {
             SUBJECT,
             ISSUER,
             ID,

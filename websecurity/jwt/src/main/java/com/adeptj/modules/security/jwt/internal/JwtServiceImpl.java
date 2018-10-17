@@ -67,7 +67,7 @@ public class JwtServiceImpl implements JwtService {
 
     private boolean suppressJwtExceptionTrace;
 
-    private List<String> obligatoryClaims;
+    private List<String> mandatoryClaims;
 
     private Duration expirationDuration;
 
@@ -106,7 +106,7 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String createJwt(Map<String, Object> claims) {
-        JwtUtil.assertClaims(claims, this.obligatoryClaims);
+        JwtUtil.assertClaims(claims, this.mandatoryClaims);
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
@@ -154,7 +154,7 @@ public class JwtServiceImpl implements JwtService {
             PrivateKey signingKey = JwtKeys.createSigningKey(config, this.signatureAlgo);
             PublicKey verificationKey = JwtKeys.createVerificationKey(this.signatureAlgo, config.publicKey());
             this.keyPair = new KeyPair(verificationKey, signingKey);
-            this.obligatoryClaims = Arrays.asList(config.obligatoryClaims());
+            this.mandatoryClaims = Arrays.asList(config.mandatoryClaims());
         } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
