@@ -47,11 +47,11 @@ import static javax.crypto.Cipher.DECRYPT_MODE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
- * Utility for creating JWT signing key.
+ * Utility for creating JWT signing and verification key.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class JwtSigningKeys {
+final class JwtKeys {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -71,10 +71,10 @@ final class JwtSigningKeys {
 
     private static final String KEYPASS_NULL_MSG = "privateKeyPassword can't be blank!!";
 
-    private JwtSigningKeys() {
+    private JwtKeys() {
     }
 
-    static PrivateKey createRsaSigningKey(JwtConfig jwtConfig, SignatureAlgorithm signatureAlgo) {
+    static PrivateKey createSigningKey(JwtConfig jwtConfig, SignatureAlgorithm signatureAlgo) {
         LOGGER.info("Creating RSA signing key!!");
         String keyData = jwtConfig.privateKey();
         Assert.hasText(keyData, "PrivateKey data can't be blank!!");
@@ -100,7 +100,7 @@ final class JwtSigningKeys {
         }
     }
 
-    static PublicKey createRsaVerificationKey(SignatureAlgorithm signatureAlgo, String publicKey) {
+    static PublicKey createVerificationKey(SignatureAlgorithm signatureAlgo, String publicKey) {
         LOGGER.info("Creating RSA verification key!!");
         Assert.hasText(publicKey, "PublicKey data can't be blank!!");
         try {

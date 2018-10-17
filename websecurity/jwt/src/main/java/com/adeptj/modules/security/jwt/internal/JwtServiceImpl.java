@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Duration;
@@ -52,7 +53,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * Service for signing and parsing JWT
+ * Service for signing and parsing JWT with RSA private and public keys respectively.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -72,11 +73,13 @@ public class JwtServiceImpl implements JwtService {
 
     private SignatureAlgorithm signatureAlgo;
 
-    private PrivateKey signingKey;
+    private KeyPair keyPair;
 
-    private PublicKey verificationKey;
+    private final ClaimsJwsHandler jwtHandler;
 
-    private ClaimsJwsHandler jwtHandler;
+    public JwtServiceImpl() {
+        this.jwtHandler = new ClaimsJwsHandler();
+    }
 
     /**
      * {@inheritDoc}
@@ -94,7 +97,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
                 .setId(UUID.randomUUID().toString())
-                .signWith(this.signingKey, this.signatureAlgo)
+                .signWith(this.keyPair.getPrivate(), this.signatureAlgo)
                 .compact();
     }
 
@@ -107,7 +110,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
-                .signWith(this.signingKey, this.signatureAlgo)
+                .signWith(this.keyPair.getPrivate(), this.signatureAlgo)
                 .compact();
     }
 
@@ -119,7 +122,7 @@ public class JwtServiceImpl implements JwtService {
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");
             return Jwts.parser()
-                    .setSigningKey(this.verificationKey)
+                    .setSigningKey(this.keyPair.getPublic())
                     .parse(jwt, this.jwtHandler);
         } catch (Exception ex) { // NOSONAR
             // For reducing noise in the logs, set this config to true.
@@ -138,8 +141,7 @@ public class JwtServiceImpl implements JwtService {
     @Activate
     protected void start(JwtConfig config) {
         this.signatureAlgo = null;
-        this.signingKey = null;
-        this.verificationKey = null;
+        this.keyPair = null;
         this.expirationDuration = null;
         this.issuer = null;
         this.suppressJwtExceptionTrace = false;
@@ -148,13 +150,13 @@ public class JwtServiceImpl implements JwtService {
             this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
             this.suppressJwtExceptionTrace = config.suppressJwtExceptionTrace();
             this.signatureAlgo = SignatureAlgorithm.forName(config.signatureAlgo());
-            LOGGER.info("JWT SignatureAlgorithm: [{}]", this.signatureAlgo.getJcaName());
-            this.signingKey = JwtSigningKeys.createRsaSigningKey(config, this.signatureAlgo);
-            this.verificationKey = JwtSigningKeys.createRsaVerificationKey(this.signatureAlgo, config.publicKey());
+            LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", this.signatureAlgo.getJcaName());
+            PrivateKey signingKey = JwtKeys.createSigningKey(config, this.signatureAlgo);
+            PublicKey verificationKey = JwtKeys.createVerificationKey(this.signatureAlgo, config.publicKey());
+            this.keyPair = new KeyPair(verificationKey, signingKey);
             this.obligatoryClaims = Arrays.asList(config.obligatoryClaims());
-            this.jwtHandler = new ClaimsJwsHandler();
         } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
-            LOGGER.error("Couldn't start the JwtService!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw ex;
         }
     }

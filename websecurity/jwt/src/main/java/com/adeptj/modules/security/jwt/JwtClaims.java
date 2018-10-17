@@ -21,6 +21,7 @@
 package com.adeptj.modules.security.jwt;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static io.jsonwebtoken.Claims.AUDIENCE;
 import static io.jsonwebtoken.Claims.ID;
@@ -35,6 +36,10 @@ import static io.jsonwebtoken.Claims.SUBJECT;
 public class JwtClaims extends HashMap<String, Object> {
 
     private static final long serialVersionUID = -7433116694314910579L;
+
+    public JwtClaims(Map<String, Object> claims) {
+        super(claims);
+    }
 
     public String getSubject() {
         return (String) this.get(SUBJECT);

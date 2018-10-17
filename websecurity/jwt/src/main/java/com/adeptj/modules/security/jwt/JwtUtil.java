@@ -45,7 +45,13 @@ public final class JwtUtil {
      */
     public static void assertClaims(Map<String, Object> claims) {
         Assert.notEmpty(claims, "Claims map can't be null or empty!!");
-        doAssertClaims(claims);
+        claims.forEach((claim, value) -> {
+            if (value instanceof String) {
+                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
+            } else {
+                Assert.notNull(value, String.format("%s can't be null!!", claim));
+            }
+        });
     }
 
     /**
@@ -56,18 +62,7 @@ public final class JwtUtil {
      * @since 1.1.0.Final
      */
     public static void assertClaims(Map<String, Object> claims, List<String> obligatoryClaims) {
-        Assert.notEmpty(claims, "JWT claims map can't be null or empty!!");
-        doAssertClaims(claims);
+        assertClaims(claims);
         obligatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
-    }
-
-    private static void doAssertClaims(Map<String, Object> claims) {
-        claims.forEach((claim, value) -> {
-            if (value instanceof String) {
-                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
-            } else {
-                Assert.notNull(value, String.format("%s can't be null!!", claim));
-            }
-        });
     }
 }

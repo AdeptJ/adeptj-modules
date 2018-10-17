@@ -40,8 +40,6 @@ final class ClaimsJwsHandler extends JwtHandlerAdapter<JwtClaims> {
      */
     @Override
     public JwtClaims onClaimsJws(Jws<Claims> jws) {
-        JwtClaims claims = new JwtClaims();
-        claims.putAll(jws.getBody());
-        return claims;
+        return new JwtClaims(jws.getBody());
     }
 }
