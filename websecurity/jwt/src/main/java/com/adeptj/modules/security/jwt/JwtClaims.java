@@ -42,18 +42,18 @@ public class JwtClaims extends HashMap<String, Object> {
     }
 
     public String getSubject() {
-        return (String) this.get(SUBJECT);
+        return (String) super.get(SUBJECT);
     }
 
     public String getIssuer() {
-        return (String) this.get(ISSUER);
+        return (String) super.get(ISSUER);
     }
 
     public String getAudience() {
-        return (String) this.get(AUDIENCE);
+        return (String) super.get(AUDIENCE);
     }
 
     public String getId() {
-        return (String) this.get(ID);
+        return (String) super.get(ID);
     }
 }

@@ -92,6 +92,9 @@ public @interface JwtConfig {
             EXPIRATION
     };
 
-    @AttributeDefinition(name = "Suppress JwtException Trace", description = "Whether to suppress JwtException Trace.")
-    boolean suppressJwtExceptionTrace();
+    @AttributeDefinition(
+            name = "Suppress Jwt Verification Exception Trace",
+            description = "Whether to suppress Jwt verification exception trace for reducing noise in logs."
+    )
+    boolean suppressVerificationException();
 }

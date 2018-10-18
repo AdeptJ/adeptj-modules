@@ -65,7 +65,7 @@ public class JwtServiceImpl implements JwtService {
 
     private String issuer;
 
-    private boolean suppressJwtExceptionTrace;
+    private boolean suppressVerificationException;
 
     private List<String> mandatoryClaims;
 
@@ -126,7 +126,7 @@ public class JwtServiceImpl implements JwtService {
                     .parse(jwt, this.jwtHandler);
         } catch (Exception ex) { // NOSONAR
             // For reducing noise in the logs, set this config to true.
-            if (this.suppressJwtExceptionTrace) {
+            if (this.suppressVerificationException) {
                 LOGGER.error(ex.getMessage());
             } else {
                 LOGGER.error(ex.getMessage(), ex);
@@ -144,11 +144,11 @@ public class JwtServiceImpl implements JwtService {
         this.keyPair = null;
         this.expirationDuration = null;
         this.issuer = null;
-        this.suppressJwtExceptionTrace = false;
+        this.suppressVerificationException = false;
         try {
             this.issuer = config.issuer();
             this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
-            this.suppressJwtExceptionTrace = config.suppressJwtExceptionTrace();
+            this.suppressVerificationException = config.suppressVerificationException();
             this.signatureAlgo = SignatureAlgorithm.forName(config.signatureAlgo());
             LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", this.signatureAlgo.getJcaName());
             PrivateKey signingKey = JwtKeys.createSigningKey(config, this.signatureAlgo);
