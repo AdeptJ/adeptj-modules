@@ -73,8 +73,8 @@ final class JwtKeys {
 
     private static final String INVALID_PUBLIC_KEY_MSG = "Invalid PublicKey, must start with -----BEGIN PUBLIC KEY-----";
 
-    private static final String INVALID_PRIVATE_KEY_MSG = "Invalid PrivateKey, must start either with " +
-            "-----BEGIN ENCRYPTED PRIVATE KEY----- or -----BEGIN PRIVATE KEY-----";
+    private static final String INVALID_PRIVATE_KEY_MSG = "Invalid PrivateKey, must start either with -----BEGIN PRIVATE KEY-----" +
+            " or -----BEGIN ENCRYPTED PRIVATE KEY-----";
 
     private JwtKeys() {
     }
