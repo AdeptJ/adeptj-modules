@@ -71,13 +71,18 @@ final class JwtKeys {
 
     private static final String KEYPASS_NULL_MSG = "privateKeyPassword can't be blank!!";
 
+    private static final String INVALID_PUBLIC_KEY_MSG = "Invalid PublicKey, must start with -----BEGIN PUBLIC KEY-----";
+
+    private static final String INVALID_PRIVATE_KEY_MSG = "Invalid PrivateKey, must start either with " +
+            "-----BEGIN ENCRYPTED PRIVATE KEY----- or -----BEGIN PRIVATE KEY-----";
+
     private JwtKeys() {
     }
 
     static PrivateKey createSigningKey(JwtConfig jwtConfig, SignatureAlgorithm signatureAlgo) {
         LOGGER.info("Creating RSA signing key!!");
         String keyData = jwtConfig.privateKey();
-        Assert.hasText(keyData, "PrivateKey data can't be blank!!");
+        Assert.isTrue(StringUtils.startsWithAny(keyData, PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER), INVALID_PRIVATE_KEY_MSG);
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgo.getFamilyName());
             if (StringUtils.startsWith(keyData, PRIVATE_ENCRYPTED_KEY_HEADER)) {
@@ -102,7 +107,7 @@ final class JwtKeys {
 
     static PublicKey createVerificationKey(SignatureAlgorithm signatureAlgo, String publicKey) {
         LOGGER.info("Creating RSA verification key!!");
-        Assert.hasText(publicKey, "PublicKey data can't be blank!!");
+        Assert.isTrue(StringUtils.startsWith(publicKey, PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgo.getFamilyName());
             byte[] publicKeyData = Base64.getDecoder().decode(publicKey
