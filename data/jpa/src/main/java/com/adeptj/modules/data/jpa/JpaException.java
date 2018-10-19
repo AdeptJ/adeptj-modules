@@ -25,19 +25,11 @@ package com.adeptj.modules.data.jpa;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class PersistenceException extends RuntimeException {
+public class JpaException extends RuntimeException {
 
     private static final long serialVersionUID = 7296926130485279382L;
 
-    public PersistenceException(String msg) {
-        super(msg);
-    }
-
-    public PersistenceException(Throwable throwable) {
+    public JpaException(Throwable throwable) {
         super(throwable);
-    }
-
-    public PersistenceException(String msg, Throwable throwable) {
-        super(msg, throwable);
     }
 }

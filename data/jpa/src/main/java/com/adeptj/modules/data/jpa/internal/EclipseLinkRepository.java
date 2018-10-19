@@ -27,9 +27,9 @@ import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.JpaCallback;
+import com.adeptj.modules.data.jpa.JpaException;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.JpaUtil;
-import com.adeptj.modules.data.jpa.PersistenceException;
 import com.adeptj.modules.data.jpa.QueryType;
 import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
@@ -115,7 +115,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -138,7 +138,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -169,7 +169,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -196,7 +196,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -221,7 +221,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -250,7 +250,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -274,7 +274,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -291,7 +291,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return em.find(entity, primaryKey);
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -311,7 +311,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -335,7 +335,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -358,7 +358,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -374,7 +374,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setTypedQueryParams(em.createNamedQuery(namedQuery, resultClass), posParams).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -391,7 +391,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setQueryParams(em.createNamedQuery(namedQuery), posParams).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -408,7 +408,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return em.createQuery(cq.select(cq.from(entity))).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -428,7 +428,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -445,7 +445,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setTypedQueryParams(query, crudDTO.getPosParams()).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -465,7 +465,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -486,7 +486,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -500,7 +500,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setQueryParams(em.createNativeQuery(nativeQuery, resultClass), posParams).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -518,7 +518,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setQueryParams(query, mappingDTO.getPosParams()).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -534,7 +534,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setTypedQueryParams(em.createQuery(jpaQuery, resultClass), posParams).getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -558,7 +558,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getResultList();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -583,7 +583,7 @@ public class EclipseLinkRepository implements JpaRepository {
             }
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -600,7 +600,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setTypedQueryParams(em.createNamedQuery(namedQuery, resultClass), posParams).getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -613,7 +613,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return JpaUtil.setQueryParams(em.createNamedQuery(namedQuery), posParams).getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -631,7 +631,7 @@ public class EclipseLinkRepository implements JpaRepository {
             return em.createQuery(cq.select(cb.count(cq.from(entity)))).getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -652,7 +652,7 @@ public class EclipseLinkRepository implements JpaRepository {
                     .getSingleResult();
         } catch (RuntimeException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
@@ -678,7 +678,7 @@ public class EclipseLinkRepository implements JpaRepository {
         } catch (RuntimeException ex) {
             JpaUtil.setRollbackOnly(txn);
             LOGGER.error(ex.getMessage(), ex);
-            throw new PersistenceException(ex.getMessage(), ex);
+            throw new JpaException(ex);
         } finally {
             JpaUtil.rollbackTransaction(txn);
             JpaUtil.closeEntityManager(em);
@@ -699,7 +699,7 @@ public class EclipseLinkRepository implements JpaRepository {
             jpaProperties.put(VALIDATION_MODE, config.validationMode());
             jpaProperties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
             this.emf = new PersistenceProvider().createEntityManagerFactory(unitName, jpaProperties);
-            Validate.validState(this.emf != null, "Couldn't create EntityManagerFactory, most probably missing persistence.xml!!");
+            Validate.validState(this.emf != null, "Couldn't create EntityManagerFactory, probably persistence.xml missing!!");
             LOGGER.info("Created EntityManagerFactory: [{}]", this.emf);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
