@@ -27,6 +27,7 @@ import com.adeptj.modules.data.jpa.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.CrudDTO;
 import com.adeptj.modules.data.jpa.DeleteCriteria;
 import com.adeptj.modules.data.jpa.JpaCallback;
+import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.PersistenceException;
 import com.adeptj.modules.data.jpa.QueryType;
@@ -34,7 +35,6 @@ import com.adeptj.modules.data.jpa.ReadCriteria;
 import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.UpdateCriteria;
-import com.adeptj.modules.data.jpa.JpaRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -62,7 +62,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 
-import static com.adeptj.modules.data.jpa.internal.EclipseLinkRepository.PID;
+import static com.adeptj.modules.data.jpa.JpaConstants.JPA_FACTORY_PID;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
@@ -86,12 +86,10 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = EntityManagerFactoryConfig.class, factory = true)
-@Component(service = JpaRepository.class, name = PID, configurationPolicy = REQUIRE)
+@Component(service = JpaRepository.class, name = JPA_FACTORY_PID, configurationPolicy = REQUIRE)
 public class EclipseLinkRepository implements JpaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    static final String PID = "com.adeptj.modules.data.jpa.JpaRepository.factory";
 
     private EntityManagerFactory emf;
 

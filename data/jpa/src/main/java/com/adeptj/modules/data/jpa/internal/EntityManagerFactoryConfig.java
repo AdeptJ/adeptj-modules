@@ -53,8 +53,6 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 )
 public @interface EntityManagerFactoryConfig {
 
-    int CARDINALITY = 100;
-
     @AttributeDefinition(
             name = "PersistenceUnit Name",
             description = "Note: Must be same as in persistence.xml"
@@ -87,8 +85,7 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "JPA Properties",
-            description = "JPA Properties(key=value) format",
-            cardinality = CARDINALITY
+            description = "JPA Properties(key=value) format"
     )
     String[] jpaProperties();
 
