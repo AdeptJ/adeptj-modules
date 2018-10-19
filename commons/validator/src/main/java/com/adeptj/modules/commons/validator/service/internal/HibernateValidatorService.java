@@ -99,8 +99,7 @@ public class HibernateValidatorService implements ValidatorService {
             this.validatorFactory = Validation.byProvider(HibernateValidator.class)
                     .configure()
                     .buildValidatorFactory();
-            long endTime = System.nanoTime() - startTime;
-            LOGGER.info("HibernateValidator initialized in [{}] ms!!", NANOSECONDS.toMillis(endTime));
+            LOGGER.info("HibernateValidator initialized in [{}] ms!!", NANOSECONDS.toMillis(System.nanoTime() - startTime));
         } catch (NoProviderFoundException ex) {
             LOGGER.error("Could not create ValidatorFactory!!", ex);
             throw ex;

@@ -20,12 +20,10 @@
 
 package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.data.jpa.api.JpaRepository;
-
 import java.io.Serializable;
 
 /**
- * Marker Interface and super of all the JPA Entities that {@link JpaRepository} will be dealing with.
+ * Must be a super of all the JPA Entities that {@link JpaRepository} will be dealing with.
  * <p>
  * This interface denotes that all of its implementations are Serializable.
  *

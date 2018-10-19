@@ -59,7 +59,7 @@ public @interface EntityManagerFactoryConfig {
             name = "PersistenceUnit Name",
             description = "Note: Must be same as in persistence.xml"
     )
-    String unitName();
+    String osgi_unit_name(); // NOSONAR
 
     @AttributeDefinition(
             name = "Persistence XML Location",

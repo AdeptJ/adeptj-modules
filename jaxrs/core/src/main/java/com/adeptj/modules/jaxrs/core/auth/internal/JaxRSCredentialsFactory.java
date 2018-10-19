@@ -55,7 +55,7 @@ public class JaxRSCredentialsFactory {
 
     private char[] password;
 
-    SimpleCredentials getSimpleCredentials() {
+    SimpleCredentials getCredentials() {
         return SimpleCredentials.of(this.username, this.password);
     }
 

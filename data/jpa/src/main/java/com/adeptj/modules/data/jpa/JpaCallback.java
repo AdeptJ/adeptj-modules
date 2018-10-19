@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.data.jpa.api.JpaRepository;
-
 import javax.persistence.EntityManager;
 
 /**

@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.data.jpa.api.JpaRepository;
 import com.adeptj.modules.data.jpa.entity.User;
 import com.adeptj.modules.data.jpa.internal.EclipseLinkRepository;
 import org.junit.jupiter.api.AfterAll;
@@ -43,12 +42,12 @@ public class JpaRepositoryTest {
 
     private static EntityManagerFactory emf;
 
-    private static JpaRepository crudRepository;
+    private static JpaRepository jpaRepository;
 
     @BeforeAll
     public static void init() throws Exception {
         emf = Persistence.createEntityManagerFactory("AdeptJ_PU");
-        crudRepository = new EclipseLinkRepository(emf);
+        jpaRepository = new EclipseLinkRepository();
     }
 
     @AfterAll
@@ -63,7 +62,7 @@ public class JpaRepositoryTest {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("john.doe@johndoe.com");
-        user = crudRepository.insert(user);
+        user = jpaRepository.insert(user);
         System.out.println("User ID: " + user.getId());
     }
 
@@ -75,13 +74,13 @@ public class JpaRepositoryTest {
         user.setFirstName("John_Updated");
         user.setLastName("Doe");
         user.setEmail("john.doe@johndoe.com");
-        user = crudRepository.update(user);
+        user = jpaRepository.update(user);
         System.out.println("User's Contact No is: " + user.getContact());
     }
 
     @Test
     public void testUpdateByCriteria() {
-        int rowsUpdated = crudRepository.updateByCriteria(UpdateCriteria.builder()
+        int rowsUpdated = jpaRepository.updateByCriteria(UpdateCriteria.builder()
                 .entity(User.class)
                 .addCriteriaAttribute("firstName", "John")
                 .addUpdateAttribute("contact", "1234567891")
@@ -91,12 +90,12 @@ public class JpaRepositoryTest {
 
     @Test
     public void testDelete() {
-        crudRepository.delete(User.class, 19L);
+        jpaRepository.delete(User.class, 19L);
     }
 
     @Test
     public void testDeleteByCriteria() {
-        int rows = crudRepository.deleteByCriteria(DeleteCriteria.builder()
+        int rows = jpaRepository.deleteByCriteria(DeleteCriteria.builder()
                 .entity(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
@@ -105,7 +104,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testDeleteByJpaNamedQuery() {
-        int rows = crudRepository.deleteByJpaNamedQuery(CrudDTO.builder()
+        int rows = jpaRepository.deleteByJpaNamedQuery(CrudDTO.builder()
                 .entity(User.class)
                 .namedQuery("User.deleteUserByContact.JPA")
                 .addPosParam("1234567890")
@@ -115,7 +114,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByCriteria() {
-        List<User> users = crudRepository.findByCriteria(ReadCriteria.builder()
+        List<User> users = jpaRepository.findByCriteria(ReadCriteria.builder()
                 .entity(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
@@ -124,7 +123,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByTupleQuery() {
-        crudRepository.findByTupleQuery(TupleQueryCriteria.builder()
+        jpaRepository.findByTupleQuery(TupleQueryCriteria.builder()
                 .entity(User.class)
                 .addSelections("firstName", "lastName")
                 .addCriteriaAttribute("contact", "1234567890")
@@ -138,7 +137,7 @@ public class JpaRepositoryTest {
     public void testFindByJpaNamedQueryAsUser() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User", posParams)
+        jpaRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User", posParams)
                 .forEach(user -> {
                     System.out.println("FirstName: " + user.getFirstName());
                     System.out.println("LastName: " + user.getLastName());
@@ -149,7 +148,7 @@ public class JpaRepositoryTest {
     public void testFindByJpaNamedQueryAsObjectArray() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray", posParams)
+        jpaRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray", posParams)
                 .forEach(objectArray -> {
                     System.out.println("FirstName: " + objectArray[0]);
                     System.out.println("LastName: " + objectArray[1]);
@@ -160,7 +159,7 @@ public class JpaRepositoryTest {
     public void testFindByJPQLNamedQuery() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findByNamedQuery("User.findUserByContact.JPA.User", posParams)
+        jpaRepository.findByNamedQuery("User.findUserByContact.JPA.User", posParams)
                 .forEach(object -> {
                     if (object instanceof User) {
                         System.out.println("User!!");
@@ -180,7 +179,7 @@ public class JpaRepositoryTest {
     public void testFindByNativeNamedQuery() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findByNamedQuery("User.findUserByContact.NATIVE", posParams)
+        jpaRepository.findByNamedQuery("User.findUserByContact.NATIVE", posParams)
                 .forEach(object -> {
                     if (object instanceof Object[]) {
                         Object[] objectArray = (Object[]) object;
@@ -192,7 +191,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindPaginatedRecords() {
-        Long count = crudRepository.count(User.class);
+        Long count = jpaRepository.count(User.class);
         System.out.println("Total no of users: " + count);
         int pageSize = count.intValue() / 3;
         this.paginate(0, pageSize);
@@ -201,7 +200,7 @@ public class JpaRepositoryTest {
     }
 
     private void paginate(int startPos, int pageSize) {
-        List<User> users = crudRepository.findPaginatedRecords(User.class, startPos, pageSize);
+        List<User> users = jpaRepository.findPaginatedRecords(User.class, startPos, pageSize);
         users.forEach(user -> {
             System.out.println("FirstName: " + user.getFirstName());
             System.out.println("LastName: " + user.getLastName());
@@ -211,7 +210,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaQuery() {
-        List<User> users = crudRepository.findByJpaQuery(CrudDTO.builder()
+        List<User> users = jpaRepository.findByJpaQuery(CrudDTO.builder()
                 .entity(User.class)
                 .jpaQuery("SELECT u FROM  User u WHERE u.firstName = ?1 and u.contact = ?2")
                 .addPosParams("John", "1234567890")
@@ -227,7 +226,7 @@ public class JpaRepositoryTest {
     public void testGetScalarResultByNamedQuery() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567891");
-        User user = crudRepository
+        User user = jpaRepository
                 .getScalarResultOfType(User.class, "User.findUserByContact.JPA.Scalar", posParams);
         if (user != null) {
             System.out.println("FirstName: " + user.getFirstName());
@@ -239,7 +238,7 @@ public class JpaRepositoryTest {
     public void testFindAndMapResultSet() {
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
+        jpaRepository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
                 .nativeQuery("SELECT * FROM  Users u WHERE MOBILE_NO = ?1")
                 .resultSetMapping("User.findUserByContact.EntityMapping")
                 .addPosParam(posParams)
@@ -258,7 +257,7 @@ public class JpaRepositoryTest {
                 "FROM User u WHERE u.contact = ?1";
         List<Object> posParams = new ArrayList<>();
         posParams.add("1234567890");
-        crudRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery, posParams)
+        jpaRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery, posParams)
                 .forEach(user -> {
                     System.out.println("User ID: " + user.getId());
                     System.out.println("FirstName: " + user.getFirstName());
@@ -269,7 +268,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindAndMapConstructorByCriteria() {
-        List<UserDTO> usersDTOList = crudRepository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder()
+        List<UserDTO> usersDTOList = jpaRepository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder()
                 .entity(User.class)
                 .constructorClass(UserDTO.class)
                 .addSelections("id", "firstName", "lastName", "email")

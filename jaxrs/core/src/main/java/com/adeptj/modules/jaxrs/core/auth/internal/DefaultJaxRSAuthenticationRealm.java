@@ -82,7 +82,7 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
 
     @Reference(service = JaxRSCredentialsFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindJaxRSCredentialsFactory(JaxRSCredentialsFactory credentialsFactory) {
-        SimpleCredentials simpleCredentials = credentialsFactory.getSimpleCredentials();
+        SimpleCredentials simpleCredentials = credentialsFactory.getCredentials();
         LOGGER.info("Creating {}", simpleCredentials);
         if (this.credentials.contains(simpleCredentials)) {
             String username = simpleCredentials.getUsername();
@@ -92,8 +92,8 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
         this.credentials.add(simpleCredentials);
     }
 
-    protected void unbindJaxRSCredentialsFactory(JaxRSCredentialsFactory factory) {
-        SimpleCredentials simpleCredentials = factory.getSimpleCredentials();
+    protected void unbindJaxRSCredentialsFactory(JaxRSCredentialsFactory credentialsFactory) {
+        SimpleCredentials simpleCredentials = credentialsFactory.getCredentials();
         LOGGER.info("Deleting {}", simpleCredentials);
         this.credentials.remove(simpleCredentials);
     }

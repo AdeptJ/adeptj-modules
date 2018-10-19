@@ -27,6 +27,9 @@ package com.adeptj.modules.data.jpa.internal;
  */
 final class LoggingLevel {
 
+    private LoggingLevel() {
+    }
+
     static final String OFF = "OFF";
 
     static final String SEVERE = "SEVERE";
@@ -44,10 +47,4 @@ final class LoggingLevel {
     static final String FINEST = "FINEST";
 
     static final String ALL = "ALL";
-
-    /**
-     * deny direct instantiation.
-     */
-    private LoggingLevel() {
-    }
 }

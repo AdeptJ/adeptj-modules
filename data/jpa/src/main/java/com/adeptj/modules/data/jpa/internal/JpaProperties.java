@@ -24,8 +24,6 @@ import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.sql.DataSource;
-import javax.validation.ValidatorFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,10 +40,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELI
 import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_FILE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
 
 /**
  * Utility methods for {@link javax.persistence.EntityManagerFactory}.
@@ -54,7 +49,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR
  */
 class JpaProperties {
 
-    static Map<String, Object> create(EntityManagerFactoryConfig config, DataSource ds, ValidatorFactory vf) {
+    static Map<String, Object> from(EntityManagerFactoryConfig config) {
         Map<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
@@ -69,9 +64,6 @@ class JpaProperties {
             jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         }
         jpaProperties.put(CLASSLOADER, JpaProperties.class.getClassLoader());
-        jpaProperties.put(NON_JTA_DATASOURCE, ds);
-        jpaProperties.put(VALIDATION_MODE, config.validationMode());
-        jpaProperties.put(VALIDATOR_FACTORY, vf);
         // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
         jpaProperties.putAll(Stream.of(config.jpaProperties())
                 .filter(StringUtils::isNotEmpty)

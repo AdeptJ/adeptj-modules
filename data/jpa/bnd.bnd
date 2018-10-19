@@ -18,13 +18,16 @@
 
 -metatypeannotations: *
 
+-metatypeannotations-options: version;minimum=1.4.0
+
 -dsannotations: *
 
-Export-Package: com.adeptj.modules.data.jpa,\
-   com.adeptj.modules.data.jpa.api
+-dsannotations-options: version;minimum=1.4.0
 
-Import-Package: org.eclipse.persistence.indirection,\
-    *
+Export-Package: com.adeptj.modules.data.jpa
+
+Import-Package: org.eclipse.persistence.indirection, \
+                *
 
 Bundle-Name: AdeptJ Modules :: Data :: JPA
 

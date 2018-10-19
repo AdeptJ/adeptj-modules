@@ -18,18 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.api;
-
-import com.adeptj.modules.data.jpa.BaseEntity;
-import com.adeptj.modules.data.jpa.ConstructorCriteria;
-import com.adeptj.modules.data.jpa.CrudDTO;
-import com.adeptj.modules.data.jpa.DeleteCriteria;
-import com.adeptj.modules.data.jpa.JpaCallback;
-import com.adeptj.modules.data.jpa.QueryType;
-import com.adeptj.modules.data.jpa.ReadCriteria;
-import com.adeptj.modules.data.jpa.ResultSetMappingDTO;
-import com.adeptj.modules.data.jpa.TupleQueryCriteria;
-import com.adeptj.modules.data.jpa.UpdateCriteria;
+package com.adeptj.modules.data.jpa;
 
 import javax.persistence.Tuple;
 import java.util.List;

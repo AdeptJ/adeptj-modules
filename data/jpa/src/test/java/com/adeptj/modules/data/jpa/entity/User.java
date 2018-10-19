@@ -39,7 +39,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 /**
  * User Entity
@@ -118,7 +117,7 @@ public class User implements BaseEntity {
     private String contact;
 
     @Override
-    public Serializable getId() {
+    public Long getId() {
         return this.id;
     }
 
