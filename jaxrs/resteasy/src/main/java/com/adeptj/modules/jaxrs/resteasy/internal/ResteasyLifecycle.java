@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
@@ -113,9 +114,7 @@ public class ResteasyLifecycle {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void stop(ServletConfig servletConfig) {
-        if (this.serviceTrackers != null) {
-            this.serviceTrackers.closeAll();
-        }
+        Optional.ofNullable(this.serviceTrackers).ifPresent(ServiceTrackers::closeAll);
         ServletContext servletContext = servletConfig.getServletContext();
         Object deployment = servletContext.getAttribute(ResteasyDeployment.class.getName());
         if (deployment instanceof ResteasyDeployment) {

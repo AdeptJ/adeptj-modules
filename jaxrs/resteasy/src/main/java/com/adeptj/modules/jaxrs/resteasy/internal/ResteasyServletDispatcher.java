@@ -55,12 +55,15 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        ResteasyDeployment deployment = new ServletBootstrap(servletConfig).createDeployment();
+        ServletBootstrap bootstrap = new ServletBootstrap(servletConfig);
+        ResteasyDeployment deployment = bootstrap.createDeployment();
         deployment.setProviderFactory(new ResteasyProviderFactoryAdapter());
         deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         servletConfig.getServletContext().setAttribute(ResteasyDeployment.class.getName(), deployment);
+        LOGGER.info("Initializing RESTEasy ServletContainerDispatcher!!");
         super.init(servletConfig);
+        LOGGER.info("RESTEasy ServletContainerDispatcher Initialized!!");
     }
 
     @Override
