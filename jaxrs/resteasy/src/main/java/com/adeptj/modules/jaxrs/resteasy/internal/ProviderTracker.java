@@ -66,8 +66,8 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
             LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
             return null;
         }
-        LOGGER.info("Adding JAX-RS Provider: [{}]", provider);
         this.providerFactory.registerProviderInstance(provider);
+        LOGGER.info("Registered JAX-RS Provider: [{}]", provider);
         return provider;
     }
 
@@ -80,7 +80,6 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     @Override
     public void removedService(ServiceReference<Object> reference, Object service) {
         super.removedService(reference, service);
-        LOGGER.info("Removing JAX-RS Provider: [{}]", service);
         if (this.providerFactory.getProviderInstances().remove(service)) {
             LOGGER.info("Removed JAX-RS Provider: [{}]", service);
         }
