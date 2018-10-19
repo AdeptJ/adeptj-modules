@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import java.lang.invoke.MethodHandles;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -115,8 +116,18 @@ public class ResteasyLifecycle {
         if (this.serviceTrackers != null) {
             this.serviceTrackers.closeAll();
         }
+        ServletContext servletContext = servletConfig.getServletContext();
+        Object deployment = servletContext.getAttribute(ResteasyDeployment.class.getName());
+        if (deployment instanceof ResteasyDeployment) {
+            try {
+                ((ResteasyDeployment) deployment).stop();
+                LOGGER.info("ResteasyDeployment stopped!!");
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error(ex.getMessage(), ex);
+            }
+        }
         this.resteasyDispatcher.destroy();
-        servletConfig.getServletContext().removeAttribute(ResteasyDeployment.class.getName());
+        servletContext.removeAttribute(ResteasyDeployment.class.getName());
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 
