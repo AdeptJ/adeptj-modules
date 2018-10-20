@@ -84,7 +84,7 @@ public class ResteasyProxyServlet extends HttpServlet {
      */
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        this.resteasyLifecycle.getResteasyDispatcher().service(req, resp);
+        this.resteasyLifecycle.getResteasyServletDispatcher().service(req, resp);
     }
 
     /**

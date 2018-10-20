@@ -46,12 +46,16 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     private static final String RES_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME);
 
-    private final Registry registry;
+    private Registry registry;
 
-    ResourceTracker(BundleContext context, Registry registry) {
+    ResourceTracker(BundleContext context) {
         super(context, OSGiUtil.anyServiceFilter(context, RES_FILTER_EXPR), null);
+    }
+
+    void setRegistry(Registry registry) {
         this.registry = registry;
-        this.open();
+        // now open the service tracker
+        super.open();
     }
 
     /**
