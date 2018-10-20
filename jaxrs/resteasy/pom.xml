@@ -183,7 +183,6 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-validator</artifactId>
-            <version>1.0.3.Final</version>
             <scope>provided</scope>
         </dependency>
 

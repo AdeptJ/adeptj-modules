@@ -98,7 +98,7 @@ public class ResteasyLifecycle {
                 this.serviceTrackers = new ServiceTrackers(this.bundleContext, dispatcher);
                 this.serviceTrackers.openAll();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
-            } catch (Exception ex) { // NOSONAR
+            } catch (Throwable ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
                 throw new ResteasyBootstrapException(ex.getMessage(), ex);
             }

@@ -20,8 +20,13 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -32,6 +37,8 @@ import java.util.Set;
  */
 public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     /**
      * See class header for description.
      *
@@ -39,6 +46,15 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
      */
     @Override
     public Set<Object> getProviderInstances() {
-        return this.providerInstances;
+        return super.providerInstances;
+    }
+
+    @Override
+    public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
+        if (provider == PatchMethodFilter.class) {
+            LOGGER.info("Ignoring PatchMethodFilter!!");
+        } else {
+            super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
+        }
     }
 }

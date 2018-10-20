@@ -20,8 +20,8 @@
 
 package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.commons.utils.Loggers;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -30,6 +30,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,18 +42,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class JpaUtil {
 
-    private static final Logger LOGGER = Loggers.get(JpaUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private JpaUtil() {
     }
 
     public static void closeEntityManager(EntityManager em) {
-        try {
-            if (em != null && em.isOpen()) {
+        if (em != null && em.isOpen()) {
+            try {
                 em.close();
+            } catch (RuntimeException ex) {
+                LOGGER.error("Exception while closing EntityManager!!", ex);
             }
-        } catch (RuntimeException ex) {
-            LOGGER.error("Exception while closing EntityManager!!", ex);
         }
     }
 
@@ -69,13 +70,13 @@ public final class JpaUtil {
     }
 
     public static void rollbackTransaction(EntityTransaction txn) {
-        try {
-            if (txn != null && txn.isActive() && txn.getRollbackOnly()) {
+        if (txn != null && txn.isActive() && txn.getRollbackOnly()) {
+            try {
                 LOGGER.warn("Rolling back transaction!!");
                 txn.rollback();
+            } catch (RuntimeException ex) {
+                LOGGER.error("Exception while rolling back transaction!!", ex);
             }
-        } catch (RuntimeException ex) {
-            LOGGER.error("Exception while rolling back transaction!!", ex);
         }
     }
 

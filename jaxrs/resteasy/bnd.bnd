@@ -29,7 +29,7 @@
 # Copy RESTEasy dependencies to the root folder of the target JAR and add them to the bundle classpath
 -includeresource: resteasy-*.jar;apache-mime4j-*.jar;lib:=true
 
--exportcontents: com.adeptj.modules.jaxrs.resteasy,\
+-exportcontents: com.adeptj.modules.jaxrs.resteasy, \
                  !com.adeptj.modules.jaxrs.resteasy.internal, \
                  *
 
@@ -52,6 +52,7 @@ Import-Package: \
   com.adeptj.modules.jaxrs.core.auth;\
   com.adeptj.modules.jaxrs.core.auth.api;\
   com.adeptj.modules.jaxrs.core.jwt,\
+  !com.github.fge.jsonpatch, \
   *
   
 Bundle-Name: ${project.name}

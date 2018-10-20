@@ -31,6 +31,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
@@ -39,6 +40,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.Stream;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
+import static javax.ws.rs.RuntimeType.SERVER;
 import static org.apache.commons.lang3.StringUtils.containsAny;
 
 /**
@@ -54,6 +56,7 @@ import static org.apache.commons.lang3.StringUtils.containsAny;
  */
 @JaxRSProvider(name = "JwtDynamicFeature")
 @Provider
+@ConstrainedTo(SERVER)
 @Designate(ocd = JwtDynamicFeatureConfig.class)
 @Component(immediate = true)
 public class JwtDynamicFeature implements DynamicFeature {
