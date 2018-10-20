@@ -52,7 +52,6 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
 
     void setResteasyProviderFactory(ResteasyProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        // now open the service tracker
         super.open();
     }
 

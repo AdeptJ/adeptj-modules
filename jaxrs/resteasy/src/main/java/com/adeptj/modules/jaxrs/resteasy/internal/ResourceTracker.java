@@ -54,7 +54,6 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     void setRegistry(Registry registry) {
         this.registry = registry;
-        // now open the service tracker
         super.open();
     }
 
