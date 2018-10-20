@@ -88,13 +88,11 @@ public class ResteasyLifecycle {
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
                 this.resteasyDispatcher = new ResteasyServletDispatcher();
                 this.resteasyDispatcher.init(servletConfig);
-                // Now we have access to fully initialized Dispatcher which provides the ResteasyProviderFactory
-                // and Registry instances.
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 dispatcher.getProviderFactory()
-                        .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()))
+                        .register(this.corsFilter)
                         .register(new ApplicationExceptionMapper(this.sendExceptionTrace))
-                        .register(this.corsFilter);
+                        .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()));
                 this.serviceTrackers = new ServiceTrackers(this.bundleContext, dispatcher);
                 this.serviceTrackers.openAll();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
