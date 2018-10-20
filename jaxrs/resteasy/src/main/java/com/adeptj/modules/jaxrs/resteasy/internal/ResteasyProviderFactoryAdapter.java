@@ -21,11 +21,15 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter;
+import org.jboss.resteasy.plugins.validation.ValidatorContextResolver;
+import org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +43,15 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private final List<Class<?>> ignoredProviders;
+
+    ResteasyProviderFactoryAdapter() {
+        this.ignoredProviders = new ArrayList<>();
+        this.ignoredProviders.add(PatchMethodFilter.class);
+        this.ignoredProviders.add(ValidatorContextResolver.class);
+        this.ignoredProviders.add(ValidatorContextResolverCDI.class);
+    }
+
     /**
      * See class header for description.
      *
@@ -51,8 +64,8 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
 
     @Override
     public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
-        if (provider == PatchMethodFilter.class) {
-            LOGGER.info("Ignoring PatchMethodFilter!!");
+        if (this.ignoredProviders.contains(provider)) {
+            LOGGER.info("Ignoring provider: [{}]", provider);
         } else {
             super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
         }
