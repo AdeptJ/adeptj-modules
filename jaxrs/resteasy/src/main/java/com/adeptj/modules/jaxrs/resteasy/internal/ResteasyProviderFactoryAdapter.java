@@ -65,7 +65,7 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
     @Override
     public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
         if (this.ignoredProviders.contains(provider)) {
-            LOGGER.info("Ignoring provider: [{}]", provider);
+            LOGGER.info("Ignoring Provider: [{}]", provider);
         } else {
             super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
         }
