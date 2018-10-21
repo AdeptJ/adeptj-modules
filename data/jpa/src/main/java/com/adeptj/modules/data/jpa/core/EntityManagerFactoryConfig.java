@@ -18,21 +18,21 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.core;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.ALL;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.CONFIG;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.FINE;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.FINER;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.FINEST;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.INFO;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.OFF;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.SEVERE;
-import static com.adeptj.modules.data.jpa.internal.LoggingLevel.WARNING;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.ALL;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.CONFIG;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.FINE;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.FINER;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.FINEST;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.INFO;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.OFF;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.SEVERE;
+import static com.adeptj.modules.data.jpa.core.LoggingLevel.WARNING;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CREATE_ONLY;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CREATE_OR_EXTEND;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_BOTH_GENERATION;
@@ -66,8 +66,9 @@ public @interface EntityManagerFactoryConfig {
     String persistenceXmlLocation() default "META-INF/persistence.xml";
 
     @AttributeDefinition(
-            name = "JDBC DataSource to Use",
-            description = "DataSource Name For Binding to this EntityManagerFactory"
+            name = "Non JTA DataSource",
+            description = "DataSource name for binding to this EntityManagerFactory, " +
+                    "please configure the DataSource using [AdeptJ JDBC DataSource Configurations]."
     )
     String dataSourceName();
 

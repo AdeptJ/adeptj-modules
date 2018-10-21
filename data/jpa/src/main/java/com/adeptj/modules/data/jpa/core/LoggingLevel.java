@@ -18,18 +18,33 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.core;
 
 /**
- * Exception thrown by {@link JpaRepository} methods.
+ * EclipseLink Log levels.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JpaException extends RuntimeException {
+final class LoggingLevel {
 
-    private static final long serialVersionUID = 7296926130485279382L;
-
-    public JpaException(Throwable throwable) {
-        super(throwable);
+    private LoggingLevel() {
     }
+
+    static final String OFF = "OFF";
+
+    static final String SEVERE = "SEVERE";
+
+    static final String WARNING = "WARNING";
+
+    static final String INFO = "INFO";
+
+    static final String CONFIG = "CONFIG";
+
+    static final String FINE = "FINE";
+
+    static final String FINER = "FINER";
+
+    static final String FINEST = "FINEST";
+
+    static final String ALL = "ALL";
 }

@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.commons.jdbc.internal;
 
-import com.adeptj.modules.commons.utils.annotation.ServicePid;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -41,7 +40,6 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ServicePid(PID)
 @Designate(ocd = DataSourceConfig.class, factory = true)
 @Component(service = DataSourceProvider.class, name = PID, configurationPolicy = REQUIRE)
 public class DataSourceProvider {

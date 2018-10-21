@@ -18,30 +18,20 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.exception;
 
-import java.util.Map;
+import com.adeptj.modules.data.jpa.JpaRepository;
 
 /**
- * Base for all the *Criteria classes.
+ * Exception thrown by {@link JpaRepository} methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public abstract class BaseCriteria<T extends BaseEntity> {
+public class JpaException extends RuntimeException {
 
-    private Class<T> entity;
+    private static final long serialVersionUID = 7296926130485279382L;
 
-    Map<String, Object> criteriaAttributes;
-
-    BaseCriteria(Class<T> entity) {
-        this.entity = entity;
-    }
-
-    public Class<T> getEntity() {
-        return entity;
-    }
-
-    public Map<String, Object> getCriteriaAttributes() {
-        return criteriaAttributes;
+    public JpaException(Throwable throwable) {
+        super(throwable);
     }
 }

@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.core;
 
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import org.apache.commons.lang3.ArrayUtils;
@@ -47,9 +47,9 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTI
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class JpaProperties {
+public class JpaProperties {
 
-    static Map<String, Object> from(EntityManagerFactoryConfig config) {
+    public static Map<String, Object> from(EntityManagerFactoryConfig config, ClassLoader cl) {
         Map<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
@@ -63,7 +63,7 @@ class JpaProperties {
         if (config.useExceptionHandler()) {
             jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         }
-        jpaProperties.put(CLASSLOADER, JpaProperties.class.getClassLoader());
+        jpaProperties.put(CLASSLOADER, cl);
         // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
         jpaProperties.putAll(Stream.of(config.jpaProperties())
                 .filter(StringUtils::isNotEmpty)

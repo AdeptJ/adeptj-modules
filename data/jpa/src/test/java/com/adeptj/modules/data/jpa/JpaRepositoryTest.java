@@ -20,6 +20,13 @@
 
 package com.adeptj.modules.data.jpa;
 
+import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
+import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
+import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
+import com.adeptj.modules.data.jpa.criteria.TupleQueryCriteria;
+import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
+import com.adeptj.modules.data.jpa.dto.CrudDTO;
+import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.entity.User;
 import com.adeptj.modules.data.jpa.internal.EclipseLinkRepository;
 import org.junit.jupiter.api.AfterAll;
@@ -42,12 +49,13 @@ public class JpaRepositoryTest {
 
     private static EntityManagerFactory emf;
 
-    private static JpaRepository jpaRepository;
+    private static EclipseLinkRepository jpaRepository;
 
     @BeforeAll
     public static void init() throws Exception {
         emf = Persistence.createEntityManagerFactory("AdeptJ_PU");
         jpaRepository = new EclipseLinkRepository();
+        jpaRepository.setEntityManagerFactory(emf);
     }
 
     @AfterAll

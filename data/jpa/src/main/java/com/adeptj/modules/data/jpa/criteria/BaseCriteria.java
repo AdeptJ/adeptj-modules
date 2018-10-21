@@ -18,33 +18,32 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.criteria;
+
+import com.adeptj.modules.data.jpa.BaseEntity;
+
+import java.util.Map;
 
 /**
- * EclipseLink Log levels.
+ * Base for all the *Criteria classes.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class LoggingLevel {
+public abstract class BaseCriteria<T extends BaseEntity> {
 
-    private LoggingLevel() {
+    private Class<T> entity;
+
+    Map<String, Object> criteriaAttributes;
+
+    BaseCriteria(Class<T> entity) {
+        this.entity = entity;
     }
 
-    static final String OFF = "OFF";
+    public Class<T> getEntity() {
+        return entity;
+    }
 
-    static final String SEVERE = "SEVERE";
-
-    static final String WARNING = "WARNING";
-
-    static final String INFO = "INFO";
-
-    static final String CONFIG = "CONFIG";
-
-    static final String FINE = "FINE";
-
-    static final String FINER = "FINER";
-
-    static final String FINEST = "FINEST";
-
-    static final String ALL = "ALL";
+    public Map<String, Object> getCriteriaAttributes() {
+        return criteriaAttributes;
+    }
 }

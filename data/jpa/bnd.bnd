@@ -24,7 +24,9 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Export-Package: com.adeptj.modules.data.jpa
+Export-Package: com.adeptj.modules.data.jpa, \
+                com.adeptj.modules.data.jpa.core, \
+                com.adeptj.modules.data.jpa.criteria
 
 Import-Package: org.eclipse.persistence.indirection, \
                 *

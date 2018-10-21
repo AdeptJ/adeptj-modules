@@ -18,7 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.criteria;
+
+import com.adeptj.modules.data.jpa.BaseEntity;
 
 import java.util.HashMap;
 import java.util.Map;

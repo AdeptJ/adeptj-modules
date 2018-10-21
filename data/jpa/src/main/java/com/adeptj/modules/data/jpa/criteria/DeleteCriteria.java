@@ -18,43 +18,22 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.criteria;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.adeptj.modules.data.jpa.BaseEntity;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Criteria object holding arguments for JpaCrudRepository find* methods.
+ * Criteria object holding arguments for JpaCrudRepository delete* methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
+public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
-    private List<Object> posParams;
-
-    // For pagination - Start
-    private int startPos;
-
-    private int maxResult;
-    // For pagination - End
-
-    private ReadCriteria(Class<T> entity) {
+    private DeleteCriteria(Class<T> entity) {
         super(entity);
-    }
-
-    public List<Object> getPosParams() {
-        return posParams;
-    }
-
-    public int getStartPos() {
-        return startPos;
-    }
-
-    public int getMaxResult() {
-        return maxResult;
     }
 
     public static Builder builder() {
@@ -62,7 +41,7 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
     }
 
     /**
-     * Builder for creating {@link ReadCriteria}
+     * Builder for creating {@link DeleteCriteria}
      */
     public static class Builder {
 
@@ -73,12 +52,6 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         private Class<? extends BaseEntity> entity;
 
         private Map<String, Object> criteriaAttributes;
-
-        private List<Object> posParams;
-
-        private int startPos;
-
-        private int maxResult;
 
         public <T extends BaseEntity> Builder entity(Class<T> entity) {
             this.entity = entity;
@@ -93,39 +66,10 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder addPosParam(Object param) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
-            }
-            this.posParams.add(param);
-            return this;
-        }
-
-        public Builder addPosParams(Object... params) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
-            }
-            this.posParams.addAll(Arrays.asList(params));
-            return this;
-        }
-
-        public Builder startPos(int startPos) {
-            this.startPos = startPos;
-            return this;
-        }
-
-        public Builder maxResult(int maxResult) {
-            this.maxResult = maxResult;
-            return this;
-        }
-
         @SuppressWarnings("unchecked")
-        public <T extends BaseEntity> ReadCriteria<T> build() {
-            ReadCriteria<T> criteria = new ReadCriteria<>((Class<T>) this.entity);
+        public <T extends BaseEntity> DeleteCriteria<T> build() {
+            DeleteCriteria<T> criteria = new DeleteCriteria<>((Class<T>) this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
-            criteria.posParams = this.posParams;
-            criteria.startPos = this.startPos;
-            criteria.maxResult = this.maxResult;
             return criteria;
         }
     }

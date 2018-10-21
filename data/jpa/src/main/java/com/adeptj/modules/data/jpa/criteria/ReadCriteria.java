@@ -18,7 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.criteria;
+
+import com.adeptj.modules.data.jpa.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,27 +29,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Criteria object holding arguments for JpaCrudRepository findByCriteriaAndMapConstructor* methods.
+ * Criteria object holding arguments for JpaCrudRepository find* methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T> {
+public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
-    private Class<C> constructorClass;
+    private List<Object> posParams;
 
-    private List<String> selections;
+    // For pagination - Start
+    private int startPos;
 
-    private ConstructorCriteria(Class<T> entity, Class<C> constructorClass) {
+    private int maxResult;
+    // For pagination - End
+
+    private ReadCriteria(Class<T> entity) {
         super(entity);
-        this.constructorClass = constructorClass;
     }
 
-    public Class<C> getConstructorClass() {
-        return constructorClass;
+    public List<Object> getPosParams() {
+        return posParams;
     }
 
-    public List<String> getSelections() {
-        return selections;
+    public int getStartPos() {
+        return startPos;
+    }
+
+    public int getMaxResult() {
+        return maxResult;
     }
 
     public static Builder builder() {
@@ -55,7 +64,7 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
     }
 
     /**
-     * Builder for creating {@link ConstructorCriteria}
+     * Builder for creating {@link ReadCriteria}
      */
     public static class Builder {
 
@@ -65,19 +74,16 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
 
         private Class<? extends BaseEntity> entity;
 
-        private Class<?> constructorClass;
-
         private Map<String, Object> criteriaAttributes;
 
-        private List<String> selections;
+        private List<Object> posParams;
+
+        private int startPos;
+
+        private int maxResult;
 
         public <T extends BaseEntity> Builder entity(Class<T> entity) {
             this.entity = entity;
-            return this;
-        }
-
-        public <T extends BaseEntity> Builder constructorClass(Class<?> constructorClass) {
-            this.constructorClass = constructorClass;
             return this;
         }
 
@@ -89,27 +95,39 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
             return this;
         }
 
-        public Builder addSelection(String attributeName) {
-            if (this.selections == null) {
-                this.selections = new ArrayList<>();
+        public Builder addPosParam(Object param) {
+            if (this.posParams == null) {
+                this.posParams = new ArrayList<>();
             }
-            this.selections.add(attributeName);
+            this.posParams.add(param);
             return this;
         }
 
-        public Builder addSelections(String... attributeNames) {
-            if (this.selections == null) {
-                this.selections = new ArrayList<>();
+        public Builder addPosParams(Object... params) {
+            if (this.posParams == null) {
+                this.posParams = new ArrayList<>();
             }
-            this.selections.addAll(Arrays.asList(attributeNames));
+            this.posParams.addAll(Arrays.asList(params));
+            return this;
+        }
+
+        public Builder startPos(int startPos) {
+            this.startPos = startPos;
+            return this;
+        }
+
+        public Builder maxResult(int maxResult) {
+            this.maxResult = maxResult;
             return this;
         }
 
         @SuppressWarnings("unchecked")
-        public <T extends BaseEntity, C> ConstructorCriteria<T, C> build() {
-            ConstructorCriteria<T, C> criteria = new ConstructorCriteria<>((Class<T>) this.entity, (Class<C>) this.constructorClass);
+        public <T extends BaseEntity> ReadCriteria<T> build() {
+            ReadCriteria<T> criteria = new ReadCriteria<>((Class<T>) this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
-            criteria.selections = this.selections;
+            criteria.posParams = this.posParams;
+            criteria.startPos = this.startPos;
+            criteria.maxResult = this.maxResult;
             return criteria;
         }
     }

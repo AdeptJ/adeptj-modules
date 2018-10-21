@@ -20,6 +20,14 @@
 
 package com.adeptj.modules.data.jpa;
 
+import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
+import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
+import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
+import com.adeptj.modules.data.jpa.criteria.TupleQueryCriteria;
+import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
+import com.adeptj.modules.data.jpa.dto.CrudDTO;
+import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
+
 import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Map;

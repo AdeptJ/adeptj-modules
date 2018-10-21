@@ -18,20 +18,31 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.criteria;
 
+import com.adeptj.modules.data.jpa.BaseEntity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Criteria object holding arguments for JpaCrudRepository delete* methods.
+ * Criteria object holding arguments for JpaCrudRepository findByTuple* methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
+public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
-    private DeleteCriteria(Class<T> entity) {
+    private List<String> selections;
+
+    private TupleQueryCriteria(Class<T> entity) {
         super(entity);
+    }
+
+    public List<String> getSelections() {
+        return selections;
     }
 
     public static Builder builder() {
@@ -39,7 +50,7 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
     }
 
     /**
-     * Builder for creating {@link DeleteCriteria}
+     * Builder for creating {@link TupleQueryCriteria}
      */
     public static class Builder {
 
@@ -50,6 +61,8 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         private Class<? extends BaseEntity> entity;
 
         private Map<String, Object> criteriaAttributes;
+
+        private List<String> selections;
 
         public <T extends BaseEntity> Builder entity(Class<T> entity) {
             this.entity = entity;
@@ -64,10 +77,27 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
+        public Builder addSelection(String attributeName) {
+            if (this.selections == null) {
+                this.selections = new ArrayList<>();
+            }
+            this.selections.add(attributeName);
+            return this;
+        }
+
+        public Builder addSelections(String... attributeNames) {
+            if (this.selections == null) {
+                this.selections = new ArrayList<>();
+            }
+            this.selections.addAll(Arrays.asList(attributeNames));
+            return this;
+        }
+
         @SuppressWarnings("unchecked")
-        public <T extends BaseEntity> DeleteCriteria<T> build() {
-            DeleteCriteria<T> criteria = new DeleteCriteria<>((Class<T>) this.entity);
+        public <T extends BaseEntity> TupleQueryCriteria<T> build() {
+            TupleQueryCriteria<T> criteria = new TupleQueryCriteria<>((Class<T>) this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
+            criteria.selections = this.selections;
             return criteria;
         }
     }

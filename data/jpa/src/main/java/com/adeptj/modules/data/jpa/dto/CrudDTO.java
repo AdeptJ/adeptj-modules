@@ -18,38 +18,62 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.dto;
+
+import com.adeptj.modules.data.jpa.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * ResultSetMappingDTO for feting entities using SQL ResultSet mapping.
+ * CrudDTO
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResultSetMappingDTO {
+public class CrudDTO<T extends BaseEntity> {
 
-    private String nativeQuery;
+    private CrudDTO() {
+    }
 
-    private String resultSetMapping;
+    private Class<T> entity;
+
+    private String namedQuery;
+
+    private String jpaQuery;
 
     private List<Object> posParams;
 
-    private ResultSetMappingDTO() {
+    private int startPos;
+
+    private int maxResult;
+
+    private CrudDTO(Class<T> entity) {
+        this.entity = entity;
     }
 
-    public String getNativeQuery() {
-        return nativeQuery;
+    public Class<T> getEntity() {
+        return entity;
     }
 
-    public String getResultSetMapping() {
-        return resultSetMapping;
+    public String getNamedQuery() {
+        return namedQuery;
+    }
+
+    public String getJpaQuery() {
+        return jpaQuery;
     }
 
     public List<Object> getPosParams() {
         return posParams;
+    }
+
+    public int getStartPos() {
+        return startPos;
+    }
+
+    public int getMaxResult() {
+        return maxResult;
     }
 
     public static Builder builder() {
@@ -57,7 +81,7 @@ public class ResultSetMappingDTO {
     }
 
     /**
-     * Builder for creating {@link ResultSetMappingDTO}
+     * Builder for creating {@link CrudDTO}
      */
     public static class Builder {
 
@@ -65,19 +89,30 @@ public class ResultSetMappingDTO {
         private Builder() {
         }
 
-        private String nativeQuery;
+        private Class<? extends BaseEntity> entity;
 
-        private String resultSetMapping;
+        private String namedQuery;
+
+        private String jpaQuery;
 
         private List<Object> posParams;
 
-        public Builder nativeQuery(String nativeQuery) {
-            this.nativeQuery = nativeQuery;
+        private int startPos;
+
+        private int maxResult;
+
+        public <T extends BaseEntity> Builder entity(Class<T> entity) {
+            this.entity = entity;
             return this;
         }
 
-        public Builder resultSetMapping(String resultSetMapping) {
-            this.resultSetMapping = resultSetMapping;
+        public Builder namedQuery(String namedQuery) {
+            this.namedQuery = namedQuery;
+            return this;
+        }
+
+        public Builder jpaQuery(String jpaQuery) {
+            this.jpaQuery = jpaQuery;
             return this;
         }
 
@@ -97,12 +132,25 @@ public class ResultSetMappingDTO {
             return this;
         }
 
-        public ResultSetMappingDTO build() {
-            ResultSetMappingDTO resultSetMappingDTO = new ResultSetMappingDTO();
-            resultSetMappingDTO.nativeQuery = this.nativeQuery;
-            resultSetMappingDTO.resultSetMapping = this.resultSetMapping;
-            resultSetMappingDTO.posParams = this.posParams;
-            return resultSetMappingDTO;
+        public Builder startPos(int startPos) {
+            this.startPos = startPos;
+            return this;
+        }
+
+        public Builder maxResult(int maxResult) {
+            this.maxResult = maxResult;
+            return this;
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T extends BaseEntity> CrudDTO<T> build() {
+            CrudDTO<T> crudDTO = new CrudDTO<>((Class<T>) this.entity);
+            crudDTO.namedQuery = this.namedQuery;
+            crudDTO.jpaQuery = this.jpaQuery;
+            crudDTO.posParams = this.posParams;
+            crudDTO.startPos = this.startPos;
+            crudDTO.maxResult = this.maxResult;
+            return crudDTO;
         }
     }
 }

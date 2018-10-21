@@ -18,18 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.exception;
 
 /**
  * Exception thrown when there is failure bootstrapping {@link javax.persistence.EntityManagerFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class JpaBootstrapException extends RuntimeException {
+public class JpaBootstrapException extends RuntimeException {
 
     private static final long serialVersionUID = 4572809035305367737L;
 
-    JpaBootstrapException(Throwable throwable) {
+    public JpaBootstrapException(Throwable throwable) {
         super(throwable);
     }
 }
