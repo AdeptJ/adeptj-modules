@@ -69,9 +69,14 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
             LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
             return null;
         }
-        this.providerFactory.registerProviderInstance(provider);
-        LOGGER.info("Registered JAX-RS Provider: [{}]", provider);
-        return provider;
+        try {
+            this.providerFactory.registerProviderInstance(provider);
+            LOGGER.info("Registered JAX-RS Provider: [{}]", provider);
+            return provider;
+        } catch (Exception | NoClassDefFoundError ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        return null;
     }
 
     /**

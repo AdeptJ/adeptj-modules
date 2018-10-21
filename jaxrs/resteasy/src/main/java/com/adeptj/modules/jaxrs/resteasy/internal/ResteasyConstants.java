@@ -37,4 +37,6 @@ final class ResteasyConstants {
     static final String SERVICE_TRACKER_FORMAT = "(%s=*)";
 
     static final String VALUE_TRUE = "true";
+
+    static final String RESTEASY_DEPLOYMENT = "org.jboss.resteasy.spi.ResteasyDeployment";
 }

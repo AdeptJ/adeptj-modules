@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.commons.utils.Functions;
-import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.jaxrs.resteasy.ApplicationExceptionMapper;
@@ -29,7 +28,6 @@ import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
-import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,9 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import java.lang.invoke.MethodHandles;
+import java.util.stream.Stream;
 
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
@@ -96,7 +95,7 @@ public class ResteasyLifecycle {
                 this.providerTracker.setResteasyProviderFactory(dispatcher.getProviderFactory());
                 this.resourceTracker.setRegistry(dispatcher.getRegistry());
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
-            } catch (Throwable ex) { // NOSONAR
+            } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
                 throw new ResteasyBootstrapException(ex.getMessage(), ex);
             }
@@ -112,20 +111,18 @@ public class ResteasyLifecycle {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void stop(ServletConfig servletConfig) {
-        OSGiUtil.closeQuietly(this.providerTracker);
-        OSGiUtil.closeQuietly(this.resourceTracker);
-        ServletContext servletContext = servletConfig.getServletContext();
-        Object deployment = servletContext.getAttribute(ResteasyDeployment.class.getName());
-        if (deployment instanceof ResteasyDeployment) {
-            try {
-                ((ResteasyDeployment) deployment).stop();
-                LOGGER.info("ResteasyDeployment stopped!!");
-            } catch (Exception ex) { // NOSONAR
-                LOGGER.error(ex.getMessage(), ex);
-            }
-        }
         this.resteasyServletDispatcher.destroy();
-        servletContext.removeAttribute(ResteasyDeployment.class.getName());
+        servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
+        Stream.of(this.providerTracker, this.resourceTracker)
+                .filter(tracker -> !tracker.isEmpty())
+                .forEach(tracker -> {
+                    try {
+                        tracker.close();
+                        LOGGER.info("ServiceTracker [{}] closed!!", tracker);
+                    } catch (Exception ex) { // NOSONAR
+                        LOGGER.error(ex.getMessage(), ex);
+                    }
+                });
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 

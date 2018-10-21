@@ -23,7 +23,6 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 
-import javax.ws.rs.Path;
 import java.util.Arrays;
 
 import static com.adeptj.modules.commons.utils.Constants.COMMA;
@@ -47,9 +46,5 @@ final class ResteasyUtil {
         corsFilter.setAllowedHeaders(String.join(COMMA, config.allowedHeaders()));
         corsFilter.getAllowedOrigins().addAll(Arrays.asList(config.allowedOrigins()));
         return corsFilter;
-    }
-
-    static boolean isPathAnnotationPresent(Object resource) {
-        return resource.getClass().isAnnotationPresent(Path.class);
     }
 }

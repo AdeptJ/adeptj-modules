@@ -71,12 +71,13 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
             LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
             return null;
         }
-        if (ResteasyUtil.isPathAnnotationPresent(resource)) {
+        try {
             this.registry.addSingletonResource(resource);
             LOGGER.info("Added JAX-RS Resource: [{}]", resource);
             return resource;
+        } catch (Exception | NoClassDefFoundError ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
         }
-        LOGGER.warn("JAX-RS Resource [{}] isn't annotated with @Path, ignoring it!!", resource);
         return null;
     }
 

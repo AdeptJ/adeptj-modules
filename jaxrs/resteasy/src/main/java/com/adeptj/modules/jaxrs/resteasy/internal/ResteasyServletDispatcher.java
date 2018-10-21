@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
+
 /**
  * This class extends RESTEasy's {@link HttpServlet30Dispatcher} and does following.
  * <p>
@@ -53,14 +55,17 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
 
+    private transient ResteasyDeployment deployment;
+
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
-        ServletBootstrap bootstrap = new ServletBootstrap(servletConfig);
-        ResteasyDeployment deployment = bootstrap.createDeployment();
-        deployment.setProviderFactory(new ResteasyProviderFactoryAdapter());
-        deployment.start();
+        // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
+        servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
+        this.deployment = new ServletBootstrap(servletConfig).createDeployment();
+        this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter());
+        this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
-        servletConfig.getServletContext().setAttribute(ResteasyDeployment.class.getName(), deployment);
+        servletConfig.getServletContext().setAttribute(RESTEASY_DEPLOYMENT, this.deployment);
         LOGGER.info("Initializing RESTEasy ServletContainerDispatcher!!");
         super.init(servletConfig);
         LOGGER.info("RESTEasy ServletContainerDispatcher Initialized!!");
@@ -79,9 +84,10 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     @Override
     public void destroy() {
-        if (super.servletContainerDispatcher != null) {
+        if (this.deployment != null) {
             try {
-                super.destroy();
+                this.deployment.stop();
+                LOGGER.info("ResteasyDeployment stopped!!");
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error(ex.getMessage(), ex);
             }
