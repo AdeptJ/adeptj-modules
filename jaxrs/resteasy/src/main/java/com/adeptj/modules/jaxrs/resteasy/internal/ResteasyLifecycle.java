@@ -113,6 +113,7 @@ public class ResteasyLifecycle {
     void stop(ServletConfig servletConfig) {
         this.resteasyServletDispatcher.destroy();
         servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
+        LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);
         Stream.of(this.providerTracker, this.resourceTracker)
                 .filter(tracker -> !tracker.isEmpty())
                 .forEach(tracker -> {
