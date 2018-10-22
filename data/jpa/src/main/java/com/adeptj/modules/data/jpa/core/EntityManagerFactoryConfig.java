@@ -57,10 +57,10 @@ public @interface EntityManagerFactoryConfig {
             name = "PersistenceUnit Name",
             description = "Note: Must be same as in persistence.xml"
     )
-    String osgi_unit_name(); // NOSONAR
+    String persistenceUnitName(); // NOSONAR
 
     // name hint non editable property
-    String webconsole_configurationFactory_nameHint() default "JPA PersistenceUnit: {" + "osgi.unit.name" + "}"; // NOSONAR
+    String webconsole_configurationFactory_nameHint() default "JPA PersistenceUnit: {" + "persistenceUnitName" + "}"; // NOSONAR
 
     @AttributeDefinition(
             name = "Persistence XML Location",

@@ -52,7 +52,7 @@ public class JpaProperties {
 
     public static Map<String, Object> from(EntityManagerFactoryConfig config) {
         Map<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put(PU_NAME, config.osgi_unit_name());
+        jpaProperties.put(PU_NAME, config.persistenceUnitName());
         jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
         jpaProperties.put(DEPLOY_ON_STARTUP, config.deployOnStartup());

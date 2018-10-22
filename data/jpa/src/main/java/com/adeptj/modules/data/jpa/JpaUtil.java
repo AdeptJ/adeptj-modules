@@ -49,7 +49,7 @@ public final class JpaUtil {
     private JpaUtil() {
     }
 
-    public static void checkInitialized(EntityManagerFactory emf) {
+    public static void assertInitialized(EntityManagerFactory emf) {
         Validate.validState(emf != null && emf.isOpen(), "EntityManagerFactory not initialized!!");
     }
 
