@@ -31,8 +31,8 @@ import java.util.stream.Stream;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
+import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
 import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON_STARTUP;
@@ -41,6 +41,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_FILE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
 
 /**
  * Utility methods for {@link javax.persistence.EntityManagerFactory}.
@@ -49,8 +50,9 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTI
  */
 public class JpaProperties {
 
-    public static Map<String, Object> from(EntityManagerFactoryConfig config, ClassLoader cl) {
+    public static Map<String, Object> from(EntityManagerFactoryConfig config) {
         Map<String, Object> jpaProperties = new HashMap<>();
+        jpaProperties.put(PU_NAME, config.osgi_unit_name());
         jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
         jpaProperties.put(DEPLOY_ON_STARTUP, config.deployOnStartup());
@@ -59,11 +61,11 @@ public class JpaProperties {
         jpaProperties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());
         jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());
         jpaProperties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
+        jpaProperties.put(VALIDATION_MODE, config.validationMode());
         jpaProperties.put(PERSISTENCE_PROVIDER, config.persistenceProviderClassName());
         if (config.useExceptionHandler()) {
             jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         }
-        jpaProperties.put(CLASSLOADER, cl);
         // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
         jpaProperties.putAll(Stream.of(config.jpaProperties())
                 .filter(StringUtils::isNotEmpty)

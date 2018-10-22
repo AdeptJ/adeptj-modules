@@ -18,15 +18,11 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
-import org.osgi.service.component.annotations.Component;
 
 import javax.persistence.EntityManagerFactory;
-
-import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
@@ -45,7 +41,6 @@ import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = JpaRepository.class, property = PU_NAME + "=" + "eclipselink")
 public class EclipseLinkRepository extends AbstractJpaRepository {
 
     @Override

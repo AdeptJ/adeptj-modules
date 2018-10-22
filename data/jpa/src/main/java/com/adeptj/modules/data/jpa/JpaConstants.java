@@ -36,4 +36,6 @@ public final class JpaConstants {
     public static final String PERSISTENCE_PROVIDER = "javax.persistence.provider";
 
     public static final String JPA_FACTORY_PID = "com.adeptj.modules.data.jpa.JpaRepository.factory";
+
+    public static final String PU_NAME = "osgi.unit.name";
 }

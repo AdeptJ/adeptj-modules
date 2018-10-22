@@ -28,7 +28,6 @@ import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.entity.User;
-import com.adeptj.modules.data.jpa.internal.EclipseLinkRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;

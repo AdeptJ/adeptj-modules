@@ -20,10 +20,12 @@
 
 package com.adeptj.modules.data.jpa;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -45,6 +47,10 @@ public final class JpaUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private JpaUtil() {
+    }
+
+    public static void checkInitialized(EntityManagerFactory emf) {
+        Validate.validState(emf != null && emf.isOpen(), "EntityManagerFactory not initialized!!");
     }
 
     public static void closeEntityManager(EntityManager em) {

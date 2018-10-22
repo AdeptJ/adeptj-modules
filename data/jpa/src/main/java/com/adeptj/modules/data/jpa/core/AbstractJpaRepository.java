@@ -21,18 +21,21 @@
 package com.adeptj.modules.data.jpa.core;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
-import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
-import com.adeptj.modules.data.jpa.dto.CrudDTO;
-import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.JpaCallback;
-import com.adeptj.modules.data.jpa.exception.JpaException;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.QueryType;
+import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
+import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
-import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.criteria.TupleQueryCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
+import com.adeptj.modules.data.jpa.dto.CrudDTO;
+import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
+import com.adeptj.modules.data.jpa.exception.JpaException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +54,9 @@ import javax.persistence.criteria.Selection;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
+
+import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
@@ -80,6 +86,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> T insert(T entity) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = null;
         EntityTransaction txn = null;
         try {
@@ -103,6 +110,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> T update(T entity) {
+        JpaUtil.checkInitialized(this.emf);
         T updated;
         EntityManager em = null;
         EntityTransaction txn = null;
@@ -127,6 +135,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int updateByCriteria(UpdateCriteria<T> criteria) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = null;
         EntityTransaction txn = null;
         try {
@@ -157,6 +166,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> void delete(Class<T> entity, Object primaryKey) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = null;
         EntityTransaction txn = null;
         try {
@@ -184,6 +194,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int deleteByJpaNamedQuery(CrudDTO<T> crudDTO) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = null;
         EntityTransaction txn = null;
         try {
@@ -209,6 +220,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int deleteByCriteria(DeleteCriteria<T> criteria) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = null;
         EntityTransaction txn = null;
         try {
@@ -238,6 +250,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int deleteAll(Class<T> entity) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = null;
         EntityTransaction txn = null;
         try {
@@ -262,6 +275,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> T findById(Class<T> entity, Object primaryKey) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             return em.find(entity, primaryKey);
@@ -278,6 +292,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findByCriteria(ReadCriteria<T> criteria) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -298,6 +313,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<Tuple> findByTupleQuery(TupleQueryCriteria<T> criteria) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -322,6 +338,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecordsByCriteria(ReadCriteria<T> criteria) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -345,6 +362,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> List<T> findByJpaNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             return JpaUtil.setTypedQueryParams(em.createNamedQuery(namedQuery, resultClass), posParams).getResultList();
@@ -362,6 +380,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             return JpaUtil.setQueryParams(em.createNamedQuery(namedQuery), posParams).getResultList();
@@ -378,6 +397,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findAll(Class<T> entity) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
@@ -415,6 +435,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findByJpaQuery(CrudDTO<T> crudDTO) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
@@ -432,6 +453,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecordsByJpaQuery(CrudDTO<T> crudDTO) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             TypedQuery<T> typedQuery = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
@@ -452,6 +474,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
@@ -488,6 +511,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> findByQueryAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
@@ -505,6 +529,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> List<T> findByQueryAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             return JpaUtil.setTypedQueryParams(em.createQuery(jpaQuery, resultClass), posParams).getResultList();
@@ -521,6 +546,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity, C> List<C> findByCriteriaAndMapConstructor(ConstructorCriteria<T, C> criteria) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -545,6 +571,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> T getScalarResultOfType(Class<T> resultClass, QueryType type, String query, List<Object> posParams) {
+        JpaUtil.checkInitialized(this.emf);
         T result = null;
         EntityManager em = this.emf.createEntityManager();
         try {
@@ -571,6 +598,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> T getScalarResultOfType(Class<T> resultClass, String namedQuery, List<Object> posParams) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             return JpaUtil.setTypedQueryParams(em.createNamedQuery(namedQuery, resultClass), posParams).getSingleResult();
@@ -584,6 +612,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @Override
     public Object getScalarResult(String namedQuery, List<Object> posParams) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             return JpaUtil.setQueryParams(em.createNamedQuery(namedQuery), posParams).getSingleResult();
@@ -600,6 +629,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> Long count(Class<T> entity) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -618,6 +648,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes) {
+        JpaUtil.checkInitialized(this.emf);
         EntityManager em = this.emf.createEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -639,6 +670,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> T execute(JpaCallback<T> action, boolean requiresTxn) {
+        JpaUtil.checkInitialized(this.emf);
         T result;
         EntityManager em = null;
         EntityTransaction txn = null;
@@ -664,7 +696,17 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     public abstract void setEntityManagerFactory(EntityManagerFactory entityManagerFactory);
 
-    public abstract EntityManagerFactory createEntityManagerFactory(EntityManagerFactoryConfig config);
+    public EntityManagerFactory createEntityManagerFactory(Map<String, Object> jpaProperties) {
+        String unitName = (String) jpaProperties.get(PU_NAME);
+        Validate.isTrue(StringUtils.isNotEmpty(unitName), "PersistenceUnit name can't be blank!!");
+        LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
+        jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
+        return new PersistenceProvider().createEntityManagerFactory(unitName, jpaProperties);
+    }
 
-    public abstract void closeEntityManagerFactory(EntityManagerFactoryConfig config);
+    public void closeEntityManagerFactory() {
+        JpaUtil.checkInitialized(this.emf);
+        this.emf.close();
+        LOGGER.info("EntityManagerFactory closed!!");
+    }
 }
