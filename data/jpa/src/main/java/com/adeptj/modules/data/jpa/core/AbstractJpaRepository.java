@@ -33,9 +33,6 @@ import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +51,6 @@ import javax.persistence.criteria.Selection;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
-
-import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
@@ -694,29 +688,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         return result;
     }
 
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        this.emf = entityManagerFactory;
-    }
-
-    public boolean isEntityManagerFactoryInitialized() {
-        return this.emf != null && this.emf.isOpen();
-    }
-
-    public EntityManagerFactory createEntityManagerFactory(Map<String, Object> jpaProperties) {
-        String unitName = (String) jpaProperties.get(PU_NAME);
-        Validate.isTrue(StringUtils.isNotEmpty(unitName), "PersistenceUnit name can't be blank!!");
-        LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
-        jpaProperties.put(CLASSLOADER, this.getClass().getClassLoader());
-        EntityManagerFactory emf = new PersistenceProvider().createEntityManagerFactory(unitName, jpaProperties);
-        if (emf == null) {
-            LOGGER.warn("Couldn't create EntityManagerFactory, probably persistence.xml missing!!");
-        }
-        return emf;
-    }
-
-    public void closeEntityManagerFactory() {
-        JpaUtil.assertInitialized(this.emf);
-        this.emf.close();
-        LOGGER.info("EntityManagerFactory closed!!");
+    public void setEntityManagerFactory(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 }

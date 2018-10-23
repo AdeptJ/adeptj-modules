@@ -50,7 +50,19 @@ public final class JpaUtil {
     }
 
     public static void assertInitialized(EntityManagerFactory emf) {
-        Validate.validState(emf != null && emf.isOpen(), "EntityManagerFactory not initialized!!");
+        Validate.validState(emf != null, "EntityManagerFactory is null, probably due to missing persistence.xml!!");
+        Validate.validState(emf != null && emf.isOpen(), "EntityManagerFactory not open!!");
+    }
+
+    public static void closeEntityManagerFactory(EntityManagerFactory emf) {
+        if (emf != null && emf.isOpen()) {
+            try {
+                emf.close();
+                LOGGER.info("EntityManagerFactory closed!!");
+            } catch (RuntimeException ex) {
+                LOGGER.error("Exception while closing EntityManager!!", ex);
+            }
+        }
     }
 
     public static void closeEntityManager(EntityManager em) {
