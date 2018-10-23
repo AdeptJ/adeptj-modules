@@ -47,6 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.adeptj.modules.data.jpa.JpaConstants.JPA_FACTORY_PID;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -80,7 +81,7 @@ public class JpaRepositoryFactory {
         try {
             Validate.isTrue(StringUtils.isNotEmpty(persistenceUnitName), "PersistenceUnit name can't be blank!!");
             Map<String, Object> properties = JpaProperties.from(config);
-            //properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
+            properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
             properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
             this.repositories.stream()
                     .filter(rw -> StringUtils.equals(rw.getPersistenceUnitName(), persistenceUnitName))
