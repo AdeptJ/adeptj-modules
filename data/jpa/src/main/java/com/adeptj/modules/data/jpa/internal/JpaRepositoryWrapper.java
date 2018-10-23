@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.JpaRepository;
+import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 
 import javax.persistence.EntityManagerFactory;
 import java.util.Objects;
@@ -61,6 +62,9 @@ class JpaRepositoryWrapper {
 
     void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
+        if (this.repository != null) {
+            ((AbstractJpaRepository) this.repository).setEntityManagerFactory(this.entityManagerFactory);
+        }
     }
     // <------------------ Generated ------------------->
 

@@ -54,18 +54,18 @@ public final class JpaUtil {
         Validate.validState(emf != null && emf.isOpen(), "EntityManagerFactory not open!!");
     }
 
-    public static void closeEntityManagerFactory(EntityManagerFactory emf) {
+    public static void close(EntityManagerFactory emf) {
         if (emf != null && emf.isOpen()) {
             try {
                 emf.close();
                 LOGGER.info("EntityManagerFactory closed!!");
             } catch (RuntimeException ex) {
-                LOGGER.error("Exception while closing EntityManager!!", ex);
+                LOGGER.error("Exception while closing EntityManagerFactory!!", ex);
             }
         }
     }
 
-    public static void closeEntityManager(EntityManager em) {
+    public static void close(EntityManager em) {
         if (em != null && em.isOpen()) {
             try {
                 em.close();
@@ -75,7 +75,7 @@ public final class JpaUtil {
         }
     }
 
-    public static EntityTransaction getTransaction(EntityManager em) {
+    public static EntityTransaction beginTransaction(EntityManager em) {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         return transaction;
@@ -87,7 +87,7 @@ public final class JpaUtil {
         }
     }
 
-    public static void rollbackTransaction(EntityTransaction txn) {
+    public static void rollback(EntityTransaction txn) {
         if (txn != null && txn.isActive() && txn.getRollbackOnly()) {
             try {
                 LOGGER.warn("Rolling back transaction!!");

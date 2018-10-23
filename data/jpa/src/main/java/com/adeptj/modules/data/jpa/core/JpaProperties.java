@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
-import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
 import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
@@ -52,7 +51,6 @@ public class JpaProperties {
 
     public static Map<String, Object> from(EntityManagerFactoryConfig config) {
         Map<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put(PU_NAME, config.persistenceUnitName());
         jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
         jpaProperties.put(DEPLOY_ON_STARTUP, config.deployOnStartup());
@@ -66,7 +64,7 @@ public class JpaProperties {
         if (config.useExceptionHandler()) {
             jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         }
-        // Extra properties are in [key=value] format, maximum of 100 properties can be provided.
+        // Extra properties are in [key=value] format.
         jpaProperties.putAll(Stream.of(config.jpaProperties())
                 .filter(StringUtils::isNotEmpty)
                 .map(row -> row.split(EQ))

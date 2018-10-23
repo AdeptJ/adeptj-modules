@@ -24,6 +24,8 @@ import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
+
 /**
  * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
  * the {@link org.eclipse.persistence.exceptions.ExceptionHandler} interface and provides a default (zero-argument) constructor.
@@ -34,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JpaExceptionHandler implements ExceptionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
     public Object handleException(RuntimeException exception) {

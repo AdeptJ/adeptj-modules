@@ -85,7 +85,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = JpaUtil.getTransaction(em);
+            txn = JpaUtil.beginTransaction(em);
             em.persist(entity);
             txn.commit();
             return entity;
@@ -94,8 +94,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
     }
 
@@ -110,7 +110,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = JpaUtil.getTransaction(em);
+            txn = JpaUtil.beginTransaction(em);
             updated = em.merge(entity);
             txn.commit();
         } catch (RuntimeException ex) {
@@ -118,8 +118,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
         return updated;
     }
@@ -134,7 +134,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = JpaUtil.getTransaction(em);
+            txn = JpaUtil.beginTransaction(em);
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
             criteria.getUpdateAttributes().forEach(cu::set);
@@ -150,8 +150,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
     }
 
@@ -165,7 +165,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = JpaUtil.getTransaction(em);
+            txn = JpaUtil.beginTransaction(em);
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
                 LOGGER.warn("Entity couldn't be deleted as it doesn't exists in DB: [{}]", entity);
@@ -178,8 +178,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
     }
 
@@ -193,7 +193,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = JpaUtil.getTransaction(em);
+            txn = JpaUtil.beginTransaction(em);
             TypedQuery<T> typedQuery = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
             int rowsDeleted = JpaUtil.setTypedQueryParams(typedQuery, crudDTO.getPosParams()).executeUpdate();
             txn.commit();
@@ -204,8 +204,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
     }
 
@@ -219,7 +219,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = JpaUtil.getTransaction(em);
+            txn = JpaUtil.beginTransaction(em);
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
             Root<T> root = cd.from(criteria.getEntity());
@@ -234,8 +234,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
     }
 
@@ -249,7 +249,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityTransaction txn = null;
         try {
             em = this.emf.createEntityManager();
-            txn = JpaUtil.getTransaction(em);
+            txn = JpaUtil.beginTransaction(em);
             int rowsDeleted = em.createQuery(em.getCriteriaBuilder().createCriteriaDelete(entity)).executeUpdate();
             txn.commit();
             LOGGER.debug("deleteAll: No. of rows deleted: [{}]", rowsDeleted);
@@ -259,8 +259,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
     }
 
@@ -277,7 +277,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -298,7 +298,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -323,7 +323,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -347,7 +347,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -364,7 +364,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -382,7 +382,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -400,7 +400,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -420,7 +420,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -438,7 +438,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -459,7 +459,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -481,7 +481,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -495,7 +495,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -514,7 +514,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -531,7 +531,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -556,7 +556,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -582,7 +582,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
         return result;
     }
@@ -600,7 +600,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -614,7 +614,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -633,7 +633,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -655,7 +655,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.close(em);
         }
     }
 
@@ -671,7 +671,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         try {
             em = this.emf.createEntityManager();
             if (requiresTxn) {
-                txn = JpaUtil.getTransaction(em);
+                txn = JpaUtil.beginTransaction(em);
                 result = action.doInJpa(em);
                 txn.commit();
             } else {
@@ -682,8 +682,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaException(ex);
         } finally {
-            JpaUtil.rollbackTransaction(txn);
-            JpaUtil.closeEntityManager(em);
+            JpaUtil.rollback(txn);
+            JpaUtil.close(em);
         }
         return result;
     }

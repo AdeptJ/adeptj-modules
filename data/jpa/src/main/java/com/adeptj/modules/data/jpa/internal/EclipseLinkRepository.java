@@ -26,7 +26,7 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.persistence.EntityManagerFactory;
 
-import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
+import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
@@ -45,7 +45,7 @@ import static com.adeptj.modules.data.jpa.JpaConstants.PU_NAME;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = JpaRepository.class, property = PU_NAME + "=" + "eclipselink")
+@Component(service = JpaRepository.class, property = JPA_UNIT_NAME + "=" + "eclipselink")
 public class EclipseLinkRepository extends AbstractJpaRepository {
 
     @Override

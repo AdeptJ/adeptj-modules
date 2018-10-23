@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.data.jpa;
 
-import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
-
 /**
  * Constants for JPA properties.
  *
@@ -38,6 +36,4 @@ public final class JpaConstants {
     public static final String PERSISTENCE_PROVIDER = "javax.persistence.provider";
 
     public static final String JPA_FACTORY_PID = "com.adeptj.modules.data.jpa.JpaRepository.factory";
-
-    public static final String PU_NAME = JPA_UNIT_NAME;
 }
