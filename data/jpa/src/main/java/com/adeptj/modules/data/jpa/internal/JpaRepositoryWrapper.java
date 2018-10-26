@@ -23,8 +23,10 @@ package com.adeptj.modules.data.jpa.internal;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
+import org.eclipse.persistence.jpa.PersistenceProvider;
 
 import javax.persistence.EntityManagerFactory;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -62,8 +64,8 @@ class JpaRepositoryWrapper {
         }
     }
 
-    void setEntityManagerFactory(EntityManagerFactory emf) {
-        this.emf = emf;
+    void initEntityManagerFactory(Map<String, Object> properties) {
+        this.emf = new PersistenceProvider().createEntityManagerFactory(this.persistenceUnit, properties);
         JpaUtil.assertInitialized(this.emf);
         this.repository.setEntityManagerFactory(this.emf);
     }

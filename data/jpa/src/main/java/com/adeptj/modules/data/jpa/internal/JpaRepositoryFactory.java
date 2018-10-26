@@ -29,7 +29,6 @@ import com.adeptj.modules.data.jpa.core.JpaProperties;
 import com.adeptj.modules.data.jpa.exception.JpaBootstrapException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -95,8 +94,7 @@ public class JpaRepositoryFactory {
                         // otherwise EclipseLink will not be able to create the EntityManagerFactory.
                         properties.put(CLASSLOADER, wrapper.getRepository().getClass().getClassLoader());
                         LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
-                        PersistenceProvider provider = new PersistenceProvider();
-                        wrapper.setEntityManagerFactory(provider.createEntityManagerFactory(persistenceUnit, properties));
+                        wrapper.initEntityManagerFactory(properties);
                         LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
                     });
         } catch (Exception ex) { // NOSONAR
