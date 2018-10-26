@@ -53,14 +53,14 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 )
 public @interface EntityManagerFactoryConfig {
 
+    // name hint non editable property
+    String webconsole_configurationFactory_nameHint() default "JPA PersistenceUnit: {" + "persistenceUnit" + "}"; // NOSONAR
+
     @AttributeDefinition(
             name = "PersistenceUnit Name",
             description = "Note: Must be same as in persistence.xml"
     )
-    String persistenceUnitName(); // NOSONAR
-
-    // name hint non editable property
-    String webconsole_configurationFactory_nameHint() default "JPA PersistenceUnit: {" + "persistenceUnitName" + "}"; // NOSONAR
+    String persistenceUnit(); // NOSONAR
 
     @AttributeDefinition(
             name = "Persistence XML Location",
@@ -112,7 +112,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "RESOURCE_LOCAL", value = "RESOURCE_LOCAL"),
                     @Option(label = "JTA", value = "JTA")
             })
-    String persistenceUnitTransactionType();
+    String persistenceUnitTransactionType() default "RESOURCE_LOCAL";
 
     @AttributeDefinition(
             name = "L2 Cache Mode",
@@ -124,7 +124,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "NONE", value = "NONE"),
                     @Option(label = "UNSPECIFIED", value = "UNSPECIFIED")
             })
-    String sharedCacheMode();
+    String sharedCacheMode() default "ENABLE_SELECTIVE";
 
     @AttributeDefinition(
             name = "Entity Validation Mode",
@@ -134,7 +134,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "AUTO", value = "AUTO"),
                     @Option(label = "CALLBACK", value = "CALLBACK")
             })
-    String validationMode();
+    String validationMode() default "NONE";
 
     @AttributeDefinition(
             name = "EclipseLink LoggingLevel",
@@ -150,7 +150,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = OFF, value = OFF),
                     @Option(label = ALL, value = ALL)
             })
-    String loggingLevel();
+    String loggingLevel() default FINE;
 
     @AttributeDefinition(
             name = "DDL Generation Mode",
@@ -160,7 +160,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "DATABASE", value = DDL_DATABASE_GENERATION),
                     @Option(label = "SQL_SCRIPT", value = DDL_SQL_SCRIPT_GENERATION),
             })
-    String ddlGenerationOutputMode();
+    String ddlGenerationOutputMode() default DDL_BOTH_GENERATION;
 
     @AttributeDefinition(
             name = "DDL Generation Strategy",
@@ -172,5 +172,5 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "DROP_ONLY", value = DROP_ONLY),
                     @Option(label = "NONE", value = NONE),
             })
-    String ddlGeneration();
+    String ddlGeneration() default CREATE_OR_EXTEND;
 }

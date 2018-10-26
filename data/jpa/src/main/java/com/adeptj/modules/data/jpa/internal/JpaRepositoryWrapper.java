@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.JpaRepository;
+import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 
 import javax.persistence.EntityManagerFactory;
@@ -33,39 +34,40 @@ import java.util.Objects;
  */
 class JpaRepositoryWrapper {
 
-    private final String persistenceUnitName;
+    private final String persistenceUnit;
 
-    private JpaRepository repository;
+    private AbstractJpaRepository repository;
 
-    private EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory emf;
 
-    JpaRepositoryWrapper(String persistenceUnitName, JpaRepository repository) {
-        this.persistenceUnitName = persistenceUnitName;
-        this.repository = repository;
+    JpaRepositoryWrapper(String persistenceUnit, JpaRepository repository) {
+        this.persistenceUnit = persistenceUnit;
+        this.repository = (AbstractJpaRepository) repository;
     }
 
-    String getPersistenceUnitName() {
-        return persistenceUnitName;
+    String getPersistenceUnit() {
+        return persistenceUnit;
     }
 
-    JpaRepository getRepository() {
+    AbstractJpaRepository getRepository() {
         return repository;
     }
 
-    void unsetRepository() {
-        this.repository = null;
-    }
-
-    EntityManagerFactory getEntityManagerFactory() {
-        return entityManagerFactory;
-    }
-
-    void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    void disposeRepository() {
+        JpaUtil.close(this.emf);
+        this.emf = null;
         if (this.repository != null) {
-            ((AbstractJpaRepository) this.repository).setEntityManagerFactory(this.entityManagerFactory);
+            this.repository.setEntityManagerFactory(null);
+            this.repository = null;
         }
     }
+
+    void setEntityManagerFactory(EntityManagerFactory emf) {
+        this.emf = emf;
+        JpaUtil.assertInitialized(this.emf);
+        this.repository.setEntityManagerFactory(this.emf);
+    }
+
     // <------------------ Generated ------------------->
 
     @Override
@@ -73,11 +75,11 @@ class JpaRepositoryWrapper {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JpaRepositoryWrapper that = (JpaRepositoryWrapper) o;
-        return Objects.equals(this.persistenceUnitName, that.persistenceUnitName);
+        return Objects.equals(this.persistenceUnit, that.persistenceUnit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.persistenceUnitName);
+        return Objects.hash(this.persistenceUnit);
     }
 }

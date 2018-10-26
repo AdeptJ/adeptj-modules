@@ -23,7 +23,6 @@ package com.adeptj.modules.data.jpa.internal;
 import com.adeptj.modules.commons.jdbc.DataSourceService;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
-import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 import com.adeptj.modules.data.jpa.core.EntityManagerFactoryConfig;
 import com.adeptj.modules.data.jpa.core.JpaProperties;
@@ -39,7 +38,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManagerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +63,7 @@ public class JpaRepositoryFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<JpaRepositoryWrapper> repositories = new CopyOnWriteArrayList<>();
+    private final List<JpaRepositoryWrapper> repositoryWrappers = new CopyOnWriteArrayList<>();
 
     @Reference
     private DataSourceService dataSourceService;
@@ -76,25 +74,24 @@ public class JpaRepositoryFactory {
     // <------------------------------------- JpaRepositoryFactory Lifecycle -------------------------------------->
 
     @Activate
-    protected void start(EntityManagerFactoryConfig config) {
-        String persistenceUnitName = config.persistenceUnitName();
+    public void start(EntityManagerFactoryConfig config) {
+        String persistenceUnit = config.persistenceUnit();
         try {
-            Validate.isTrue(StringUtils.isNotEmpty(persistenceUnitName), "PersistenceUnit name can't be blank!!");
-            Map<String, Object> properties = JpaProperties.from(config);
-            properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
-            properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
-            this.repositories.stream()
-                    .filter(rw -> StringUtils.equals(rw.getPersistenceUnitName(), persistenceUnitName))
-                    .findFirst()
-                    .ifPresent(rw -> {
-                        JpaRepository repository = rw.getRepository();
-                        properties.put(CLASSLOADER, repository.getClass().getClassLoader());
-                        LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnitName);
+            Validate.isTrue(StringUtils.isNotEmpty(persistenceUnit), "PersistenceUnit name can't be blank!!");
+            this.repositoryWrappers.stream()
+                    .filter(wrapper -> StringUtils.equals(wrapper.getPersistenceUnit(), persistenceUnit))
+                    .forEach(wrapper -> {
+                        Map<String, Object> properties = JpaProperties.from(config);
+                        properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
+                        properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
+                        // The ClassLoader must be the one which loaded the given JpaRepository implementation
+                        // and it must have the visibility to the entity classes and persistence.xml/orm.xml
+                        // otherwise EclipseLink will not be able to create the EntityManagerFactory.
+                        properties.put(CLASSLOADER, wrapper.getRepository().getClass().getClassLoader());
+                        LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
                         PersistenceProvider provider = new PersistenceProvider();
-                        EntityManagerFactory emf = provider.createEntityManagerFactory(persistenceUnitName, properties);
-                        JpaUtil.assertInitialized(emf);
-                        rw.setEntityManagerFactory(emf);
-                        LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnitName);
+                        wrapper.setEntityManagerFactory(provider.createEntityManagerFactory(persistenceUnit, properties));
+                        LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
                     });
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -104,45 +101,40 @@ public class JpaRepositoryFactory {
     }
 
     @Deactivate
-    protected void stop(EntityManagerFactoryConfig config) {
-        String persistenceUnitName = config.persistenceUnitName();
-        this.repositories.stream()
-                .filter(rw -> StringUtils.equals(rw.getPersistenceUnitName(), persistenceUnitName))
-                .findFirst()
-                .ifPresent(rw -> {
-                    LOGGER.info("Closing EntityManagerFactory for PU [{}]", persistenceUnitName);
-                    JpaUtil.close(rw.getEntityManagerFactory());
-                    rw.setEntityManagerFactory(null);
-                    rw.unsetRepository();
+    public void stop(EntityManagerFactoryConfig config) {
+        String persistenceUnit = config.persistenceUnit();
+        this.repositoryWrappers.stream()
+                .filter(wrapper -> StringUtils.equals(wrapper.getPersistenceUnit(), persistenceUnit))
+                .forEach(wrapper -> {
+                    LOGGER.info("Closing EntityManagerFactory for PU [{}]", persistenceUnit);
+                    wrapper.disposeRepository();
                 });
+        this.repositoryWrappers.removeIf(rw -> StringUtils.equals(rw.getPersistenceUnit(), persistenceUnit));
     }
 
     // <------------------------------------- JpaRepository Lifecycle Listener -------------------------------------->
 
     @Reference(service = JpaRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
-        String persistenceUnitName = (String) properties.get(JPA_UNIT_NAME);
-        if (StringUtils.isEmpty(persistenceUnitName)) {
+    public void bindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
+        String persistenceUnit = (String) properties.get(JPA_UNIT_NAME);
+        if (StringUtils.isEmpty(persistenceUnit)) {
             LOGGER.warn("{} must specify the [{}] service property!!", repository, JPA_UNIT_NAME);
             return;
         }
-        LOGGER.info("Binding JpaRepository for PU [{}]", persistenceUnitName);
-        this.repositories.add(new JpaRepositoryWrapper(persistenceUnitName, repository));
+        LOGGER.info("Binding JpaRepository for PU [{}]", persistenceUnit);
+        this.repositoryWrappers.add(new JpaRepositoryWrapper(persistenceUnit, repository));
     }
 
-    protected void unbindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
-        String persistenceUnitName = (String) properties.get(JPA_UNIT_NAME);
-        LOGGER.info("Unbinding JpaRepository for PU [{}]", persistenceUnitName);
-        LOGGER.info("Closing EntityManagerFactory for PU [{}]", persistenceUnitName);
-        this.repositories.stream()
-                .filter(rw -> StringUtils.equals(rw.getPersistenceUnitName(), persistenceUnitName))
-                .findFirst()
-                .ifPresent(rw -> {
-                    JpaUtil.close(rw.getEntityManagerFactory());
-                    rw.setEntityManagerFactory(null);
-                    rw.unsetRepository();
+    public void unbindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
+        String persistenceUnit = (String) properties.get(JPA_UNIT_NAME);
+        LOGGER.info("Unbinding JpaRepository for PU [{}]", persistenceUnit);
+        this.repositoryWrappers.stream()
+                .filter(wrapper -> StringUtils.equals(wrapper.getPersistenceUnit(), persistenceUnit))
+                .forEach(wrapper -> {
+                    LOGGER.info("Closing EntityManagerFactory for PU [{}]", persistenceUnit);
+                    wrapper.disposeRepository();
                 });
-        this.repositories.removeIf(rw -> StringUtils.equals(rw.getPersistenceUnitName(), persistenceUnitName));
+        this.repositoryWrappers.removeIf(rw -> StringUtils.equals(rw.getPersistenceUnit(), persistenceUnit));
         ((AbstractJpaRepository) repository).setEntityManagerFactory(null);
     }
 }
