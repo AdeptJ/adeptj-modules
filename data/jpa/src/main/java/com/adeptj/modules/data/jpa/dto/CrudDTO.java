@@ -33,9 +33,6 @@ import java.util.List;
  */
 public class CrudDTO<T extends BaseEntity> {
 
-    private CrudDTO() {
-    }
-
     private Class<T> entity;
 
     private String namedQuery;
@@ -101,7 +98,7 @@ public class CrudDTO<T extends BaseEntity> {
 
         private int maxResult;
 
-        public <T extends BaseEntity> Builder entity(Class<T> entity) {
+        public Builder entity(Class<? extends BaseEntity> entity) {
             this.entity = entity;
             return this;
         }
@@ -142,9 +139,8 @@ public class CrudDTO<T extends BaseEntity> {
             return this;
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends BaseEntity> CrudDTO<T> build() {
-            CrudDTO<T> crudDTO = new CrudDTO<>((Class<T>) this.entity);
+            CrudDTO<T> crudDTO = new CrudDTO<>(this.entity.asSubclass(BaseEntity.class));
             crudDTO.namedQuery = this.namedQuery;
             crudDTO.jpaQuery = this.jpaQuery;
             crudDTO.posParams = this.posParams;

@@ -66,9 +66,8 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends BaseEntity> DeleteCriteria<T> build() {
-            DeleteCriteria<T> criteria = new DeleteCriteria<>((Class<T>) this.entity);
+            DeleteCriteria<T> criteria = new DeleteCriteria<>(this.entity.asSubclass(BaseEntity.class));
             criteria.criteriaAttributes = this.criteriaAttributes;
             return criteria;
         }

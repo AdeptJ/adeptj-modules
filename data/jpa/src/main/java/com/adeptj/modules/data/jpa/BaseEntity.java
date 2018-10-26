@@ -20,21 +20,10 @@
 
 package com.adeptj.modules.data.jpa;
 
-import java.io.Serializable;
-
 /**
- * Must be a super of all the JPA Entities that {@link JpaRepository} will be dealing with.
- * <p>
- * This interface denotes that all of its implementations are Serializable.
+ * Marker Interface, acting as a super of all the JPA Entities that {@link JpaRepository} will be dealing with.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface BaseEntity extends Serializable {
-
-    /**
-     * Most of the sub classes have an Id, can be of type Integer, Long etc. which are Serializable.
-     *
-     * @return primary key of the jpa entity.
-     */
-    Serializable getId();
+public interface BaseEntity {
 }

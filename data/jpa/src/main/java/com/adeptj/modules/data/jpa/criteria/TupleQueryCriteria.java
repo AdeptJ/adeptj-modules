@@ -93,9 +93,8 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends BaseEntity> TupleQueryCriteria<T> build() {
-            TupleQueryCriteria<T> criteria = new TupleQueryCriteria<>((Class<T>) this.entity);
+            TupleQueryCriteria<T> criteria = new TupleQueryCriteria<>(this.entity.asSubclass(BaseEntity.class));
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.selections = this.selections;
             return criteria;

@@ -97,8 +97,6 @@ import javax.persistence.Table;
 })
 public class User implements BaseEntity {
 
-    private static final long serialVersionUID = 1809725039547865373L;
-
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -116,7 +114,6 @@ public class User implements BaseEntity {
     @Column(name = "MOBILE_NO", length = 25)
     private String contact;
 
-    @Override
     public Long getId() {
         return this.id;
     }

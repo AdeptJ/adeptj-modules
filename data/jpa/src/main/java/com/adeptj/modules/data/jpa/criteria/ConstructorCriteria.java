@@ -109,7 +109,8 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
 
         @SuppressWarnings("unchecked")
         public <T extends BaseEntity, C> ConstructorCriteria<T, C> build() {
-            ConstructorCriteria<T, C> criteria = new ConstructorCriteria<>((Class<T>) this.entity, (Class<C>) this.constructorClass);
+            ConstructorCriteria<T, C> criteria =
+                    new ConstructorCriteria<>(this.entity.asSubclass(BaseEntity.class), (Class<C>) this.constructorClass);
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.selections = this.selections;
             return criteria;

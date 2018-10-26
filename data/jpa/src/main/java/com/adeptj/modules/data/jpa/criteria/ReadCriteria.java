@@ -121,9 +121,8 @@ public class ReadCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends BaseEntity> ReadCriteria<T> build() {
-            ReadCriteria<T> criteria = new ReadCriteria<>((Class<T>) this.entity);
+            ReadCriteria<T> criteria = new ReadCriteria<>(this.entity.asSubclass(BaseEntity.class));
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.posParams = this.posParams;
             criteria.startPos = this.startPos;

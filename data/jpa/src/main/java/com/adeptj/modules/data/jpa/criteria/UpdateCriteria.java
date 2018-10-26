@@ -82,9 +82,8 @@ public class UpdateCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        @SuppressWarnings("unchecked")
         public <T extends BaseEntity> UpdateCriteria<T> build() {
-            UpdateCriteria<T> criteria = new UpdateCriteria<>((Class<T>) this.entity);
+            UpdateCriteria<T> criteria = new UpdateCriteria<>(this.entity.asSubclass(BaseEntity.class));
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.updateAttributes = this.updateAttributes;
             return criteria;
