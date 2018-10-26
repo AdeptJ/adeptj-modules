@@ -38,12 +38,15 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.ValidationMode;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.adeptj.modules.data.jpa.JpaConstants.JPA_FACTORY_PID;
+import static javax.persistence.ValidationMode.AUTO;
+import static javax.persistence.ValidationMode.CALLBACK;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
@@ -83,7 +86,10 @@ public class JpaRepositoryFactory {
                     .forEach(wrapper -> {
                         Map<String, Object> properties = JpaProperties.from(config);
                         properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
-                        properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
+                        ValidationMode validationMode = ValidationMode.valueOf(config.validationMode());
+                        if (validationMode == AUTO || validationMode == CALLBACK) {
+                            properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
+                        }
                         // The ClassLoader must be the one which loaded the given JpaRepository implementation
                         // and it must have the visibility to the entity classes and persistence.xml/orm.xml
                         // otherwise EclipseLink will not be able to create the EntityManagerFactory.
