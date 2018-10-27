@@ -42,31 +42,26 @@ public class UpdateCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         return updateAttributes;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <T extends BaseEntity> Builder<T> builder(Class<T> entity) {
+        return new Builder<>(entity);
     }
 
     /**
      * Builder for creating {@link UpdateCriteria}
      */
-    public static class Builder {
+    public static class Builder<T extends BaseEntity> {
 
-        // no public access as available through static method.
-        private Builder() {
-        }
-
-        private Class<? extends BaseEntity> entity;
+        private Class<T> entity;
 
         private Map<String, Object> criteriaAttributes;
 
         private Map<String, Object> updateAttributes;
 
-        public <T extends BaseEntity> Builder entity(Class<T> entity) {
+        private Builder(Class<T> entity) {
             this.entity = entity;
-            return this;
         }
 
-        public Builder addCriteriaAttribute(String attributeName, Object value) {
+        public Builder<T> addCriteriaAttribute(String attributeName, Object value) {
             if (this.criteriaAttributes == null) {
                 this.criteriaAttributes = new HashMap<>();
             }
@@ -74,7 +69,7 @@ public class UpdateCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder addUpdateAttribute(String attributeName, Object value) {
+        public Builder<T> addUpdateAttribute(String attributeName, Object value) {
             if (this.updateAttributes == null) {
                 this.updateAttributes = new HashMap<>();
             }
@@ -82,8 +77,8 @@ public class UpdateCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public <T extends BaseEntity> UpdateCriteria<T> build() {
-            UpdateCriteria<T> criteria = new UpdateCriteria<>(this.entity.asSubclass(BaseEntity.class));
+        public UpdateCriteria<T> build() {
+            UpdateCriteria<T> criteria = new UpdateCriteria<>(this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.updateAttributes = this.updateAttributes;
             return criteria;

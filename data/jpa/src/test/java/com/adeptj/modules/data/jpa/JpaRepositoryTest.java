@@ -87,8 +87,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testUpdateByCriteria() {
-        int rowsUpdated = jpaRepository.updateByCriteria(UpdateCriteria.builder()
-                .entity(User.class)
+        int rowsUpdated = jpaRepository.updateByCriteria(UpdateCriteria.builder(User.class)
                 .addCriteriaAttribute("firstName", "John")
                 .addUpdateAttribute("contact", "1234567891")
                 .build());
@@ -102,8 +101,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testDeleteByCriteria() {
-        int rows = jpaRepository.deleteByCriteria(DeleteCriteria.builder()
-                .entity(User.class)
+        int rows = jpaRepository.deleteByCriteria(DeleteCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
         System.out.println("Rows deleted: " + rows);
@@ -111,8 +109,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testDeleteByJpaNamedQuery() {
-        int rows = jpaRepository.deleteByJpaNamedQuery(CrudDTO.builder()
-                .entity(User.class)
+        int rows = jpaRepository.deleteByJpaNamedQuery(CrudDTO.builder(User.class)
                 .namedQuery("User.deleteUserByContact.JPA")
                 .addPosParam("1234567890")
                 .build());
@@ -121,8 +118,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByCriteria() {
-        List<User> users = jpaRepository.findByCriteria(ReadCriteria.builder()
-                .entity(User.class)
+        List<User> users = jpaRepository.findByCriteria(ReadCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
         System.out.println("Rows found: " + users.size());
@@ -130,8 +126,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByTupleQuery() {
-        jpaRepository.findByTupleQuery(TupleQueryCriteria.builder()
-                .entity(User.class)
+        jpaRepository.findByTupleQuery(TupleQueryCriteria.builder(User.class)
                 .addSelections("firstName", "lastName")
                 .addCriteriaAttribute("contact", "1234567890")
                 .build()).forEach(tuple -> {
@@ -217,8 +212,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaQuery() {
-        List<User> users = jpaRepository.findByJpaQuery(CrudDTO.builder()
-                .entity(User.class)
+        List<User> users = jpaRepository.findByJpaQuery(CrudDTO.builder(User.class)
                 .jpaQuery("SELECT u FROM  User u WHERE u.firstName = ?1 and u.contact = ?2")
                 .addPosParams("John", "1234567890")
                 .build());
@@ -275,13 +269,11 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindAndMapConstructorByCriteria() {
-        List<UserDTO> usersDTOList = jpaRepository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder()
-                .entity(User.class)
-                .constructorClass(UserDTO.class)
+        List<UserDTO> list = jpaRepository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder(User.class, UserDTO.class)
                 .addSelections("id", "firstName", "lastName", "email")
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
-        usersDTOList.forEach((UserDTO dto) -> {
+        list.forEach(dto -> {
             System.out.println("User ID: " + dto.getId());
             System.out.println("FirstName: " + dto.getFirstName());
             System.out.println("LastName: " + dto.getLastName());

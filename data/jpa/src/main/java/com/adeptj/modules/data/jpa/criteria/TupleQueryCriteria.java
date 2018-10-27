@@ -45,31 +45,26 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         return selections;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <T extends BaseEntity> Builder<T> builder(Class<T> entity) {
+        return new Builder<>(entity);
     }
 
     /**
      * Builder for creating {@link TupleQueryCriteria}
      */
-    public static class Builder {
+    public static class Builder<T extends BaseEntity> {
 
-        // no public access as available through static method.
-        private Builder() {
-        }
-
-        private Class<? extends BaseEntity> entity;
+        private Class<T> entity;
 
         private Map<String, Object> criteriaAttributes;
 
         private List<String> selections;
 
-        public <T extends BaseEntity> Builder entity(Class<T> entity) {
+        private Builder(Class<T> entity) {
             this.entity = entity;
-            return this;
         }
 
-        public Builder addCriteriaAttribute(String attributeName, Object value) {
+        public Builder<T> addCriteriaAttribute(String attributeName, Object value) {
             if (this.criteriaAttributes == null) {
                 this.criteriaAttributes = new HashMap<>();
             }
@@ -77,7 +72,7 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder addSelection(String attributeName) {
+        public Builder<T> addSelection(String attributeName) {
             if (this.selections == null) {
                 this.selections = new ArrayList<>();
             }
@@ -85,7 +80,7 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder addSelections(String... attributeNames) {
+        public Builder<T> addSelections(String... attributeNames) {
             if (this.selections == null) {
                 this.selections = new ArrayList<>();
             }
@@ -93,8 +88,8 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public <T extends BaseEntity> TupleQueryCriteria<T> build() {
-            TupleQueryCriteria<T> criteria = new TupleQueryCriteria<>(this.entity.asSubclass(BaseEntity.class));
+        public TupleQueryCriteria<T> build() {
+            TupleQueryCriteria<T> criteria = new TupleQueryCriteria<>(this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.selections = this.selections;
             return criteria;

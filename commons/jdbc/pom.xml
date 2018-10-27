@@ -136,7 +136,6 @@
             <plugin>
                 <groupId>com.adeptj</groupId>
                 <artifactId>adeptj-maven-plugin</artifactId>
-                <version>${adeptj-maven-plugin.version}</version>
             </plugin>
         </plugins>
 

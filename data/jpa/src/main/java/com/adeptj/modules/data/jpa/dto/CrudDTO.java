@@ -73,20 +73,16 @@ public class CrudDTO<T extends BaseEntity> {
         return maxResult;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <T extends BaseEntity> Builder<T> builder(Class<T> entity) {
+        return new Builder<>(entity);
     }
 
     /**
      * Builder for creating {@link CrudDTO}
      */
-    public static class Builder {
+    public static class Builder<T extends BaseEntity> {
 
-        // no public access as available through static method.
-        private Builder() {
-        }
-
-        private Class<? extends BaseEntity> entity;
+        private Class<T> entity;
 
         private String namedQuery;
 
@@ -98,22 +94,21 @@ public class CrudDTO<T extends BaseEntity> {
 
         private int maxResult;
 
-        public Builder entity(Class<? extends BaseEntity> entity) {
+        private Builder(Class<T> entity) {
             this.entity = entity;
-            return this;
         }
 
-        public Builder namedQuery(String namedQuery) {
+        public Builder<T> namedQuery(String namedQuery) {
             this.namedQuery = namedQuery;
             return this;
         }
 
-        public Builder jpaQuery(String jpaQuery) {
+        public Builder<T> jpaQuery(String jpaQuery) {
             this.jpaQuery = jpaQuery;
             return this;
         }
 
-        public Builder addPosParam(Object param) {
+        public Builder<T> addPosParam(Object param) {
             if (this.posParams == null) {
                 this.posParams = new ArrayList<>();
             }
@@ -121,7 +116,7 @@ public class CrudDTO<T extends BaseEntity> {
             return this;
         }
 
-        public Builder addPosParams(Object... params) {
+        public Builder<T> addPosParams(Object... params) {
             if (this.posParams == null) {
                 this.posParams = new ArrayList<>();
             }
@@ -129,18 +124,18 @@ public class CrudDTO<T extends BaseEntity> {
             return this;
         }
 
-        public Builder startPos(int startPos) {
+        public Builder<T> startPos(int startPos) {
             this.startPos = startPos;
             return this;
         }
 
-        public Builder maxResult(int maxResult) {
+        public Builder<T> maxResult(int maxResult) {
             this.maxResult = maxResult;
             return this;
         }
 
-        public <T extends BaseEntity> CrudDTO<T> build() {
-            CrudDTO<T> crudDTO = new CrudDTO<>(this.entity.asSubclass(BaseEntity.class));
+        public CrudDTO<T> build() {
+            CrudDTO<T> crudDTO = new CrudDTO<>(this.entity);
             crudDTO.namedQuery = this.namedQuery;
             crudDTO.jpaQuery = this.jpaQuery;
             crudDTO.posParams = this.posParams;

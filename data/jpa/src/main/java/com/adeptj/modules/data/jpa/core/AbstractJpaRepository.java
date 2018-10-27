@@ -73,6 +73,10 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * The {@link EntityManagerFactory} instance whose lifecycle is managed by this Bundle therefore caller must not
+     * attempt to create or close it. It is automatically created and closed appropriately by this Bundle.
+     */
     protected EntityManagerFactory emf;
 
     /**

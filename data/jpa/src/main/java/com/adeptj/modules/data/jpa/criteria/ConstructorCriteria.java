@@ -52,38 +52,29 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
         return selections;
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <T extends BaseEntity, C> Builder<T, C> builder(Class<T> entity, Class<C> constructorClass) {
+        return new Builder<>(entity, constructorClass);
     }
 
     /**
      * Builder for creating {@link ConstructorCriteria}
      */
-    public static class Builder {
+    public static class Builder<T extends BaseEntity, C> {
 
-        // no public access as available through static method.
-        private Builder() {
-        }
+        private Class<T> entity;
 
-        private Class<? extends BaseEntity> entity;
-
-        private Class<?> constructorClass;
+        private Class<C> constructorClass;
 
         private Map<String, Object> criteriaAttributes;
 
         private List<String> selections;
 
-        public <T extends BaseEntity> Builder entity(Class<T> entity) {
+        private Builder(Class<T> entity, Class<C> constructorClass) {
             this.entity = entity;
-            return this;
-        }
-
-        public <T extends BaseEntity> Builder constructorClass(Class<?> constructorClass) {
             this.constructorClass = constructorClass;
-            return this;
         }
 
-        public Builder addCriteriaAttribute(String attributeName, Object value) {
+        public Builder<T, C> addCriteriaAttribute(String attributeName, Object value) {
             if (this.criteriaAttributes == null) {
                 this.criteriaAttributes = new HashMap<>();
             }
@@ -91,7 +82,7 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
             return this;
         }
 
-        public Builder addSelection(String attributeName) {
+        public Builder<T, C> addSelection(String attributeName) {
             if (this.selections == null) {
                 this.selections = new ArrayList<>();
             }
@@ -99,7 +90,7 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
             return this;
         }
 
-        public Builder addSelections(String... attributeNames) {
+        public Builder<T, C> addSelections(String... attributeNames) {
             if (this.selections == null) {
                 this.selections = new ArrayList<>();
             }
@@ -107,10 +98,8 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
             return this;
         }
 
-        @SuppressWarnings("unchecked")
-        public <T extends BaseEntity, C> ConstructorCriteria<T, C> build() {
-            ConstructorCriteria<T, C> criteria =
-                    new ConstructorCriteria<>(this.entity.asSubclass(BaseEntity.class), (Class<C>) this.constructorClass);
+        public ConstructorCriteria<T, C> build() {
+            ConstructorCriteria<T, C> criteria = new ConstructorCriteria<>(this.entity, this.constructorClass);
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.selections = this.selections;
             return criteria;

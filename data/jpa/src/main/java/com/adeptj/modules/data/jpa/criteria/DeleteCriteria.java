@@ -36,29 +36,24 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         super(entity);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static <T extends BaseEntity> Builder<T> builder(Class<T> entity) {
+        return new Builder<>(entity);
     }
 
     /**
      * Builder for creating {@link DeleteCriteria}
      */
-    public static class Builder {
+    public static class Builder<T extends BaseEntity> {
 
-        // no public access as available through static method.
-        private Builder() {
+        private Class<T> entity;
+
+        private Builder(Class<T> entity) {
+            this.entity = entity;
         }
-
-        private Class<? extends BaseEntity> entity;
 
         private Map<String, Object> criteriaAttributes;
 
-        public <T extends BaseEntity> Builder entity(Class<T> entity) {
-            this.entity = entity;
-            return this;
-        }
-
-        public Builder addCriteriaAttribute(String attributeName, Object value) {
+        public Builder<T> addCriteriaAttribute(String attributeName, Object value) {
             if (this.criteriaAttributes == null) {
                 this.criteriaAttributes = new HashMap<>();
             }
@@ -66,8 +61,8 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public <T extends BaseEntity> DeleteCriteria<T> build() {
-            DeleteCriteria<T> criteria = new DeleteCriteria<>(this.entity.asSubclass(BaseEntity.class));
+        public DeleteCriteria<T> build() {
+            DeleteCriteria<T> criteria = new DeleteCriteria<>(this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
             return criteria;
         }

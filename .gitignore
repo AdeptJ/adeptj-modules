@@ -17,3 +17,7 @@ hs_err_pid*
 target/
 
 jpa.log
+.project
+org.eclipse.m2e.core.prefs
+.classpath
+*.prefs
