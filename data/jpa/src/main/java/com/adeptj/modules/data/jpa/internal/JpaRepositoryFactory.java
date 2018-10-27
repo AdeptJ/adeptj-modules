@@ -46,7 +46,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static com.adeptj.modules.data.jpa.JpaConstants.JPA_FACTORY_PID;
 import static javax.persistence.ValidationMode.AUTO;
 import static javax.persistence.ValidationMode.CALLBACK;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -89,10 +88,6 @@ public class JpaRepositoryFactory {
                         if (validationMode == AUTO || validationMode == CALLBACK) {
                             properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
                         }
-                        // The ClassLoader must be the one which loaded the given JpaRepository implementation
-                        // and it must have the visibility to the entity classes and persistence.xml/orm.xml
-                        // otherwise EclipseLink will not be able to create the EntityManagerFactory.
-                        properties.put(CLASSLOADER, wrapper.getRepository().getClass().getClassLoader());
                         LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
                         wrapper.initEntityManagerFactory(properties);
                         LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);

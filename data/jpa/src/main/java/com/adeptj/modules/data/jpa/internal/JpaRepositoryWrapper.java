@@ -30,6 +30,8 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
+
 /**
  * Plain wrapper around {@link JpaRepository} and corresponding {@link EntityManagerFactory}.
  *
@@ -66,6 +68,10 @@ class JpaRepositoryWrapper {
     }
 
     void initEntityManagerFactory(Map<String, Object> properties) {
+        // Note: The ClassLoader must be the one which loaded the given JpaRepository implementation
+        // and it must have the visibility to the entity classes and persistence.xml/orm.xml
+        // otherwise EclipseLink may not be able to create the EntityManagerFactory.
+        properties.put(CLASSLOADER, this.repository.getClass().getClassLoader());
         this.emf = new PersistenceProvider().createEntityManagerFactory(this.persistenceUnit, properties);
         JpaUtil.assertInitialized(this.emf);
         EntityManagerFactory emfProxy = (EntityManagerFactory) Proxy.newProxyInstance(this.getClass().getClassLoader(),
