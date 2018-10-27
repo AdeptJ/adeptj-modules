@@ -64,7 +64,7 @@ public @interface DataSourceConfig {
 
     String DEFAULT_USER = "root";
 
-    boolean DEFAULT_AUTO_COMMIT = true;
+    boolean DEFAULT_AUTO_COMMIT = false;
 
     // name hint non editable property
     String webconsole_configurationFactory_nameHint() default "JDBC DataSource: {" + "poolName" + "}"; // NOSONAR

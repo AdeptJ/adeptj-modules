@@ -23,6 +23,7 @@ package com.adeptj.modules.data.jpa.internal;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.JpaUtil;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
+import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 
 import javax.persistence.EntityManagerFactory;
@@ -73,7 +74,7 @@ class JpaRepositoryWrapper {
         // otherwise EclipseLink may not be able to create the EntityManagerFactory.
         properties.put(CLASSLOADER, this.repository.getClass().getClassLoader());
         this.emf = new PersistenceProvider().createEntityManagerFactory(this.persistenceUnit, properties);
-        JpaUtil.assertInitialized(this.emf);
+        Validate.validState(this.emf != null, "EntityManagerFactory is null, probably due to missing persistence.xml!!");
         EntityManagerFactory emfProxy = (EntityManagerFactory) Proxy.newProxyInstance(this.getClass().getClassLoader(),
                 new Class[]{EntityManagerFactory.class},
                 new EntityManagerFactoryProxyHandler(this.emf));

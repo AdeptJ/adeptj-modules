@@ -18,38 +18,27 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.data.jpa.JpaRepository;
-import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
-import org.osgi.service.component.annotations.Component;
-
-import javax.persistence.EntityManagerFactory;
-
-import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Map;
 
 /**
- * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
- * <p>
- * This will be registered with the OSGi service registry whenever there is a new EntityManagerFactory configuration
- * created from OSGi console.
- * <p>
- * Therefore there will be a separate service for each PersistenceUnit.
- * <p>
- * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaRepository}
- *
- * <code>
- * &#064;Reference(target="(osgi.unit.name=my_persistence_unit)")
- * private JpaRepository repository;
- * </code>
+ * Utilities for Jpa {@link Predicate}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = JpaRepository.class, property = JPA_UNIT_NAME + "=" + "eclipselink")
-public class EclipseLinkRepository extends AbstractJpaRepository {
+public final class Predicates {
 
-    @Override
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        super.entityManagerFactory = entityManagerFactory;
+    private Predicates() {
+    }
+
+    public static <T> Predicate[] from(Map<String, Object> attributes, CriteriaBuilder cb, Root<T> root) {
+        return attributes.entrySet()
+                .stream()
+                .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
+                .toArray(Predicate[]::new);
     }
 }

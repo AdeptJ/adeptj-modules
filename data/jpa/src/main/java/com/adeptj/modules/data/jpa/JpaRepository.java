@@ -49,7 +49,7 @@ public interface JpaRepository {
      *
      * @param entity the JPA entity instance
      * @param <T>    type of the JPA entity
-     * @return the entity instance having id assigned from DB
+     * @return the entity instance having id assigned begin DB
      */
     <T extends BaseEntity> T insert(T entity);
 
@@ -74,7 +74,7 @@ public interface JpaRepository {
     <T extends BaseEntity> int updateByCriteria(UpdateCriteria<T> criteria);
 
     /**
-     * Deletes the given JPA entity from DB.
+     * Deletes the given JPA entity begin DB.
      *
      * @param entity     the JPA entity instance
      * @param primaryKey the primary key of the JPA entity
@@ -103,9 +103,9 @@ public interface JpaRepository {
     <T extends BaseEntity> int deleteByCriteria(DeleteCriteria<T> criteria);
 
     /**
-     * Deletes all the rows from db of given JPA entity.
+     * Deletes all the rows begin db of given JPA entity.
      * <p>
-     * Note: This will delete all the rows from DB, you better know what are you doing.
+     * Note: This will delete all the rows begin DB, you better know what are you doing.
      *
      * @param entity the JPA entity class object
      * @param <T>    type of the JPA entity
@@ -296,11 +296,11 @@ public interface JpaRepository {
      * Gets the single result against the query which must be one of the type {@link QueryType}.
      *
      * @param <E>         as the type of returned instance
-     * @param type        E as the singular result from query execution
+     * @param type        E as the singular result begin query execution
      * @param resultClass the type of the query result
      * @param query       the query string
      * @param posParams   List of parameters to bind to query a.k.a positional parameters
-     * @return a singular result from query execution
+     * @return a singular result begin query execution
      */
     <E> E getScalarResultOfType(Class<E> resultClass, QueryType type, String query, List<Object> posParams);
 
@@ -311,7 +311,7 @@ public interface JpaRepository {
      * @param namedQuery  the name of a query defined in metadata
      * @param posParams   List of parameters to bind to query a.k.a positional parameters
      * @param <T>         Type of returned instance
-     * @return singular result from query execution
+     * @return singular result begin query execution
      */
     <T> T getScalarResultOfType(Class<T> resultClass, String namedQuery, List<Object> posParams);
 
@@ -320,7 +320,7 @@ public interface JpaRepository {
      *
      * @param namedQuery the name of a query defined in metadata
      * @param posParams  List of parameters to bind to query a.k.a positional parameters
-     * @return singular result from query execution
+     * @return singular result begin query execution
      */
     Object getScalarResult(String namedQuery, List<Object> posParams);
 
@@ -345,12 +345,20 @@ public interface JpaRepository {
     <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
 
     /**
-     * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager.
+     * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager without a transaction.
      *
-     * @param action      callback object that specifies the JPA action
-     * @param requiresTxn whether a JPA transaction is required or not
-     * @param <T>         the result type
+     * @param action callback object that specifies the JPA action
+     * @param <T>    the result type
      * @return a result object returned by the action, or null
      */
-    <T> T execute(JpaCallback<T> action, boolean requiresTxn);
+    <T> T execute(JpaCallback<T> action);
+
+    /**
+     * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager in a transaction.
+     *
+     * @param action callback object that specifies the JPA action
+     * @param <T>    the result type
+     * @return a result object returned by the action, or null
+     */
+    <T> T executeInTransaction(JpaCallback<T> action);
 }

@@ -20,21 +20,15 @@
 
 package com.adeptj.modules.data.jpa;
 
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -49,9 +43,11 @@ public final class JpaUtil {
     private JpaUtil() {
     }
 
-    public static void assertInitialized(EntityManagerFactory emf) {
-        Validate.validState(emf != null, "EntityManagerFactory is null, probably due to missing persistence.xml!!");
-        Validate.validState(emf != null && emf.isOpen(), "EntityManagerFactory not open!!");
+    public static EntityManager createEntityManager(EntityManagerFactory emf) {
+        if (emf == null) {
+            throw new IllegalStateException("EntityManagerFactory is null!!");
+        }
+        return emf.createEntityManager();
     }
 
     public static void close(EntityManagerFactory emf) {
@@ -73,37 +69,6 @@ public final class JpaUtil {
                 LOGGER.error("Exception while closing EntityManager!!", ex);
             }
         }
-    }
-
-    public static EntityTransaction beginTransaction(EntityManager em) {
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        return transaction;
-    }
-
-    public static void setRollbackOnly(EntityTransaction txn) {
-        if (txn != null && txn.isActive() && !txn.getRollbackOnly()) {
-            txn.setRollbackOnly();
-        }
-    }
-
-    public static void rollback(EntityTransaction txn) {
-        if (txn != null && txn.isActive() && txn.getRollbackOnly()) {
-            try {
-                LOGGER.warn("Rolling back transaction!!");
-                txn.rollback();
-            } catch (RuntimeException ex) {
-                LOGGER.error("Exception while rolling back transaction!!", ex);
-            }
-        }
-    }
-
-    public static <T> Predicate[] getPredicates(Map<String, Object> attributes, CriteriaBuilder cb, Root<T> root) {
-        return attributes
-                .entrySet()
-                .stream()
-                .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
-                .toArray(Predicate[]::new);
     }
 
     /**

@@ -18,38 +18,41 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa;
 
-import com.adeptj.modules.data.jpa.JpaRepository;
-import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
-import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManagerFactory;
-
-import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import java.lang.invoke.MethodHandles;
 
 /**
- * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
- * <p>
- * This will be registered with the OSGi service registry whenever there is a new EntityManagerFactory configuration
- * created from OSGi console.
- * <p>
- * Therefore there will be a separate service for each PersistenceUnit.
- * <p>
- * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaRepository}
- *
- * <code>
- * &#064;Reference(target="(osgi.unit.name=my_persistence_unit)")
- * private JpaRepository repository;
- * </code>
+ * Utilities for Jpa {@link EntityTransaction}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = JpaRepository.class, property = JPA_UNIT_NAME + "=" + "eclipselink")
-public class EclipseLinkRepository extends AbstractJpaRepository {
+public final class Transactions {
 
-    @Override
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        super.entityManagerFactory = entityManagerFactory;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private Transactions() {
+    }
+
+    public static void markRollback(EntityManager em) {
+        if (!em.getTransaction().getRollbackOnly()) {
+            em.getTransaction().setRollbackOnly();
+        }
+    }
+
+    public static void rollback(EntityManager em) {
+        if (em.getTransaction().getRollbackOnly()) {
+            try {
+                LOGGER.warn("Rolling back transaction!!");
+                em.getTransaction().rollback();
+            } catch (RuntimeException ex) {
+                LOGGER.error("Exception while rolling back transaction!!", ex);
+            }
+        }
     }
 }
