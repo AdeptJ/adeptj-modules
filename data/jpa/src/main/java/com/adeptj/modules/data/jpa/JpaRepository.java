@@ -30,7 +30,6 @@ import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 
 import javax.persistence.Tuple;
 import java.util.List;
-import java.util.Map;
 
 /**
  * JPA 2.2 Repository for CRUD operations to be performed by the application on underlying DB.
@@ -295,14 +294,14 @@ public interface JpaRepository {
     /**
      * Gets the single result against the query which must be one of the type {@link QueryType}.
      *
-     * @param <E>         as the type of returned instance
+     * @param <T>         as the type of returned instance
      * @param type        E as the singular result begin query execution
      * @param resultClass the type of the query result
      * @param query       the query string
      * @param posParams   List of parameters to bind to query a.k.a positional parameters
      * @return a singular result begin query execution
      */
-    <E> E getScalarResultOfType(Class<E> resultClass, QueryType type, String query, List<Object> posParams);
+    <T> T getScalarResultOfType(Class<T> resultClass, QueryType type, String query, List<Object> posParams);
 
     /**
      * Gets the single result against the named query which must be in JPQL format.
@@ -329,20 +328,26 @@ public interface JpaRepository {
      *
      * @param entity the JPA entity class object
      * @param <T>    type of the JPA entity
-     * @return count of no. of rows og given JPA entity
+     * @return count of no. of rows of given JPA entity
      */
     <T extends BaseEntity> Long count(Class<T> entity);
 
     /**
-     * Count the no. of rows of given JPA entity using UpdateCriteria.
+     * Count the no. of rows of given JPA entity.
      *
-     * @param entity             the JPA entity class object
-     * @param criteriaAttributes the mapping of entity attributes on which criteria has to be applied
-     *                           and the corresponding values using AND operator
-     * @param <T>                type of the JPA entity
-     * @return count of no. of rows og given JPA entity
+     * @param query the query string
+     * @param type  type of the JPA or native query
+     * @return count of no. of rows of given JPA entity
      */
-    <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes);
+    Number count(String query, QueryType type);
+
+    /**
+     * Count the no. of rows of given JPA entity.
+     *
+     * @param namedQuery the query string
+     * @return count of no. of rows of given JPA entity
+     */
+    Number count(String namedQuery);
 
     /**
      * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager without a transaction.

@@ -45,6 +45,6 @@ public class EclipseLinkRepository extends AbstractJpaRepository {
 
     @Override
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        super.emf = entityManagerFactory;
+        super.entityManagerFactory = entityManagerFactory;
     }
 }

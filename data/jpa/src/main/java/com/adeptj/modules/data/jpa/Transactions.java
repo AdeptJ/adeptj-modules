@@ -40,13 +40,13 @@ public final class Transactions {
     }
 
     public static void markRollback(EntityManager em) {
-        if (!em.getTransaction().getRollbackOnly()) {
+        if (em.getTransaction().isActive() && !em.getTransaction().getRollbackOnly()) {
             em.getTransaction().setRollbackOnly();
         }
     }
 
     public static void rollback(EntityManager em) {
-        if (em.getTransaction().getRollbackOnly()) {
+        if (em.getTransaction().isActive() && em.getTransaction().getRollbackOnly()) {
             try {
                 LOGGER.warn("Rolling back transaction!!");
                 em.getTransaction().rollback();

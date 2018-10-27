@@ -29,7 +29,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Common JPA Utilities.
@@ -72,35 +71,16 @@ public final class JpaUtil {
     }
 
     /**
-     * This method sets the the positional parameters to the given JPA {@link Query}.
+     * This method sets the the positional parameters to the given JPA {@link Query} or {@link TypedQuery}.
      *
-     * @param query     the JPA {@link Query}
+     * @param query     the JPA {@link Query} or {@link TypedQuery}
      * @param posParams positional parameters
-     * @return JPA {@link Query}
      */
-    public static Query setQueryParams(Query query, List<Object> posParams) {
-        setQueryParamsInternal(query, posParams);
-        return query;
-    }
-
-    /**
-     * This method sets the the positional parameters to the given JPA {@link TypedQuery}.
-     *
-     * @param query     the JPA {@link TypedQuery}
-     * @param posParams positional parameters
-     * @param <T>       as the type of entity
-     * @return JPA {@link TypedQuery}
-     */
-    public static <T> TypedQuery<T> setTypedQueryParams(TypedQuery<T> query, List<Object> posParams) {
-        setQueryParamsInternal(query, posParams);
-        return query;
-    }
-
-
-    private static void setQueryParamsInternal(Query query, List<Object> posParams) {
-        if (posParams != null && !posParams.isEmpty()) {
-            AtomicInteger posParamCounter = new AtomicInteger();
-            posParams.forEach(param -> query.setParameter(posParamCounter.incrementAndGet(), param));
+    public static void setQueryParams(Query query, List<Object> posParams) {
+        if (posParams != null) {
+            for (int index = 0; index < posParams.size(); index++) {
+                query.setParameter(index + 1, posParams.get(index));
+            }
         }
     }
 }

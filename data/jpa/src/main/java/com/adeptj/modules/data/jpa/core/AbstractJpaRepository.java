@@ -51,7 +51,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
@@ -182,7 +181,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         try {
             em.getTransaction().begin();
             TypedQuery<T> typedQuery = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
-            int rowsDeleted = JpaUtil.setTypedQueryParams(typedQuery, crudDTO.getPosParams()).executeUpdate();
+            JpaUtil.setQueryParams(typedQuery, crudDTO.getPosParams());
+            int rowsDeleted = typedQuery.executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("deleteByJpaNamedQuery: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
@@ -328,7 +328,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public <T> List<T> findByJpaNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            return JpaUtil.setTypedQueryParams(em.createNamedQuery(namedQuery, resultClass), posParams).getResultList();
+            TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
+            JpaUtil.setQueryParams(query, posParams);
+            return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -344,7 +346,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            return JpaUtil.setQueryParams(em.createNamedQuery(namedQuery), posParams).getResultList();
+            Query query = em.createNamedQuery(namedQuery);
+            JpaUtil.setQueryParams(query, posParams);
+            return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -395,7 +399,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            return JpaUtil.setTypedQueryParams(query, crudDTO.getPosParams()).getResultList();
+            JpaUtil.setQueryParams(query, crudDTO.getPosParams());
+            return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -411,8 +416,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<T> typedQuery = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            return JpaUtil.setTypedQueryParams(typedQuery, crudDTO.getPosParams())
-                    .setFirstResult(crudDTO.getStartPos())
+            JpaUtil.setQueryParams(typedQuery, crudDTO.getPosParams());
+            return typedQuery.setFirstResult(crudDTO.getStartPos())
                     .setMaxResults(crudDTO.getMaxResult())
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
@@ -447,7 +452,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public <T> List<T> findByQueryAndMapDefault(Class<T> resultClass, String nativeQuery, List<Object> posParams) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            return JpaUtil.setQueryParams(em.createNativeQuery(nativeQuery, resultClass), posParams).getResultList();
+            Query query = em.createNativeQuery(nativeQuery, resultClass);
+            JpaUtil.setQueryParams(query, posParams);
+            return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -464,7 +471,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
-            return JpaUtil.setQueryParams(query, mappingDTO.getPosParams()).getResultList();
+            JpaUtil.setQueryParams(query, mappingDTO.getPosParams());
+            return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -479,7 +487,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public <T> List<T> findByQueryAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            return JpaUtil.setTypedQueryParams(em.createQuery(jpaQuery, resultClass), posParams).getResultList();
+            TypedQuery<T> query = em.createQuery(jpaQuery, resultClass);
+            JpaUtil.setQueryParams(query, posParams);
+            return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -519,12 +529,15 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             switch (type) {
-                case JPQL:
-                    result = JpaUtil.setTypedQueryParams(em.createQuery(query, resultClass), posParams).getSingleResult();
+                case JPA:
+                    TypedQuery<T> typedQuery = em.createQuery(query, resultClass);
+                    JpaUtil.setQueryParams(typedQuery, posParams);
+                    result = typedQuery.getSingleResult();
                     break;
                 case NATIVE:
-                    result = resultClass.cast(JpaUtil.setQueryParams(em.createNativeQuery(query, resultClass), posParams)
-                            .getSingleResult());
+                    Query nativeQuery = em.createNativeQuery(query, resultClass);
+                    JpaUtil.setQueryParams(nativeQuery, posParams);
+                    result = resultClass.cast(nativeQuery.getSingleResult());
                     break;
             }
         } catch (Exception ex) { // NOSONAR
@@ -542,7 +555,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public <T> T getScalarResultOfType(Class<T> resultClass, String namedQuery, List<Object> posParams) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            return JpaUtil.setTypedQueryParams(em.createNamedQuery(namedQuery, resultClass), posParams).getSingleResult();
+            TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
+            JpaUtil.setQueryParams(query, posParams);
+            return query.getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -554,7 +569,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public Object getScalarResult(String namedQuery, List<Object> posParams) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            return JpaUtil.setQueryParams(em.createNamedQuery(namedQuery), posParams).getSingleResult();
+            Query query = em.createNamedQuery(namedQuery);
+            JpaUtil.setQueryParams(query, posParams);
+            return query.getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -562,9 +579,6 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public <T extends BaseEntity> Long count(Class<T> entity) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
@@ -579,19 +593,30 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public <T extends BaseEntity> Long countByCriteria(Class<T> entity, Map<String, Object> criteriaAttributes) {
+    public Number count(String query, QueryType type) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-            Root<T> from = cq.from(entity);
-            return em.createQuery(cq.select(cb.count(from))
-                    .where(cb.and(Predicates.from(criteriaAttributes, cb, from))))
-                    .getSingleResult();
+            switch (type) {
+                case JPA:
+                    return (Number) em.createQuery(query).getSingleResult();
+                case NATIVE:
+                    return (Number) em.createNativeQuery(query).getSingleResult();
+                default:
+                    throw new IllegalStateException("Invalid QueryType!!");
+            }
+        } catch (Exception ex) { // NOSONAR
+            throw new JpaException(ex);
+        } finally {
+            JpaUtil.close(em);
+        }
+    }
+
+    @Override
+    public Number count(String namedQuery) {
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            return (Number) em.createNamedQuery(namedQuery).getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -608,10 +633,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         try {
             return action.doInJpa(em);
         } catch (Exception ex) { // NOSONAR
-            Transactions.markRollback(em);
             throw new JpaException(ex);
         } finally {
-            Transactions.rollback(em);
             JpaUtil.close(em);
         }
     }

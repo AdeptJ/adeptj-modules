@@ -49,17 +49,20 @@ import javax.persistence.Table;
 @Table(schema = "AdeptJ", name = "USERS")
 @NamedQueries({
 
-        @NamedQuery(name = "User.findUserByContact.JPA.Scalar",
-                query = "SELECT u FROM  User u WHERE u.contact = ?1"),
+        @NamedQuery(name = "User.findUserFirstNameByContact.JPA.Scalar",
+                query = "SELECT u.firstName FROM User u WHERE u.contact = ?1"),
+
+        @NamedQuery(name = "User.findUserCountsByContact.JPA.Scalar",
+                query = "SELECT select count(u) from User u"),
 
         @NamedQuery(name = "User.findUserByContact.JPA.User",
-                query = "SELECT u FROM  User u WHERE u.contact = ?1"),
+                query = "SELECT u FROM User u WHERE u.contact = ?1"),
 
         @NamedQuery(name = "User.findUserByContact.JPA.ObjectArray",
                 query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.contact = ?1"),
 
         @NamedQuery(name = "User.deleteUserByContact.JPA",
-                query = "DELETE FROM  User u WHERE u.contact = ?1")
+                query = "DELETE FROM User u WHERE u.contact = ?1")
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "User.findUserByContact.NATIVE",

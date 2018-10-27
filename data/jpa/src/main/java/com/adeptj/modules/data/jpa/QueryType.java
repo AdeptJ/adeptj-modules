@@ -29,5 +29,5 @@ public enum QueryType {
 
     NATIVE,
 
-    JPQL,
+    JPA,
 }
