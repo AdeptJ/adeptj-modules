@@ -47,6 +47,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import java.lang.invoke.MethodHandles;
@@ -96,7 +97,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -116,7 +117,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
         return updated;
     }
@@ -144,7 +145,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -168,7 +169,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -181,7 +182,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         try {
             em.getTransaction().begin();
             TypedQuery<T> typedQuery = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
-            JpaUtil.setQueryParams(typedQuery, crudDTO.getPosParams());
+            JpaUtil.bindQueryParams(typedQuery, crudDTO.getPosParams());
             int rowsDeleted = typedQuery.executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("deleteByJpaNamedQuery: No. of rows deleted: [{}]", rowsDeleted);
@@ -191,7 +192,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -217,7 +218,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -238,7 +239,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -253,7 +254,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -272,7 +273,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -295,7 +296,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -317,7 +318,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -329,12 +330,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
-            JpaUtil.setQueryParams(query, posParams);
+            JpaUtil.bindQueryParams(query, posParams);
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -347,12 +348,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNamedQuery(namedQuery);
-            JpaUtil.setQueryParams(query, posParams);
+            JpaUtil.bindQueryParams(query, posParams);
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -368,7 +369,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -387,7 +388,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -399,12 +400,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            JpaUtil.setQueryParams(query, crudDTO.getPosParams());
+            JpaUtil.bindQueryParams(query, crudDTO.getPosParams());
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -416,14 +417,14 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<T> typedQuery = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            JpaUtil.setQueryParams(typedQuery, crudDTO.getPosParams());
+            JpaUtil.bindQueryParams(typedQuery, crudDTO.getPosParams());
             return typedQuery.setFirstResult(crudDTO.getStartPos())
                     .setMaxResults(crudDTO.getMaxResult())
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -436,14 +437,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             Root<T> root = cq.from(entity);
-            return em.createQuery(cq
-                    .select(root)
-                    .where(root.get(attributeName).in(values)))
-                    .getResultList();
+            Predicate predicate = root.get(attributeName).in(values);
+            return em.createQuery(cq.select(root).where(predicate)).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -453,12 +452,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNativeQuery(nativeQuery, resultClass);
-            JpaUtil.setQueryParams(query, posParams);
+            JpaUtil.bindQueryParams(query, posParams);
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -471,12 +470,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
-            JpaUtil.setQueryParams(query, mappingDTO.getPosParams());
+            JpaUtil.bindQueryParams(query, mappingDTO.getPosParams());
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -488,12 +487,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<T> query = em.createQuery(jpaQuery, resultClass);
-            JpaUtil.setQueryParams(query, posParams);
+            JpaUtil.bindQueryParams(query, posParams);
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -516,7 +515,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -525,27 +524,25 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> T getScalarResultOfType(Class<T> resultClass, QueryType type, String query, List<Object> posParams) {
-        T result = null;
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             switch (type) {
                 case JPA:
                     TypedQuery<T> typedQuery = em.createQuery(query, resultClass);
-                    JpaUtil.setQueryParams(typedQuery, posParams);
-                    result = typedQuery.getSingleResult();
-                    break;
+                    JpaUtil.bindQueryParams(typedQuery, posParams);
+                    return typedQuery.getSingleResult();
                 case NATIVE:
                     Query nativeQuery = em.createNativeQuery(query, resultClass);
-                    JpaUtil.setQueryParams(nativeQuery, posParams);
-                    result = resultClass.cast(nativeQuery.getSingleResult());
-                    break;
+                    JpaUtil.bindQueryParams(nativeQuery, posParams);
+                    return resultClass.cast(nativeQuery.getSingleResult());
+                default:
+                    throw new IllegalStateException("Invalid QueryType!!");
             }
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
-        return result;
     }
 
     /**
@@ -556,12 +553,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
-            JpaUtil.setQueryParams(query, posParams);
+            JpaUtil.bindQueryParams(query, posParams);
             return query.getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -570,12 +567,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNamedQuery(namedQuery);
-            JpaUtil.setQueryParams(query, posParams);
+            JpaUtil.bindQueryParams(query, posParams);
             return query.getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -589,7 +586,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -608,7 +605,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -620,7 +617,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -635,7 +632,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
     }
 
@@ -655,7 +652,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             throw new JpaException(ex);
         } finally {
             Transactions.rollback(em);
-            JpaUtil.close(em);
+            JpaUtil.closeEntityManager(em);
         }
         return result;
     }

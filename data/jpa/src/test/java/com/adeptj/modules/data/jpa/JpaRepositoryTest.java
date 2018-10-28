@@ -32,9 +32,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +49,8 @@ import java.util.List;
 @Disabled
 public class JpaRepositoryTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private static EntityManagerFactory entityManagerFactory;
 
     private static EclipseLinkRepository repository;
@@ -53,6 +58,7 @@ public class JpaRepositoryTest {
     @BeforeAll
     public static void init() throws Exception {
         entityManagerFactory = Persistence.createEntityManagerFactory("AdeptJ_PU");
+        LOGGER.info("EntityManagerFactory created!!");
         repository = new EclipseLinkRepository();
         repository.setEntityManagerFactory(entityManagerFactory);
     }
@@ -128,11 +134,12 @@ public class JpaRepositoryTest {
     public void testFindByTupleQuery() {
         repository.findByTupleQuery(TupleQueryCriteria.builder(User.class)
                 .addSelections("firstName", "lastName")
-                .addCriteriaAttribute("contact", "1234567890")
-                .build()).forEach(tuple -> {
-            System.out.println("FirstName: " + tuple.get(0));
-            System.out.println("LastName: " + tuple.get(1));
-        });
+                .addCriteriaAttribute("contact", "1234567891")
+                .build())
+                .forEach(tuple -> {
+                    LOGGER.info("FirstName: {}", tuple.get(0));
+                    LOGGER.info("FirstName: {}", tuple.get(1));
+                });
     }
 
     @Test
@@ -253,7 +260,7 @@ public class JpaRepositoryTest {
                 .addPosParam("John")
                 .build());
         users.forEach(user -> {
-            System.out.println("User ID: " + user.getId());
+            System.out.printf("User ID: %s", user.getId());
             System.out.println("FirstName: " + user.getFirstName());
             System.out.println("LastName: " + user.getLastName());
         });
@@ -270,7 +277,6 @@ public class JpaRepositoryTest {
                     System.out.println("User ID: " + user.getId());
                     System.out.println("FirstName: " + user.getFirstName());
                     System.out.println("LastName: " + user.getLastName());
-
                 });
     }
 

@@ -60,7 +60,7 @@ class JpaRepositoryWrapper {
     }
 
     void disposeRepository() {
-        JpaUtil.close(this.emf);
+        JpaUtil.closeEntityManagerFactory(this.emf);
         this.emf = null;
         if (this.repository != null) {
             this.repository.setEntityManagerFactory(null);

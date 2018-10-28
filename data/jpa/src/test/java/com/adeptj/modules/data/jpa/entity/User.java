@@ -53,7 +53,7 @@ import javax.persistence.Table;
                 query = "SELECT u.firstName FROM User u WHERE u.contact = ?1"),
 
         @NamedQuery(name = "User.findUserCountsByContact.JPA.Scalar",
-                query = "SELECT select count(u) from User u"),
+                query = "SELECT count(u) from User u"),
 
         @NamedQuery(name = "User.findUserByContact.JPA.User",
                 query = "SELECT u FROM User u WHERE u.contact = ?1"),

@@ -49,7 +49,7 @@ public final class JpaUtil {
         return emf.createEntityManager();
     }
 
-    public static void close(EntityManagerFactory emf) {
+    public static void closeEntityManagerFactory(EntityManagerFactory emf) {
         if (emf != null && emf.isOpen()) {
             try {
                 emf.close();
@@ -60,7 +60,7 @@ public final class JpaUtil {
         }
     }
 
-    public static void close(EntityManager em) {
+    public static void closeEntityManager(EntityManager em) {
         if (em != null && em.isOpen()) {
             try {
                 em.close();
@@ -71,15 +71,18 @@ public final class JpaUtil {
     }
 
     /**
-     * This method sets the the positional parameters to the given JPA {@link Query} or {@link TypedQuery}.
+     * This method binds the the positional parameters to the given JPA {@link Query} or {@link TypedQuery}.
      *
      * @param query     the JPA {@link Query} or {@link TypedQuery}
      * @param posParams positional parameters
      */
-    public static void setQueryParams(Query query, List<Object> posParams) {
+    public static void bindQueryParams(Query query, List<Object> posParams) {
         if (posParams != null) {
             for (int index = 0; index < posParams.size(); index++) {
-                query.setParameter(index + 1, posParams.get(index));
+                int position = index + 1;
+                Object value = posParams.get(index);
+                LOGGER.info("Binding JPA Query parameter: [{}] at position: [{}]", value, position);
+                query.setParameter(position, value);
             }
         }
     }
