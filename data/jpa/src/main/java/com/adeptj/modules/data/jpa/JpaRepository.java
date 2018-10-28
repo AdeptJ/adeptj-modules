@@ -53,6 +53,15 @@ public interface JpaRepository {
     <T extends BaseEntity> T insert(T entity);
 
     /**
+     * Inserts the given JPA entities in DB.
+     *
+     * @param entities  the JPA entity instances
+     * @param batchSize the interval with which there is a commit to database
+     * @param <T>       type of the JPA entity
+     */
+    <T extends BaseEntity> void batchInsert(List<T> entities, int batchSize);
+
+    /**
      * Updates the given JPA entity in DB.
      *
      * @param entity the JPA entity instance

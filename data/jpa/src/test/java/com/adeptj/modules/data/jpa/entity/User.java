@@ -32,12 +32,9 @@ import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 
 /**
@@ -47,57 +44,46 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(schema = "AdeptJ", name = "USERS")
-@NamedQueries({
-
-        @NamedQuery(name = "User.findUserFirstNameByContact.JPA.Scalar",
-                query = "SELECT u.firstName FROM User u WHERE u.contact = ?1"),
-
-        @NamedQuery(name = "User.findUserCountsByContact.JPA.Scalar",
-                query = "SELECT count(u) from User u"),
-
-        @NamedQuery(name = "User.findUserByContact.JPA.User",
-                query = "SELECT u FROM User u WHERE u.contact = ?1"),
-
-        @NamedQuery(name = "User.findUserByContact.JPA.ObjectArray",
-                query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.contact = ?1"),
-
-        @NamedQuery(name = "User.deleteUserByContact.JPA",
-                query = "DELETE FROM User u WHERE u.contact = ?1")
-})
-@NamedNativeQueries({
-        @NamedNativeQuery(name = "User.findUserByContact.NATIVE",
-                query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM  Users u WHERE MOBILE_NO = ?1")
-})
-@SqlResultSetMappings({
-        @SqlResultSetMapping(
-                name = "User.findUserByContact.EntityMapping",
-                entities = {
-                        @EntityResult(
-                                entityClass = User.class,
-                                fields = {
-                                        @FieldResult(name = "id", column = "ID"),
-                                        @FieldResult(name = "firstName", column = "FIRST_NAME"),
-                                        @FieldResult(name = "lastName", column = "LAST_NAME"),
-                                        @FieldResult(name = "email", column = "EMAIL"),
-                                        @FieldResult(name = "contact", column = "MOBILE_NO"),
-                                })
-                }
-        ),
-        @SqlResultSetMapping(
-                name = "User.findUserByContact.ConstructorMapping",
-                classes = {
-                        @ConstructorResult(
-                                targetClass = UserDTO.class,
-                                columns = {
-                                        @ColumnResult(name = "ID"),
-                                        @ColumnResult(name = "FIRST_NAME"),
-                                        @ColumnResult(name = "LAST_NAME"),
-                                        @ColumnResult(name = "EMAIL"),
-                                        @ColumnResult(name = "MOBILE_NO"),
-                                })
-                }
-        )
-})
+@NamedQuery(name = "User.findUserFirstNameByContact.JPA.Scalar",
+        query = "SELECT u.firstName FROM User u WHERE u.contact = ?1")
+@NamedQuery(name = "User.findUserCountsByContact.JPA.Scalar",
+        query = "SELECT count(u) from User u")
+@NamedQuery(name = "User.findUserByContact.JPA.User",
+        query = "SELECT u FROM User u WHERE u.contact = ?1")
+@NamedQuery(name = "User.findUserByContact.JPA.ObjectArray",
+        query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.contact = ?1")
+@NamedQuery(name = "User.deleteUserByContact.JPA",
+        query = "DELETE FROM User u WHERE u.contact = ?1")
+@NamedNativeQuery(name = "User.findUserByContact.NATIVE",
+        query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM  Users u WHERE MOBILE_NO = ?1")
+@SqlResultSetMapping(
+        name = "User.findUserByContact.EntityMapping",
+        entities = {
+                @EntityResult(
+                        entityClass = User.class,
+                        fields = {
+                                @FieldResult(name = "id", column = "ID"),
+                                @FieldResult(name = "firstName", column = "FIRST_NAME"),
+                                @FieldResult(name = "lastName", column = "LAST_NAME"),
+                                @FieldResult(name = "email", column = "EMAIL"),
+                                @FieldResult(name = "contact", column = "MOBILE_NO"),
+                        })
+        }
+)
+@SqlResultSetMapping(
+        name = "User.findUserByContact.ConstructorMapping",
+        classes = {
+                @ConstructorResult(
+                        targetClass = UserDTO.class,
+                        columns = {
+                                @ColumnResult(name = "ID"),
+                                @ColumnResult(name = "FIRST_NAME"),
+                                @ColumnResult(name = "LAST_NAME"),
+                                @ColumnResult(name = "EMAIL"),
+                                @ColumnResult(name = "MOBILE_NO"),
+                        })
+        }
+)
 public class User implements BaseEntity {
 
     @Id

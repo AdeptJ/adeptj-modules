@@ -35,6 +35,7 @@ import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +93,30 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             em.persist(entity);
             em.getTransaction().commit();
             return entity;
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @Override
+    public <T extends BaseEntity> void batchInsert(List<T> entities, int batchSize) {
+        Validate.isTrue(entities != null && !entities.isEmpty() && batchSize > 1, "Invalid inputs!!");
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            em.getTransaction().begin();
+            for (int index = 0; index < entities.size(); index++) {
+                if (index > 0 && index % batchSize == 0) {
+                    em.getTransaction().commit();
+                    em.getTransaction().begin();
+                    em.clear();
+                }
+                em.persist(entities.get(index));
+            }
+            em.getTransaction().commit();
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
             throw new JpaException(ex);

@@ -71,7 +71,7 @@ public class JpaRepositoryTest {
     @Test
     public void testInsert() {
         User user = new User();
-        user.setContact("1234567890");
+        //user.setContact("1234567890");
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("john.doe@johndoe.com");
@@ -84,8 +84,8 @@ public class JpaRepositoryTest {
         User user = new User();
         user.setId(1L);
         user.setContact("1234567890");
-        user.setFirstName("John_Updated");
-        user.setLastName("Doe");
+        user.setFirstName("John_Updated_Again");
+        user.setLastName("Doe_Updated");
         user.setEmail("john.doe@johndoe.com");
         user = repository.update(user);
         System.out.println("User's Contact No is: " + user.getContact());
