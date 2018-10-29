@@ -26,13 +26,14 @@ import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceProvider.PID;
+import static com.adeptj.modules.commons.jdbc.internal.DataSourceFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -41,12 +42,15 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = DataSourceConfig.class, factory = true)
-@Component(service = DataSourceProvider.class, name = PID, configurationPolicy = REQUIRE)
-public class DataSourceProvider {
+@Component(service = DataSourceFactory.class, name = PID, configurationPolicy = REQUIRE)
+public class DataSourceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final String PID = "com.adeptj.modules.commons.jdbc.DataSource.factory";
+
+    @Reference
+    private PoolNameChecker poolNameChecker;
 
     private HikariDataSource dataSource;
 
@@ -67,6 +71,7 @@ public class DataSourceProvider {
         try {
             String poolName = config.poolName();
             Validate.isTrue(StringUtils.isNotEmpty(poolName), "JDBC Pool Name can't be blank!!");
+            this.poolNameChecker.checkExists(poolName);
             this.dataSource = DataSources.newDataSource(config);
             LOGGER.info("HikariDataSource: [{}] initialized!!", poolName);
         } catch (Exception ex) { // NOSONAR
@@ -89,5 +94,6 @@ public class DataSourceProvider {
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }
+        this.poolNameChecker.remove(config.poolName());
     }
 }

@@ -20,16 +20,31 @@
 
 package com.adeptj.modules.commons.jdbc.internal;
 
+import org.osgi.service.component.annotations.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Thrown from {@link DataSourceFactory} when the DataSource is being configured in start method.
+ * Checks if the pool name for a given {@link javax.sql.DataSource} exists, if yes, then throw exception.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class DataSourceConfigurationException extends RuntimeException {
+@Component(service = PoolNameChecker.class)
+public class PoolNameChecker {
 
-    private static final long serialVersionUID = -4649854107775357466L;
+    private static final String JDBC_DS_EXISTS_MSG = "JDBC pool [%s] already configured, please choose a different name!!";
 
-    DataSourceConfigurationException(Exception ex) {
-        super(ex);
+    private final List<String> poolNames = new ArrayList<>();
+
+    void checkExists(String poolName) {
+        if (this.poolNames.contains(poolName)) {
+            throw new IllegalStateException(String.format(JDBC_DS_EXISTS_MSG, poolName));
+        }
+        this.poolNames.add(poolName);
+    }
+
+    void remove(String poolName) {
+        this.poolNames.remove(poolName);
     }
 }

@@ -40,7 +40,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 /**
  * Provides {@link com.zaxxer.hikari.HikariDataSource} as the JDBC {@link DataSource} implementation.
  * <p>
- * The {@link com.zaxxer.hikari.HikariDataSource} is configured by the {@link DataSourceProvider}.
+ * The {@link com.zaxxer.hikari.HikariDataSource} is configured by the {@link DataSourceFactory}.
  * <p>
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -68,15 +68,14 @@ public class HikariDataSourceService implements DataSourceService {
 
     // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
 
-    @Reference(service = DataSourceProvider.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindDataSourceProvider(DataSourceProvider provider) {
-        LOGGER.info("Adding DataSource: [{}]", provider.getDataSource().getPoolName());
-        this.dataSources.add(provider.getDataSource());
+    @Reference(service = DataSourceFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindDataSourceFactory(DataSourceFactory factory) {
+        LOGGER.info("Binding: {}", factory.getDataSource());
+        this.dataSources.add(factory.getDataSource());
     }
 
-    protected void unbindDataSourceProvider(DataSourceProvider provider) {
-        String poolName = provider.getDataSource().getPoolName();
-        LOGGER.info("Removing DataSource: [{}]", poolName);
-        this.dataSources.removeIf(ds -> StringUtils.equals(ds.getPoolName(), poolName));
+    protected void unbindDataSourceFactory(DataSourceFactory factory) {
+        LOGGER.info("Unbinding: [{}]", factory.getDataSource());
+        this.dataSources.removeIf(ds -> StringUtils.equals(ds.getPoolName(), factory.getDataSource().getPoolName()));
     }
 }
