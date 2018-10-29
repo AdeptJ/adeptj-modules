@@ -54,17 +54,17 @@ public @interface DataSourceConfig {
 
     long DEFAULT_MAX_LIFETIME = 1800000L;
 
-    int DEFAULT_MIN_IDLE = 32;
+    int DEFAULT_MIN_IDLE = 8;
 
-    int DEFAULT_MAX_POOL_SIZE = 32;
+    int DEFAULT_MAX_POOL_SIZE = 8;
 
-    String DEFAULT_JDBC_URL = "jdbc:mysql://localhost:3306/db?useSSL=false&nullNamePatternMatchesAll=true";
+    String DEFAULT_JDBC_URL = "jdbc:mysql://localhost:3306/db?useSSL=false&nullNamePatternMatchesAll=true&allowPublicKeyRetrieval=true";
 
-    String DEFAULT_DRIVER_CLASSNAME = "com.mysql.cj.jdbc.Driver";
+    String JDBC_DRIVER_CLASSNAME = "com.mysql.cj.jdbc.Driver";
 
-    String DEFAULT_USER = "root";
+    String JDBC_USER = "root";
 
-    boolean DEFAULT_AUTO_COMMIT = false;
+    boolean JDBC_AUTO_COMMIT = false;
 
     // name hint non editable property
     String webconsole_configurationFactory_nameHint() default "JDBC DataSource: {" + "poolName" + "}"; // NOSONAR
@@ -72,14 +72,14 @@ public @interface DataSourceConfig {
     @AttributeDefinition(name = POOL_NAME, description = "DataSource Pool Name")
     String poolName();
 
-    @AttributeDefinition(name = JDBC_URL, description = "JDBC URL for target Database")
+    @AttributeDefinition(name = JDBC_URL, description = "JDBC URL of target database")
     String jdbcUrl() default DEFAULT_JDBC_URL;
 
     @AttributeDefinition(name = DRIVER_CLASS_NAME, description = "JDBC driver FQCN")
-    String driverClassName() default DEFAULT_DRIVER_CLASSNAME;
+    String driverClassName() default JDBC_DRIVER_CLASSNAME;
 
     @AttributeDefinition(name = USERNAME, description = "JDBC default authentication username")
-    String username() default DEFAULT_USER;
+    String username() default JDBC_USER;
 
     @AttributeDefinition(
             name = PWD,
@@ -89,7 +89,7 @@ public @interface DataSourceConfig {
     String password();
 
     @AttributeDefinition(name = AUTO_COMMIT, description = "JDBC auto-commit behavior of connections")
-    boolean autoCommit() default DEFAULT_AUTO_COMMIT;
+    boolean autoCommit() default JDBC_AUTO_COMMIT;
 
     @AttributeDefinition(
             name = CONN_TIMEOUT,
@@ -111,18 +111,17 @@ public @interface DataSourceConfig {
             name = MIN_IDLE,
             description = "Minimum number of idle connections that HikariCP tries to maintain in the pool"
     )
-    int minimumIdle() default DEFAULT_MIN_IDLE; // 32 Connections;
+    int minimumIdle() default DEFAULT_MIN_IDLE; // 8 Connections;
 
     @AttributeDefinition(
             name = MAX_POOL_SIZE,
             description = "Maximum size that the pool is allowed to reach, including both idle and in-use connections"
     )
-    int maximumPoolSize() default DEFAULT_MAX_POOL_SIZE; // 32 Connections;
+    int maximumPoolSize() default DEFAULT_MAX_POOL_SIZE; // 8 Connections;
 
     @AttributeDefinition(
             name = DATASOURCE_PROPS,
-            description = "Underlying JDBC data source specific properties, in key=value format. " +
-                    "Provided are for MySQL only!"
+            description = "Underlying JDBC data source specific properties, in key=value format, provided are for MySQL only!"
     )
     String[] dataSourceProperties() default {
             "prepStmtCacheSize=250",
