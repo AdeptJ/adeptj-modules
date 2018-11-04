@@ -26,6 +26,7 @@ import org.apache.commons.lang3.Validate;
 import org.hibernate.validator.HibernateValidator;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.NoProviderFoundException;
 import javax.validation.Validation;
+import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
@@ -87,10 +89,18 @@ public class HibernateValidatorService implements ValidatorService {
      */
     @Override
     public ValidatorFactory getValidatorFactory() {
-        return validatorFactory;
+        return this.validatorFactory;
     }
 
-    // --------------------------------------------------- INTERNAL ----------------------------------------------------
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Validator getValidator() {
+        return this.validatorFactory.getValidator();
+    }
+
+    // <-----------------------------------------------OSGi INTERNAL -------------------------------------------------->
 
     @Activate
     protected void start() {
@@ -101,8 +111,13 @@ public class HibernateValidatorService implements ValidatorService {
                     .buildValidatorFactory();
             LOGGER.info("HibernateValidator initialized in [{}] ms!!", NANOSECONDS.toMillis(System.nanoTime() - startTime));
         } catch (NoProviderFoundException ex) {
-            LOGGER.error("Could not create ValidatorFactory!!", ex);
+            LOGGER.error(ex.getMessage(), ex);
             throw ex;
         }
+    }
+
+    @Deactivate
+    protected void stop() {
+        this.validatorFactory.close();
     }
 }

@@ -21,6 +21,7 @@
 package com.adeptj.modules.commons.validator.service;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
 
@@ -64,9 +65,16 @@ public interface ValidatorService {
     <T> Set<ConstraintViolation<T>> getConstraintViolations(T instance);
 
     /**
-     * Returns the ValidatorFactory instance.
+     * Returns the {@link ValidatorFactory} instance.
      *
-     * @return the ValidatorFactory instance.
+     * @return the {@link ValidatorFactory} instance.
      */
     ValidatorFactory getValidatorFactory();
+
+    /**
+     * Returns the {@link Validator} instance.
+     *
+     * @return the {@link Validator} instance.
+     */
+    Validator getValidator();
 }

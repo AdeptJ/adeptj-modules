@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter;
 import org.jboss.resteasy.plugins.validation.ValidatorContextResolver;
 import org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI;
@@ -39,7 +40,7 @@ import java.util.Set;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactory {
+public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

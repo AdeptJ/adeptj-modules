@@ -53,6 +53,8 @@ Import-Package: \
   com.adeptj.modules.jaxrs.core.auth.api;\
   com.adeptj.modules.jaxrs.core.jwt,\
   !com.github.fge.jsonpatch, \
+  !org.hibernate.validator.internal.engine.path, \
+  !org.hibernate.validator.internal.metadata.descriptor, \
   *
   
 Bundle-Name: ${project.name}
