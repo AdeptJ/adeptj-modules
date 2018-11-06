@@ -44,13 +44,13 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<Class<?>> ignoredProviders;
+    private final List<Class<?>> blacklistedProviders;
 
     ResteasyProviderFactoryAdapter() {
-        this.ignoredProviders = new ArrayList<>();
-        this.ignoredProviders.add(PatchMethodFilter.class);
-        this.ignoredProviders.add(ValidatorContextResolver.class);
-        this.ignoredProviders.add(ValidatorContextResolverCDI.class);
+        this.blacklistedProviders = new ArrayList<>(3);
+        this.blacklistedProviders.add(PatchMethodFilter.class);
+        this.blacklistedProviders.add(ValidatorContextResolver.class);
+        this.blacklistedProviders.add(ValidatorContextResolverCDI.class);
     }
 
     /**
@@ -65,8 +65,8 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     @Override
     public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
-        if (this.ignoredProviders.contains(provider)) {
-            LOGGER.info("Ignoring Provider: [{}]", provider);
+        if (this.blacklistedProviders.contains(provider)) {
+            LOGGER.info("Provider [{}] is blacklisted!!", provider);
         } else {
             super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
         }

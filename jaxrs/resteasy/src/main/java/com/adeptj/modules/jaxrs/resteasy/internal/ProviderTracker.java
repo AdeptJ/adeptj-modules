@@ -42,17 +42,15 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String PROVIDER_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME);
-
     private ResteasyProviderFactory providerFactory;
 
     ProviderTracker(BundleContext context) {
-        super(context, OSGiUtil.anyServiceFilter(context, PROVIDER_FILTER_EXPR), null);
+        super(context, OSGiUtil.anyServiceFilter(context, String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME)), null);
     }
 
-    void setResteasyProviderFactory(ResteasyProviderFactory providerFactory) {
+    ProviderTracker setResteasyProviderFactory(ResteasyProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        super.open();
+        return this;
     }
 
     /**

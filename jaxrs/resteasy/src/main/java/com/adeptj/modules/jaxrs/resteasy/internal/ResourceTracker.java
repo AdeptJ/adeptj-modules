@@ -44,17 +44,15 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String RES_FILTER_EXPR = String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME);
-
     private Registry registry;
 
     ResourceTracker(BundleContext context) {
-        super(context, OSGiUtil.anyServiceFilter(context, RES_FILTER_EXPR), null);
+        super(context, OSGiUtil.anyServiceFilter(context, String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME)), null);
     }
 
-    void setRegistry(Registry registry) {
+    ResourceTracker setRegistry(Registry registry) {
         this.registry = registry;
-        super.open();
+        return this;
     }
 
     /**

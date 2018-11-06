@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import org.jboss.resteasy.spi.ResteasyDeployment;
+
 /**
  * Constants for RESTEasy modules.
  *
@@ -38,5 +40,5 @@ final class ResteasyConstants {
 
     static final String VALUE_TRUE = "true";
 
-    static final String RESTEASY_DEPLOYMENT = "org.jboss.resteasy.spi.ResteasyDeployment";
+    static final String RESTEASY_DEPLOYMENT = ResteasyDeployment.class.getName();
 }

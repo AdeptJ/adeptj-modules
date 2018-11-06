@@ -88,12 +88,12 @@ public class ResteasyLifecycle {
                 this.resteasyServletDispatcher = new ResteasyServletDispatcher();
                 this.resteasyServletDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
-                dispatcher.getProviderFactory()
+                this.providerTracker.setResteasyProviderFactory(dispatcher.getProviderFactory()
                         .register(this.corsFilter)
                         .register(new ApplicationExceptionMapper(this.sendExceptionTrace))
-                        .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory()));
-                this.providerTracker.setResteasyProviderFactory(dispatcher.getProviderFactory());
-                this.resourceTracker.setRegistry(dispatcher.getRegistry());
+                        .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory())))
+                        .open();
+                this.resourceTracker.setRegistry(dispatcher.getRegistry()).open();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
