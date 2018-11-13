@@ -18,15 +18,45 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine;
+package com.adeptj.modules.cache.caffeine.internal;
+
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
+
+import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheFactory.PID;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * The {@link CacheService}.
+ * Factory for creating Caffeine cache.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface CacheService {
+@Designate(ocd = CaffeineCacheConfig.class, factory = true)
+@Component(service = CaffeineCacheFactory.class, name = PID, configurationPolicy = REQUIRE)
+public class CaffeineCacheFactory {
 
-    <K, V> Cache<K, V> getCache(String name);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCache.factory";
+
+    private String cacheName;
+
+    String getCacheName() {
+        return cacheName;
+    }
+
+    @Activate
+    protected void start(CaffeineCacheConfig config) {
+        this.cacheName = config.name();
+    }
+
+    @Deactivate
+    protected void stop(CaffeineCacheConfig config) {
+    }
 }

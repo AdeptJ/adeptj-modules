@@ -18,55 +18,49 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine;
+package com.adeptj.modules.cache.caffeine.internal;
 
+import com.adeptj.modules.cache.caffeine.Cache;
+import com.adeptj.modules.cache.caffeine.CacheService;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.Reference;
 
-import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static com.adeptj.modules.cache.caffeine.CaffeineCacheProvider.COMPONENT_NAME;
-import static org.osgi.framework.Constants.SERVICE_PID;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
- * CaffeineCacheProvider.
+ * Default implementation of {@link CacheService}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = CaffeineCacheConfig.class, factory = true)
-@Component(
-        immediate = true,
-        name = COMPONENT_NAME,
-        property = SERVICE_PID + "=" + COMPONENT_NAME,
-        configurationPolicy = REQUIRE
-)
-public class CaffeineCacheProvider implements CacheService {
+@Component
+public class CaffeineCacheService implements CacheService {
 
-    static final String COMPONENT_NAME = "com.adeptj.modules.cache.caffeine.CacheProvider.factory";
+    private final List<CaffeineCache<?, ?>> caches = new CopyOnWriteArrayList<>();
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-
+    @SuppressWarnings("unchecked")
     @Override
     public <K, V> Cache<K, V> getCache(String name) {
-        return new CaffeineCache<>(Caffeine.newBuilder()
+        return (Cache<K, V>) this.caches.stream()
+                .filter(cache -> cache.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Reference(service = CaffeineCacheFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    public void bindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
+        this.caches.add(new CaffeineCache<>(cacheFactory.getCacheName(), Caffeine.newBuilder()
                 .maximumSize(10_000)
                 .expireAfterWrite(10, TimeUnit.MINUTES)
-                .build());
+                .build()));
     }
 
-    @Activate
-    protected void start(CaffeineCacheConfig config) {
-    }
-
-    @Deactivate
-    protected void stop(CaffeineCacheConfig config) {
+    public void unbindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
+        this.caches.removeIf(cache -> cache.getName().equals(cacheFactory.getCacheName()));
     }
 }

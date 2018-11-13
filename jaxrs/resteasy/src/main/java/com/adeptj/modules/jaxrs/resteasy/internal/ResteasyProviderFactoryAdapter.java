@@ -21,15 +21,11 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
-import org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter;
-import org.jboss.resteasy.plugins.validation.ValidatorContextResolver;
-import org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,13 +40,10 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<Class<?>> blacklistedProviders;
+    private final List<String> blacklistedProviders;
 
-    ResteasyProviderFactoryAdapter() {
-        this.blacklistedProviders = new ArrayList<>(3);
-        this.blacklistedProviders.add(PatchMethodFilter.class);
-        this.blacklistedProviders.add(ValidatorContextResolver.class);
-        this.blacklistedProviders.add(ValidatorContextResolverCDI.class);
+    ResteasyProviderFactoryAdapter(List<String> blacklistedProviders) {
+        this.blacklistedProviders = blacklistedProviders;
     }
 
     /**
@@ -65,7 +58,7 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     @Override
     public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
-        if (this.blacklistedProviders.contains(provider)) {
+        if (this.blacklistedProviders.contains(provider.getName())) {
             LOGGER.info("Provider [{}] is blacklisted!!", provider);
         } else {
             super.registerProvider(provider, priorityOverride, isBuiltin, contracts);

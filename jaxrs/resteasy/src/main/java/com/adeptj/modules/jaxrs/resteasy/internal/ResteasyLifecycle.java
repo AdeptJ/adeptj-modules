@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
@@ -67,6 +69,8 @@ public class ResteasyLifecycle {
 
     private ResteasyServletDispatcher resteasyServletDispatcher;
 
+    private List<String> blacklistedProviders;
+
     /**
      * Statically injected ValidatorService, this component will not become active until one is provided.
      */
@@ -85,7 +89,7 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyServletDispatcher = new ResteasyServletDispatcher();
+                this.resteasyServletDispatcher = new ResteasyServletDispatcher(this.blacklistedProviders);
                 this.resteasyServletDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
                 this.providerTracker.setResteasyProviderFactory(dispatcher.getProviderFactory()
@@ -144,5 +148,6 @@ public class ResteasyLifecycle {
         this.resourceTracker = new ResourceTracker(bundleContext);
         this.corsFilter = ResteasyUtil.newCorsFilter(config);
         this.sendExceptionTrace = config.sendExceptionTrace();
+        this.blacklistedProviders = Arrays.asList(config.blacklistedProviders());
     }
 }

@@ -18,15 +18,24 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine;
+package com.adeptj.modules.cache.caffeine.internal;
+
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
- * The {@link CacheService}.
+ * Configuration for Caffeine cache.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface CacheService {
+@ObjectClassDefinition(
+        name = "AdeptJ CaffeineCache Configuration",
+        description = "Configuration for AdeptJ CaffeineCache."
+)
+public @interface CaffeineCacheConfig {
 
-    <K, V> Cache<K, V> getCache(String name);
+    String name();
 
+    int expireAfter();
+
+    int maximumSize();
 }

@@ -18,27 +18,48 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine;
+package com.adeptj.modules.cache.caffeine.internal;
+
+import com.adeptj.modules.cache.caffeine.Cache;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
- * Implementation for Cache interface, internally this uses the Caffeine's caffeineCache.
+ * Implementation for Cache interface, internally this uses the Caffeine cache.
  *
- * @author Rakesh.Kumar
+ * @author Rakesh.Kumar, AdeptJ
  */
-public class CaffeineCache<K, V> implements Cache<K, V> {
+public final class CaffeineCache<K, V> implements Cache<K, V> {
 
-    private com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache;
+    private final String name;
 
-    CaffeineCache(com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache) {
+    private final com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache;
+
+    CaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache) {
         this.caffeineCache = caffeineCache;
+        this.name = name;
+    }
+
+    String getName() {
+        return this.name;
     }
 
     @Override
     public V get(K key) {
         return this.caffeineCache.getIfPresent(key);
+    }
+
+    @Override
+    public Map<K, V> getAllPresent(Iterable<K> keys) {
+        return this.caffeineCache.getAllPresent(keys);
+    }
+
+    @Override
+    public Map<K, V> getAll() {
+        return this.caffeineCache.asMap();
     }
 
     @Override
@@ -52,12 +73,18 @@ public class CaffeineCache<K, V> implements Cache<K, V> {
     }
 
     @Override
+    public void remove(Iterable<K> keys) {
+        this.caffeineCache.invalidateAll(keys);
+    }
+
+    @Override
     public void clear() {
         this.caffeineCache.invalidateAll();
     }
 
     @Override
     public long size() {
+        this.caffeineCache.cleanUp();
         return this.caffeineCache.estimatedSize();
     }
 
@@ -71,4 +98,18 @@ public class CaffeineCache<K, V> implements Cache<K, V> {
         return this.caffeineCache.asMap().values();
     }
 
+    // ----------------------- Generated -----------------------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaffeineCache<?, ?> that = (CaffeineCache<?, ?>) o;
+        return Objects.equals(this.name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name);
+    }
 }
