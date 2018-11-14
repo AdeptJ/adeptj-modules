@@ -89,15 +89,18 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyServletDispatcher = new ResteasyServletDispatcher(this.blacklistedProviders);
-                this.resteasyServletDispatcher.init(servletConfig);
+                this.resteasyServletDispatcher = new ResteasyServletDispatcher();
+                this.resteasyServletDispatcher.bootstrap(servletConfig, this.blacklistedProviders);
                 Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
-                this.providerTracker.setResteasyProviderFactory(dispatcher.getProviderFactory()
-                        .register(this.corsFilter)
-                        .register(new ApplicationExceptionMapper(this.sendExceptionTrace))
-                        .register(new PriorityValidatorContextResolver(this.validatorService.getValidatorFactory())))
+                this.providerTracker
+                        .setResteasyProviderFactory(dispatcher.getProviderFactory()
+                                .register(this.corsFilter)
+                                .register(new ApplicationExceptionMapper(this.sendExceptionTrace))
+                                .register(new GeneralValidatorContextResolver(this.validatorService.getValidatorFactory())))
                         .open();
-                this.resourceTracker.setRegistry(dispatcher.getRegistry()).open();
+                this.resourceTracker
+                        .setRegistry(dispatcher.getRegistry())
+                        .open();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);

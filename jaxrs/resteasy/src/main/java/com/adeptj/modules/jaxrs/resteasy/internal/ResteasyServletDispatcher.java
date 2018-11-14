@@ -58,18 +58,11 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     private transient ResteasyDeployment deployment;
 
-    private final transient List<String> blacklistedProviders;
-
-    ResteasyServletDispatcher(List<String> blacklistedProviders) {
-        this.blacklistedProviders = blacklistedProviders;
-    }
-
-    @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
+    void bootstrap(ServletConfig servletConfig, List<String> blacklistedProviders) throws ServletException {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
         servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
-        this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
+        this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(blacklistedProviders));
         this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         servletConfig.getServletContext().setAttribute(RESTEASY_DEPLOYMENT, this.deployment);
