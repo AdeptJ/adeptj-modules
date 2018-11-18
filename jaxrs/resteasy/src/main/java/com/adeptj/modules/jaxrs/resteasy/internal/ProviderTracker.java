@@ -71,7 +71,7 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
             this.providerFactory.registerProviderInstance(provider);
             LOGGER.info("Registered JAX-RS Provider: [{}]", provider);
             return provider;
-        } catch (Exception | NoClassDefFoundError ex) { // NOSONAR
+        } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }
         return null;

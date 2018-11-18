@@ -73,7 +73,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
             this.registry.addSingletonResource(resource);
             LOGGER.info("Added JAX-RS Resource: [{}]", resource);
             return resource;
-        } catch (Exception | NoClassDefFoundError ex) { // NOSONAR
+        } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }
         return null;

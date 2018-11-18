@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
+import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 
 /**
  * ResteasyLifecycle: Bootstraps RESTEasy Framework, open/close ServiceTracker for JAX-RS providers and resources.
@@ -52,7 +53,7 @@ import static org.osgi.service.component.annotations.ReferencePolicyOption.GREED
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = ResteasyConfig.class)
-@Component(service = ResteasyLifecycle.class, configurationPolicy = REQUIRE)
+@Component(service = ResteasyLifecycle.class, scope = PROTOTYPE, configurationPolicy = REQUIRE)
 public class ResteasyLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -67,7 +68,7 @@ public class ResteasyLifecycle {
 
     private CorsFilter corsFilter;
 
-    private ResteasyServletDispatcher resteasyServletDispatcher;
+    private ResteasyServletDispatcher resteasyDispatcher;
 
     private List<String> blacklistedProviders;
 
@@ -89,9 +90,9 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyServletDispatcher = new ResteasyServletDispatcher();
-                this.resteasyServletDispatcher.bootstrap(servletConfig, this.blacklistedProviders);
-                Dispatcher dispatcher = this.resteasyServletDispatcher.getDispatcher();
+                this.resteasyDispatcher = new ResteasyServletDispatcher();
+                this.resteasyDispatcher.bootstrap(servletConfig, this.blacklistedProviders);
+                Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 this.providerTracker
                         .setResteasyProviderFactory(dispatcher.getProviderFactory()
                                 .register(this.corsFilter)
@@ -118,7 +119,7 @@ public class ResteasyLifecycle {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void stop(ServletConfig servletConfig) {
-        this.resteasyServletDispatcher.destroy();
+        this.resteasyDispatcher.destroy();
         servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
         LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);
         Stream.of(this.providerTracker, this.resourceTracker)
@@ -139,8 +140,8 @@ public class ResteasyLifecycle {
      *
      * @return {@link ResteasyServletDispatcher}
      */
-    ResteasyServletDispatcher getResteasyServletDispatcher() {
-        return resteasyServletDispatcher;
+    ResteasyServletDispatcher getResteasyDispatcher() {
+        return resteasyDispatcher;
     }
 
     // <------------------------------------------------ OSGi INTERNAL ------------------------------------------------>
