@@ -47,7 +47,7 @@ public class ApplicationExceptionMapper implements ExceptionMapper<ApplicationEx
 
     private static final String DEFAULT_ERROR_MSG = "Unexpected error, we are looking into it. Please try again later!!";
 
-    private boolean sendExceptionTrace;
+    private final boolean sendExceptionTrace;
 
     public ApplicationExceptionMapper(boolean sendExceptionTrace) {
         this.sendExceptionTrace = sendExceptionTrace;

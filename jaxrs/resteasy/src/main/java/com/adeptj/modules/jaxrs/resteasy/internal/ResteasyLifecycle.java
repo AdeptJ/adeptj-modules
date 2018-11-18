@@ -97,7 +97,7 @@ public class ResteasyLifecycle {
                         .setResteasyProviderFactory(dispatcher.getProviderFactory()
                                 .register(this.corsFilter)
                                 .register(new ApplicationExceptionMapper(this.sendExceptionTrace))
-                                .register(new GeneralValidatorContextResolver(this.validatorService.getValidatorFactory())))
+                                .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory())))
                         .open();
                 this.resourceTracker
                         .setRegistry(dispatcher.getRegistry())

@@ -28,7 +28,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import java.util.EnumSet;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.GeneralValidatorContextResolver.PRIORITY;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ValidatorContextResolver.PRIORITY;
 import static javax.validation.executable.ExecutableType.CONSTRUCTORS;
 import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
 
@@ -39,15 +39,15 @@ import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
  */
 @Priority(PRIORITY)
 @Provider
-public class GeneralValidatorContextResolver implements ContextResolver<GeneralValidator> {
+public class ValidatorContextResolver implements ContextResolver<GeneralValidator> {
 
     static final int PRIORITY = 4500;
 
     private GeneralValidator validator;
 
-    private ValidatorFactory validatorFactory;
+    private final ValidatorFactory validatorFactory;
 
-    GeneralValidatorContextResolver(ValidatorFactory validatorFactory) {
+    ValidatorContextResolver(ValidatorFactory validatorFactory) {
         this.validatorFactory = validatorFactory;
     }
 
