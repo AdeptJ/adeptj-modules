@@ -28,10 +28,10 @@ package com.adeptj.modules.mvc;
 public interface TemplateEngine {
 
     /**
-     * Renders the template contained by the {@link Template} object.
+     * Process the template contained by the {@link Template} object.
      *
      * @param template the {@link Template} object containing template contextual data
      * @throws TemplateProcessingException the {@link TemplateProcessingException}
      */
-    void render(Template template);
+    void process(Template template);
 }

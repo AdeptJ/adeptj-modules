@@ -30,6 +30,6 @@ public class TemplateWriter implements MessageBodyWriter<Template> {
                         MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,
                         OutputStream entityStream) throws IOException, WebApplicationException {
-        this.templateEngine.render(template);
+        this.templateEngine.process(template);
     }
 }

@@ -85,7 +85,7 @@ public class MustacheTemplateEngine implements TemplateEngine {
      * {@inheritDoc}
      */
     @Override
-    public void render(Template template) {
+    public void process(Template template) {
         TemplateContext context = template.getTemplateContext();
         try {
             Mustache mustache = this.mustacheEngine.getMustache(context.getTemplate());
@@ -103,7 +103,7 @@ public class MustacheTemplateEngine implements TemplateEngine {
         }
     }
 
-    // -------------------------------------------- OSGi Internal --------------------------------------------
+    // <-------------------------------------------- OSGi Internal -------------------------------------------->
 
     @Activate
     public void start(BundleContext context, TemplateEngineConfig config) {
