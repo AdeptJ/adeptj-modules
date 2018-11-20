@@ -20,16 +20,42 @@
 
 package com.adeptj.modules.mvc;
 
+import org.trimou.engine.resolver.Mapper;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
- * RenderException.
+ * TemplateData for storing data used in template rendering.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public final class RenderException extends RuntimeException {
+public final class TemplateData implements Mapper, Iterable<Entry<String, Object>> {
 
-    private static final long serialVersionUID = -8077495079692215520L;
+    private final Map<String, Object> data;
 
-    public RenderException(String message, Throwable cause) {
-        super(message, cause);
+    private TemplateData() {
+        this.data = new HashMap<>();
+    }
+
+    public static TemplateData newTemplateData() {
+        return new TemplateData();
+    }
+
+    public TemplateData with(String key, Object value) {
+        this.data.put(key, value);
+        return this;
+    }
+
+    @Override
+    public Object get(String key) {
+        return this.data.get(key);
+    }
+
+    @Override
+    public Iterator<Entry<String, Object>> iterator() {
+        return this.data.entrySet().iterator();
     }
 }

@@ -35,8 +35,8 @@ public final class Randomizer {
     }
 
     public static byte[] getRandomBytes(int length) {
-        byte[] saltBytes = new byte[length];
-        DEFAULT_SECURE_RANDOM.nextBytes(saltBytes);
-        return saltBytes;
+        byte[] bytes = new byte[length];
+        DEFAULT_SECURE_RANDOM.nextBytes(bytes);
+        return bytes;
     }
 }

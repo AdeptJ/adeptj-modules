@@ -71,7 +71,7 @@ public class DynamicJwtFilter extends AbstractJwtFilter implements JwtFilter {
     @Activate
     protected void start() {
         if (this.claimsIntrospector == null) {
-            this.claimsIntrospector = (claims -> true);
+            this.claimsIntrospector = new DefaultJwtClaimsIntrospector();
         }
     }
 }

@@ -73,10 +73,7 @@ public class JwtSecurityContext implements SecurityContext {
 
     @Override
     public boolean isUserInRole(String role) {
-        if (this.roles == null || this.roles.isEmpty()) {
-            return false;
-        }
-        return this.roles.contains(role);
+        return this.roles != null && this.roles.contains(role);
     }
 
     @Override

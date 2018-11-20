@@ -20,42 +20,16 @@
 
 package com.adeptj.modules.mvc;
 
-import org.trimou.engine.resolver.Mapper;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 /**
- * ContextObject for storing variables used in template rendering.
+ * The TemplateProcessingException thrown from {@link TemplateEngine#render} method execution.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-public final class ContextObject implements Mapper, Iterable<Entry<String, Object>> {
+public final class TemplateProcessingException extends RuntimeException {
 
-    private Map<String, Object> variables;
+    private static final long serialVersionUID = -8756067154883255519L;
 
-    private ContextObject() {
-        this.variables = new HashMap<>();
-    }
-
-    public ContextObject put(String key, Object value) {
-        this.variables.put(key, value);
-        return this;
-    }
-
-    public static ContextObject newContextObject() {
-        return new ContextObject();
-    }
-
-    @Override
-    public Object get(String key) {
-        return this.variables.get(key);
-    }
-
-    @Override
-    public Iterator<Entry<String, Object>> iterator() {
-        return this.variables.entrySet().iterator();
+    public TemplateProcessingException(Throwable cause) {
+        super(cause);
     }
 }

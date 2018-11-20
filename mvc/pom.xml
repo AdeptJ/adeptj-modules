@@ -119,6 +119,12 @@
         </dependency>
 
         <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.trimou</groupId>
             <artifactId>trimou-core</artifactId>
             <version>${trimou-core.version}</version>
@@ -128,6 +134,12 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-utils</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
