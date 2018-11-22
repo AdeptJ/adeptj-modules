@@ -43,7 +43,6 @@ import org.trimou.Mustache;
 import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.MustacheEngineBuilder;
 import org.trimou.engine.locator.ClassPathTemplateLocator;
-import org.trimou.handlebars.i18n.ResourceBundleHelper;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Hashtable;
@@ -51,12 +50,13 @@ import java.util.List;
 
 import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import static org.trimou.engine.config.EngineConfigurationKey.DEFAULT_FILE_ENCODING;
 import static org.trimou.engine.config.EngineConfigurationKey.END_DELIMITER;
 import static org.trimou.engine.config.EngineConfigurationKey.START_DELIMITER;
 import static org.trimou.engine.config.EngineConfigurationKey.TEMPLATE_CACHE_ENABLED;
 import static org.trimou.engine.config.EngineConfigurationKey.TEMPLATE_CACHE_EXPIRATION_TIMEOUT;
-import static org.trimou.handlebars.i18n.ResourceBundleHelper.Format.MESSAGE;
 
 /**
  * Renders Html Templates using Trimou {@link MustacheEngine}
@@ -108,26 +108,29 @@ public class MustacheTemplateEngine implements TemplateEngine {
     @Activate
     public void start(BundleContext context, TemplateEngineConfig config) {
         long startTime = System.nanoTime();
-        BundleTemplateLocator locator = new BundleTemplateLocator(config.bundleTemplateLocatorPriority(),
+        BundleTemplateLocator bundleTemplateLocator = new BundleTemplateLocator(config.bundleTemplateLocatorPriority(),
                 config.bundleTemplatePrefix(),
                 config.suffix());
         this.mustacheEngine = MustacheEngineBuilder.newBuilder()
-                .registerHelper(RB_HELPER_NAME, new ResourceBundleHelper(config.resourceBundleBasename(), MESSAGE))
+                .setProperty(START_DELIMITER, config.startDelimiter())
+                .setProperty(END_DELIMITER, config.endDelimiter())
+                .setProperty(DEFAULT_FILE_ENCODING, config.encoding())
+                .setProperty(TEMPLATE_CACHE_ENABLED, config.cacheEnabled())
+                .setProperty(TEMPLATE_CACHE_EXPIRATION_TIMEOUT, config.cacheExpiration())
+                .registerHelper(RB_HELPER_NAME, bundleTemplateLocator.getResourceBundleHelper())
+                .addTemplateLocator(bundleTemplateLocator)
                 .addTemplateLocator(ClassPathTemplateLocator.builder()
                         .setPriority(config.classpathTemplateLocatorPriority())
                         .setRootPath(config.classpathTemplatePrefix())
                         .setSuffix(config.suffix())
                         .setScanClasspath(false)
                         .build())
-                .addTemplateLocator(locator)
-                .setProperty(START_DELIMITER, config.startDelimiter())
-                .setProperty(END_DELIMITER, config.endDelimiter())
-                .setProperty(DEFAULT_FILE_ENCODING, config.encoding())
-                .setProperty(TEMPLATE_CACHE_ENABLED, config.cacheEnabled())
-                .setProperty(TEMPLATE_CACHE_EXPIRATION_TIMEOUT, config.cacheExpiration())
                 .build();
-        this.serviceRegistration = context.registerService(MustacheEngine.class, this.mustacheEngine, new Hashtable<>());
-        this.bundleTracker = new BundleTracker<>(context, Bundle.ACTIVE, locator);
+        Hashtable<String, Object> properties = new Hashtable<>();
+        properties.put(SERVICE_VENDOR, "AdeptJ");
+        properties.put(SERVICE_DESCRIPTION, "AdeptJ MustacheEngine Service");
+        this.serviceRegistration = context.registerService(MustacheEngine.class, this.mustacheEngine, properties);
+        this.bundleTracker = new BundleTracker<>(context, Bundle.ACTIVE, bundleTemplateLocator);
         this.bundleTracker.open();
         LOGGER.info(TEMPLATE_ENGINE_INIT_MSG, TimeUtil.elapsedMillis(startTime));
     }

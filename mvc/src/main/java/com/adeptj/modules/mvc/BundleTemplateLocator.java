@@ -19,9 +19,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PropertyResourceBundle;
 import java.util.Set;
 
 import static com.adeptj.modules.mvc.TemplateEngineConstants.TEMPLATE_HEADER;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class BundleTemplateLocator extends PathTemplateLocator<String> implements BundleTrackerCustomizer<List<TemplateEntry>> {
 
@@ -29,9 +31,16 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
 
     private final Map<Long, List<TemplateEntry>> bundleTemplates;
 
+    private final DelegatingResourceBundleHelper resourceBundleHelper;
+
     public BundleTemplateLocator(int priority, String rootPath, String suffix) {
         super(priority, rootPath, suffix);
         this.bundleTemplates = new HashMap<>();
+        this.resourceBundleHelper = new DelegatingResourceBundleHelper();
+    }
+
+    public DelegatingResourceBundleHelper getResourceBundleHelper() {
+        return resourceBundleHelper;
     }
 
     // <------------------------ PathTemplateLocator ---------------------->
@@ -79,8 +88,27 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
                 templateEntries.add(new TemplateEntry(templates.nextElement()));
             }
             this.bundleTemplates.put(bundle.getBundleId(), templateEntries);
+            Enumeration<URL> resourceBundles = bundle.findEntries(templatesLocation, "*.properties", true);
+            while (resourceBundles.hasMoreElements()) {
+                InputStreamReader reader = null;
+                try {
+                    reader = new InputStreamReader(resourceBundles.nextElement().openStream(), UTF_8);
+                    this.resourceBundleHelper.addResourceBundle(new PropertyResourceBundle(reader));
+                } catch (IOException ex) {
+                    LOGGER.error(ex.getMessage(), ex);
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException ex) {
+                            LOGGER.error(ex.getMessage(), ex);
+                        }
+                    }
+                }
+            }
             return templateEntries;
         }
+
         return null;
     }
 

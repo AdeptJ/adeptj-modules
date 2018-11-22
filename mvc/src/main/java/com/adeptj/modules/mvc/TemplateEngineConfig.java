@@ -10,10 +10,10 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public @interface TemplateEngineConfig {
 
     @AttributeDefinition(name = "Bundle TemplateLocator Priority")
-    int bundleTemplateLocatorPriority() default 4000;
+    int bundleTemplateLocatorPriority() default 5000;
 
     @AttributeDefinition(name = "Bundle TemplateLocator Priority")
-    int classpathTemplateLocatorPriority() default 5000;
+    int classpathTemplateLocatorPriority() default 4000;
 
     @AttributeDefinition(name = "Bundle Template Prefix")
     String bundleTemplatePrefix() default "WEB-INF/views/";
@@ -37,7 +37,7 @@ public @interface TemplateEngineConfig {
     String encoding() default "UTF-8";
 
     @AttributeDefinition(name = "Template Cache Enabled")
-    boolean cacheEnabled() default true;
+    boolean cacheEnabled();
 
     @AttributeDefinition(name = "Template Cache Expiration")
     int cacheExpiration() default 3600;
