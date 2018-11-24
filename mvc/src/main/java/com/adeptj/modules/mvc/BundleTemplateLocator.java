@@ -100,10 +100,10 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
             String resourceBundlesLocation = bundle.getHeaders().get(I18N_HEADER);
             if (StringUtils.isNotEmpty(resourceBundlesLocation)) {
                 LOGGER.info("Bundle: {} has provided ResourceBundle(s) under path: {}", bundle, resourceBundlesLocation);
-                Enumeration<URL> resourceBundles = bundle.findEntries(resourceBundlesLocation, "*.properties", true);
-                if (resourceBundles != null) {
-                    while (resourceBundles.hasMoreElements()) {
-                        try (BufferedInputStream bis = IOUtils.buffer(resourceBundles.nextElement().openStream())) {
+                Enumeration<URL> entries = bundle.findEntries(resourceBundlesLocation, "*.properties", true);
+                if (entries != null) {
+                    while (entries.hasMoreElements()) {
+                        try (BufferedInputStream bis = IOUtils.buffer(entries.nextElement().openStream())) {
                             PropertyResourceBundle resourceBundle = new PropertyResourceBundle(bis);
                             ResourceBundleWrapper wrapper = new ResourceBundleWrapper(resourceBundle, bundle.getBundleId());
                             this.resourceBundleHelper.addResourceBundleWrapper(wrapper);
