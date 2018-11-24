@@ -130,7 +130,7 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
         List<String> templates = this.bundleTemplatesMapping.get(bundle.getBundleId());
         if (templates != null) {
             for (String template : templates) {
-                this.mustacheEngine.invalidateTemplateCache(name -> StringUtils.isNotEmpty(template));
+                this.mustacheEngine.invalidateTemplateCache(name -> StringUtils.equals(template, name));
             }
         }
     }
