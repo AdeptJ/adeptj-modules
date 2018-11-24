@@ -19,7 +19,7 @@ public @interface TemplateEngineConfig {
     String bundleTemplatePrefix() default "WEB-INF/templates/";
 
     @AttributeDefinition(name = "Classpath Template Prefix")
-    String classpathTemplatePrefix() default "tools/WEB-INF/templates/";
+    String classpathTemplatePrefix() default "tools/WEB-INF/views/";
 
     @AttributeDefinition(name = "Template Suffix")
     String suffix() default "html";

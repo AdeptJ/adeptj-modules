@@ -7,6 +7,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trimou.engine.MustacheEngine;
 import org.trimou.engine.locator.PathTemplateLocator;
 
 import java.io.BufferedInputStream;
@@ -18,7 +19,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.Set;
 
@@ -31,16 +34,25 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
 
     private final List<Bundle> templateBundles;
 
+    private final Map<Long, List<String>> bundleTemplatesMapping;
+
     private final DelegatingResourceBundleHelper resourceBundleHelper;
+
+    private MustacheEngine mustacheEngine;
 
     public BundleTemplateLocator(int priority, String rootPath, String suffix) {
         super(priority, rootPath, suffix);
         this.resourceBundleHelper = new DelegatingResourceBundleHelper();
         this.templateBundles = new ArrayList<>();
+        this.bundleTemplatesMapping = new HashMap<>();
     }
 
     public DelegatingResourceBundleHelper getResourceBundleHelper() {
         return resourceBundleHelper;
+    }
+
+    public void setMustacheEngine(MustacheEngine mustacheEngine) {
+        this.mustacheEngine = mustacheEngine;
     }
 
     // <------------------------ PathTemplateLocator ---------------------->
@@ -63,10 +75,10 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
                 while (entries.hasMoreElements()) {
                     URL template = entries.nextElement();
                     if (StringUtils.endsWith(template.getPath(), name + "." + this.getSuffix())) {
+                        this.bundleTemplatesMapping.computeIfAbsent(bundle.getBundleId(), k -> new ArrayList<>())
+                                .add(name);
                         try {
-                            Reader reader = IOUtils.buffer(new InputStreamReader(template.openStream(), this.getDefaultFileEncoding()));
-                            LOGGER.debug("Template {} located: {}", name, template);
-                            return reader;
+                            return IOUtils.buffer(new InputStreamReader(template.openStream(), this.getDefaultFileEncoding()));
                         } catch (IOException ex) {
                             LOGGER.error(ex.getMessage(), ex);
                         }
@@ -92,7 +104,8 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
                 if (resourceBundles != null) {
                     while (resourceBundles.hasMoreElements()) {
                         try (BufferedInputStream bis = IOUtils.buffer(resourceBundles.nextElement().openStream())) {
-                            ResourceBundleWrapper wrapper = new ResourceBundleWrapper(new PropertyResourceBundle(bis), bundle.getBundleId());
+                            PropertyResourceBundle resourceBundle = new PropertyResourceBundle(bis);
+                            ResourceBundleWrapper wrapper = new ResourceBundleWrapper(resourceBundle, bundle.getBundleId());
                             this.resourceBundleHelper.addResourceBundleWrapper(wrapper);
                         } catch (IOException ex) {
                             LOGGER.error(ex.getMessage(), ex);
@@ -114,5 +127,11 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
     public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
         this.templateBundles.removeIf(b -> b.getBundleId() == bundle.getBundleId());
         this.resourceBundleHelper.removeResourceBundleWrapper(bundle.getBundleId());
+        List<String> templates = this.bundleTemplatesMapping.get(bundle.getBundleId());
+        if (templates != null) {
+            for (String template : templates) {
+                this.mustacheEngine.invalidateTemplateCache(name -> StringUtils.isNotEmpty(template));
+            }
+        }
     }
 }

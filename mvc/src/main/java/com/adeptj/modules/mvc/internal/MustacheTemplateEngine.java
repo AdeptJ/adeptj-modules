@@ -122,6 +122,7 @@ public class MustacheTemplateEngine implements TemplateEngine {
                         .setScanClasspath(false)
                         .build())
                 .build();
+        bundleTemplateLocator.setMustacheEngine(this.mustacheEngine);
         LOGGER.info(TEMPLATE_ENGINE_INIT_MSG, TimeUtil.elapsedMillis(startTime));
         Hashtable<String, String> properties = new Hashtable<>();
         properties.put(SERVICE_VENDOR, "AdeptJ");
@@ -132,10 +133,12 @@ public class MustacheTemplateEngine implements TemplateEngine {
     }
 
     @Deactivate
-    public void stop() {
+    public void stop(TemplateEngineConfig config) {
         this.bundleTracker.close();
         this.serviceRegistration.unregister();
-        this.mustacheEngine.invalidateTemplateCache();
+        if (config.cacheEnabled()) {
+            this.mustacheEngine.invalidateTemplateCache();
+        }
         this.mustacheEngine = null;
     }
 }
