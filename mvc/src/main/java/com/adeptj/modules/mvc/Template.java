@@ -1,18 +1,25 @@
 package com.adeptj.modules.mvc;
 
-public class Template {
+public final class Template {
 
-    private TemplateContext templateContext;
+    private final String name;
 
-    private Template(TemplateContext templateContext) {
+    private final TemplateContext templateContext;
+
+    private Template(String name, TemplateContext templateContext) {
+        this.name = name;
         this.templateContext = templateContext;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public TemplateContext getTemplateContext() {
         return templateContext;
     }
 
-    public static Template using(TemplateContext templateContext) {
-        return new Template(templateContext);
+    public static Template using(String name, TemplateContext templateContext) {
+        return new Template(name, templateContext);
     }
 }

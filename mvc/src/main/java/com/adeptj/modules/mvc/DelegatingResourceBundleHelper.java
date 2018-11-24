@@ -6,33 +6,32 @@ import org.trimou.handlebars.Options;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import static org.trimou.util.Arrays.EMPTY_OBJECT_ARRAY;
 
 public class DelegatingResourceBundleHelper extends BasicValueHelper {
 
-    private final List<ResourceBundle> resourceBundles;
+    private final List<ResourceBundleWrapper> resourceBundleWrappers;
 
     DelegatingResourceBundleHelper() {
-        this.resourceBundles = new ArrayList<>();
+        this.resourceBundleWrappers = new ArrayList<>();
     }
 
-    void addResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundles.add(resourceBundle);
+    void addResourceBundleWrapper(ResourceBundleWrapper wrapper) {
+        this.resourceBundleWrappers.add(wrapper);
     }
 
-    List<ResourceBundle> getResourceBundles() {
-        return resourceBundles;
+    void removeResourceBundleWrapper(long bundleId) {
+        this.resourceBundleWrappers.removeIf(wrapper -> wrapper.getBundleId() == bundleId);
     }
 
     @Override
     public void execute(Options options) {
         List<Object> params = options.getParameters();
         String key = params.get(0).toString();
-        for (ResourceBundle resourceBundle : this.resourceBundles) {
-            if (resourceBundle.containsKey(key)) {
-                append(options, MessageFormat.format(resourceBundle.getString(key),
+        for (ResourceBundleWrapper wrapper : this.resourceBundleWrappers) {
+            if (wrapper.getResourceBundle().containsKey(key)) {
+                append(options, MessageFormat.format(wrapper.getResourceBundle().getString(key),
                         params.size() > 1 ? params.subList(1, params.size()).toArray() : EMPTY_OBJECT_ARRAY));
                 break;
             }

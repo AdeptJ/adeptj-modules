@@ -26,10 +26,8 @@ import com.adeptj.modules.mvc.Template;
 import com.adeptj.modules.mvc.TemplateContext;
 import com.adeptj.modules.mvc.TemplateEngine;
 import com.adeptj.modules.mvc.TemplateEngineConfig;
-import com.adeptj.modules.mvc.TemplateEntry;
 import com.adeptj.modules.mvc.TemplateProcessingException;
 import org.apache.commons.io.IOUtils;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -46,10 +44,10 @@ import org.trimou.engine.locator.ClassPathTemplateLocator;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Hashtable;
-import java.util.List;
 
 import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static org.osgi.framework.Bundle.ACTIVE;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
 import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import static org.trimou.engine.config.EngineConfigurationKey.DEFAULT_FILE_ENCODING;
@@ -69,13 +67,11 @@ public class MustacheTemplateEngine implements TemplateEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String RB_HELPER_NAME = "msg";
-
     private static final String TEMPLATE_ENGINE_INIT_MSG = "MustacheTemplateEngine initialized in [{}] ms!!";
 
-    private static final int SB_CAPACITY = Integer.getInteger("template.builder.capacity", 100);
+    private static final int SB_CAPACITY = Integer.getInteger("template.builder.capacity", 128);
 
-    private BundleTracker<List<TemplateEntry>> bundleTracker;
+    private BundleTracker<Object> bundleTracker;
 
     private ServiceRegistration<MustacheEngine> serviceRegistration;
 
@@ -88,13 +84,13 @@ public class MustacheTemplateEngine implements TemplateEngine {
     public void process(Template template) {
         TemplateContext context = template.getTemplateContext();
         try {
-            Mustache mustache = this.mustacheEngine.getMustache(context.getTemplate());
+            Mustache mustache = this.mustacheEngine.getMustache(template.getName());
             if (mustache == null) {
                 context.getResponse().sendError(SC_NOT_FOUND);
                 return;
             }
             StringBuilder output = new StringBuilder(SB_CAPACITY);
-            mustache.render(output, context.getTemplateData());
+            mustache.render(output, context);
             IOUtils.write(output.toString(), context.getResponse().getWriter());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -117,7 +113,7 @@ public class MustacheTemplateEngine implements TemplateEngine {
                 .setProperty(DEFAULT_FILE_ENCODING, config.encoding())
                 .setProperty(TEMPLATE_CACHE_ENABLED, config.cacheEnabled())
                 .setProperty(TEMPLATE_CACHE_EXPIRATION_TIMEOUT, config.cacheExpiration())
-                .registerHelper(RB_HELPER_NAME, bundleTemplateLocator.getResourceBundleHelper())
+                .registerHelper(config.resourceBundleHelperName(), bundleTemplateLocator.getResourceBundleHelper())
                 .addTemplateLocator(bundleTemplateLocator)
                 .addTemplateLocator(ClassPathTemplateLocator.builder()
                         .setPriority(config.classpathTemplateLocatorPriority())
@@ -126,13 +122,13 @@ public class MustacheTemplateEngine implements TemplateEngine {
                         .setScanClasspath(false)
                         .build())
                 .build();
-        Hashtable<String, Object> properties = new Hashtable<>();
+        LOGGER.info(TEMPLATE_ENGINE_INIT_MSG, TimeUtil.elapsedMillis(startTime));
+        Hashtable<String, String> properties = new Hashtable<>();
         properties.put(SERVICE_VENDOR, "AdeptJ");
         properties.put(SERVICE_DESCRIPTION, "AdeptJ MustacheEngine Service");
         this.serviceRegistration = context.registerService(MustacheEngine.class, this.mustacheEngine, properties);
-        this.bundleTracker = new BundleTracker<>(context, Bundle.ACTIVE, bundleTemplateLocator);
+        this.bundleTracker = new BundleTracker<>(context, ACTIVE, bundleTemplateLocator);
         this.bundleTracker.open();
-        LOGGER.info(TEMPLATE_ENGINE_INIT_MSG, TimeUtil.elapsedMillis(startTime));
     }
 
     @Deactivate

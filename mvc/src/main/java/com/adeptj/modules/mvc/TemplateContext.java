@@ -22,36 +22,29 @@ package com.adeptj.modules.mvc;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * TemplateContext containing required objects for template rendering.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public final class TemplateContext {
+public final class TemplateContext extends HashMap<String, Object> implements Iterable<Map.Entry<String, Object>> {
 
-    private String template;
+    private static final long serialVersionUID = 5698972457184163777L;
 
-    private TemplateData templateData;
+    private transient final HttpServletRequest request;
 
-    private final HttpServletRequest request;
+    private transient final HttpServletResponse response;
 
-    private final HttpServletResponse response;
-
-    private Locale locale;
+    private transient Locale locale;
 
     private TemplateContext(HttpServletRequest req, HttpServletResponse resp) {
         this.request = req;
         this.response = resp;
-    }
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public TemplateData getTemplateData() {
-        return templateData;
     }
 
     public HttpServletRequest getRequest() {
@@ -70,6 +63,16 @@ public final class TemplateContext {
         return new Builder();
     }
 
+    public TemplateContext withData(String key, Object value) {
+        super.put(key, value);
+        return this;
+    }
+
+    @Override
+    public Iterator<Entry<String, Object>> iterator() {
+        return super.entrySet().iterator();
+    }
+
     /**
      * Builder for TemplateContext.
      *
@@ -77,15 +80,13 @@ public final class TemplateContext {
      */
     public static class Builder {
 
-        private String template;
-
-        private TemplateData templateData;
-
-        private Locale locale;
-
         private HttpServletRequest request;
 
         private HttpServletResponse response;
+
+        private Locale locale;
+
+        private Map<String, Object> data;
 
         private Builder() {
         }
@@ -100,27 +101,25 @@ public final class TemplateContext {
             return this;
         }
 
-        public Builder template(String template) {
-            this.template = template;
-            return this;
-        }
-
-        public Builder templateData(TemplateData templateData) {
-            this.templateData = templateData;
-            return this;
-        }
-
         public Builder locale(Locale locale) {
             this.locale = locale;
             return this;
         }
 
+        public Builder withData(String key, Object value) {
+            if (this.data == null) {
+                this.data = new HashMap<>();
+            }
+            this.data.put(key, value);
+            return this;
+        }
+
         public TemplateContext build() {
             TemplateContext context = new TemplateContext(this.request, this.response);
-            context.template = this.template;
-            context.templateData = this.templateData;
-            // English is default Locale if no locale set.
             context.locale = (this.locale == null ? Locale.ENGLISH : this.locale);
+            if (this.data != null) {
+                context.putAll(this.data);
+            }
             return context;
         }
     }

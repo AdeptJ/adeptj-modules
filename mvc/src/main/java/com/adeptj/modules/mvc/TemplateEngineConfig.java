@@ -16,10 +16,10 @@ public @interface TemplateEngineConfig {
     int classpathTemplateLocatorPriority() default 4000;
 
     @AttributeDefinition(name = "Bundle Template Prefix")
-    String bundleTemplatePrefix() default "WEB-INF/views/";
+    String bundleTemplatePrefix() default "WEB-INF/templates/";
 
     @AttributeDefinition(name = "Classpath Template Prefix")
-    String classpathTemplatePrefix() default "tools/WEB-INF/views/";
+    String classpathTemplatePrefix() default "tools/WEB-INF/templates/";
 
     @AttributeDefinition(name = "Template Suffix")
     String suffix() default "html";
@@ -32,6 +32,9 @@ public @interface TemplateEngineConfig {
 
     @AttributeDefinition(name = "Template ResourceBundle BaseName")
     String resourceBundleBasename();
+
+    @AttributeDefinition(name = "Template ResourceBundleHelper Name")
+    String resourceBundleHelperName() default "msg";
 
     @AttributeDefinition(name = "Template Encoding")
     String encoding() default "UTF-8";
