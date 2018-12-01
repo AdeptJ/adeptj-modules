@@ -1,8 +1,10 @@
 package com.adeptj.modules.mvc;
 
+import com.adeptj.modules.jaxrs.core.JaxRSProvider;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -15,6 +17,8 @@ import java.lang.reflect.Type;
 
 @Provider
 @Component
+@JaxRSProvider(name = "TemplateWriter")
+@Produces("text/html")
 public class TemplateWriter implements MessageBodyWriter<Template> {
 
     @Reference
@@ -22,7 +26,7 @@ public class TemplateWriter implements MessageBodyWriter<Template> {
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type == TemplateContext.class;
+        return type == Template.class;
     }
 
     @Override
