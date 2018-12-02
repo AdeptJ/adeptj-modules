@@ -33,3 +33,7 @@ Bundle-Name: ${project.name}
 Bundle-Category: AdeptJ Commons
 
 Bundle-Vendor: AdeptJ
+
+Mustache-Templates-Location: WEB-INF/templates
+
+Mustache-I18n-Location: WEB-INF/i18n

@@ -75,6 +75,8 @@ public class MustacheTemplateEngine implements TemplateEngine {
 
     private ServiceRegistration<MustacheEngine> serviceRegistration;
 
+    private boolean templateCacheEnabled;
+
     private MustacheEngine mustacheEngine;
 
     /**
@@ -107,6 +109,7 @@ public class MustacheTemplateEngine implements TemplateEngine {
         BundleTemplateLocator bundleTemplateLocator = new BundleTemplateLocator(config.bundleTemplateLocatorPriority(),
                 config.bundleTemplatePrefix(),
                 config.suffix());
+        bundleTemplateLocator.setTemplateCacheEnabled(this.templateCacheEnabled);
         this.mustacheEngine = MustacheEngineBuilder.newBuilder()
                 .setProperty(START_DELIMITER, config.startDelimiter())
                 .setProperty(END_DELIMITER, config.endDelimiter())
@@ -136,7 +139,8 @@ public class MustacheTemplateEngine implements TemplateEngine {
     public void stop(TemplateEngineConfig config) {
         this.bundleTracker.close();
         this.serviceRegistration.unregister();
-        if (config.cacheEnabled()) {
+        this.templateCacheEnabled = config.cacheEnabled();
+        if (this.templateCacheEnabled) {
             this.mustacheEngine.invalidateTemplateCache();
         }
         this.mustacheEngine = null;

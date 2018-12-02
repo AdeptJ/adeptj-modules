@@ -40,6 +40,8 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
 
     private MustacheEngine mustacheEngine;
 
+    private boolean templateCacheEnabled;
+
     public BundleTemplateLocator(int priority, String rootPath, String suffix) {
         super(priority, rootPath, suffix);
         this.resourceBundleHelper = new DelegatingResourceBundleHelper();
@@ -55,7 +57,10 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
         this.mustacheEngine = mustacheEngine;
     }
 
-    // <------------------------ PathTemplateLocator ---------------------->
+    public void setTemplateCacheEnabled(boolean templateCacheEnabled) {
+        this.templateCacheEnabled = templateCacheEnabled;
+    }
+// <------------------------ PathTemplateLocator ---------------------->
 
     @Override
     protected String constructVirtualPath(String source) {
@@ -127,10 +132,12 @@ public class BundleTemplateLocator extends PathTemplateLocator<String> implement
     public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
         this.templateBundles.removeIf(b -> b.getBundleId() == bundle.getBundleId());
         this.resourceBundleHelper.removeResourceBundleWrapper(bundle.getBundleId());
-        List<String> templates = this.bundleTemplatesMapping.get(bundle.getBundleId());
-        if (templates != null) {
-            for (String template : templates) {
-                this.mustacheEngine.invalidateTemplateCache(name -> StringUtils.equals(template, name));
+        if (this.templateCacheEnabled) {
+            List<String> templates = this.bundleTemplatesMapping.get(bundle.getBundleId());
+            if (templates != null) {
+                for (String template : templates) {
+                    this.mustacheEngine.invalidateTemplateCache(name -> StringUtils.equals(template, name));
+                }
             }
         }
     }
