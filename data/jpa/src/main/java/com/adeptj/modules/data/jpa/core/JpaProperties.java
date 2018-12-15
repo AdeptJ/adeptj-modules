@@ -53,7 +53,8 @@ public class JpaProperties {
         Map<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
-        jpaProperties.put(DEPLOY_ON_STARTUP, config.deployOnStartup());
+        // DEPLOY_ON_STARTUP must be a string value
+        jpaProperties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
         jpaProperties.put(LOGGING_FILE, config.loggingFile());
         jpaProperties.put(LOGGING_LEVEL, config.loggingLevel());
         jpaProperties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());

@@ -59,12 +59,14 @@ import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = EntityManagerFactoryConfig.class, factory = true)
-@Component(name = JPA_FACTORY_PID, configurationPolicy = REQUIRE)
+@Component(immediate = true, name = JPA_FACTORY_PID, configurationPolicy = REQUIRE)
 public class JpaRepositoryFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final List<JpaRepositoryWrapper> repositoryWrappers = new CopyOnWriteArrayList<>();
+
+    private Map<String, Object> jpaProperties;
 
     @Reference
     private DataSourceService dataSourceService;
@@ -79,17 +81,17 @@ public class JpaRepositoryFactory {
         String persistenceUnit = config.persistenceUnit();
         try {
             Validate.isTrue(StringUtils.isNotEmpty(persistenceUnit), "PersistenceUnit name can't be blank!!");
+            this.jpaProperties = JpaProperties.from(config);
             this.repositoryWrappers.stream()
                     .filter(wrapper -> StringUtils.equals(wrapper.getPersistenceUnit(), persistenceUnit))
                     .forEach(wrapper -> {
-                        Map<String, Object> properties = JpaProperties.from(config);
-                        properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
+                        this.jpaProperties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
                         ValidationMode validationMode = ValidationMode.valueOf(config.validationMode());
                         if (validationMode == AUTO || validationMode == CALLBACK) {
-                            properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
+                            this.jpaProperties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
                         }
                         LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
-                        wrapper.initEntityManagerFactory(properties);
+                        wrapper.initEntityManagerFactory(this.jpaProperties);
                         LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
                     });
         } catch (Exception ex) { // NOSONAR
@@ -102,6 +104,10 @@ public class JpaRepositoryFactory {
     @Deactivate
     public void stop(EntityManagerFactoryConfig config) {
         String persistenceUnit = config.persistenceUnit();
+        if (this.jpaProperties != null) {
+            this.jpaProperties.clear();
+            this.jpaProperties = null;
+        }
         this.repositoryWrappers.stream()
                 .filter(wrapper -> StringUtils.equals(wrapper.getPersistenceUnit(), persistenceUnit))
                 .forEach(wrapper -> {
@@ -121,7 +127,18 @@ public class JpaRepositoryFactory {
             return;
         }
         LOGGER.info("Binding JpaRepository for PU [{}]", persistenceUnit);
-        this.repositoryWrappers.add(new JpaRepositoryWrapper(persistenceUnit, repository));
+        JpaRepositoryWrapper wrapper = new JpaRepositoryWrapper(persistenceUnit, repository);
+        if (this.jpaProperties != null) {
+            this.jpaProperties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(""));
+            ValidationMode validationMode = ValidationMode.valueOf("");
+            if (validationMode == AUTO || validationMode == CALLBACK) {
+                this.jpaProperties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
+            }
+            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
+            wrapper.initEntityManagerFactory(this.jpaProperties);
+            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
+        }
+        this.repositoryWrappers.add(wrapper);
     }
 
     public void unbindJpaRepository(JpaRepository repository, Map<String, Object> properties) {

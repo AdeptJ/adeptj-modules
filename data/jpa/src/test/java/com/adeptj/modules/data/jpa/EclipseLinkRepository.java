@@ -47,4 +47,8 @@ public class EclipseLinkRepository extends AbstractJpaRepository {
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         super.entityManagerFactory = entityManagerFactory;
     }
+
+    void closeEntityManagerFactory() {
+        JpaUtil.closeEntityManagerFactory(super.entityManagerFactory);
+    }
 }

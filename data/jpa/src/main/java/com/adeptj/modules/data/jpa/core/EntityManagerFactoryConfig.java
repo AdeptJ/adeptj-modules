@@ -53,7 +53,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 )
 public @interface EntityManagerFactoryConfig {
 
-    // name hint non editable property
+    // name hint is a non editable property
     String webconsole_configurationFactory_nameHint() default "JPA PersistenceUnit: {" + "persistenceUnit" + "}"; // NOSONAR
 
     @AttributeDefinition(
