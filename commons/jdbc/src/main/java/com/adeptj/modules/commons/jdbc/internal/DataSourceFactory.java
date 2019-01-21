@@ -87,6 +87,7 @@ public class DataSourceFactory {
      */
     @Deactivate
     protected void stop(DataSourceConfig config) {
+        this.poolNameChecker.remove(config.poolName());
         try {
             this.dataSource.close();
             LOGGER.info("HikariDataSource: [{}] closed!!", config.poolName());
@@ -94,6 +95,5 @@ public class DataSourceFactory {
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }
-        this.poolNameChecker.remove(config.poolName());
     }
 }

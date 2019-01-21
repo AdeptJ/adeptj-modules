@@ -79,7 +79,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
         response.setHeader(HEADER_LOC, this.redirectURI);
     }
 
-    // <---------------------- Below two methods from WebConsoleSecurityProvider never get called --------------------->
+    // <---------------------- Below two methods from WebConsoleSecurityProvider never get called -------------------->
 
     /**
      * {@inheritDoc}
@@ -97,7 +97,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
         return true;
     }
 
-    // <------------------------------------------------ OSGi Internal ------------------------------------------------>
+    // <------------------------------------------------ OSGi Internal ----------------------------------------------->
 
     @Activate
     @Modified

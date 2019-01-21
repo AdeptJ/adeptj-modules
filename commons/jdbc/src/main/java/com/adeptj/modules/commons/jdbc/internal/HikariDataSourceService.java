@@ -45,7 +45,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = DataSourceService.class)
+@Component(service = DataSourceService.class, immediate = true)
 public class HikariDataSourceService implements DataSourceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -66,7 +66,7 @@ public class HikariDataSourceService implements DataSourceService {
                 .orElseThrow(() -> new IllegalStateException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, name)));
     }
 
-    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
+    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------>
 
     @Reference(service = DataSourceFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindDataSourceFactory(DataSourceFactory factory) {

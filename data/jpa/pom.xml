@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <eclipselink.version>2.7.3</eclipselink.version>
+        <eclipselink.version>2.7.4</eclipselink.version>
     </properties>
 
     <!-- Project Information -->
@@ -175,8 +175,7 @@
 
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <version>${jpa.version}</version>
+            <artifactId>jakarta.persistence</artifactId>
             <scope>provided</scope>
         </dependency>
 

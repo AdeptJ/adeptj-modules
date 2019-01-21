@@ -124,9 +124,7 @@ public class DefaultServletContextHelper extends ServletContextHelper {
         return this.contextHelper.getRealPath(path);
     }
 
-    // ------------------------------------------ INTERNAL ------------------------------------------
-
-    // Component lifecycle methods
+    // <------------------------------------------ OSGi INTERNAL ------------------------------------------>
 
     @Activate
     protected void start(ComponentContext componentContext) {
