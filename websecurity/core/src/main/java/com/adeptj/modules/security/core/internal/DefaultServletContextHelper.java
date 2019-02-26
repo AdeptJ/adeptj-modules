@@ -21,7 +21,6 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.Authenticator;
-import com.adeptj.modules.security.core.ServletContextHelperAdapter;
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -37,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_NAME;
@@ -64,9 +62,8 @@ public class DefaultServletContextHelper extends ServletContextHelper {
     /**
      * The {@link Authenticator} is optionally referenced.
      * If unavailable {@link ServletContextHelperAdapter} will set a Service Unavailable (503) status
-     * while calling {@link ServletContextHelperAdapter#handleSecurity(HttpServletRequest, HttpServletResponse)}.
+     * while calling {@link ServletContextHelperAdapter#handleSecurity}.
      * <p>
-     * Note: As per Felix SCR, dynamic references should be declared as volatile.
      */
     @Reference(
             cardinality = ReferenceCardinality.OPTIONAL,
@@ -129,16 +126,22 @@ public class DefaultServletContextHelper extends ServletContextHelper {
     @Activate
     protected void start(ComponentContext componentContext) {
         this.contextHelper = new ServletContextHelperAdapter(componentContext.getUsingBundle());
-        Optional.ofNullable(this.authenticator).ifPresent(this.contextHelper::setAuthenticator);
+        if (this.authenticator != null) {
+            this.contextHelper.setAuthenticator(this.authenticator);
+        }
     }
 
     protected void bindAuthenticator(Authenticator authenticator) {
         this.authenticator = authenticator;
-        Optional.ofNullable(this.contextHelper).ifPresent(sh -> sh.setAuthenticator(this.authenticator));
+        if (this.contextHelper != null) {
+            this.contextHelper.setAuthenticator(this.authenticator);
+        }
     }
 
     protected void unbindAuthenticator(Authenticator authenticator) {
         this.authenticator = null;
-        Optional.ofNullable(this.contextHelper).ifPresent(ServletContextHelperAdapter::unsetAuthenticator);
+        if (this.contextHelper != null) {
+            this.contextHelper.unsetAuthenticator();
+        }
     }
 }

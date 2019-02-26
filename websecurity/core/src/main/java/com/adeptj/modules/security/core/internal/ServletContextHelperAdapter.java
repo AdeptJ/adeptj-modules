@@ -18,8 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.core;
+package com.adeptj.modules.security.core.internal;
 
+import com.adeptj.modules.security.core.Authenticator;
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.context.ServletContextHelper;
@@ -37,21 +38,21 @@ import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
-public final class ServletContextHelperAdapter extends ServletContextHelper {
+class ServletContextHelperAdapter extends ServletContextHelper {
 
     private static final String AUTH_SERVICE_MISSING_MSG = "Authenticator service missing!!";
 
     private volatile Authenticator authenticator;
 
-    public ServletContextHelperAdapter(Bundle usingBundle) {
+    ServletContextHelperAdapter(Bundle usingBundle) {
         super(usingBundle);
     }
 
-    public void setAuthenticator(Authenticator authenticator) {
+    void setAuthenticator(Authenticator authenticator) {
         this.authenticator = authenticator;
     }
 
-    public void unsetAuthenticator() {
+    void unsetAuthenticator() {
         this.authenticator = null;
     }
 
@@ -72,6 +73,6 @@ public final class ServletContextHelperAdapter extends ServletContextHelper {
      */
     @Override
     public void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
-        this.authenticator.handleSecurity(request, response);
+        this.authenticator.finishSecurity(request, response);
     }
 }

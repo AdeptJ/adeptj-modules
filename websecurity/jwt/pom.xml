@@ -185,12 +185,6 @@
             <artifactId>jjwt-impl</artifactId>
             <scope>compile</scope>
             <version>${jjwt.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
