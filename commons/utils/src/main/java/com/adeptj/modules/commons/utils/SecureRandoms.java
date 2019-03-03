@@ -27,11 +27,11 @@ import java.security.SecureRandom;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class Randomizer {
+public final class SecureRandoms {
 
     private static final SecureRandom DEFAULT_SECURE_RANDOM = new SecureRandom();
 
-    private Randomizer() {
+    private SecureRandoms() {
     }
 
     public static byte[] getRandomBytes(int length) {

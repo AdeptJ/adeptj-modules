@@ -36,7 +36,27 @@ public final class Exceptions {
      * @param ex the given exception.
      * @return RuntimeException wrapping the original exception.
      */
-    public static RuntimeException toUnchecked(Exception ex) {
+    public static RuntimeException unchecked(Exception ex) {
         return new RuntimeException(ex);
+    }
+
+    /**
+     * Wraps the given exception in an {@link IllegalStateException} and rethrow.
+     *
+     * @param ex the given exception.
+     * @return IllegalStateException wrapping the original exception.
+     */
+    public static IllegalStateException state(Exception ex) {
+        return new IllegalStateException(ex);
+    }
+
+    /**
+     * Wraps the given exception in an {@link IllegalArgumentException} and rethrow.
+     *
+     * @param ex the given exception.
+     * @return IllegalArgumentException wrapping the original exception.
+     */
+    public static IllegalArgumentException arg(Exception ex) {
+        return new IllegalArgumentException(ex);
     }
 }

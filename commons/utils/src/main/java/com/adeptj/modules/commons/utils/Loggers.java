@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Utility for SLF4J {@link org.slf4j.Logger}
+ * Utility for SLF4J {@link Logger}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -36,15 +36,15 @@ public final class Loggers {
     private Loggers() {
     }
 
-    public static Logger get(MethodHandles.Lookup lookup) {
+    public static Logger of(MethodHandles.Lookup lookup) {
         return LoggerFactory.getLogger(lookup.lookupClass());
     }
 
-    public static <T> Logger get(Class<T> type) {
+    public static <T> Logger of(Class<T> type) {
         return LoggerFactory.getLogger(type);
     }
 
-    public static Logger get(String name) {
+    public static Logger of(String name) {
         return LoggerFactory.getLogger(name);
     }
 }
