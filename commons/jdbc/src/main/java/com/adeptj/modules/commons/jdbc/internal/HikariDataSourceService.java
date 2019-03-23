@@ -59,7 +59,7 @@ public class HikariDataSourceService implements DataSourceService {
      */
     @Override
     public DataSource getDataSource(String name) {
-        Validate.isTrue(StringUtils.isNotEmpty(name), "pool name can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(name), "DataSource name can't be blank!!");
         return this.dataSources.stream()
                 .filter(ds -> StringUtils.equals(name, ds.getPoolName()))
                 .findFirst()

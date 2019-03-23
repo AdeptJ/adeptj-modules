@@ -55,11 +55,11 @@ class JpaRepositoryWrapper {
         return persistenceUnit;
     }
 
-    AbstractJpaRepository getRepository() {
+    AbstractJpaRepository getJpaRepository() {
         return repository;
     }
 
-    void disposeRepository() {
+    void disposeJpaRepository() {
         JpaUtil.closeEntityManagerFactory(this.emf);
         this.emf = null;
         if (this.repository != null) {

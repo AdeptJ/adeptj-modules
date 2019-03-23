@@ -28,7 +28,6 @@ import javax.ws.rs.core.Cookie;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Utility extracts Jwt either from request headers or cookies.
@@ -54,20 +53,14 @@ public final class JwtExtractor {
     public static String extract(ContainerRequestContext requestContext) {
         String jwt = null;
         // if JwtCookieConfig is enabled then always extract the Jwt from cookies first.
-        if (JwtCookieConfigHolder.getInstance().isJwtCookieEnabled()) {
-            jwt = extractFromCookies(requestContext);
+        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
+        if (cookieConfig.enabled()) {
+            Cookie jwtCookie = requestContext.getCookies().get(cookieConfig.name());
+            if (jwtCookie != null) {
+                jwt = cleanseJwt(jwtCookie.getValue());
+            }
         }
-        return StringUtils.isEmpty(jwt) ? extractFromHeaders(requestContext) : jwt;
-    }
-
-    private static String extractFromCookies(ContainerRequestContext requestContext) {
-        Cookie jwtCookie = requestContext.getCookies()
-                .get(JwtCookieConfigHolder.getInstance().getJwtCookieConfig().name());
-        return jwtCookie == null ? EMPTY : cleanseJwt(jwtCookie.getValue());
-    }
-
-    private static String extractFromHeaders(ContainerRequestContext requestContext) {
-        return cleanseJwt(requestContext.getHeaders().getFirst(AUTHORIZATION));
+        return StringUtils.isEmpty(jwt) ? cleanseJwt(requestContext.getHeaders().getFirst(AUTHORIZATION)) : jwt;
     }
 
     private static String cleanseJwt(String jwt) {

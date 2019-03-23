@@ -22,8 +22,8 @@ package com.adeptj.modules.security.jwt;
 
 import io.jsonwebtoken.lang.Assert;
 
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * JWT utilities.
@@ -61,8 +61,9 @@ public final class JwtUtil {
      * @param mandatoryClaims obligatory claims that should be present in claims map.
      * @since 1.1.0.Final
      */
-    public static void assertClaims(Map<String, Object> claims, List<String> mandatoryClaims) {
+    public static void assertClaims(Map<String, Object> claims, String[] mandatoryClaims) {
         assertClaims(claims);
-        mandatoryClaims.forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
+        Stream.of(mandatoryClaims)
+                .forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
     }
 }

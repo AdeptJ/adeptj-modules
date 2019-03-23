@@ -55,7 +55,7 @@ public final class SimpleCredentials {
         return this.password;
     }
 
-    // ---------------- Generated -----------------
+    // <---------------- Generated ----------------->
 
     @Override
     public boolean equals(Object o) {
