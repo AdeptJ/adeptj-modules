@@ -53,6 +53,7 @@ Import-Package: \
   com.adeptj.modules.jaxrs.core.auth.api;\
   com.adeptj.modules.jaxrs.core.jwt,\
   !com.github.fge.jsonpatch, \
+  !org.jboss.weld.proxy, \
   !org.hibernate.validator.internal.engine.path, \
   !org.hibernate.validator.internal.metadata.descriptor, \
   *

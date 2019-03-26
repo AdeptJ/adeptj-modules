@@ -20,18 +20,21 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * The {@link ResteasyProviderFactory} adapter provides the access to which is used in adding
+ * The {@link ResteasyProviderFactory} adapter sets the field providerInstances in ResteasyProviderFactoryImpl which is used in adding
  * and removing the provider instances through OSGi {@link org.osgi.util.tracker.ServiceTracker} mechanism.
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -40,20 +43,30 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
+
     private final List<String> blacklistedProviders;
 
-    ResteasyProviderFactoryAdapter(List<String> blacklistedProviders) {
+    private final Set<Object> overriddenProviderInstances;
+
+    ResteasyProviderFactoryAdapter(List<String> blacklistedProviders) throws ServletException {
         this.blacklistedProviders = blacklistedProviders;
+        this.overriddenProviderInstances = new CopyOnWriteArraySet<>();
+        try {
+            FieldUtils.writeField(this, FIELD_PROVIDER_INSTANCES, this.overriddenProviderInstances, true);
+        } catch (IllegalAccessException ex) {
+            throw new ServletException(ex);
+        }
     }
 
     /**
      * See class header for description.
      *
-     * @return the provider instances.
+     * @return the overriddenProviderInstances reference.
      */
     @Override
     public Set<Object> getProviderInstances() {
-        return null;
+        return this.overriddenProviderInstances;
     }
 
     @Override
