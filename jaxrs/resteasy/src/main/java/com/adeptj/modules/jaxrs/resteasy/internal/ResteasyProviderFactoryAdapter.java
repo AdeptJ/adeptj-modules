@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import org.jboss.resteasy.core.ResteasyProviderFactoryImpl;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
