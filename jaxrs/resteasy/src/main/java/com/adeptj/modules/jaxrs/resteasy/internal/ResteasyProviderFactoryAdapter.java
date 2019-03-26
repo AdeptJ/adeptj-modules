@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The {@link ResteasyProviderFactory} adapter provides the access to {@link #providerInstances} which is used in adding
+ * The {@link ResteasyProviderFactory} adapter provides the access to which is used in adding
  * and removing the provider instances through OSGi {@link org.osgi.util.tracker.ServiceTracker} mechanism.
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -53,7 +53,7 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
      */
     @Override
     public Set<Object> getProviderInstances() {
-        return super.providerInstances;
+        return null;
     }
 
     @Override
