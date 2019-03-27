@@ -47,26 +47,27 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     private final List<String> blacklistedProviders;
 
-    private final Set<Object> overriddenProviderInstances;
+    private final Set<Object> providers;
 
     ResteasyProviderFactoryAdapter(List<String> blacklistedProviders) throws ServletException {
         this.blacklistedProviders = blacklistedProviders;
-        this.overriddenProviderInstances = new CopyOnWriteArraySet<>();
+        this.providers = new CopyOnWriteArraySet<>();
+        // 27.03.2019 - Using reflection as the field is made private in 4.0.0.RC1, it was protected earlier.
         try {
-            FieldUtils.writeField(this, FIELD_PROVIDER_INSTANCES, this.overriddenProviderInstances, true);
-        } catch (IllegalAccessException ex) {
-            throw new ServletException(ex);
+            FieldUtils.writeField(this, FIELD_PROVIDER_INSTANCES, this.providers, true);
+        } catch (IllegalAccessException iae) {
+            throw new ServletException(iae);
         }
     }
 
     /**
      * See class header for description.
      *
-     * @return the overriddenProviderInstances reference.
+     * @return the providers reference.
      */
     @Override
     public Set<Object> getProviderInstances() {
-        return this.overriddenProviderInstances;
+        return this.providers;
     }
 
     @Override
