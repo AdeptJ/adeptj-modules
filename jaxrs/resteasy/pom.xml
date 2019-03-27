@@ -438,6 +438,7 @@
             </exclusions>
         </dependency>
 
+        <!-- Needed by resteasy-validator-provider, we are not using CDI in OSGi for anything else -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-cdi</artifactId>
@@ -625,6 +626,10 @@
                 <exclusion>
                     <groupId>com.sun.mail</groupId>
                     <artifactId>javax.mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.james</groupId>
+                    <artifactId>apache-mime4j-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.james</groupId>

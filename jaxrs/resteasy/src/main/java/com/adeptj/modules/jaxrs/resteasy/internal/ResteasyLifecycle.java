@@ -144,7 +144,7 @@ public class ResteasyLifecycle {
         return resteasyDispatcher;
     }
 
-    // <------------------------------------------------ OSGi INTERNAL ------------------------------------------------>
+    // <--------------------------------------------- OSGi INTERNAL --------------------------------------------->
 
     @Activate
     protected void start(BundleContext bundleContext, ResteasyConfig config) {

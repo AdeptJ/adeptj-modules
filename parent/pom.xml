@@ -200,7 +200,15 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.apache.james</groupId>
-                        <artifactId>apache-mime4j</artifactId>
+                        <artifactId>apache-mime4j-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.james</groupId>
+                        <artifactId>apache-mime4j-dom</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.james</groupId>
+                        <artifactId>apache-mime4j-storage</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.jboss.logging</groupId>
@@ -216,6 +224,14 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.jboss.resteasy</groupId>
+                        <artifactId>resteasy-core-spi</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jboss.resteasy</groupId>
+                        <artifactId>resteasy-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jboss.resteasy</groupId>
                         <artifactId>resteasy-client</artifactId>
                     </exclusion>
                     <exclusion>
@@ -224,7 +240,7 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.jboss.spec.javax.servlet</groupId>
-                        <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+                        <artifactId>jboss-servlet-api_4.0_spec</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
