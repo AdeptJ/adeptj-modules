@@ -33,9 +33,11 @@ import javax.servlet.http.HttpServletResponse;
 @ProviderType
 public interface Authenticator {
 
-    boolean handleSecurity(HttpServletRequest request, HttpServletResponse response);
+    boolean handleSecurity(HttpServletRequest request);
 
-    default void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
+    void finishSecurity(HttpServletRequest request);
 
-    }
+    void login(HttpServletRequest request, HttpServletResponse response);
+
+    void logout(HttpServletRequest request, HttpServletResponse response);
 }

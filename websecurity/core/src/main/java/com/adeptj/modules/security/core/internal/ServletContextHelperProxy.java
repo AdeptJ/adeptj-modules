@@ -49,7 +49,7 @@ public class ServletContextHelperProxy extends ServletContextHelper {
      */
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) {
-        return this.authenticator.handleSecurity(request, response);
+        return this.authenticator.handleSecurity(request);
     }
 
     /**
@@ -57,6 +57,6 @@ public class ServletContextHelperProxy extends ServletContextHelper {
      */
     @Override
     public void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
-        this.authenticator.finishSecurity(request, response);
+        this.authenticator.finishSecurity(request);
     }
 }

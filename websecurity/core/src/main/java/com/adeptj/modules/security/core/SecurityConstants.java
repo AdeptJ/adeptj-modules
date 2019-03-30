@@ -31,4 +31,16 @@ public final class SecurityConstants {
     }
 
     public static final String SERVLET_CONTEXT_NAME = "AdeptJ ServletContextHelper";
+
+    public static final String METHOD_POST = "POST";
+
+    public static final String PARAM_USERNAME = "j_username";
+
+    public static final String PARAM_PWD = "j_password";
+
+    public static final String LOGIN_URI_SUFFIX = "j_security_check";
+
+    public static final String AUTH_SCHEME_BEARER = "Bearer";
+
+    public static final String HEADER_AUTHORIZATION = "AUTHORIZATION";
 }

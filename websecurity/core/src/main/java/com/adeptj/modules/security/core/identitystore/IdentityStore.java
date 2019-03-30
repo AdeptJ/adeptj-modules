@@ -25,5 +25,7 @@ public interface IdentityStore {
         return this.getClass().getName();
     }
 
-    boolean validate(Credential credential);
+    boolean canValidate(Credential credential);
+
+    CredentialValidationOutcome validate(Credential credential);
 }

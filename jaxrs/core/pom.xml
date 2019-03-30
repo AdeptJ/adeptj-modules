@@ -204,6 +204,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-websecurity-core</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>javax.security.enterprise</groupId>
             <artifactId>javax.security.enterprise-api</artifactId>
             <version>1.0</version>

@@ -20,8 +20,16 @@
 
 package com.adeptj.modules.security.core.credential;
 
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Objects;
+
+import static com.adeptj.modules.security.core.SecurityConstants.LOGIN_URI_SUFFIX;
+import static com.adeptj.modules.security.core.SecurityConstants.METHOD_POST;
+import static com.adeptj.modules.security.core.SecurityConstants.PARAM_PWD;
+import static com.adeptj.modules.security.core.SecurityConstants.PARAM_USERNAME;
 
 /**
  * Represents simple username/password credentials.
@@ -30,7 +38,7 @@ import java.util.Objects;
  */
 public class UsernamePasswordCredential implements Credential {
 
-    private static final char[] EMPTY_VALUE = new char[0];
+    private static final char[] EMPTY_CHAR_ARRAY = new char[0];
 
     private String username;
 
@@ -41,12 +49,14 @@ public class UsernamePasswordCredential implements Credential {
         this.password = password;
     }
 
-    public static UsernamePasswordCredential from(String username, String password) {
-        return new UsernamePasswordCredential(username, password.toCharArray());
-    }
-
-    public static UsernamePasswordCredential from(String username, char[] password) {
-        return new UsernamePasswordCredential(username, password);
+    public static Credential from(HttpServletRequest request) {
+        String username = request.getParameter(PARAM_USERNAME);
+        String password = request.getParameter(PARAM_PWD);
+        if (METHOD_POST.equals(request.getMethod()) && StringUtils.endsWith(request.getRequestURI(), LOGIN_URI_SUFFIX)
+                && StringUtils.isNoneEmpty(username, password)) {
+            return new UsernamePasswordCredential(username, password.toCharArray());
+        }
+        return null;
     }
 
     public String getUsername() {
@@ -57,14 +67,15 @@ public class UsernamePasswordCredential implements Credential {
         return this.password;
     }
 
+    @Override
     public void clear() {
-        if (EMPTY_VALUE == this.password) {
+        if (EMPTY_CHAR_ARRAY == this.password) {
             return;
         }
-        char[] tempValue = this.password;
-        this.password = EMPTY_VALUE;
-        for (int i = 0; i < tempValue.length; i++) {
-            tempValue[i] = 0x00;
+        char[] temp = this.password;
+        this.password = EMPTY_CHAR_ARRAY;
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = 0x00;
         }
     }
 
