@@ -191,13 +191,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-mvc</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
 
 
