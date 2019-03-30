@@ -25,9 +25,6 @@ import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import org.jboss.resteasy.annotations.Form;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -46,8 +43,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/aws/sns")
 @Component(immediate = true, service = SmsResource.class, property = RESOURCE_BASE)
 public class SmsResource {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmsResource.class);
 
     static final String RESOURCE_BASE = "osgi.jaxrs.resource.base=aws-sns";
 

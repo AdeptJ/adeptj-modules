@@ -377,7 +377,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core-spi</artifactId>
-            <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>

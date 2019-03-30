@@ -27,7 +27,9 @@ package com.adeptj.modules.jaxrs.resteasy;
  */
 public class ResteasyBootstrapException extends RuntimeException {
 
-    public ResteasyBootstrapException(String message, Throwable cause) {
+	private static final long serialVersionUID = 3361307228148474881L;
+
+	public ResteasyBootstrapException(String message, Throwable cause) {
         super(message, cause);
     }
 
