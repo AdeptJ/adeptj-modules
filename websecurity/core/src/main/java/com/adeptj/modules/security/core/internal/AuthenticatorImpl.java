@@ -73,8 +73,23 @@ public class AuthenticatorImpl implements Authenticator {
     }
 
     @Override
-    public void login(HttpServletRequest request, HttpServletResponse response) {
+    public CredentialValidationOutcome login(HttpServletRequest request, HttpServletResponse response) {
+        Credential credential = this.credentialProvider.getCredential(request);
+        if (credential == null) {
+            return NOT_VALIDATED_OUTCOME;
+        }
+        CredentialValidationOutcome outcome = this.identityStores.stream()
+                .sorted(Comparator.comparingInt(IdentityStore::priority).reversed())
+                .peek(store -> LOGGER.info("Asking credential validation from IdentityStore: {}", store.getName()))
+                .filter(store -> store.canValidate(credential))
+                .map(store -> store.validate(credential))
+                .findFirst()
+                .orElse(null);
+        credential.clear();
+        if (outcome == null || outcome == INVALID_OUTCOME || outcome == NOT_VALIDATED_OUTCOME) {
 
+        }
+        return outcome;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.credential.Credential;
-import com.adeptj.modules.security.core.credential.TokenCredential;
+import com.adeptj.modules.security.core.credential.BearerTokenCredential;
 import com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome;
 import com.adeptj.modules.security.core.identitystore.IdentityStore;
 import org.osgi.service.component.annotations.Component;
@@ -21,7 +21,7 @@ public class JwtIdentityStore implements IdentityStore {
 
     @Override
     public boolean canValidate(Credential credential) {
-        return credential instanceof TokenCredential;
+        return credential instanceof BearerTokenCredential;
     }
 
     @Override

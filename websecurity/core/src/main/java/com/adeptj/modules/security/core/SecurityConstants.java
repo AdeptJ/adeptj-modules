@@ -42,5 +42,7 @@ public final class SecurityConstants {
 
     public static final String AUTH_SCHEME_BEARER = "Bearer";
 
+    public static final String AUTH_SCHEME_BASIC = "Basic";
+
     public static final String HEADER_AUTHORIZATION = "AUTHORIZATION";
 }

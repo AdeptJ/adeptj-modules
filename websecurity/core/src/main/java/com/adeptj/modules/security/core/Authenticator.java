@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.security.core;
 
+import com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome;
 import org.osgi.annotation.versioning.ProviderType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +38,7 @@ public interface Authenticator {
 
     void finishSecurity(HttpServletRequest request);
 
-    void login(HttpServletRequest request, HttpServletResponse response);
+    CredentialValidationOutcome login(HttpServletRequest request, HttpServletResponse response);
 
     void logout(HttpServletRequest request, HttpServletResponse response);
 }
