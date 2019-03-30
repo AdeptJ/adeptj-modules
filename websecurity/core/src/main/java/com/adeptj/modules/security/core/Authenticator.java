@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.core;
 
-import org.osgi.annotation.versioning.ConsumerType;
+import org.osgi.annotation.versioning.ProviderType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,10 +30,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ConsumerType
+@ProviderType
 public interface Authenticator {
 
     boolean handleSecurity(HttpServletRequest request, HttpServletResponse response);
 
-    void finishSecurity(HttpServletRequest request, HttpServletResponse response);
+    default void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
+
+    }
 }

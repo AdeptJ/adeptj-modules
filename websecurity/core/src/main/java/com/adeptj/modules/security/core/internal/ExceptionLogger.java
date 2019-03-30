@@ -29,21 +29,28 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
- * DefaultExceptionHandler.
+ * Logs the unhandled exceptions.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(service = Preprocessor.class)
-public class DefaultExceptionHandler implements Preprocessor {
+public class ExceptionLogger implements Preprocessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
+
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) resp;
+        LOGGER.debug(PROCESSING_REQUEST_MSG, request.getMethod(), request.getRequestURI());
         try {
             chain.doFilter(request, response);
         } catch (Exception ex) { // NOSONAR

@@ -27,44 +27,28 @@ import org.osgi.service.http.context.ServletContextHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE;
 
 /**
  * ServletContextHelper implementation which initializes the {@link ServletContextHelper} with the bundle instance
- * of the service which consumed the {@link com.adeptj.modules.security.core.internal.DefaultServletContextHelper}.
+ * of the service which consumed the {@link ServletContextHelperImpl}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
-class ServletContextHelperAdapter extends ServletContextHelper {
+public class ServletContextHelperAdapter extends ServletContextHelper {
 
-    private static final String AUTH_SERVICE_MISSING_MSG = "Authenticator service missing!!";
+    private Authenticator authenticator;
 
-    private volatile Authenticator authenticator;
-
-    ServletContextHelperAdapter(Bundle usingBundle) {
+    ServletContextHelperAdapter(Bundle usingBundle, Authenticator authenticator) {
         super(usingBundle);
-    }
-
-    void setAuthenticator(Authenticator authenticator) {
         this.authenticator = authenticator;
-    }
-
-    void unsetAuthenticator() {
-        this.authenticator = null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (this.authenticator == null) {
-            response.sendError(SC_SERVICE_UNAVAILABLE, AUTH_SERVICE_MISSING_MSG);
-            return false;
-        }
+    public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) {
         return this.authenticator.handleSecurity(request, response);
     }
 

@@ -30,5 +30,5 @@ public final class SecurityConstants {
     private SecurityConstants() {
     }
 
-    public static final String SERVLET_CONTEXT_NAME = "AdeptJ DefaultServletContext";
+    public static final String SERVLET_CONTEXT_NAME = "AdeptJ ServletContextHelper";
 }

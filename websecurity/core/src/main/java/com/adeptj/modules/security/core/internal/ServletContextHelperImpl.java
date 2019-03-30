@@ -26,58 +26,43 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ServiceScope;
 import org.osgi.service.http.context.ServletContextHelper;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Set;
 
 import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_NAME;
-import static com.adeptj.modules.security.core.internal.DefaultServletContextHelper.ROOT_PATH;
+import static com.adeptj.modules.security.core.internal.ServletContextHelperImpl.ROOT_PATH;
+import static org.osgi.service.component.annotations.ServiceScope.BUNDLE;
 
 /**
- * DefaultServletContextHelper.
+ * ServletContextHelperImpl.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
 @HttpWhiteboardContext(name = SERVLET_CONTEXT_NAME, path = ROOT_PATH)
-@Component(service = ServletContextHelper.class, scope = ServiceScope.BUNDLE)
-public class DefaultServletContextHelper extends ServletContextHelper {
+@Component(service = ServletContextHelper.class, scope = BUNDLE)
+public class ServletContextHelperImpl extends ServletContextHelper {
 
     static final String ROOT_PATH = "/";
 
-    private static final String BIND_AUTHENTICATOR = "bindAuthenticator";
-
-    private static final String UNBIND_AUTHENTICATOR = "unbindAuthenticator";
-
-    private volatile ServletContextHelperAdapter contextHelper;
+    private ServletContextHelperAdapter contextHelper;
 
     /**
-     * The {@link Authenticator} is optionally referenced.
-     * If unavailable {@link ServletContextHelperAdapter} will set a Service Unavailable (503) status
-     * while calling {@link ServletContextHelperAdapter#handleSecurity}.
-     * <p>
+     * The {@link Authenticator} service is statically referenced.
      */
-    @Reference(
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC,
-            bind = BIND_AUTHENTICATOR,
-            unbind = UNBIND_AUTHENTICATOR
-    )
-    private volatile Authenticator authenticator;
+    @Reference
+    private Authenticator authenticator;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) {
         return this.contextHelper.handleSecurity(request, response);
     }
 
@@ -121,27 +106,10 @@ public class DefaultServletContextHelper extends ServletContextHelper {
         return this.contextHelper.getRealPath(path);
     }
 
-    // <------------------------------------------ OSGi INTERNAL ------------------------------------------>
+    // <<------------------------------------------ OSGi INTERNAL ------------------------------------------>>
 
     @Activate
     protected void start(ComponentContext componentContext) {
-        this.contextHelper = new ServletContextHelperAdapter(componentContext.getUsingBundle());
-        if (this.authenticator != null) {
-            this.contextHelper.setAuthenticator(this.authenticator);
-        }
-    }
-
-    protected void bindAuthenticator(Authenticator authenticator) {
-        this.authenticator = authenticator;
-        if (this.contextHelper != null) {
-            this.contextHelper.setAuthenticator(this.authenticator);
-        }
-    }
-
-    protected void unbindAuthenticator(Authenticator authenticator) {
-        this.authenticator = null;
-        if (this.contextHelper != null) {
-            this.contextHelper.unsetAuthenticator();
-        }
+        this.contextHelper = new ServletContextHelperAdapter(componentContext.getUsingBundle(), this.authenticator);
     }
 }
