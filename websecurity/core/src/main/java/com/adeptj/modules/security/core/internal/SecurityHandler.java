@@ -35,22 +35,22 @@ import java.net.URL;
 import java.util.Set;
 
 import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_NAME;
-import static com.adeptj.modules.security.core.internal.ServletContextHelperImpl.ROOT_PATH;
+import static com.adeptj.modules.security.core.internal.SecurityHandler.ROOT_PATH;
 import static org.osgi.service.component.annotations.ServiceScope.BUNDLE;
 
 /**
- * ServletContextHelperImpl.
+ * SecurityHandler.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
 @HttpWhiteboardContext(name = SERVLET_CONTEXT_NAME, path = ROOT_PATH)
 @Component(service = ServletContextHelper.class, scope = BUNDLE)
-public class ServletContextHelperImpl extends ServletContextHelper {
+public class SecurityHandler extends ServletContextHelper {
 
     static final String ROOT_PATH = "/";
 
-    private ServletContextHelperAdapter contextHelper;
+    private ServletContextHelperProxy contextHelperProxy;
 
     /**
      * The {@link Authenticator} service is statically referenced.
@@ -63,7 +63,7 @@ public class ServletContextHelperImpl extends ServletContextHelper {
      */
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) {
-        return this.contextHelper.handleSecurity(request, response);
+        return this.contextHelperProxy.handleSecurity(request, response);
     }
 
     /**
@@ -71,7 +71,7 @@ public class ServletContextHelperImpl extends ServletContextHelper {
      */
     @Override
     public void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
-        this.contextHelper.finishSecurity(request, response);
+        this.contextHelperProxy.finishSecurity(request, response);
     }
 
     /**
@@ -79,7 +79,7 @@ public class ServletContextHelperImpl extends ServletContextHelper {
      */
     @Override
     public URL getResource(String name) {
-        return this.contextHelper.getResource(name);
+        return this.contextHelperProxy.getResource(name);
     }
 
     /**
@@ -87,7 +87,7 @@ public class ServletContextHelperImpl extends ServletContextHelper {
      */
     @Override
     public String getMimeType(String name) {
-        return this.contextHelper.getMimeType(name);
+        return this.contextHelperProxy.getMimeType(name);
     }
 
     /**
@@ -95,7 +95,7 @@ public class ServletContextHelperImpl extends ServletContextHelper {
      */
     @Override
     public Set<String> getResourcePaths(String path) {
-        return this.contextHelper.getResourcePaths(path);
+        return this.contextHelperProxy.getResourcePaths(path);
     }
 
     /**
@@ -103,13 +103,13 @@ public class ServletContextHelperImpl extends ServletContextHelper {
      */
     @Override
     public String getRealPath(String path) {
-        return this.contextHelper.getRealPath(path);
+        return this.contextHelperProxy.getRealPath(path);
     }
 
     // <<------------------------------------------ OSGi INTERNAL ------------------------------------------>>
 
     @Activate
-    protected void start(ComponentContext componentContext) {
-        this.contextHelper = new ServletContextHelperAdapter(componentContext.getUsingBundle(), this.authenticator);
+    protected void start(ComponentContext context) {
+        this.contextHelperProxy = new ServletContextHelperProxy(context.getUsingBundle(), this.authenticator);
     }
 }

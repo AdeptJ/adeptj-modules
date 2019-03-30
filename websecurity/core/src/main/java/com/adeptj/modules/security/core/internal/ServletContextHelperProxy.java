@@ -29,17 +29,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * ServletContextHelper implementation which initializes the {@link ServletContextHelper} with the bundle instance
- * of the service which consumed the {@link ServletContextHelperImpl}.
+ * A {@link ServletContextHelper} proxy which initializes the {@link ServletContextHelper} with the bundle instance
+ * of the service which consumed the {@link SecurityHandler}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
-public class ServletContextHelperAdapter extends ServletContextHelper {
+public class ServletContextHelperProxy extends ServletContextHelper {
 
     private Authenticator authenticator;
 
-    ServletContextHelperAdapter(Bundle usingBundle, Authenticator authenticator) {
+    ServletContextHelperProxy(Bundle usingBundle, Authenticator authenticator) {
         super(usingBundle);
         this.authenticator = authenticator;
     }
