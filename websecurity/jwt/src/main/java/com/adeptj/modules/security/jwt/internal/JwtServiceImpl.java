@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
+import static io.jsonwebtoken.Claims.ID;
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
 import static java.time.temporal.ChronoUnit.MINUTES;
@@ -102,7 +103,7 @@ public class JwtServiceImpl implements JwtService {
                 .setIssuer(this.issuer)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
-                .setId(UUID.randomUUID().toString())
+                .setId(claims.containsKey(ID) ? (String) claims.get(ID) : UUID.randomUUID().toString())
                 .signWith(this.keyPair.getPrivate(), this.signatureAlgo)
                 .serializeToJsonWith(this.serializer)
                 .compact();
