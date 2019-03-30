@@ -8,6 +8,6 @@ public class DefaultJwtClaimsIntrospector implements JwtClaimsIntrospector {
 
     @Override
     public boolean introspect(Map<String, Object> claims) {
-        return true;
+        return !claims.containsKey("EXPIRED");
     }
 }

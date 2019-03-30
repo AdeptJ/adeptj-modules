@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.REQ_PATH_ATTR;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -50,14 +51,13 @@ public abstract class AbstractJwtFilter implements JwtFilter {
             requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
             return;
         }
-        JwtClaims claims;
         String jwt = JwtExtractor.extract(requestContext);
-        // Send Unauthorized if JWT is null/empty or JwtService finds token to be malformed, expired etc.
-        // 401 is better suited for token verification failure.
-        if (StringUtils.isEmpty(jwt) || (claims = jwtService.verifyJwt(jwt)) == null) {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+        // Send Bad Request(400) if JWT is null/empty.
+        if (StringUtils.isEmpty(jwt)) {
+            requestContext.abortWith(Response.status(BAD_REQUEST).build());
             return;
         }
+        JwtClaims claims = jwtService.verifyJwt(jwt);
         claims.put(REQ_PATH_ATTR, requestContext.getUriInfo().getPath());
         if (this.getClaimsIntrospector().introspect(claims)) {
             requestContext.setSecurityContext(JwtSecurityContext.newSecurityContext()
@@ -66,6 +66,8 @@ public abstract class AbstractJwtFilter implements JwtFilter {
                     .withSecure(requestContext.getSecurityContext().isSecure())
                     .withAuthScheme(AUTH_SCHEME_TOKEN));
         } else {
+            // Send Unauthorized if JwtService finds token to be malformed, expired etc.
+            // 401 is better suited for token verification failure.
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         }
     }

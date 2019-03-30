@@ -24,6 +24,7 @@ import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Deserializer;
@@ -50,6 +51,7 @@ import java.util.UUID;
 import static io.jsonwebtoken.Claims.ID;
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
+import static java.lang.Boolean.TRUE;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -128,9 +130,10 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public JwtClaims verifyJwt(String jwt) {
+        JwtClaims claims = null;
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");
-            return Jwts.parser()
+            claims = Jwts.parser()
                     .setSigningKey(this.keyPair.getPublic())
                     .deserializeJsonWith(this.deserializer)
                     .parse(jwt, this.jwtHandler);
@@ -141,8 +144,13 @@ public class JwtServiceImpl implements JwtService {
             } else {
                 LOGGER.error(ex.getMessage(), ex);
             }
+            if (ex instanceof ExpiredJwtException) {
+                ExpiredJwtException expiredJwtException = (ExpiredJwtException) ex;
+                claims = new JwtClaims(expiredJwtException.getClaims());
+                claims.put("EXPIRED", TRUE);
+            }
         }
-        return null;
+        return claims;
     }
 
     // <----------------------------------------------- OSGi INTERNAL ----------------------------------------------->
