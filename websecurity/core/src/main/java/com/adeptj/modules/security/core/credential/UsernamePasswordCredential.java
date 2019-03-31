@@ -49,7 +49,11 @@ public class UsernamePasswordCredential implements Credential {
         this.password = password;
     }
 
-    public static Credential from(HttpServletRequest request) {
+    public static UsernamePasswordCredential from(String username, String password) {
+        return new UsernamePasswordCredential(username, password.toCharArray());
+    }
+
+    public static UsernamePasswordCredential from(HttpServletRequest request) {
         String username = request.getParameter(PARAM_USERNAME);
         String password = request.getParameter(PARAM_PWD);
         if (METHOD_POST.equals(request.getMethod()) && StringUtils.endsWith(request.getRequestURI(), LOGIN_URI_SUFFIX)

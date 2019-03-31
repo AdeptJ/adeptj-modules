@@ -28,9 +28,4 @@ public class BearerTokenCredential implements Credential {
     public String getToken() {
         return token;
     }
-
-    @Override
-    public void clear() {
-        this.token = null;
-    }
 }

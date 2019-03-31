@@ -5,7 +5,7 @@ import org.osgi.annotation.versioning.ProviderType;
 import javax.servlet.http.HttpServletRequest;
 
 @ProviderType
-public interface CredentialProvider {
+public interface CredentialResolver {
 
-    Credential getCredential(HttpServletRequest request);
+    Credential resolve(HttpServletRequest request);
 }

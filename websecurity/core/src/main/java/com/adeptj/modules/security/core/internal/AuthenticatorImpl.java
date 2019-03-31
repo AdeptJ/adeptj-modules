@@ -1,8 +1,9 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.Authenticator;
+import com.adeptj.modules.security.core.credential.BearerTokenCredential;
 import com.adeptj.modules.security.core.credential.Credential;
-import com.adeptj.modules.security.core.credential.CredentialProvider;
+import com.adeptj.modules.security.core.credential.CredentialResolver;
 import com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome;
 import com.adeptj.modules.security.core.identitystore.IdentityStore;
 import org.osgi.service.component.annotations.Activate;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.adeptj.modules.security.core.SecurityConstants.ATTRIBUTE_TOKEN_CREDENTIAL;
 import static com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome.INVALID_OUTCOME;
 import static com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome.NOT_VALIDATED_OUTCOME;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -35,7 +37,7 @@ public class AuthenticatorImpl implements Authenticator {
     private List<String> securityDisabledPaths;
 
     @Reference
-    private CredentialProvider credentialProvider;
+    private CredentialResolver credentialResolver;
 
     /**
      * As per Felix SCR, dynamic references should be declared as volatile.
@@ -45,36 +47,25 @@ public class AuthenticatorImpl implements Authenticator {
 
     @Override
     public boolean handleSecurity(HttpServletRequest request) {
-        Credential credential = this.credentialProvider.getCredential(request);
-        if (credential == null && this.securityDisabledPaths.contains(request.getRequestURI())) {
+        if (this.securityDisabledPaths.contains(request.getRequestURI())) {
             return true;
         }
-        if (credential == null) {
-            return false;
+        Credential credential = this.credentialResolver.resolve(request);
+        if (credential instanceof BearerTokenCredential) {
+            request.setAttribute(ATTRIBUTE_TOKEN_CREDENTIAL, credential);
+            return true;
         }
-        CredentialValidationOutcome outcome = this.identityStores.stream()
-                .sorted(Comparator.comparingInt(IdentityStore::priority).reversed())
-                .peek(store -> LOGGER.info("Asking credential validation from IdentityStore: {}", store.getName()))
-                .filter(store -> store.canValidate(credential))
-                .map(store -> store.validate(credential))
-                .findFirst()
-                .orElse(null);
-        credential.clear();
-        if (outcome == null || outcome == INVALID_OUTCOME || outcome == NOT_VALIDATED_OUTCOME) {
-            return false;
-        }
-        request.setAttribute("", "");
-        return true;
+        return false;
     }
 
     @Override
     public void finishSecurity(HttpServletRequest request) {
-
+        request.removeAttribute(ATTRIBUTE_TOKEN_CREDENTIAL);
     }
 
     @Override
     public CredentialValidationOutcome login(HttpServletRequest request, HttpServletResponse response) {
-        Credential credential = this.credentialProvider.getCredential(request);
+        Credential credential = this.credentialResolver.resolve(request);
         if (credential == null) {
             return NOT_VALIDATED_OUTCOME;
         }
@@ -84,11 +75,8 @@ public class AuthenticatorImpl implements Authenticator {
                 .filter(store -> store.canValidate(credential))
                 .map(store -> store.validate(credential))
                 .findFirst()
-                .orElse(null);
+                .orElse(INVALID_OUTCOME);
         credential.clear();
-        if (outcome == null || outcome == INVALID_OUTCOME || outcome == NOT_VALIDATED_OUTCOME) {
-
-        }
         return outcome;
     }
 

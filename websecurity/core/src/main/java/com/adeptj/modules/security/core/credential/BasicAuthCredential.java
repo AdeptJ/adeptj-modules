@@ -28,9 +28,4 @@ public class BasicAuthCredential implements Credential {
     public String getCredential() {
         return credential;
     }
-
-    @Override
-    public void clear() {
-        this.credential = null;
-    }
 }
