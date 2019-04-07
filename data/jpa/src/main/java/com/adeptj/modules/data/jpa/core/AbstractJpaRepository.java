@@ -683,6 +683,13 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         return result;
     }
 
+    /**
+     * This method does nothing, sub class can override this method to do some stuff before underlying EntityManagerFactory is closed.
+     */
+    @Override
+    public void onClose() {
+    }
+
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }

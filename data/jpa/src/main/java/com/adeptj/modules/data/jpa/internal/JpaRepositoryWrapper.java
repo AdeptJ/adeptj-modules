@@ -29,7 +29,6 @@ import org.eclipse.persistence.jpa.PersistenceProvider;
 import javax.persistence.EntityManagerFactory;
 import java.lang.reflect.Proxy;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 
@@ -62,10 +61,7 @@ class JpaRepositoryWrapper {
     void disposeJpaRepository() {
         JpaUtil.closeEntityManagerFactory(this.emf);
         this.emf = null;
-        if (this.repository != null) {
-            this.repository.setEntityManagerFactory(null);
-            this.repository = null;
-        }
+        this.repository.setEntityManagerFactory(null);
     }
 
     void initEntityManagerFactory(Map<String, Object> properties) {
@@ -79,20 +75,5 @@ class JpaRepositoryWrapper {
                 new Class[]{EntityManagerFactory.class},
                 new EntityManagerFactoryInvocationHandler(this.emf));
         this.repository.setEntityManagerFactory(emfProxy);
-    }
-
-    // <------------------ Generated ------------------->
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JpaRepositoryWrapper that = (JpaRepositoryWrapper) o;
-        return Objects.equals(this.persistenceUnit, that.persistenceUnit);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.persistenceUnit);
     }
 }

@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.ValidationMode;
-import javax.sql.DataSource;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
 /**
- * JpaRepositoryManager.
+ * Manages {@link javax.persistence.EntityManagerFactory} and sets it to the {@link JpaRepository} implementation.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -73,18 +72,21 @@ public class JpaRepositoryManager {
     @Activate
     public void start(EntityManagerFactoryConfig config) {
         Validate.validState(this.repositoryWrapper != null, "JpaRepositoryWrapper must not be null!!");
+        String persistenceUnit = config.persistenceUnit();
+        Validate.validState(StringUtils.equals(this.repositoryWrapper.getPersistenceUnit(), persistenceUnit),
+                String.format("JpaRepository [%s]'s service property [%s] must be equal to EntityManagerFactoryConfig#persistenceUnit!!",
+                        this.repositoryWrapper.getJpaRepository(), JPA_UNIT_NAME));
         try {
-            Validate.isTrue(StringUtils.isNotEmpty(config.persistenceUnit()), "PersistenceUnit name can't be blank!!");
-            DataSource dataSource = this.dataSourceService.getDataSource(config.dataSourceName());
+            Validate.isTrue(StringUtils.isNotEmpty(persistenceUnit), "PersistenceUnit name can't be blank!!");
             Map<String, Object> jpaProperties = JpaProperties.from(config);
-            jpaProperties.put(NON_JTA_DATASOURCE, dataSource);
+            jpaProperties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
             ValidationMode validationMode = ValidationMode.valueOf(config.validationMode());
             if (validationMode == AUTO || validationMode == CALLBACK) {
                 jpaProperties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
             }
-            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", config.persistenceUnit());
+            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
             this.repositoryWrapper.initEntityManagerFactory(jpaProperties);
-            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", config.persistenceUnit());
+            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             // Throw exception so that SCR won't register the component instance.
@@ -94,11 +96,16 @@ public class JpaRepositoryManager {
 
     @Deactivate
     public void stop(EntityManagerFactoryConfig config) {
+        try {
+            this.repositoryWrapper.getJpaRepository().onClose();
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
         this.repositoryWrapper.disposeJpaRepository();
         LOGGER.info("Closed EntityManagerFactory for PU [{}]", config.persistenceUnit());
     }
 
-    // <<----------------------------------- JpaRepository Lifecycle Listener ------------------------------------>>
+    // <<----------------------------------- JpaRepository Lifecycle ------------------------------------>>
 
     @Reference(service = JpaRepository.class)
     public void bindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
