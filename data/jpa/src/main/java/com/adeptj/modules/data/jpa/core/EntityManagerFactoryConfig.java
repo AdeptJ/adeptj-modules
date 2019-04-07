@@ -43,18 +43,15 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_ONLY
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 
 /**
- * EntityManagerFactory configurations.
+ * EntityManagerFactory configuration.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ JPA EntityManagerFactory Configurations",
-        description = "EntityManagerFactory(EclipseLink) Configurations"
+        name = "AdeptJ JPA EntityManagerFactory Configuration",
+        description = "EntityManagerFactory(EclipseLink) Configuration"
 )
 public @interface EntityManagerFactoryConfig {
-
-    // name hint is a non editable property
-    String webconsole_configurationFactory_nameHint() default "JPA PersistenceUnit: {" + "persistenceUnit" + "}"; // NOSONAR
 
     @AttributeDefinition(
             name = "PersistenceUnit Name",
@@ -71,7 +68,7 @@ public @interface EntityManagerFactoryConfig {
     @AttributeDefinition(
             name = "Non JTA DataSource",
             description = "DataSource name for binding to this EntityManagerFactory, " +
-                    "please configure the DataSource using [AdeptJ JDBC DataSource Configurations]."
+                    "please configure the DataSource using [AdeptJ JDBC DataSource Configuration]."
     )
     String dataSourceName();
 

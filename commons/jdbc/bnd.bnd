@@ -26,7 +26,8 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Export-Package: com.adeptj.modules.commons.jdbc
+Export-Package: com.adeptj.modules.commons.jdbc.service, \
+                com.adeptj.modules.commons.jdbc.exception
 
 Bundle-Name: ${project.name}
 

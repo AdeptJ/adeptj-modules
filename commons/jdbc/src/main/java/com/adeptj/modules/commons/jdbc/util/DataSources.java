@@ -18,8 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.internal;
+package com.adeptj.modules.commons.jdbc.util;
 
+import com.adeptj.modules.commons.jdbc.service.internal.DataSourceConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.ArrayUtils;
@@ -31,9 +32,11 @@ import java.util.stream.Stream;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class DataSources {
+public final class DataSources {
 
-    static HikariDataSource newDataSource(DataSourceConfig config) {
+    private static final String EQ = "=";
+
+    public static HikariDataSource newDataSource(DataSourceConfig config) {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName(config.poolName());
         hikariConfig.setJdbcUrl(config.jdbcUrl());
@@ -47,8 +50,8 @@ final class DataSources {
         hikariConfig.setMinimumIdle(config.minimumIdle());
         hikariConfig.setMaximumPoolSize(config.maximumPoolSize());
         Stream.of(config.dataSourceProperties())
-                .filter(row -> ArrayUtils.getLength(row.split("=")) == 2)
-                .map(row -> row.split("="))
+                .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
+                .map(row -> row.split(EQ))
                 .forEach(mapping -> hikariConfig.addDataSourceProperty(mapping[0], mapping[1]));
         return new HikariDataSource(hikariConfig);
     }

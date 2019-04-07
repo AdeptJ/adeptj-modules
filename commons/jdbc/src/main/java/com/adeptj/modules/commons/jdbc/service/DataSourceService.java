@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc;
+package com.adeptj.modules.commons.jdbc.service;
 
 import org.osgi.annotation.versioning.ProviderType;
 

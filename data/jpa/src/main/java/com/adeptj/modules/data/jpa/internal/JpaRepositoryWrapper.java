@@ -77,7 +77,7 @@ class JpaRepositoryWrapper {
         Validate.validState(this.emf != null, "EntityManagerFactory is null, probably due to missing persistence.xml!!");
         EntityManagerFactory emfProxy = (EntityManagerFactory) Proxy.newProxyInstance(this.getClass().getClassLoader(),
                 new Class[]{EntityManagerFactory.class},
-                new EntityManagerFactoryProxyHandler(this.emf));
+                new EntityManagerFactoryInvocationHandler(this.emf));
         this.repository.setEntityManagerFactory(emfProxy);
     }
 

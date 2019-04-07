@@ -18,47 +18,58 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.internal;
+package com.adeptj.modules.commons.jdbc.service.internal;
 
+import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import com.adeptj.modules.commons.jdbc.exception.DataSourceConfigurationException;
+import com.adeptj.modules.commons.jdbc.util.DataSources;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Proxy;
 
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * A factory for creating {@link com.zaxxer.hikari.HikariDataSource} instances.
+ * Provides {@link com.zaxxer.hikari.HikariDataSource} as the JDBC {@link DataSource} implementation.
+ * <p>
+ * The {@link com.zaxxer.hikari.HikariDataSource} is configured by the {@link HikariDataSourceService}.
+ * <p>
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = DataSourceConfig.class, factory = true)
-@Component(service = DataSourceFactory.class, name = PID, configurationPolicy = REQUIRE)
-public class DataSourceFactory {
+@Designate(ocd = DataSourceConfig.class)
+@Component(service = DataSourceService.class, immediate = true, configurationPolicy = REQUIRE)
+public class HikariDataSourceService implements DataSourceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    static final String PID = "com.adeptj.modules.commons.jdbc.DataSource.factory";
-
-    @Reference
-    private PoolNameChecker poolNameChecker;
+    private static final String JDBC_DS_NOT_CONFIGURED_MSG = "HikariDataSource: [%s] is not configured!!";
 
     private HikariDataSource dataSource;
 
-    HikariDataSource getDataSource() {
-        return this.dataSource;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataSource getDataSource(String name) {
+        Validate.isTrue(StringUtils.isNotEmpty(name), "DataSource name can't be empty!!");
+        if (StringUtils.equals(this.dataSource.getPoolName(), name)) {
+            return (DataSource) Proxy.newProxyInstance(this.getClass().getClassLoader(),
+                    new Class[]{DataSource.class},
+                    new HikariDataSourceInvocationHandler(this.dataSource));
+        }
+        throw new IllegalStateException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, name));
     }
-
-    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
 
     /**
      * Initialize the {@link HikariDataSource} using the configuration passed.
@@ -69,11 +80,9 @@ public class DataSourceFactory {
     @Activate
     protected void start(DataSourceConfig config) {
         try {
-            String poolName = config.poolName();
-            Validate.isTrue(StringUtils.isNotEmpty(poolName), "JDBC Pool Name can't be blank!!");
-            this.poolNameChecker.checkExists(poolName);
+            Validate.isTrue(StringUtils.isNotEmpty(config.poolName()), "JDBC Pool Name can't be blank!!");
             this.dataSource = DataSources.newDataSource(config);
-            LOGGER.info("HikariDataSource: [{}] initialized!!", poolName);
+            LOGGER.info("HikariDataSource: [{}] initialized!!", config.poolName());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw new DataSourceConfigurationException(ex);
@@ -87,11 +96,9 @@ public class DataSourceFactory {
      */
     @Deactivate
     protected void stop(DataSourceConfig config) {
-        this.poolNameChecker.remove(config.poolName());
         try {
             this.dataSource.close();
             LOGGER.info("HikariDataSource: [{}] closed!!", config.poolName());
-            this.dataSource = null;
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }

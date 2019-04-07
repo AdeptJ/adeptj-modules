@@ -18,9 +18,20 @@
 ###############################################################################
 */
 
-@Capability(namespace = IMPLEMENTATION_NAMESPACE, name = "osgi.jpa", version = "1.0.0")
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.commons.jdbc.exception;
 
-import org.osgi.annotation.bundle.Capability;
+import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 
-import static org.osgi.namespace.implementation.ImplementationNamespace.IMPLEMENTATION_NAMESPACE;
+/**
+ * Thrown from {@link DataSourceService} when the DataSource is being configured in start method.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+public class DataSourceConfigurationException extends RuntimeException {
+
+    private static final long serialVersionUID = -4649854107775357466L;
+
+    public DataSourceConfigurationException(Exception ex) {
+        super(ex);
+    }
+}

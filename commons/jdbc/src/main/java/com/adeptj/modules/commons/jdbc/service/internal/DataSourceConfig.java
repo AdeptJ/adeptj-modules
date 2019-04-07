@@ -18,33 +18,33 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.internal;
+package com.adeptj.modules.commons.jdbc.service.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.AUTO_COMMIT;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.CONN_TIMEOUT;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.DATASOURCE_PROPS;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.DRIVER_CLASS_NAME;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.IDLE_TIMEOUT;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.JDBC_URL;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.MAX_LIFETIME;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.MAX_POOL_SIZE;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.MIN_IDLE;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.POOL_NAME;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.PWD;
-import static com.adeptj.modules.commons.jdbc.internal.DataSourceConstants.USERNAME;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.AUTO_COMMIT;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.CONN_TIMEOUT;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.DATASOURCE_PROPS;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.DRIVER_CLASS_NAME;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.IDLE_TIMEOUT;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.JDBC_URL;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.MAX_LIFETIME;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.MAX_POOL_SIZE;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.MIN_IDLE;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.POOL_NAME;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.PWD;
+import static com.adeptj.modules.commons.jdbc.service.internal.DataSourceConstants.USERNAME;
 import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
- * HikariDataSource configurations, few configurations defaults to MySQL DB.
+ * HikariDataSource configuration, few configurations defaults to MySQL DB.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ JDBC DataSource Configurations",
-        description = "Configurations for JDBC DataSource(HikariDataSource)."
+        name = "AdeptJ JDBC DataSource Configuration",
+        description = "Configuration for JDBC DataSource(HikariDataSource)."
 )
 public @interface DataSourceConfig {
 
@@ -65,9 +65,6 @@ public @interface DataSourceConfig {
     String JDBC_USER = "root";
 
     boolean JDBC_AUTO_COMMIT = false;
-
-    // name hint non editable property
-    String webconsole_configurationFactory_nameHint() default "JDBC DataSource: {" + "poolName" + "}"; // NOSONAR
 
     @AttributeDefinition(name = POOL_NAME, description = "DataSource Pool Name")
     String poolName();
@@ -121,7 +118,7 @@ public @interface DataSourceConfig {
 
     @AttributeDefinition(
             name = DATASOURCE_PROPS,
-            description = "Underlying JDBC data source specific properties, in key=value format, provided are for MySQL only!"
+            description = "Underlying JDBC data source specific properties, in key=value format, defaults are only for MySQL!"
     )
     String[] dataSourceProperties() default {
             "prepStmtCacheSize=250",

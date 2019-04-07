@@ -9,13 +9,18 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-class EntityManagerFactoryProxyHandler implements InvocationHandler {
+/**
+ * The {@link InvocationHandler} which prevents the close of {@link EntityManagerFactory} from client code.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+public class EntityManagerFactoryInvocationHandler implements InvocationHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final EntityManagerFactory delegate;
 
-    EntityManagerFactoryProxyHandler(EntityManagerFactory delegate) {
+    EntityManagerFactoryInvocationHandler(EntityManagerFactory delegate) {
         this.delegate = delegate;
     }
 
