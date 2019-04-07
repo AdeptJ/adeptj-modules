@@ -35,7 +35,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jjwt.version>0.10.6</jjwt.version>
     </properties>
 
     <!-- Project Information -->
@@ -182,6 +181,7 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
             <scope>compile</scope>
         </dependency>
 
