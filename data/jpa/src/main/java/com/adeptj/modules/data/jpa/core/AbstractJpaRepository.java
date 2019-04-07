@@ -35,7 +35,7 @@ import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
-import com.adeptj.modules.data.jpa.internal.JpaRepositoryManager;
+import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryLifecycle;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     /**
      * The {@link EntityManagerFactory} instance is a proxy and the lifecycle of actual instance is managed by
-     * the {@link JpaRepositoryManager} therefore consumers must not
+     * the {@link EntityManagerFactoryLifecycle} therefore consumers must not
      * attempt to create or close it on their own. It will be automatically created and closed appropriately.
      */
     protected EntityManagerFactory entityManagerFactory;
