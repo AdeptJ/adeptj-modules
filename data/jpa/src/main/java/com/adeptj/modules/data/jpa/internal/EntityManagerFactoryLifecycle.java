@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.ValidationMode;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Proxy;
 import java.util.Map;
 
 import static javax.persistence.ValidationMode.AUTO;
@@ -105,9 +104,7 @@ public class EntityManagerFactoryLifecycle {
             jpaProperties.put(CLASSLOADER, this.repository.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(persistenceUnit, jpaProperties);
             Validate.validState(this.entityManagerFactory != null, EMF_NULL_EXCEPTION_MSG);
-            this.repository.setEntityManagerFactory((EntityManagerFactory) Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                    new Class[]{EntityManagerFactory.class},
-                    new EntityManagerFactoryInvocationHandler(this.entityManagerFactory)));
+            this.repository.setEntityManagerFactory(JpaUtil.proxyEntityManagerFactory(this.entityManagerFactory));
             LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);

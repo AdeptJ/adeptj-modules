@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.data.jpa;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 /**
@@ -49,10 +53,16 @@ public final class JpaUtil {
         return emf.createEntityManager();
     }
 
-    public static void closeEntityManagerFactory(EntityManagerFactory emf) {
-        if (emf != null && emf.isOpen()) {
+    public static EntityManagerFactory proxyEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        return (EntityManagerFactory) Proxy.newProxyInstance(JpaUtil.class.getClassLoader(),
+                new Class[]{EntityManagerFactory.class},
+                new EntityManagerFactoryInvocationHandler(entityManagerFactory));
+    }
+
+    public static void closeEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
             try {
-                emf.close();
+                entityManagerFactory.close();
                 LOGGER.info("EntityManagerFactory closed!!");
             } catch (RuntimeException ex) {
                 LOGGER.error("Exception while closing EntityManagerFactory!!", ex);
@@ -60,10 +70,10 @@ public final class JpaUtil {
         }
     }
 
-    public static void closeEntityManager(EntityManager em) {
-        if (em != null && em.isOpen()) {
+    public static void closeEntityManager(EntityManager entityManager) {
+        if (entityManager != null && entityManager.isOpen()) {
             try {
-                em.close();
+                entityManager.close();
             } catch (RuntimeException ex) {
                 LOGGER.error("Exception while closing EntityManager!!", ex);
             }
@@ -84,6 +94,30 @@ public final class JpaUtil {
                 LOGGER.info("Binding JPA Query parameter: [{}] at position: [{}]", value, position);
                 query.setParameter(position, value);
             }
+        }
+    }
+
+    /**
+     * The {@link InvocationHandler} which prevents the close of {@link EntityManagerFactory} from client code.
+     *
+     * @author Rakesh.Kumar, AdeptJ
+     */
+    private static class EntityManagerFactoryInvocationHandler implements InvocationHandler {
+
+        private final EntityManagerFactory delegate;
+
+        private EntityManagerFactoryInvocationHandler(EntityManagerFactory delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            // No-op if it is a call for close method.
+            if (StringUtils.equals(method.getName(), "close")) {
+                LOGGER.warn("EntityManagerFactory#close can't be invoked by the application code!!");
+                return null;
+            }
+            return method.invoke(this.delegate, args);
         }
     }
 }
