@@ -79,12 +79,6 @@ public @interface EntityManagerFactoryConfig {
     String persistenceProviderClassName() default "org.eclipse.persistence.jpa.PersistenceProvider";
 
     @AttributeDefinition(
-            name = "EclipseLink LoggingFile",
-            description = "EclipseLink Logging File, relative to current working directory"
-    )
-    String loggingFile() default "adeptj-runtime/deployment/logs/jpa.log";
-
-    @AttributeDefinition(
             name = "JPA Properties",
             description = "JPA Properties(key=value) format"
     )
@@ -104,7 +98,7 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "Transaction Type",
-            description = "JPA Transaction Type",
+            description = "JPA Transaction Type(JTA is not supported at this moment!)",
             options = {
                     @Option(label = "RESOURCE_LOCAL", value = "RESOURCE_LOCAL"),
                     @Option(label = "JTA", value = "JTA")
@@ -127,9 +121,9 @@ public @interface EntityManagerFactoryConfig {
             name = "Entity Validation Mode",
             description = "Bean Validation Options",
             options = {
-                    @Option(label = "NONE", value = "NONE"),
                     @Option(label = "AUTO", value = "AUTO"),
-                    @Option(label = "CALLBACK", value = "CALLBACK")
+                    @Option(label = "CALLBACK", value = "CALLBACK"),
+                    @Option(label = "NONE", value = "NONE")
             })
     String validationMode() default "NONE";
 

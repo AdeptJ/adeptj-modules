@@ -37,7 +37,6 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENER
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON_STARTUP;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_FILE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
@@ -55,7 +54,6 @@ public class JpaProperties {
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
         // DEPLOY_ON_STARTUP must be a string value
         jpaProperties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
-        jpaProperties.put(LOGGING_FILE, config.loggingFile());
         jpaProperties.put(LOGGING_LEVEL, config.loggingLevel());
         jpaProperties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());
         jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());

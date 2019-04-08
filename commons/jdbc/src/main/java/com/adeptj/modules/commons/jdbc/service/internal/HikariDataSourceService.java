@@ -20,8 +20,8 @@
 
 package com.adeptj.modules.commons.jdbc.service.internal;
 
-import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 import com.adeptj.modules.commons.jdbc.exception.DataSourceConfigurationException;
+import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 import com.adeptj.modules.commons.jdbc.util.DataSources;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Proxy;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -64,9 +63,7 @@ public class HikariDataSourceService implements DataSourceService {
     public DataSource getDataSource(String name) {
         Validate.isTrue(StringUtils.isNotEmpty(name), "DataSource name can't be empty!!");
         if (StringUtils.equals(this.dataSource.getPoolName(), name)) {
-            return (DataSource) Proxy.newProxyInstance(this.getClass().getClassLoader(),
-                    new Class[]{DataSource.class},
-                    new HikariDataSourceInvocationHandler(this.dataSource));
+            return this.dataSource;
         }
         throw new IllegalStateException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, name));
     }

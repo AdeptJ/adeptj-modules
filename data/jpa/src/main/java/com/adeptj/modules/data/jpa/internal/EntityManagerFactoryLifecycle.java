@@ -104,10 +104,11 @@ public class EntityManagerFactoryLifecycle {
             properties.put(CLASSLOADER, this.repository.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(persistenceUnit, properties);
             Validate.validState(this.entityManagerFactory != null, EMF_NULL_EXCEPTION_MSG);
-            this.repository.setEntityManagerFactory(JpaUtil.proxyEntityManagerFactory(this.entityManagerFactory));
+            this.repository.setEntityManagerFactory(this.entityManagerFactory);
             LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
+            JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
             // Throw exception so that SCR won't register the component instance.
             throw new JpaBootstrapException(ex);
         }
