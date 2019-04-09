@@ -47,7 +47,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = DataSourceConfig.class)
-@Component(service = DataSourceService.class, immediate = true, configurationPolicy = REQUIRE)
+@Component(service = DataSourceService.class, configurationPolicy = REQUIRE)
 public class HikariDataSourceService implements DataSourceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -63,10 +63,12 @@ public class HikariDataSourceService implements DataSourceService {
     public DataSource getDataSource(String name) {
         Validate.isTrue(StringUtils.isNotEmpty(name), "DataSource name can't be empty!!");
         if (StringUtils.equals(this.dataSource.getPoolName(), name)) {
-            return this.dataSource;
+            return new DataSourceWrapper(this.dataSource);
         }
         throw new IllegalStateException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, name));
     }
+
+    // <<------------------------------------- OSGi Internal  -------------------------------------->>
 
     /**
      * Initialize the {@link HikariDataSource} using the configuration passed.
