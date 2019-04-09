@@ -77,9 +77,10 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * The {@link EntityManagerFactory} instance is a proxy and the lifecycle of actual instance is managed by
-     * the {@link EntityManagerFactoryLifecycle} therefore consumers must not
-     * attempt to create or close it on their own. It will be automatically created and closed appropriately.
+     * The {@link EntityManagerFactory}'s lifecycle is managed by {@link EntityManagerFactoryLifecycle}
+     * therefore consumers must not attempt to create or close it on their own.
+     * <p>
+     * It will be automatically created and closed appropriately.
      */
     protected EntityManagerFactory entityManagerFactory;
 
