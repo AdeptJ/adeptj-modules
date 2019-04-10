@@ -35,7 +35,7 @@ import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
-import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryLifecycle;
+import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryHandler;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +77,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * The {@link EntityManagerFactory}'s lifecycle is managed by {@link EntityManagerFactoryLifecycle}
+     * The {@link EntityManagerFactory}'s lifecycle is managed by {@link EntityManagerFactoryHandler}
      * therefore consumers must not attempt to create or close it on their own.
      * <p>
      * It will be automatically created and closed appropriately.

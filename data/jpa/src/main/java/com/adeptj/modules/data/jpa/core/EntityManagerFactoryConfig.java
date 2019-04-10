@@ -40,6 +40,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_DATAB
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_CREATE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_ONLY;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 
 /**
@@ -63,7 +64,7 @@ public @interface EntityManagerFactoryConfig {
             name = "Persistence XML Location",
             description = "Location of the persistence.xml file"
     )
-    String persistenceXmlLocation() default "META-INF/persistence.xml";
+    String persistenceXmlLocation() default ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 
     @AttributeDefinition(
             name = "Non JTA DataSource",

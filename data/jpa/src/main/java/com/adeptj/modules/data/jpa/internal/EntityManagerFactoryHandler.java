@@ -54,13 +54,15 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
 /**
- * Manages {@link javax.persistence.EntityManagerFactory} and sets it to the {@link JpaRepository} implementation.
+ * Handles the {@link EntityManagerFactory}'s lifecycle.
+ *
+ * Sets the {@link EntityManagerFactory} instance to the {@link JpaRepository} implementation.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = EntityManagerFactoryConfig.class)
-@Component(service = EntityManagerFactoryLifecycle.class, immediate = true, configurationPolicy = REQUIRE)
-public class EntityManagerFactoryLifecycle {
+@Component(service = EntityManagerFactoryHandler.class, immediate = true, configurationPolicy = REQUIRE)
+public class EntityManagerFactoryHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
