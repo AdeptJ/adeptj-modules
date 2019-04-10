@@ -55,7 +55,7 @@ import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
 /**
  * Handles the {@link EntityManagerFactory}'s lifecycle.
- *
+ * <p>
  * Sets the {@link EntityManagerFactory} instance to the {@link JpaRepository} implementation.
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -106,7 +106,7 @@ public class EntityManagerFactoryHandler {
             properties.put(CLASSLOADER, this.repository.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(persistenceUnit, properties);
             Validate.validState(this.entityManagerFactory != null, EMF_NULL_EXCEPTION_MSG);
-            this.repository.setEntityManagerFactory(this.entityManagerFactory);
+            this.repository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
             LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -118,12 +118,7 @@ public class EntityManagerFactoryHandler {
 
     @Deactivate
     protected void stop(EntityManagerFactoryConfig config) {
-        try {
-            this.repository.onClose();
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-        }
-        JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
+        JpaUtil.closeEntityManagerFactory(this.entityManagerFactory, this.repository);
         this.entityManagerFactory = null;
         this.repository.setEntityManagerFactory(null);
         LOGGER.info("Closed EntityManagerFactory for PU [{}]", config.persistenceUnit());

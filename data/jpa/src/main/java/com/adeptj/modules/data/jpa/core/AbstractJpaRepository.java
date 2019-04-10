@@ -82,14 +82,14 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      * <p>
      * It will be automatically created and closed appropriately.
      */
-    protected EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public <T extends BaseEntity> T insert(T entity) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             em.persist(entity);
@@ -107,7 +107,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @Override
     public <T extends BaseEntity> void batchInsert(List<T> entities, int batchSize) {
         Validate.isTrue(entities != null && !entities.isEmpty() && batchSize > 1, "Invalid inputs!!");
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             for (int index = 0; index < entities.size(); index++) {
@@ -134,7 +134,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @Override
     public <T extends BaseEntity> T update(T entity) {
         T updated;
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             updated = em.merge(entity);
@@ -154,7 +154,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int updateByCriteria(UpdateCriteria<T> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -181,7 +181,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> void delete(Class<T> entity, Object primaryKey) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             T entityToDelete = em.find(entity, primaryKey);
@@ -205,7 +205,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int deleteByJpaNamedQuery(CrudDTO<T> crudDTO) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             TypedQuery<T> typedQuery = em.createNamedQuery(crudDTO.getNamedQuery(), crudDTO.getEntity());
@@ -228,7 +228,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int deleteByCriteria(DeleteCriteria<T> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -254,7 +254,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> int deleteAll(Class<T> entity) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             int rowsDeleted = em.createQuery(em.getCriteriaBuilder().createCriteriaDelete(entity)).executeUpdate();
@@ -275,7 +275,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> T findById(Class<T> entity, Object primaryKey) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             return em.find(entity, primaryKey);
         } catch (Exception ex) { // NOSONAR
@@ -290,7 +290,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findByCriteria(ReadCriteria<T> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
@@ -309,7 +309,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<Tuple> findByTupleQuery(TupleQueryCriteria<T> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
@@ -332,7 +332,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecordsByCriteria(ReadCriteria<T> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
@@ -354,7 +354,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> List<T> findByJpaNamedQuery(Class<T> resultClass, String namedQuery, List<Object> posParams) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
             JpaUtil.bindQueryParams(query, posParams);
@@ -372,7 +372,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> findByNamedQuery(String namedQuery, List<Object> posParams) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             Query query = em.createNamedQuery(namedQuery);
             JpaUtil.bindQueryParams(query, posParams);
@@ -389,7 +389,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findAll(Class<T> entity) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             return em.createQuery(cq.select(cq.from(entity))).getResultList();
@@ -405,7 +405,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecords(Class<T> entity, int startPos, int maxResult) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             return em.createQuery(cq.select(cq.from(entity)))
@@ -424,7 +424,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findByJpaQuery(CrudDTO<T> crudDTO) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
             JpaUtil.bindQueryParams(query, crudDTO.getPosParams());
@@ -441,7 +441,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findPaginatedRecordsByJpaQuery(CrudDTO<T> crudDTO) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             TypedQuery<T> typedQuery = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
             JpaUtil.bindQueryParams(typedQuery, crudDTO.getPosParams());
@@ -460,7 +460,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             Root<T> root = cq.from(entity);
@@ -476,7 +476,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> findByQueryAndMapDefault(Class<T> resultClass, String nativeQuery, List<Object> posParams) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             Query query = em.createNativeQuery(nativeQuery, resultClass);
             JpaUtil.bindQueryParams(query, posParams);
@@ -494,7 +494,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> findByQueryAndMapResultSet(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
             JpaUtil.bindQueryParams(query, mappingDTO.getPosParams());
@@ -511,7 +511,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> List<T> findByQueryAndMapConstructor(Class<T> resultClass, String jpaQuery, List<Object> posParams) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             TypedQuery<T> query = em.createQuery(jpaQuery, resultClass);
             JpaUtil.bindQueryParams(query, posParams);
@@ -528,7 +528,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity, C> List<C> findByCriteriaAndMapConstructor(ConstructorCriteria<T, C> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<C> cq = cb.createQuery(criteria.getConstructorClass());
@@ -551,7 +551,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> T getScalarResultOfType(Class<T> resultClass, QueryType type, String query, List<Object> posParams) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             switch (type) {
                 case JPA:
@@ -577,7 +577,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> T getScalarResultOfType(Class<T> resultClass, String namedQuery, List<Object> posParams) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             TypedQuery<T> query = em.createNamedQuery(namedQuery, resultClass);
             JpaUtil.bindQueryParams(query, posParams);
@@ -591,7 +591,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @Override
     public Object getScalarResult(String namedQuery, List<Object> posParams) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             Query query = em.createNamedQuery(namedQuery);
             JpaUtil.bindQueryParams(query, posParams);
@@ -605,7 +605,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @Override
     public <T extends BaseEntity> Long count(Class<T> entity) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -619,7 +619,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @Override
     public Number count(String query, QueryType type) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             switch (type) {
                 case JPA:
@@ -638,7 +638,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @Override
     public Number count(String namedQuery) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             return (Number) em.createNamedQuery(namedQuery).getSingleResult();
         } catch (Exception ex) { // NOSONAR
@@ -653,7 +653,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T> T execute(JpaCallback<T> action) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             return action.doInJpa(em);
         } catch (Exception ex) { // NOSONAR
@@ -669,7 +669,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @Override
     public <T> T executeInTransaction(JpaCallback<T> action) {
         T result;
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             result = action.doInJpa(em);
@@ -689,6 +689,10 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public void onClose() {
+    }
+
+    protected EntityManagerFactory getEntityManagerFactory() {
+        return this.entityManagerFactory;
     }
 
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {

@@ -42,11 +42,11 @@ public final class JpaUtil {
     private JpaUtil() {
     }
 
-    public static EntityManager createEntityManager(EntityManagerFactory emf) {
-        if (emf == null) {
-            throw new IllegalStateException("EntityManagerFactory is null!!");
+    public static EntityManager createEntityManager(EntityManagerFactory entityManagerFactory) {
+        if (entityManagerFactory == null) {
+            throw new IllegalArgumentException("EntityManagerFactory is null!!");
         }
-        return emf.createEntityManager();
+        return entityManagerFactory.createEntityManager();
     }
 
     public static void closeEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
@@ -59,6 +59,16 @@ public final class JpaUtil {
             }
         }
     }
+
+    public static void closeEntityManagerFactory(EntityManagerFactory entityManagerFactory, JpaRepository repository) {
+        try {
+            repository.onClose();
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        closeEntityManagerFactory(entityManagerFactory);
+    }
+
 
     public static void closeEntityManager(EntityManager entityManager) {
         if (entityManager != null && entityManager.isOpen()) {

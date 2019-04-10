@@ -22,8 +22,6 @@ package com.adeptj.modules.data.jpa;
 
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 
-import javax.persistence.EntityManagerFactory;
-
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
  * <p>
@@ -43,12 +41,7 @@ import javax.persistence.EntityManagerFactory;
  */
 public class EclipseLinkRepository extends AbstractJpaRepository {
 
-    @Override
-    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        super.entityManagerFactory = entityManagerFactory;
-    }
-
     void closeEntityManagerFactory() {
-        JpaUtil.closeEntityManagerFactory(super.entityManagerFactory);
+        JpaUtil.closeEntityManagerFactory(super.getEntityManagerFactory());
     }
 }
