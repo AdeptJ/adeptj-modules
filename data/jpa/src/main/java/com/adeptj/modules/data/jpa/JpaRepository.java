@@ -375,6 +375,4 @@ public interface JpaRepository {
      * @return a result object returned by the action, or null
      */
     <T> T executeInTransaction(JpaCallback<T> action);
-
-    void onClose();
 }

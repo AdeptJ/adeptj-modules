@@ -54,19 +54,17 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
 /**
- * Handles the {@link EntityManagerFactory}'s lifecycle.
+ * Manages {@link EntityManagerFactory}'s lifecycle.
  * <p>
  * Sets the {@link EntityManagerFactory} instance to the {@link JpaRepository} implementation.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = EntityManagerFactoryConfig.class)
-@Component(service = EntityManagerFactoryHandler.class, immediate = true, configurationPolicy = REQUIRE)
-public class EntityManagerFactoryHandler {
+@Component(service = EntityManagerFactoryLifecycle.class, immediate = true, configurationPolicy = REQUIRE)
+public class EntityManagerFactoryLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final String EMF_NULL_EXCEPTION_MSG = "EntityManagerFactory is null, probably due to missing persistence.xml!!";
 
     private static final String PU_NOT_MATCHED_EXCEPTION_MSG = "JpaRepository [%s]'s service property [%s] must be equal to " +
             "EntityManagerFactoryConfig#persistenceUnit!!";
@@ -105,12 +103,10 @@ public class EntityManagerFactoryHandler {
             // otherwise EclipseLink may not be able to create the EntityManagerFactory.
             properties.put(CLASSLOADER, this.repository.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(persistenceUnit, properties);
-            Validate.validState(this.entityManagerFactory != null, EMF_NULL_EXCEPTION_MSG);
             this.repository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
             LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
-        } catch (Exception ex) { // NOSONAR
+        } catch (RuntimeException ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
-            JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
             // Throw exception so that SCR won't register the component instance.
             throw new JpaBootstrapException(ex);
         }
@@ -118,7 +114,7 @@ public class EntityManagerFactoryHandler {
 
     @Deactivate
     protected void stop(EntityManagerFactoryConfig config) {
-        JpaUtil.closeEntityManagerFactory(this.entityManagerFactory, this.repository);
+        JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
         this.entityManagerFactory = null;
         this.repository.setEntityManagerFactory(null);
         LOGGER.info("Closed EntityManagerFactory for PU [{}]", config.persistenceUnit());
@@ -135,7 +131,7 @@ public class EntityManagerFactoryHandler {
             LOGGER.info("Binding JpaRepository for PU [{}]", this.repositoryPersistenceUnit);
             // Not doing any type check purposely, the JpaRepository must be a subclass of AbstractJpaRepository.
             this.repository = (AbstractJpaRepository) repository;
-        } catch (Exception ex) { // NOSONAR
+        } catch (IllegalArgumentException | ClassCastException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaRepositoryBindException(ex);
         }

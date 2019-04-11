@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
+import org.apache.commons.lang3.Validate;
+
 import javax.persistence.Cache;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -39,22 +41,34 @@ import java.util.Map;
  */
 public class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
+    private static final String EMF_NULL_EXCEPTION_MSG = "EntityManagerFactory is null, probably due to missing persistence.xml!!";
+
     private EntityManagerFactory delegate;
 
     EntityManagerFactoryWrapper(EntityManagerFactory delegate) {
+        Validate.validState(delegate != null, EMF_NULL_EXCEPTION_MSG);
         this.delegate = delegate;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EntityManager createEntityManager() {
         return this.delegate.createEntityManager();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EntityManager createEntityManager(Map map) {
         return this.delegate.createEntityManager(map);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
         return this.delegate.createEntityManager(synchronizationType);
@@ -65,51 +79,81 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
         return this.delegate.createEntityManager(synchronizationType, map);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CriteriaBuilder getCriteriaBuilder() {
         return this.delegate.getCriteriaBuilder();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Metamodel getMetamodel() {
         return this.delegate.getMetamodel();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOpen() {
         return this.delegate.isOpen();
     }
 
+    /**
+     * Not allowing the consumer code to invoke the close on managed EntityManagerFactory.
+     */
     @Override
     public void close() {
         throw new IllegalStateException("Managed EntityManagerFactory can't be closed by consumer code!!");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, Object> getProperties() {
         return this.delegate.getProperties();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Cache getCache() {
         return this.delegate.getCache();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
         return this.delegate.getPersistenceUnitUtil();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addNamedQuery(String name, Query query) {
         this.delegate.addNamedQuery(name, query);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> T unwrap(Class<T> cls) {
         return this.delegate.unwrap(cls);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
         this.delegate.addNamedEntityGraph(graphName, entityGraph);
