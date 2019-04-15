@@ -42,20 +42,21 @@ import org.slf4j.Logger;
 @Component(immediate = true)
 public class LogListenerManager {
 
-    @Reference
-    private LogReaderService logReaderService;
+    private LogListener logListener;
 
-    private final LogListener logListener = new LogEntryConsumer();
+    @Reference
+    private LogReaderService readerService;
 
     // Component Lifecycle Methods
 
     @Activate
     protected void start() {
-        this.logReaderService.addLogListener(this.logListener);
+        this.logListener = new LogEntryConsumer();
+        this.readerService.addLogListener(this.logListener);
     }
 
     @Deactivate
     protected void stop() {
-        this.logReaderService.removeLogListener(this.logListener);
+        this.readerService.removeLogListener(this.logListener);
     }
 }

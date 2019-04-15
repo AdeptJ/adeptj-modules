@@ -29,6 +29,7 @@ import org.osgi.service.metatype.annotations.Designate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 import java.util.stream.Stream;
 
 import static javax.servlet.http.HttpServletResponse.SC_FOUND;
@@ -50,7 +51,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
 
     private String[] roles;
 
-    private String redirectURI;
+    private String logoutURI;
 
     // <------------------------ WebConsoleSecurityProvider2 ---------------------------->
 
@@ -76,7 +77,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
         request.removeAttribute(REMOTE_USER);
         request.removeAttribute(AUTHORIZATION);
         response.setStatus(SC_FOUND);
-        response.setHeader(HEADER_LOC, this.redirectURI);
+        response.setHeader(HEADER_LOC, this.logoutURI);
     }
 
     // <---------------------- Below two methods from WebConsoleSecurityProvider never get called -------------------->
@@ -86,7 +87,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
      */
     @Override
     public Object authenticate(String username, String password) {
-        return ADMIN;
+        return (Principal) () -> ADMIN;
     }
 
     /**
@@ -103,7 +104,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
     @Modified
     protected void start(WebConsoleSecurityConfig config) {
         this.roles = config.roles();
-        this.redirectURI = config.redirectURI();
+        this.logoutURI = config.logoutURI();
     }
 
 }

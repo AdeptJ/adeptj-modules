@@ -36,7 +36,7 @@ import static com.adeptj.modules.webconsole.security.WebConsoleConfigurationPlug
  * @author Rakesh.Kumar, AdeptJ
  */
 @ConfigurationPluginProperties(cm_target = OSGI_MGR_PID, service_cmRanking = 100)
-@Component()
+@Component(immediate = true)
 public class WebConsoleConfigurationPlugin implements ConfigurationPlugin {
 
     private static final String CFG_PWD = "password";
