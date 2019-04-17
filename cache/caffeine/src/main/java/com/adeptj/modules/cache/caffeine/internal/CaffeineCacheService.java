@@ -23,6 +23,7 @@ package com.adeptj.modules.cache.caffeine.internal;
 import com.adeptj.modules.cache.caffeine.Cache;
 import com.adeptj.modules.cache.caffeine.CacheService;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -41,7 +42,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component
 public class CaffeineCacheService implements CacheService {
 
-    private final List<CaffeineCache<?, ?>> caches = new CopyOnWriteArrayList<>();
+    private List<CaffeineCache<Object, Object>> caches = new CopyOnWriteArrayList<>();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -49,18 +50,19 @@ public class CaffeineCacheService implements CacheService {
         return (Cache<K, V>) this.caches.stream()
                 .filter(cache -> cache.getName().equals(name))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new IllegalStateException(String.format("No cache exists with name [%s]!!", name)));
     }
 
     @Reference(service = CaffeineCacheFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
     public void bindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
-        this.caches.add(new CaffeineCache<>(cacheFactory.getCacheName(), Caffeine.newBuilder()
-                .maximumSize(10_000)
-                .expireAfterWrite(10, TimeUnit.MINUTES)
+        CaffeineCacheConfig cacheConfig = cacheFactory.getCacheConfig();
+        this.caches.add(new CaffeineCache<>(cacheConfig.name(), Caffeine.newBuilder()
+                .maximumSize(cacheConfig.maximumSize())
+                .expireAfterWrite(cacheConfig.expireAfter(), TimeUnit.MINUTES)
                 .build()));
     }
 
     public void unbindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
-        this.caches.removeIf(cache -> cache.getName().equals(cacheFactory.getCacheName()));
+        this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheFactory.getCacheConfig().name()));
     }
 }

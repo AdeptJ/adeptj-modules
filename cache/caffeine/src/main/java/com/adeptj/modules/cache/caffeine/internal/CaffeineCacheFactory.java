@@ -24,10 +24,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -41,22 +37,21 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Component(service = CaffeineCacheFactory.class, name = PID, configurationPolicy = REQUIRE)
 public class CaffeineCacheFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCache.factory";
 
-    private String cacheName;
+    private CaffeineCacheConfig cacheConfig;
 
-    String getCacheName() {
-        return cacheName;
+    public CaffeineCacheConfig getCacheConfig() {
+        return cacheConfig;
     }
 
     @Activate
     protected void start(CaffeineCacheConfig config) {
-        this.cacheName = config.name();
+        this.cacheConfig = config;
     }
 
     @Deactivate
     protected void stop(CaffeineCacheConfig config) {
+        this.cacheConfig = null;
     }
 }
