@@ -20,6 +20,8 @@
 
 -dsannotations: *
 
+Export-Package: com.adeptj.modules.cache.caffeine
+
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ Cache
