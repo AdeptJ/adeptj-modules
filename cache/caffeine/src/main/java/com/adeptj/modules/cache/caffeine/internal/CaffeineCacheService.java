@@ -42,7 +42,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component
 public class CaffeineCacheService implements CacheService {
 
-    private List<CaffeineCache<Object, Object>> caches = new CopyOnWriteArrayList<>();
+    private List<CaffeineCache<?, ?>> caches = new CopyOnWriteArrayList<>();
 
     @SuppressWarnings("unchecked")
     @Override

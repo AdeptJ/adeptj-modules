@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Implementation for Cache interface, internally this uses the Caffeine cache.
@@ -48,7 +49,12 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public V get(K key) {
+    public V get(K key, Function<? super K, ? extends V> mappingFunction) {
+        return this.caffeineCache.get(key, mappingFunction);
+    }
+
+    @Override
+    public V getIfPresent(K key) {
         return this.caffeineCache.getIfPresent(key);
     }
 

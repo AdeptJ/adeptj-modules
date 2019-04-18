@@ -41,7 +41,7 @@ public class CaffeineCacheFactory {
 
     private CaffeineCacheConfig cacheConfig;
 
-    public CaffeineCacheConfig getCacheConfig() {
+    CaffeineCacheConfig getCacheConfig() {
         return cacheConfig;
     }
 

@@ -23,6 +23,7 @@ package com.adeptj.modules.cache.caffeine;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * The {@link Cache}
@@ -31,7 +32,9 @@ import java.util.Set;
  */
 public interface Cache<K, V> {
 
-    V get(K key);
+    V get(K key, Function<? super K, ? extends V> mappingFunction);
+
+    V getIfPresent(K key);
 
     Map<K, V> getAllPresent(Iterable<K> keys);
 
