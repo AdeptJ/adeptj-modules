@@ -38,7 +38,7 @@ public @interface WebConsoleSecurityConfig {
 
     String ROLE_OSGI_ADMIN = "OSGiAdmin";
 
-    String TOOLS_LOGOUT_URI = "/tools/logout";
+    String DEFAULT_LOGOUT_URI = "/admin/logout";
 
     @AttributeDefinition(
             name = "WebConsole Security Roles",
@@ -51,5 +51,5 @@ public @interface WebConsoleSecurityConfig {
             name = "Logout URI",
             description = "URI where user will be redirected after logout."
     )
-    String logoutURI() default TOOLS_LOGOUT_URI;
+    String logoutURI() default DEFAULT_LOGOUT_URI;
 }
