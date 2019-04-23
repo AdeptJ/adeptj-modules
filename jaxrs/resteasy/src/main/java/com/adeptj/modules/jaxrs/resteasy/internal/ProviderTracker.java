@@ -44,13 +44,9 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
 
     private ResteasyProviderFactory providerFactory;
 
-    ProviderTracker(BundleContext context) {
+    ProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
         super(context, OSGiUtil.anyServiceFilter(context, String.format(SERVICE_TRACKER_FORMAT, PROPERTY_PROVIDER_NAME)), null);
-    }
-
-    ProviderTracker setResteasyProviderFactory(ResteasyProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        return this;
     }
 
     /**

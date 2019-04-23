@@ -46,13 +46,9 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     private Registry registry;
 
-    ResourceTracker(BundleContext context) {
+    ResourceTracker(BundleContext context, Registry registry) {
         super(context, OSGiUtil.anyServiceFilter(context, String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME)), null);
-    }
-
-    ResourceTracker setRegistry(Registry registry) {
         this.registry = registry;
-        return this;
     }
 
     /**

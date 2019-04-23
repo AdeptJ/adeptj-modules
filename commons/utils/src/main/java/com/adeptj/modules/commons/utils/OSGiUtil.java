@@ -26,7 +26,10 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import static com.adeptj.modules.commons.utils.Constants.ASTERISK;
@@ -41,6 +44,8 @@ import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
  * @author Rakesh.Kumar, AdeptJ
  */
 public final class OSGiUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String FILTER_AND = "(&(";
 
@@ -106,17 +111,18 @@ public final class OSGiUtil {
     }
 
     public static <S, T> void close(ServiceTracker<S, T> tracker) {
-        if (tracker != null) {
+        if (tracker != null && !tracker.isEmpty()) {
             tracker.close();
         }
     }
 
     public static <S, T> void closeQuietly(ServiceTracker<S, T> tracker) {
-        if (tracker != null) {
+        if (tracker != null && !tracker.isEmpty()) {
             try {
                 tracker.close();
+                LOGGER.info("ServiceTracker [{}] closed!!", tracker);
             } catch (Exception ex) { // NOSONAR
-                // Ignore, anyway Framework is managing it as the Tracked service is being removed from service registry.
+                LOGGER.error(ex.getMessage(), ex);
             }
         }
     }
