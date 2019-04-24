@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -76,9 +75,9 @@ public class ResteasyLifecycle {
     private ValidatorService validatorService;
 
     /**
-     * Bootstraps the RESTEasy Framework using this Bundle's ClassLoader as the bundleContext ClassLoader because
+     * Bootstraps the RESTEasy Framework using this Bundle's ClassLoader as the context ClassLoader because
      * we need to find the providers specified in the file [META-INF/services/javax.ws.rs.Providers] file
-     * which will not be visible to the original bundleContext ClassLoader which is the application ClassLoader itself.
+     * which will not be visible to the original context ClassLoader which is the application ClassLoader itself.
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
@@ -87,8 +86,8 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyDispatcher = new ResteasyServletDispatcher();
-                this.resteasyDispatcher.bootstrap(servletConfig, Arrays.asList(this.config.blacklistedProviders()));
+                this.resteasyDispatcher = new ResteasyServletDispatcher(this.config.blacklistedProviders());
+                this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))

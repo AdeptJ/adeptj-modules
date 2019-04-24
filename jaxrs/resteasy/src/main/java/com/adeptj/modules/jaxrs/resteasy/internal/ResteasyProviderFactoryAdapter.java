@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -28,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -45,11 +45,11 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     private static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
 
-    private final List<String> blacklistedProviders;
+    private final String[] blacklistedProviders;
 
     private final Set<Object> providers;
 
-    ResteasyProviderFactoryAdapter(List<String> blacklistedProviders) throws ServletException {
+    ResteasyProviderFactoryAdapter(String[] blacklistedProviders) throws ServletException {
         this.blacklistedProviders = blacklistedProviders;
         this.providers = new CopyOnWriteArraySet<>();
         // 27.03.2019 - Using reflection as the field is made private in 4.0.0.RC1, it was protected earlier.
@@ -73,7 +73,7 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
     @SuppressWarnings("rawtypes")
     @Override
     public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
-        if (this.blacklistedProviders.contains(provider.getName())) {
+        if (ArrayUtils.contains(this.blacklistedProviders, provider.getName())) {
             LOGGER.info("Provider [{}] is blacklisted!!", provider);
             return;
         }

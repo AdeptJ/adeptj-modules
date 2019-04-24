@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 
@@ -58,11 +57,18 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     private transient ResteasyDeployment deployment;
 
-    void bootstrap(ServletConfig servletConfig, List<String> blacklistedProviders) throws ServletException {
+    private transient String[] blacklistedProviders;
+
+    ResteasyServletDispatcher(String[] blacklistedProviders) {
+        this.blacklistedProviders = blacklistedProviders;
+    }
+
+    @Override
+    public void init(ServletConfig servletConfig) throws ServletException {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
         servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
-        this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(blacklistedProviders));
+        this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
         this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         servletConfig.getServletContext().setAttribute(RESTEASY_DEPLOYMENT, this.deployment);
