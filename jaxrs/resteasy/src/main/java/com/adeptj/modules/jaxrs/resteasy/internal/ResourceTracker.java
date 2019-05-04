@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.PROPERTY_RESOURCE_NAME;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.SERVICE_TRACKER_FORMAT;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESOURCE_TRACKER_FILTER;
 
 /**
  * ResourceTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS &#064;Path
@@ -47,7 +46,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
     private Registry registry;
 
     ResourceTracker(BundleContext context, Registry registry) {
-        super(context, OSGiUtil.anyServiceFilter(context, String.format(SERVICE_TRACKER_FORMAT, PROPERTY_RESOURCE_NAME)), null);
+        super(context, OSGiUtil.anyServiceFilter(context, RESOURCE_TRACKER_FILTER), null);
         this.registry = registry;
     }
 

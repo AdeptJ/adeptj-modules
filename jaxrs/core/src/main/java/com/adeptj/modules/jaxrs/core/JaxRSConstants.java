@@ -37,8 +37,4 @@ public final class JaxRSConstants {
 
     public static final String REQ_PATH_ATTR = "REQUEST_PATH";
 
-    public static final String PROPERTY_PROVIDER_NAME = "osgi.jaxrs.provider.name";
-
-    public static final String PROPERTY_RESOURCE_NAME = "osgi.jaxrs.resource.name";
-
 }

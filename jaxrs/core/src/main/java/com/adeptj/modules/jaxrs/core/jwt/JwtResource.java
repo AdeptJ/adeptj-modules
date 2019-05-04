@@ -114,7 +114,7 @@ public class JwtResource {
         return Response.ok("Verified subject: " + securityContext.getUserPrincipal()).build();
     }
 
-    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
+    // <<-------------------------------------------- OSGi INTERNAL ---------------------------------------------->>
 
     @Modified
     @Activate
