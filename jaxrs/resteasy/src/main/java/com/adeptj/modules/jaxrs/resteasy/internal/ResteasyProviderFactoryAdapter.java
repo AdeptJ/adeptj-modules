@@ -21,17 +21,13 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * The {@link ResteasyProviderFactory} adapter sets the field providerInstances in ResteasyProviderFactoryImpl which is used in adding
@@ -43,31 +39,10 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String FIELD_PROVIDER_INSTANCES = "providerInstances";
-
     private final String[] blacklistedProviders;
 
-    private final Set<Object> providers;
-
-    ResteasyProviderFactoryAdapter(String[] blacklistedProviders) throws ServletException {
+    ResteasyProviderFactoryAdapter(String[] blacklistedProviders) {
         this.blacklistedProviders = blacklistedProviders;
-        this.providers = new CopyOnWriteArraySet<>();
-        // 27.03.2019 - Using reflection as the field is made private in 4.0.0.RC1, it was protected earlier.
-        try {
-            FieldUtils.writeField(this, FIELD_PROVIDER_INSTANCES, this.providers, true);
-        } catch (IllegalAccessException iae) {
-            throw new ServletException(iae);
-        }
-    }
-
-    /**
-     * See class header for description.
-     *
-     * @return the providers reference.
-     */
-    @Override
-    public Set<Object> getProviderInstances() {
-        return this.providers;
     }
 
     @SuppressWarnings("rawtypes")
