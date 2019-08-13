@@ -44,7 +44,9 @@ public final class SecurityConstants {
 
     public static final String AUTH_SCHEME_BASIC = "Basic";
 
-    public static final String HEADER_AUTHORIZATION = "AUTHORIZATION";
+    public static final String HEADER_AUTHORIZATION = "Authorization";
 
     public static final String ATTRIBUTE_TOKEN_CREDENTIAL = ".TOKEN_CREDENTIAL";
+
+    public static final String KEY_REQUEST_ID = "REQ_ID";
 }

@@ -24,15 +24,18 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.whiteboard.Preprocessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.UUID;
+
+import static com.adeptj.modules.security.core.SecurityConstants.KEY_REQUEST_ID;
 
 /**
  * Logs the unhandled exceptions.
@@ -48,14 +51,18 @@ public class ExceptionLogger implements Preprocessor {
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) resp;
-        LOGGER.debug(PROCESSING_REQUEST_MSG, request.getMethod(), request.getRequestURI());
+        if (LOGGER.isDebugEnabled()) {
+            HttpServletRequest request = (HttpServletRequest) req;
+            LOGGER.debug(PROCESSING_REQUEST_MSG, request.getMethod(), request.getRequestURI());
+        }
         try {
-            chain.doFilter(request, response);
+            MDC.put(KEY_REQUEST_ID, UUID.randomUUID().toString());
+            chain.doFilter(req, resp);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
+        } finally {
+            MDC.remove(KEY_REQUEST_ID);
         }
     }
 }
