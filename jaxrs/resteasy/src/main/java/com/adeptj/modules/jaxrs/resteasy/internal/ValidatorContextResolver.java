@@ -24,6 +24,7 @@ import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 import javax.annotation.Priority;
 import javax.validation.ValidatorFactory;
+import javax.validation.executable.ExecutableType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import java.util.EnumSet;
@@ -43,21 +44,16 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
 
     static final int PRIORITY = 4500;
 
-    private GeneralValidator validator;
-
-    private final ValidatorFactory validatorFactory;
+    private final GeneralValidator validator;
 
     ValidatorContextResolver(ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
+        EnumSet<ExecutableType> executableTypes = EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS);
+        this.validator = new GeneralValidatorImpl(validatorFactory, true, executableTypes);
     }
 
     @Override
     public GeneralValidator getContext(Class<?> type) {
-        // Not doing the type check of passed Class object as RESTEasy passes null while processing resource methods
-        // at bootstrap time.
-        if (this.validator == null) {
-            this.validator = new GeneralValidatorImpl(this.validatorFactory, true, EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS));
-        }
+        // Not doing the type check of passed Class object as RESTEasy passes null while processing resource methods at bootstrap time.
         return this.validator;
     }
 }
