@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <eclipselink.version>2.7.5</eclipselink.version>
+        <eclipselink.version>2.7.6</eclipselink.version>
     </properties>
 
     <!-- Project Information -->
