@@ -78,9 +78,7 @@ public class UsernamePasswordCredential implements Credential {
         }
         char[] temp = this.password;
         this.password = EMPTY_CHAR_ARRAY;
-        for (int i = 0; i < temp.length; i++) {
-            temp[i] = 0x00;
-        }
+        Arrays.fill(temp, (char) 0x00);
     }
 
     // <---------------- Generated ----------------->

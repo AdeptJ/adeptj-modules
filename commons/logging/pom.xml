@@ -70,8 +70,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <compilerArgument>-parameters</compilerArgument>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
 
