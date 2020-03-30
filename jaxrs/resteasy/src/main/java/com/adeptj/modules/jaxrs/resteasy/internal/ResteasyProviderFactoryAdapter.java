@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The {@link ResteasyProviderFactory} adapter sets the field providerInstances in ResteasyProviderFactoryImpl which is used in adding
@@ -53,5 +54,10 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
             return;
         }
         super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
+    }
+
+    @Override
+    public Set<Object> getProviderInstances() {
+        return super.providerInstances;
     }
 }
