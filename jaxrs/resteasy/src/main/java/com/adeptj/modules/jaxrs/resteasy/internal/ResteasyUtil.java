@@ -23,9 +23,11 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 
+import javax.servlet.ServletConfig;
 import java.util.Arrays;
 
 import static com.adeptj.modules.commons.utils.Constants.COMMA;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 
 /**
  * Utilities for RESTEasy bootstrap process.
@@ -46,5 +48,9 @@ final class ResteasyUtil {
         corsFilter.setAllowedHeaders(String.join(COMMA, config.allowedHeaders()));
         corsFilter.getAllowedOrigins().addAll(Arrays.asList(config.allowedOrigins()));
         return corsFilter;
+    }
+
+    static void clearResteasyDeployment(ServletConfig servletConfig) {
+        servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
     }
 }

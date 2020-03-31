@@ -115,7 +115,7 @@ public class ResteasyLifecycle {
      */
     void stop(ServletConfig servletConfig) {
         this.resteasyDispatcher.destroy();
-        servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
+        ResteasyUtil.clearResteasyDeployment(servletConfig);
         LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);
         OSGiUtil.closeQuietly(this.providerTracker);
         OSGiUtil.closeQuietly(this.resourceTracker);

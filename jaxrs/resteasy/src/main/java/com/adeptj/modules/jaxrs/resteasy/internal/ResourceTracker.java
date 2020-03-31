@@ -43,7 +43,7 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private Registry registry;
+    private final Registry registry;
 
     ResourceTracker(BundleContext context, Registry registry) {
         super(context, OSGiUtil.anyServiceFilter(context, RESOURCE_TRACKER_FILTER), null);

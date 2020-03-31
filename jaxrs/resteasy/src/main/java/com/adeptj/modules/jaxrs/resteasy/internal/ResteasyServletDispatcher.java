@@ -66,7 +66,7 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
-        servletConfig.getServletContext().removeAttribute(RESTEASY_DEPLOYMENT);
+        ResteasyUtil.clearResteasyDeployment(servletConfig);
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
         this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
         this.deployment.start();

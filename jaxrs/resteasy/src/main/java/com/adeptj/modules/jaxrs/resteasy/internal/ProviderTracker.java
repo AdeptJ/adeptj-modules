@@ -41,7 +41,7 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private ResteasyProviderFactory providerFactory;
+    private final ResteasyProviderFactory providerFactory;
 
     ProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
         super(context, OSGiUtil.anyServiceFilter(context, PROVIDER_TRACKER_FILTER), null);
