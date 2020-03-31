@@ -46,7 +46,6 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
         this.blacklistedProviders = blacklistedProviders;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
         if (ArrayUtils.contains(this.blacklistedProviders, provider.getName())) {
