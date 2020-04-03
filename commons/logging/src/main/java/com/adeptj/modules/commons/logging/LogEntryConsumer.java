@@ -33,10 +33,13 @@ import org.slf4j.LoggerFactory;
  */
 public class LogEntryConsumer implements LogListener {
 
-    private static final String OSGI_LOGGER_NAME = "com.adeptj.modules.commons.logging.osgi.Logger";
+    private static final String LOGGER_NAME = "com.adeptj.modules.commons.logging.osgi.Logger";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OSGI_LOGGER_NAME);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LOGGER_NAME);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void logged(LogEntry entry) {
         switch (entry.getLogLevel()) {
@@ -47,7 +50,9 @@ public class LogEntryConsumer implements LogListener {
                 LOGGER.warn(entry.getMessage());
                 break;
             case DEBUG:
-                LOGGER.debug(entry.getMessage());
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(entry.getMessage());
+                }
                 break;
             default:
                 // do nothing, we are not interested in other log levels.
