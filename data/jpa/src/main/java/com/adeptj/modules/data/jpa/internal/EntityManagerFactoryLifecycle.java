@@ -73,7 +73,7 @@ public class EntityManagerFactoryLifecycle {
 
     private EntityManagerFactory entityManagerFactory;
 
-    private AbstractJpaRepository repository;
+    private AbstractJpaRepository jpaRepository;
 
     @Reference
     private DataSourceService dataSourceService;
@@ -85,11 +85,11 @@ public class EntityManagerFactoryLifecycle {
 
     @Activate
     protected void start(EntityManagerFactoryConfig config) {
-        Validate.validState(this.repository != null, "JpaRepository must not be null!!");
+        Validate.validState(this.jpaRepository != null, "JpaRepository must not be null!!");
         String persistenceUnit = config.persistenceUnit();
         Validate.isTrue(StringUtils.isNotEmpty(persistenceUnit), "PersistenceUnit name can't be empty!!");
         Validate.validState(StringUtils.equals(this.repositoryPersistenceUnit, persistenceUnit),
-                String.format(PU_NOT_MATCHED_EXCEPTION_MSG, this.repository, JPA_UNIT_NAME));
+                String.format(PU_NOT_MATCHED_EXCEPTION_MSG, this.jpaRepository, JPA_UNIT_NAME));
         try {
             Map<String, Object> properties = JpaProperties.from(config);
             properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
@@ -98,12 +98,13 @@ public class EntityManagerFactoryLifecycle {
                 properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
             }
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
-            // Note: The ClassLoader must be the one which loaded the given JpaRepository implementation
+            // Important Note: The ClassLoader must be the one which loaded the given JpaRepository implementation
             // and it must have the visibility to the entity classes and persistence.xml/orm.xml
             // otherwise EclipseLink may not be able to create the EntityManagerFactory.
-            properties.put(CLASSLOADER, this.repository.getClass().getClassLoader());
+            LOGGER.info("Using ClassLoader of JpaRepository implementation class: [{}]", this.jpaRepository.getClass().getName());
+            properties.put(CLASSLOADER, this.jpaRepository.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(persistenceUnit, properties);
-            this.repository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
+            this.jpaRepository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
             LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
         } catch (RuntimeException ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -114,23 +115,24 @@ public class EntityManagerFactoryLifecycle {
 
     @Deactivate
     protected void stop(EntityManagerFactoryConfig config) {
+        LOGGER.info("Closing EntityManagerFactory for PU [{}]", config.persistenceUnit());
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
         this.entityManagerFactory = null;
-        this.repository.setEntityManagerFactory(null);
-        LOGGER.info("Closed EntityManagerFactory for PU [{}]", config.persistenceUnit());
+        this.jpaRepository.setEntityManagerFactory(null);
+        this.jpaRepository = null;
     }
 
     // <<----------------------------------- JpaRepository Bind ------------------------------------>>
 
     @Reference(service = JpaRepository.class)
-    protected void bindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
+    protected void bindJpaRepository(JpaRepository jpaRepository, Map<String, Object> properties) {
         this.repositoryPersistenceUnit = (String) properties.get(JPA_UNIT_NAME);
         try {
             Validate.isTrue(StringUtils.isNotEmpty(this.repositoryPersistenceUnit),
-                    String.format("%s must specify the [%s] service property!!", repository, JPA_UNIT_NAME));
+                    String.format("%s must specify the [%s] service property!!", jpaRepository, JPA_UNIT_NAME));
             LOGGER.info("Binding JpaRepository for PU [{}]", this.repositoryPersistenceUnit);
             // Not doing any type check purposely, the JpaRepository must be a subclass of AbstractJpaRepository.
-            this.repository = (AbstractJpaRepository) repository;
+            this.jpaRepository = (AbstractJpaRepository) jpaRepository;
         } catch (IllegalArgumentException | ClassCastException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaRepositoryBindException(ex);

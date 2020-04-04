@@ -77,11 +77,12 @@ public final class JpaUtil {
      * @param posParams positional parameters
      */
     public static void bindQueryParams(Query query, List<Object> posParams) {
-        if (posParams != null) {
+        if (posParams != null && !posParams.isEmpty()) {
             for (int index = 0; index < posParams.size(); index++) {
                 int position = index + 1;
                 Object value = posParams.get(index);
-                LOGGER.info("Binding JPA Query parameter: [{}] at position: [{}]", value, position);
+                LOGGER.debug("Binding JPA Query parameter: [{}] at position: [{}]", value, position);
+                // Query parameter index starts with 1
                 query.setParameter(position, value);
             }
         }

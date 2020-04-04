@@ -133,9 +133,10 @@ public class JwtServiceImpl implements JwtService {
         JwtClaims claims = null;
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");
-            claims = Jwts.parser()
+            claims = Jwts.parserBuilder()
                     .setSigningKey(this.keyPair.getPublic())
                     .deserializeJsonWith(this.deserializer)
+                    .build()
                     .parse(jwt, this.jwtHandler);
         } catch (Exception ex) { // NOSONAR
             // For reducing noise in the logs, set this config to true.
@@ -153,7 +154,7 @@ public class JwtServiceImpl implements JwtService {
         return claims;
     }
 
-    // <----------------------------------------------- OSGi INTERNAL ----------------------------------------------->
+    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
     @Modified
     @Activate

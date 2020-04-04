@@ -43,7 +43,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
     private static final String EMF_NULL_EXCEPTION_MSG = "EntityManagerFactory is null, probably due to missing persistence.xml!!";
 
-    private EntityManagerFactory delegate;
+    private final EntityManagerFactory delegate;
 
     EntityManagerFactoryWrapper(EntityManagerFactory delegate) {
         Validate.validState(delegate != null, EMF_NULL_EXCEPTION_MSG);
