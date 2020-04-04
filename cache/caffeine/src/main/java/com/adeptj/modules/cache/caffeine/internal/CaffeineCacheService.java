@@ -63,15 +63,14 @@ public class CaffeineCacheService implements CacheService {
     }
 
     @Override
-    public boolean invalidate(String cacheName) {
+    public void evictCache(String cacheName) {
         this.caches.stream()
                 .filter(cache -> cache.getName().equals(cacheName))
                 .forEach(CaffeineCache::clear);
-        return true;
     }
 
     @Override
-    public void invalidateAll() {
+    public void evictAllCaches() {
         this.caches.forEach(cache -> {
             try {
                 LOGGER.info("Invalidating cache: [{}]", cache.getName());
@@ -86,19 +85,19 @@ public class CaffeineCacheService implements CacheService {
 
     @Deactivate
     protected void stop() {
-        this.invalidateAll();
+        this.evictAllCaches();
         this.caches.clear();
     }
 
     @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    public void bindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheFactory) {
-        CaffeineCacheConfig cacheConfig = cacheFactory.getCacheConfig();
+    public void bindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
+        CaffeineCacheConfig cacheConfig = cacheConfigFactory.getCacheConfig();
         this.caches.add(new CaffeineCache<>(cacheConfig.cache_name(), Caffeine.from(cacheConfig.cache_spec()).build()));
     }
 
-    public void unbindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheFactory) {
-        String cacheName = cacheFactory.getCacheConfig().cache_name();
-        this.invalidate(cacheName);
+    public void unbindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
+        String cacheName = cacheConfigFactory.getCacheConfig().cache_name();
+        this.evictCache(cacheName);
         this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheName));
     }
 }

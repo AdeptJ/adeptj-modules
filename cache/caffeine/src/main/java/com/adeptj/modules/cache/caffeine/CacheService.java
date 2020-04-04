@@ -29,7 +29,7 @@ public interface CacheService {
 
     <K, V> Cache<K, V> getCache(String cacheName);
 
-    boolean invalidate(String cacheName);
+    void evictCache(String cacheName);
 
-    void invalidateAll();
+    void evictAllCaches();
 }
