@@ -18,14 +18,14 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine.internal;
+package com.adeptj.modules.cache.caffeine;
 
+import com.adeptj.modules.cache.caffeine.internal.CaffeineCacheConfig;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 
-import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheConfigFactory.PID;
+import static com.adeptj.modules.cache.caffeine.CaffeineCacheConfigFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -39,19 +39,14 @@ public class CaffeineCacheConfigFactory {
 
     static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCacheConfig.factory";
 
-    private CaffeineCacheConfig cacheConfig;
-
-    CaffeineCacheConfig getCacheConfig() {
-        return cacheConfig;
-    }
+    private final CaffeineCacheConfig cacheConfig;
 
     @Activate
-    protected void start(CaffeineCacheConfig config) {
-        this.cacheConfig = config;
+    public CaffeineCacheConfigFactory(CaffeineCacheConfig cacheConfig) {
+        this.cacheConfig = cacheConfig;
     }
 
-    @Deactivate
-    protected void stop(CaffeineCacheConfig config) {
-        this.cacheConfig = null;
+    public CaffeineCacheConfig getCacheConfig() {
+        return cacheConfig;
     }
 }

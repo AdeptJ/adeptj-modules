@@ -22,6 +22,7 @@ package com.adeptj.modules.cache.caffeine.internal;
 
 import com.adeptj.modules.cache.caffeine.Cache;
 import com.adeptj.modules.cache.caffeine.CacheService;
+import com.adeptj.modules.cache.caffeine.CaffeineCacheConfigFactory;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
@@ -42,7 +43,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component
+@Component(immediate = true)
 public class CaffeineCacheService implements CacheService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -57,7 +58,7 @@ public class CaffeineCacheService implements CacheService {
     @Override
     public <K, V> Cache<K, V> getCache(String cacheName) {
         return (Cache<K, V>) this.caches.stream()
-                .filter(cache -> cache.getName().equals(cacheName))
+                .filter(cache -> StringUtils.equals(cache.getName(), cacheName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(String.format("No cache exists with name [%s]!!", cacheName)));
     }
@@ -65,8 +66,9 @@ public class CaffeineCacheService implements CacheService {
     @Override
     public void evictCache(String cacheName) {
         this.caches.stream()
-                .filter(cache -> cache.getName().equals(cacheName))
-                .forEach(CaffeineCache::clear);
+                .filter(cache -> StringUtils.equals(cache.getName(), cacheName))
+                .findFirst()
+                .ifPresent(CaffeineCache::clear);
     }
 
     @Override
@@ -90,12 +92,12 @@ public class CaffeineCacheService implements CacheService {
     }
 
     @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    public void bindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
+    public void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
         CaffeineCacheConfig cacheConfig = cacheConfigFactory.getCacheConfig();
         this.caches.add(new CaffeineCache<>(cacheConfig.cache_name(), Caffeine.from(cacheConfig.cache_spec()).build()));
     }
 
-    public void unbindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
+    public void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
         String cacheName = cacheConfigFactory.getCacheConfig().cache_name();
         this.evictCache(cacheName);
         this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheName));

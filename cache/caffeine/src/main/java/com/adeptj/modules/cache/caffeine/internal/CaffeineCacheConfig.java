@@ -28,7 +28,10 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(name = "AdeptJ CaffeineCache Configuration", description = "Configuration for AdeptJ CaffeineCache.")
+@ObjectClassDefinition(
+        name = "AdeptJ CaffeineCache Factory Configuration",
+        description = "Configuration for AdeptJ CaffeineCache."
+)
 public @interface CaffeineCacheConfig {
 
     @AttributeDefinition

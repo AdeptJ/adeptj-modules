@@ -21,7 +21,7 @@
 package com.adeptj.modules.cache.caffeine;
 
 /**
- * The {@link CacheService}.
+ * The {@link CacheService} for in memory local caching.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

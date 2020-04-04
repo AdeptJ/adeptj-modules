@@ -16,9 +16,15 @@
 #                                                                          #
 ############################################################################
 
+# Look for metatype and ds annotations in all packages by default.
+
 -metatypeannotations: *
 
+-metatypeannotations-options: version;minimum=1.4.0
+
 -dsannotations: *
+
+-dsannotations-options: version;minimum=1.4.0
 
 Export-Package: com.adeptj.modules.cache.caffeine
 
