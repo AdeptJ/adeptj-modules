@@ -33,11 +33,18 @@ public class EncryptionServiceImpl implements EncryptionService {
 
     private static final String ALGO_AEM = "AES";
 
-    private int keySize;
+    private final int keySize;
 
-    private byte[] iv;
+    private final byte[] iv;
 
-    private byte[] key;
+    private final byte[] key;
+
+    @Activate
+    public EncryptionServiceImpl(EncryptionConfig config) {
+        this.keySize = config.keySize();
+        this.iv = Randomness.randomBytes(IV_LENGTH_BYTE);
+        this.key = Randomness.randomBytes(this.keySize / 8);
+    }
 
     @Override
     public String encrypt(String plainText) {
@@ -61,14 +68,5 @@ public class EncryptionServiceImpl implements EncryptionService {
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);
         }
-    }
-
-    // <------------------------------------------ OSGi INTERNAL ------------------------------------------>
-
-    @Activate
-    protected void start(EncryptionConfig config) {
-        this.keySize = config.keySize();
-        this.iv = Randomness.randomBytes(IV_LENGTH_BYTE);
-        this.key = Randomness.randomBytes(this.keySize / 8);
     }
 }

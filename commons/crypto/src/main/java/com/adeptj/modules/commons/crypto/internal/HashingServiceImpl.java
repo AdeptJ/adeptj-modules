@@ -54,15 +54,24 @@ public class HashingServiceImpl implements HashingService {
 
     private static final String PLAINTEXT_NULL_MSG = "plainText can't be blank!!";
 
-    private int saltSize;
+    private final int saltSize;
 
-    private int iterationCount;
+    private final int iterationCount;
 
-    private int keyLength;
+    private final int keyLength;
 
-    private String secretKeyAlgo;
+    private final String secretKeyAlgo;
 
-    private Charset charset;
+    private final Charset charset;
+
+    @Activate
+    public HashingServiceImpl(HashingConfig config) {
+        this.charset = Charset.forName(config.charsetToEncode());
+        this.saltSize = config.saltSize();
+        this.iterationCount = config.iterationCount();
+        this.keyLength = config.keyLength();
+        this.secretKeyAlgo = config.secretKeyAlgo();
+    }
 
     /**
      * {@inheritDoc}
@@ -133,16 +142,5 @@ public class HashingServiceImpl implements HashingService {
     @Override
     public boolean compareHashes(SaltHashPair saltHashPair, String plainText) {
         return StringUtils.equals(saltHashPair.getHash(), this.getHashedText(plainText, saltHashPair.getSalt()));
-    }
-
-    // <------------------------------------------ OSGi INTERNAL ------------------------------------------>
-
-    @Activate
-    protected void start(HashingConfig config) {
-        this.charset = Charset.forName(config.charsetToEncode());
-        this.saltSize = config.saltSize();
-        this.iterationCount = config.iterationCount();
-        this.keyLength = config.keyLength();
-        this.secretKeyAlgo = config.secretKeyAlgo();
     }
 }
