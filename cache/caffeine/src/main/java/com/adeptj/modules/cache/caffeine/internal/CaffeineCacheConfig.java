@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.cache.caffeine.internal;
 
+import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 /**
@@ -27,15 +28,12 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ CaffeineCache Configuration",
-        description = "Configuration for AdeptJ CaffeineCache."
-)
+@ObjectClassDefinition(name = "AdeptJ CaffeineCache Configuration", description = "Configuration for AdeptJ CaffeineCache.")
 public @interface CaffeineCacheConfig {
 
-    String name();
+    @AttributeDefinition
+    String cache_name();
 
-    int expireAfter();
-
-    int maximumSize();
+    @AttributeDefinition
+    String cache_spec();
 }

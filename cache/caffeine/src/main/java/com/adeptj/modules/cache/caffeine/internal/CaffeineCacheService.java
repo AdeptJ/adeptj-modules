@@ -25,11 +25,14 @@ import com.adeptj.modules.cache.caffeine.CacheService;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -42,27 +45,60 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component
 public class CaffeineCacheService implements CacheService {
 
-    private List<CaffeineCache<?, ?>> caches = new CopyOnWriteArrayList<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private final List<CaffeineCache<?, ?>> caches;
+
+    public CaffeineCacheService() {
+        this.caches = new CopyOnWriteArrayList<>();
+    }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <K, V> Cache<K, V> getCache(String name) {
+    public <K, V> Cache<K, V> getCache(String cacheName) {
         return (Cache<K, V>) this.caches.stream()
-                .filter(cache -> cache.getName().equals(name))
+                .filter(cache -> cache.getName().equals(cacheName))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(String.format("No cache exists with name [%s]!!", name)));
+                .orElseThrow(() -> new IllegalStateException(String.format("No cache exists with name [%s]!!", cacheName)));
     }
 
-    @Reference(service = CaffeineCacheFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    public void bindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
+    @Override
+    public boolean invalidate(String cacheName) {
+        this.caches.stream()
+                .filter(cache -> cache.getName().equals(cacheName))
+                .forEach(CaffeineCache::clear);
+        return true;
+    }
+
+    @Override
+    public void invalidateAll() {
+        this.caches.forEach(cache -> {
+            try {
+                LOGGER.info("Invalidating cache: [{}]", cache.getName());
+                cache.clear();
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error(ex.getMessage(), ex);
+            }
+        });
+    }
+
+    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
+
+    @Deactivate
+    protected void stop() {
+        this.invalidateAll();
+        this.caches.clear();
+    }
+
+    @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    public void bindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheFactory) {
         CaffeineCacheConfig cacheConfig = cacheFactory.getCacheConfig();
-        this.caches.add(new CaffeineCache<>(cacheConfig.name(), Caffeine.newBuilder()
-                .maximumSize(cacheConfig.maximumSize())
-                .expireAfterWrite(cacheConfig.expireAfter(), TimeUnit.MINUTES)
-                .build()));
+        this.caches.add(new CaffeineCache<>(cacheConfig.cache_name(), Caffeine.from(cacheConfig.cache_spec()).build()));
     }
 
-    public void unbindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
-        this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheFactory.getCacheConfig().name()));
+    public void unbindCaffeineCacheFactory(CaffeineCacheConfigFactory cacheFactory) {
+        String cacheName = cacheFactory.getCacheConfig().cache_name();
+        this.invalidate(cacheName);
+        this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheName));
     }
 }

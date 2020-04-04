@@ -104,7 +104,7 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
         return this.caffeineCache.asMap().values();
     }
 
-    // <----------------------- Generated ----------------------->
+    // <<----------------------- Generated ----------------------->>
 
     @Override
     public boolean equals(Object o) {

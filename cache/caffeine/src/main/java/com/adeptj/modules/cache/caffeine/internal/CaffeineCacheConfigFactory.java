@@ -25,7 +25,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 
-import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheFactory.PID;
+import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheConfigFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -34,10 +34,10 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = CaffeineCacheConfig.class, factory = true)
-@Component(service = CaffeineCacheFactory.class, name = PID, configurationPolicy = REQUIRE)
-public class CaffeineCacheFactory {
+@Component(service = CaffeineCacheConfigFactory.class, name = PID, configurationPolicy = REQUIRE)
+public class CaffeineCacheConfigFactory {
 
-    static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCache.factory";
+    static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCacheConfig.factory";
 
     private CaffeineCacheConfig cacheConfig;
 
