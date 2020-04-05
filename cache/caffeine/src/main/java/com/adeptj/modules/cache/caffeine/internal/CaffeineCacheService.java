@@ -23,7 +23,6 @@ package com.adeptj.modules.cache.caffeine.internal;
 import com.adeptj.modules.cache.caffeine.Cache;
 import com.adeptj.modules.cache.caffeine.CacheService;
 import com.adeptj.modules.cache.caffeine.CaffeineCacheConfigFactory;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
