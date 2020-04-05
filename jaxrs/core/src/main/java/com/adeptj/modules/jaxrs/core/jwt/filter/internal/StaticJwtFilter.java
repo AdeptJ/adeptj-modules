@@ -81,7 +81,7 @@ public class StaticJwtFilter extends AbstractJwtFilter implements JwtFilter {
     @Activate
     protected void start() {
         if (this.claimsIntrospector == null) {
-            this.claimsIntrospector = new DefaultJwtClaimsIntrospector();
+            this.claimsIntrospector = DefaultJwtClaimsIntrospector.INSTANCE;
         }
     }
 }

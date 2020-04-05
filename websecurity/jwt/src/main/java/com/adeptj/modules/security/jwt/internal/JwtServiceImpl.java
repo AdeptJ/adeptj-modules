@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.adeptj.modules.security.jwt.JwtClaims.KEY_JWT_EXPIRED;
 import static io.jsonwebtoken.Claims.ID;
 import static io.jsonwebtoken.Claims.ISSUER;
 import static io.jsonwebtoken.Header.JWT_TYPE;
@@ -143,7 +144,7 @@ public class JwtServiceImpl implements JwtService {
                 LOGGER.debug(ex.getMessage(), ex);
             }
             claims = new JwtClaims(ex.getClaims());
-            claims.setExpired(true);
+            claims.augment(KEY_JWT_EXPIRED, "true");
         } catch (JwtException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }

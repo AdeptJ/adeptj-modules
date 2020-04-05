@@ -21,22 +21,21 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
-import com.adeptj.modules.security.jwt.JwtClaims;
+import com.adeptj.modules.security.jwt.JwtUtil;
 
 import java.util.Map;
 
 /**
- * Simple implementation of {@link JwtClaimsIntrospector}, which just checks if the Jwt is expired.
+ * Default implementation of {@link JwtClaimsIntrospector}, which just checks whether the Jwt is expired or not.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public class DefaultJwtClaimsIntrospector implements JwtClaimsIntrospector {
 
+    static final JwtClaimsIntrospector INSTANCE = new DefaultJwtClaimsIntrospector();
+
     @Override
     public boolean introspect(Map<String, Object> claims) {
-        if (claims instanceof JwtClaims) {
-            return !((JwtClaims) claims).isExpired();
-        }
-        return false;
+        return !JwtUtil.isExpired(claims);
     }
 }
