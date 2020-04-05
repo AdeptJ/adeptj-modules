@@ -25,6 +25,7 @@ import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Deserializer;
@@ -49,9 +50,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.jsonwebtoken.Claims.ID;
+import static io.jsonwebtoken.Claims.ISSUER;
 import static io.jsonwebtoken.Header.JWT_TYPE;
 import static io.jsonwebtoken.Header.TYPE;
-import static java.lang.Boolean.TRUE;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -66,9 +67,7 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private String issuer;
-
-    private boolean suppressVerificationException;
+    private String defaultIssuer;
 
     private String[] mandatoryClaims;
 
@@ -102,10 +101,10 @@ public class JwtServiceImpl implements JwtService {
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuer(this.issuer)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
                 .setId(claims.containsKey(ID) ? (String) claims.get(ID) : UUID.randomUUID().toString())
+                .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
                 .signWith(this.keyPair.getPrivate(), this.signatureAlgo)
                 .serializeToJsonWith(this.serializer)
                 .compact();
@@ -138,18 +137,15 @@ public class JwtServiceImpl implements JwtService {
                     .deserializeJsonWith(this.deserializer)
                     .build()
                     .parse(jwt, this.jwtHandler);
-        } catch (Exception ex) { // NOSONAR
-            // For reducing noise in the logs, set this config to true.
-            if (this.suppressVerificationException) {
-                LOGGER.error(ex.getMessage());
-            } else {
-                LOGGER.error(ex.getMessage(), ex);
+        } catch (ExpiredJwtException ex) {
+            // to reduce noise in logs.
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(ex.getMessage(), ex);
             }
-            if (ex instanceof ExpiredJwtException) {
-                ExpiredJwtException expiredJwtException = (ExpiredJwtException) ex;
-                claims = new JwtClaims(expiredJwtException.getClaims());
-                claims.put("EXPIRED", TRUE);
-            }
+            claims = new JwtClaims(ex.getClaims());
+            claims.setExpired(true);
+        } catch (JwtException | IllegalArgumentException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
         return claims;
     }
@@ -162,18 +158,16 @@ public class JwtServiceImpl implements JwtService {
         this.signatureAlgo = null;
         this.keyPair = null;
         this.expirationDuration = null;
-        this.issuer = null;
-        this.suppressVerificationException = false;
+        this.defaultIssuer = null;
         try {
-            this.issuer = config.issuer();
+            this.defaultIssuer = config.defaultIssuer();
             this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
-            this.suppressVerificationException = config.suppressVerificationException();
+            this.mandatoryClaims = config.mandatoryClaims();
             this.signatureAlgo = SignatureAlgorithm.forName(config.signatureAlgo());
             LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", this.signatureAlgo.getJcaName());
             PrivateKey signingKey = JwtKeys.createSigningKey(config, this.signatureAlgo);
             PublicKey verificationKey = JwtKeys.createVerificationKey(this.signatureAlgo, config.publicKey());
             this.keyPair = new KeyPair(verificationKey, signingKey);
-            this.mandatoryClaims = config.mandatoryClaims();
         } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;

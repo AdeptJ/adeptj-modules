@@ -36,7 +36,7 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for JWT Service")
+@ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for AdeptJ JWT Service")
 public @interface JwtConfig {
 
     /**
@@ -74,8 +74,8 @@ public @interface JwtConfig {
     )
     String publicKey();
 
-    @AttributeDefinition(name = "JWT Issuer", description = "Issuer of JWT")
-    String issuer() default "AdeptJ Runtime";
+    @AttributeDefinition(name = "JWT Default Issuer", description = "Default Issuer of JWT")
+    String defaultIssuer() default "AdeptJ Runtime";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes.")
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
@@ -91,10 +91,4 @@ public @interface JwtConfig {
             ISSUED_AT,
             EXPIRATION
     };
-
-    @AttributeDefinition(
-            name = "Suppress Jwt Verification Exception Trace",
-            description = "Whether to suppress Jwt verification exception trace for reducing noise in logs."
-    )
-    boolean suppressVerificationException();
 }

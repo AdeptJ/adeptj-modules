@@ -20,8 +20,9 @@
 
 package com.adeptj.modules.security.jwt;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.jsonwebtoken.Claims;
+
+import java.util.Date;
 
 import static io.jsonwebtoken.Claims.AUDIENCE;
 import static io.jsonwebtoken.Claims.ID;
@@ -29,31 +30,49 @@ import static io.jsonwebtoken.Claims.ISSUER;
 import static io.jsonwebtoken.Claims.SUBJECT;
 
 /**
- * A simple map containing the JWT claims and accessor methods.
+ * A simple POJO containing the JWT claims and accessor methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JwtClaims extends HashMap<String, Object> {
+public class JwtClaims {
 
-    private static final long serialVersionUID = -7433116694314910579L;
+    private boolean expired;
 
-    public JwtClaims(Map<String, Object> claims) {
-        super(claims);
+    private final Claims claims;
+
+    public JwtClaims(Claims claims1) {
+        this.claims = claims1;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    public Date getExpiration() {
+        return this.claims.getExpiration();
     }
 
     public String getSubject() {
-        return (String) super.get(SUBJECT);
+        return (String) this.claims.get(SUBJECT);
     }
 
     public String getIssuer() {
-        return (String) super.get(ISSUER);
+        return (String) this.claims.get(ISSUER);
     }
 
     public String getAudience() {
-        return (String) super.get(AUDIENCE);
+        return (String) this.claims.get(AUDIENCE);
     }
 
     public String getId() {
-        return (String) super.get(ID);
+        return (String) this.claims.get(ID);
+    }
+
+    public <T> T getClaim(String key, Class<T> requiredType) {
+        return this.claims.get(key, requiredType);
     }
 }

@@ -22,8 +22,7 @@
 
 -includeresource: jjwt-*.jar;lib:=true
 
-Export-Package: com.adeptj.modules.security.jwt, \
-                com.adeptj.modules.security.jwt.validation
+Export-Package: com.adeptj.modules.security.jwt
 
 Import-Package: org.apache.commons.io;version="[1.4,3)", \
                 *
