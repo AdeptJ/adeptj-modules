@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 
 /**
- * Service for generating random salt and hashed text using PBKDF2WithHmacSHA256 algo.
+ * Service for generating random salt and hashed text using PBKDF2WithHmacSHA* algo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

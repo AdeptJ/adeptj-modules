@@ -31,7 +31,7 @@ public class EncryptionServiceImpl implements EncryptionService {
 
     private static final String ALGO_GCM = "AES/GCM/NoPadding";
 
-    private static final String ALGO_AEM = "AES";
+    private static final String ALGO_AES = "AES";
 
     private final int keySize;
 
@@ -50,7 +50,7 @@ public class EncryptionServiceImpl implements EncryptionService {
     public String encrypt(String plainText) {
         try {
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
-            cipher.init(ENCRYPT_MODE, new SecretKeySpec(this.key, ALGO_AEM), new GCMParameterSpec(this.keySize, this.iv));
+            cipher.init(ENCRYPT_MODE, new SecretKeySpec(this.key, ALGO_AES), new GCMParameterSpec(this.keySize, this.iv));
             byte[] encrypted = cipher.doFinal(plainText.getBytes(UTF_8));
             return new String(Base64.getEncoder().encode(encrypted), UTF_8);
         } catch (GeneralSecurityException ex) {
@@ -62,7 +62,7 @@ public class EncryptionServiceImpl implements EncryptionService {
     public String decrypt(String encryptedText) {
         try {
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
-            cipher.init(DECRYPT_MODE, new SecretKeySpec(this.key, ALGO_AEM), new GCMParameterSpec(this.keySize, this.iv));
+            cipher.init(DECRYPT_MODE, new SecretKeySpec(this.key, ALGO_AES), new GCMParameterSpec(this.keySize, this.iv));
             byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(encryptedText.getBytes(UTF_8)));
             return new String(decrypted, UTF_8);
         } catch (GeneralSecurityException ex) {

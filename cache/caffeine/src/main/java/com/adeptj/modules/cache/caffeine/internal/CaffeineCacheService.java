@@ -92,14 +92,12 @@ public class CaffeineCacheService implements CacheService {
     }
 
     @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    public void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
-        CaffeineCacheConfig cacheConfig = cacheConfigFactory.getCacheConfig();
-        this.caches.add(new CaffeineCache<>(cacheConfig.cache_name(), Caffeine.from(cacheConfig.cache_spec()).build()));
+    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
+        this.caches.add(new CaffeineCache<>(cacheConfigFactory.getCacheName(), cacheConfigFactory.getCacheSpec()));
     }
 
-    public void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
-        String cacheName = cacheConfigFactory.getCacheConfig().cache_name();
-        this.evictCache(cacheName);
-        this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheName));
+    protected void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
+        this.evictCache(cacheConfigFactory.getCacheName());
+        this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheConfigFactory.getCacheName()));
     }
 }
