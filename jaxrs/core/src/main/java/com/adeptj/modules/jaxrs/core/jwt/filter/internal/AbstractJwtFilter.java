@@ -33,10 +33,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.REQ_PATH_ATTR;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.REQ_URI_INFO;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Implements the {@link #filter} from {@link javax.ws.rs.container.ContainerRequestFilter}.
@@ -58,11 +61,12 @@ public abstract class AbstractJwtFilter implements JwtFilter {
             return;
         }
         JwtClaims claims = jwtService.verifyJwt(jwt);
-        claims.put(REQ_PATH_ATTR, requestContext.getUriInfo().getPath());
-        if (this.getClaimsIntrospector().introspect(claims)) {
+        claims.augment(REQ_URI_INFO, requestContext.getUriInfo());
+        if (this.getClaimsIntrospector().introspect(claims.asMap())) {
             requestContext.setSecurityContext(JwtSecurityContext.newSecurityContext()
                     .withSubject(claims.getSubject())
-                    .withRoles(Stream.of(((String) claims.getOrDefault("roles", "")).split(",")).collect(Collectors.toSet()))
+                    .withRoles(Stream.of(((String) claims.asMap().getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
+                            .collect(Collectors.toSet()))
                     .withSecure(requestContext.getSecurityContext().isSecure())
                     .withAuthScheme(AUTH_SCHEME_TOKEN));
         } else {

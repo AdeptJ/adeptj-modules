@@ -36,7 +36,7 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(name = "AdeptJ JWT Configuration", description = "Configs for AdeptJ JWT Service")
+@ObjectClassDefinition(name = "AdeptJ JWT Service Configuration", description = "Configs for AdeptJ JWT Service")
 public @interface JwtConfig {
 
     /**

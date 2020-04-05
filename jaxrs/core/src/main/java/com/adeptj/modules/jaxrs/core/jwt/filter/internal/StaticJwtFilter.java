@@ -76,6 +76,8 @@ public class StaticJwtFilter extends AbstractJwtFilter implements JwtFilter {
         return this.claimsIntrospector;
     }
 
+    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
+
     @Activate
     protected void start() {
         if (this.claimsIntrospector == null) {

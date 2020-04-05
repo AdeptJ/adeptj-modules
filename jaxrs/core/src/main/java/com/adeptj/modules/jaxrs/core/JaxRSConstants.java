@@ -35,6 +35,10 @@ public final class JaxRSConstants {
 
     public static final String AUTH_SCHEME_TOKEN = "TOKEN";
 
-    public static final String REQ_PATH_ATTR = "REQUEST_PATH";
+    public static final String REQ_URI_INFO = "REQUEST_URI_INFO";
+
+    public static final String ROLES = "roles";
+
+    public static final String ROLES_DELIMITER = ",";
 
 }

@@ -23,8 +23,10 @@ package com.adeptj.modules.security.jwt;
 import io.jsonwebtoken.Claims;
 
 import java.util.Date;
+import java.util.Map;
 
 import static io.jsonwebtoken.Claims.AUDIENCE;
+import static io.jsonwebtoken.Claims.EXPIRATION;
 import static io.jsonwebtoken.Claims.ID;
 import static io.jsonwebtoken.Claims.ISSUER;
 import static io.jsonwebtoken.Claims.SUBJECT;
@@ -38,10 +40,10 @@ public class JwtClaims {
 
     private boolean expired;
 
-    private final Claims claims;
+    private final Map<String, Object> claims;
 
-    public JwtClaims(Claims claims1) {
-        this.claims = claims1;
+    public JwtClaims(Map<String, Object> claims) {
+        this.claims = claims;
     }
 
     public boolean isExpired() {
@@ -53,7 +55,7 @@ public class JwtClaims {
     }
 
     public Date getExpiration() {
-        return this.claims.getExpiration();
+        return (Date) this.claims.get(EXPIRATION);
     }
 
     public String getSubject() {
@@ -72,7 +74,15 @@ public class JwtClaims {
         return (String) this.claims.get(ID);
     }
 
-    public <T> T getClaim(String key, Class<T> requiredType) {
-        return this.claims.get(key, requiredType);
+    public Object getClaim(String key) {
+        return this.claims.get(key);
+    }
+
+    public void augment(String key, Object value) {
+        this.claims.put(key, value);
+    }
+
+    public Map<String, Object> asMap() {
+        return this.claims;
     }
 }
