@@ -24,7 +24,7 @@ import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
-import com.adeptj.modules.jaxrs.resteasy.ApplicationExceptionMapper;
+import com.adeptj.modules.jaxrs.resteasy.GenericExceptionHandler;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.spi.Dispatcher;
@@ -42,7 +42,6 @@ import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
-import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 
 /**
@@ -64,15 +63,25 @@ public class ResteasyLifecycle {
 
     private ResteasyServletDispatcher resteasyDispatcher;
 
-    private ResteasyConfig config;
+    // Activation objects start.
 
-    private BundleContext bundleContext;
+    private final ResteasyConfig config;
+
+    private final BundleContext bundleContext;
+
+    // Activation objects end.
 
     /**
      * Statically injected ValidatorService, this component will not become active until one is provided.
      */
-    @Reference(policyOption = GREEDY)
-    private ValidatorService validatorService;
+    private final ValidatorService validatorService;
+
+    @Activate
+    public ResteasyLifecycle(@Reference ValidatorService vs, BundleContext bc, ResteasyConfig config) {
+        this.validatorService = vs;
+        this.bundleContext = bc;
+        this.config = config;
+    }
 
     /**
      * Bootstraps the RESTEasy Framework using this Bundle's ClassLoader as the context ClassLoader because
@@ -91,12 +100,11 @@ public class ResteasyLifecycle {
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))
-                        .register(new ApplicationExceptionMapper(this.config.sendExceptionTrace()))
-                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()));
-                this.providerTracker = new ProviderTracker(this.bundleContext, providerFactory);
-                this.providerTracker.open();
-                this.resourceTracker = new ResourceTracker(this.bundleContext, dispatcher.getRegistry());
-                this.resourceTracker.open();
+                        .register(new GenericExceptionHandler(this.config.sendExceptionTrace()))
+                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
+                        .register(new ObjectMapperContextResolver());
+                this.providerTracker = new ProviderTracker(this.bundleContext, providerFactory).openTracker();
+                this.resourceTracker = new ResourceTracker(this.bundleContext, dispatcher.getRegistry()).openTracker();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
@@ -115,7 +123,7 @@ public class ResteasyLifecycle {
      */
     void stop(ServletConfig servletConfig) {
         this.resteasyDispatcher.destroy();
-        ResteasyUtil.clearResteasyDeployment(servletConfig);
+        ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
         LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);
         OSGiUtil.closeQuietly(this.providerTracker);
         OSGiUtil.closeQuietly(this.resourceTracker);
@@ -129,13 +137,5 @@ public class ResteasyLifecycle {
      */
     ResteasyServletDispatcher getResteasyDispatcher() {
         return resteasyDispatcher;
-    }
-
-    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
-
-    @Activate
-    protected void start(BundleContext bundleContext, ResteasyConfig config) {
-        this.bundleContext = bundleContext;
-        this.config = config;
     }
 }

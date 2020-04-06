@@ -21,6 +21,7 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
@@ -59,8 +60,12 @@ public class ResteasyProxyServlet extends HttpServlet {
      * Service is statically injected so that this servlet doesn't get initialized until the reference
      * to {@link ResteasyLifecycle} becomes available which also manages RESTEasy's lifecycle.
      */
-    @Reference
-    private ResteasyLifecycle resteasyLifecycle; // NOSONAR
+    private final ResteasyLifecycle resteasyLifecycle;
+
+    @Activate
+    public ResteasyProxyServlet(@Reference ResteasyLifecycle resteasyLifecycle) {
+        this.resteasyLifecycle = resteasyLifecycle;
+    }
 
     /**
      * Delegates the RESTEasy's bootstrap process in {@link ResteasyLifecycle#start}

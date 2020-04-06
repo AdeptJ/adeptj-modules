@@ -50,6 +50,11 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
         this.registry = registry;
     }
 
+    ResourceTracker openTracker() {
+        super.open();
+        return this;
+    }
+
     /**
      * Registers the JAX-RS resource with the RESTEasy {@link Registry}.
      *

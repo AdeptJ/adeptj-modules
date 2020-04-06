@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_EXPIRED;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_SUBJECT;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -46,10 +48,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 @ConsumerType
 public interface JwtClaimsIntrospector {
-
-    String JWT_SUBJECT = "sub";
-
-    String KEY_JWT_EXPIRED = "JWT_EXPIRED";
 
     /**
      * Introspect the JWT claims passed.
@@ -85,7 +83,7 @@ public interface JwtClaimsIntrospector {
      */
     default void setJwtSecurityContext(ContainerRequestContext requestContext, Map<String, Object> claims) {
         requestContext.setSecurityContext(JwtSecurityContext.newSecurityContext()
-                .withSubject((String) claims.get(JWT_SUBJECT))
+                .withSubject((String) claims.get(KEY_JWT_SUBJECT))
                 .withRoles(Stream.of(((String) claims.getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
                         .collect(Collectors.toSet()))
                 .withSecure(requestContext.getSecurityContext().isSecure())

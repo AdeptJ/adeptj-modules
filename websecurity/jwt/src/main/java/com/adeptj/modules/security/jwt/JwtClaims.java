@@ -36,7 +36,7 @@ import static io.jsonwebtoken.Claims.SUBJECT;
  */
 public class JwtClaims {
 
-    public static final String KEY_JWT_EXPIRED = "JWT_EXPIRED";
+    private boolean expired;
 
     private final Map<String, Object> claims;
 
@@ -44,8 +44,12 @@ public class JwtClaims {
         this.claims = claims;
     }
 
-    public void augment(String key, Object value) {
-        this.claims.put(key, value);
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
     }
 
     public Map<String, Object> asMap() {

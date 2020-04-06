@@ -60,7 +60,7 @@ public final class JwtExtractor {
                 jwt = cleanseJwt(jwtCookie.getValue());
             }
         }
-        return StringUtils.isEmpty(jwt) ? cleanseJwt(requestContext.getHeaders().getFirst(AUTHORIZATION)) : jwt;
+        return StringUtils.isEmpty(jwt) ? cleanseJwt(requestContext.getHeaderString(AUTHORIZATION)) : jwt;
     }
 
     private static String cleanseJwt(String jwt) {

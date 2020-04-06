@@ -35,7 +35,11 @@ public final class JaxRSConstants {
 
     public static final String AUTH_SCHEME_TOKEN = "TOKEN";
 
-    public static final String REQ_URI_INFO = "REQUEST_URI_INFO";
+    public static final String KEY_JWT_SUBJECT = "sub";
+
+    public static final String KEY_JWT_EXPIRED = "JWT_EXPIRED";
+
+    public static final String VALUE_JWT_EXPIRED = "true";
 
     public static final String ROLES = "roles";
 

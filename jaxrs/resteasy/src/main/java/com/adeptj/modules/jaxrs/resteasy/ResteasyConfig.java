@@ -134,7 +134,7 @@ public @interface ResteasyConfig {
 
     @AttributeDefinition(
             name = "Send Exception Trace",
-            description = "Whether to send exception trace in response from ApplicationExceptionMapper."
+            description = "Whether to send exception trace in response from GenericExceptionHandler."
     )
     boolean sendExceptionTrace() default true;
 }

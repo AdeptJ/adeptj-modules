@@ -98,7 +98,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
         return true;
     }
 
-    // <------------------------------------------------ OSGi Internal ----------------------------------------------->
+    // <<------------------------------------------- OSGi Internal ------------------------------------------>>
 
     @Activate
     @Modified

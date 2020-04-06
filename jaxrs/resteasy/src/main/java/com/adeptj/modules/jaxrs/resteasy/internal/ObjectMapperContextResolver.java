@@ -20,38 +20,28 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
-import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+import com.adeptj.modules.commons.utils.Jackson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import java.util.Arrays;
+import javax.annotation.Priority;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
-import static com.adeptj.modules.commons.utils.Constants.COMMA;
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ObjectMapperContextResolver.PRIORITY;
 
 /**
- * Utilities for RESTEasy bootstrap process.
+ * ContextResolver for Jackson's {@link ObjectMapper}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class ResteasyUtil {
+@Priority(PRIORITY)
+@Provider
+public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
-    private ResteasyUtil() {
-    }
+    static final int PRIORITY = 5000;
 
-    static CorsFilter newCorsFilter(ResteasyConfig config) {
-        CorsFilter corsFilter = new CorsFilter();
-        corsFilter.setAllowCredentials(config.allowCredentials());
-        corsFilter.setCorsMaxAge(config.corsMaxAge());
-        corsFilter.setExposedHeaders(String.join(COMMA, config.exposedHeaders()));
-        corsFilter.setAllowedMethods(String.join(COMMA, config.allowedMethods()));
-        corsFilter.setAllowedHeaders(String.join(COMMA, config.allowedHeaders()));
-        corsFilter.getAllowedOrigins().addAll(Arrays.asList(config.allowedOrigins()));
-        return corsFilter;
-    }
-
-    static void clearPreviousResteasyDeployment(ServletContext servletContext) {
-        servletContext.removeAttribute(RESTEASY_DEPLOYMENT);
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
+        return Jackson.objectMapper();
     }
 }

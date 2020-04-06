@@ -21,7 +21,6 @@
 package com.adeptj.modules.jaxrs.resteasy;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jboss.resteasy.spi.ApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,15 +32,14 @@ import java.lang.invoke.MethodHandles;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 /**
- * An {@link ExceptionMapper} for RESTEasy's {@link ApplicationException}.
+ * A global {@link ExceptionMapper} for handling all uncaught exception types.
  * <p>
- * Sends the unhandled exception's trace coming out of resource method calls in response if sendExceptionTrace
- * is set as true otherwise a generic error message is sent.
+ * Sends the uncaught exception's trace in response if sendExceptionTrace is set as true otherwise a generic error message is sent.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Provider
-public class ApplicationExceptionMapper implements ExceptionMapper<ApplicationException> {
+public class GenericExceptionHandler implements ExceptionMapper<Exception> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -49,12 +47,12 @@ public class ApplicationExceptionMapper implements ExceptionMapper<ApplicationEx
 
     private final boolean sendExceptionTrace;
 
-    public ApplicationExceptionMapper(boolean sendExceptionTrace) {
+    public GenericExceptionHandler(boolean sendExceptionTrace) {
         this.sendExceptionTrace = sendExceptionTrace;
     }
 
     @Override
-    public Response toResponse(ApplicationException exception) {
+    public Response toResponse(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         return Response.serverError()
                 .type(TEXT_PLAIN)

@@ -29,7 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_EXPIRED;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.VALUE_JWT_EXPIRED;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -57,17 +58,16 @@ public abstract class AbstractJwtFilter implements JwtFilter {
             requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
             return;
         }
+        JwtClaims claims;
         String jwt = JwtExtractor.extract(requestContext);
-        // Send Bad Request(400) if JWT itself is null/empty.
-        if (StringUtils.isEmpty(jwt)) {
-            requestContext.abortWith(Response.status(BAD_REQUEST).build());
-            return;
-        }
-        // Send Unauthorized(401) if JwtService returns null JwtClaims after verification, probably due to malformed jwt.
-        JwtClaims claims = jwtService.verifyJwt(jwt);
-        if (claims == null) {
+        // Send Unauthorized(401) if JWT itself is null/empty or JwtService returns null JwtClaims after verification,
+        // probably due to malformed jwt.
+        if (StringUtils.isEmpty(jwt) || (claims = jwtService.verifyJwt(jwt)) == null) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
             return;
+        }
+        if (claims.isExpired()) {
+            claims.asMap().put(KEY_JWT_EXPIRED, VALUE_JWT_EXPIRED);
         }
         this.getClaimsIntrospector().introspect(requestContext, claims.asMap());
     }

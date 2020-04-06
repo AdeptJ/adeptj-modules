@@ -66,7 +66,7 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
-        ResteasyUtil.clearResteasyDeployment(servletConfig);
+        ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
         this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
         this.deployment.start();
@@ -79,13 +79,10 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
-        try {
-            super.service(req.getMethod(), req, resp);
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-            throw ex;
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(PROCESSING_REQUEST_MSG, req.getMethod(), req.getRequestURI());
         }
+        super.service(req.getMethod(), req, resp);
     }
 
     @Override
