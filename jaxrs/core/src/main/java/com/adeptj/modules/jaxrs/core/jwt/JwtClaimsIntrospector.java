@@ -23,7 +23,15 @@ package com.adeptj.modules.jaxrs.core.jwt;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.annotation.versioning.ConsumerType;
 
+import javax.ws.rs.container.ContainerRequestContext;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Service interface for introspecting the JWT claims(Registered as well as public).
@@ -39,6 +47,10 @@ import java.util.Map;
 @ConsumerType
 public interface JwtClaimsIntrospector {
 
+    String JWT_SUBJECT = "sub";
+
+    String KEY_JWT_EXPIRED = "JWT_EXPIRED";
+
     /**
      * Introspect the JWT claims passed.
      * <p>
@@ -46,9 +58,37 @@ public interface JwtClaimsIntrospector {
      * therefore should not be validated again.
      * <p>
      * Any public claims like username, roles and other important information can be introspected as per the need.
+     * <p>
+     * Implementation must check if the key JWT_EXPIRED exists in the passed claims by calling {@link #isJwtExpiredKeyExists},
+     * if exists, then take appropriate action such as abort the request processing by setting a 401.
      *
-     * @param claims the JWT claims
-     * @return boolean to indicate if claims passed were good.
+     * @param requestContext the JaxRs request context
+     * @param claims         the JWT claims
      */
-    boolean introspect(Map<String, Object> claims);
+    void introspect(ContainerRequestContext requestContext, Map<String, Object> claims);
+
+    /**
+     * Checks whether the claims contains the key JWT_EXPIRED.
+     *
+     * @param claims the Jwt claims
+     * @return a boolean to indicate whether the claims contains the key JWT_EXPIRED.
+     */
+    default boolean isJwtExpiredKeyExists(Map<String, Object> claims) {
+        return Boolean.parseBoolean((String) claims.get(KEY_JWT_EXPIRED));
+    }
+
+    /**
+     * Sets the {@link JwtSecurityContext} to the {@link ContainerRequestContext}.
+     *
+     * @param requestContext the JaxRs request context
+     * @param claims         the JWT claims
+     */
+    default void setJwtSecurityContext(ContainerRequestContext requestContext, Map<String, Object> claims) {
+        requestContext.setSecurityContext(JwtSecurityContext.newSecurityContext()
+                .withSubject((String) claims.get(JWT_SUBJECT))
+                .withRoles(Stream.of(((String) claims.getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
+                        .collect(Collectors.toSet()))
+                .withSecure(requestContext.getSecurityContext().isSecure())
+                .withAuthScheme(AUTH_SCHEME_TOKEN));
+    }
 }

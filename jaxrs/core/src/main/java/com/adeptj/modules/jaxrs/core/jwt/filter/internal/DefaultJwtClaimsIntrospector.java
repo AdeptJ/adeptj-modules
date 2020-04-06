@@ -21,9 +21,12 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
-import com.adeptj.modules.security.jwt.JwtUtil;
 
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Response;
 import java.util.Map;
+
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * Default implementation of {@link JwtClaimsIntrospector}, which just checks whether the Jwt is expired or not.
@@ -35,7 +38,13 @@ public class DefaultJwtClaimsIntrospector implements JwtClaimsIntrospector {
     static final JwtClaimsIntrospector INSTANCE = new DefaultJwtClaimsIntrospector();
 
     @Override
-    public boolean introspect(Map<String, Object> claims) {
-        return !JwtUtil.isExpired(claims);
+    public void introspect(ContainerRequestContext requestContext, Map<String, Object> claims) {
+        if (this.isJwtExpiredKeyExists(claims)) {
+            // Send Unauthorized if JwtService finds token to be expired.
+            // 401 is better suited for token verification failure.
+            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+        } else {
+            this.setJwtSecurityContext(requestContext, claims);
+        }
     }
 }

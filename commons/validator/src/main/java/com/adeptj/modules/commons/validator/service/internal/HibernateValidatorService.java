@@ -100,7 +100,7 @@ public class HibernateValidatorService implements ValidatorService {
         return this.validatorFactory.getValidator();
     }
 
-    // <-----------------------------------------------OSGi INTERNAL -------------------------------------------------->
+    // <<------------------------------------------ OSGi INTERNAL ---------------------------------------------->>
 
     @Activate
     protected void start() {

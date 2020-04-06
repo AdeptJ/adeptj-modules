@@ -25,8 +25,6 @@ import io.jsonwebtoken.lang.Assert;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.adeptj.modules.security.jwt.JwtClaims.KEY_JWT_EXPIRED;
-
 /**
  * JWT utilities.
  *
@@ -70,15 +68,5 @@ public final class JwtUtil {
         assertClaims(claims);
         Stream.of(mandatoryClaims)
                 .forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
-    }
-
-    /**
-     * Checks whether the claims contains the key {@link JwtClaims#KEY_JWT_EXPIRED}.
-     *
-     * @param claims the Jwt claims
-     * @return a boolean to indicate whether the claims contains the key {@link JwtClaims#KEY_JWT_EXPIRED}.
-     */
-    public static boolean isExpired(Map<String, Object> claims) {
-        return Boolean.parseBoolean((String) claims.get(KEY_JWT_EXPIRED));
     }
 }
