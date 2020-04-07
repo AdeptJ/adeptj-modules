@@ -25,7 +25,7 @@ import org.osgi.annotation.versioning.ProviderType;
 import javax.sql.DataSource;
 
 /**
- * DataSourceService interface for providing JDBC DataSource.
+ * DataSourceService interface for providing Hikari JDBC DataSource.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
@@ -33,11 +33,12 @@ import javax.sql.DataSource;
 public interface DataSourceService {
 
     /**
-     * Returns the configured {@link DataSource} instance against the name passed.
+     * Returns the configured Hikari {@link DataSource} instance.
      *
-     * @param name the name of the JDBC pool.
-     * @return The configured {@link DataSource} instance against the name passed.
+     * Note: Caller should NEVER try to close the DataSource as it's lifecycle is managed by HikariDataSourceService.
+     *
+     * @return The configured Hikari {@link DataSource} instance.
      * @throws IllegalStateException if {@link DataSource} is not configured.
      */
-    DataSource getDataSource(String name);
+    DataSource getDataSource();
 }

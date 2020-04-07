@@ -31,7 +31,7 @@ public class DataSourceConfigurationException extends RuntimeException {
 
     private static final long serialVersionUID = -4649854107775357466L;
 
-    public DataSourceConfigurationException(Exception ex) {
+    public DataSourceConfigurationException(Throwable ex) {
         super(ex);
     }
 }

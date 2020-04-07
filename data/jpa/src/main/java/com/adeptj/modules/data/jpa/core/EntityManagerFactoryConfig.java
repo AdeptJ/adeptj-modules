@@ -67,13 +67,6 @@ public @interface EntityManagerFactoryConfig {
     String persistenceXmlLocation() default ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 
     @AttributeDefinition(
-            name = "Non JTA DataSource",
-            description = "DataSource name for binding to this EntityManagerFactory, " +
-                    "please configure the DataSource using [AdeptJ JDBC DataSource Configuration]."
-    )
-    String dataSourceName();
-
-    @AttributeDefinition(
             name = "JPA Provider",
             description = "Fully qualified class name of PersistenceProvider"
     )

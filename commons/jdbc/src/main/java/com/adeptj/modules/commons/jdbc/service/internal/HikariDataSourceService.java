@@ -52,23 +52,7 @@ public class HikariDataSourceService implements DataSourceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String JDBC_DS_NOT_CONFIGURED_MSG = "HikariDataSource: [%s] is not configured!!";
-
-    private HikariDataSource dataSource;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DataSource getDataSource(String name) {
-        Validate.isTrue(StringUtils.isNotEmpty(name), "DataSource name can't be empty!!");
-        if (StringUtils.equals(this.dataSource.getPoolName(), name)) {
-            return new DataSourceWrapper(this.dataSource);
-        }
-        throw new IllegalStateException(String.format(JDBC_DS_NOT_CONFIGURED_MSG, name));
-    }
-
-    // <<------------------------------------- OSGi Internal  -------------------------------------->>
+    private final HikariDataSource dataSource;
 
     /**
      * Initialize the {@link HikariDataSource} using the configuration passed.
@@ -77,7 +61,7 @@ public class HikariDataSourceService implements DataSourceService {
      * @throws DataSourceConfigurationException so that component activation fails and SCR ignores the service.
      */
     @Activate
-    protected void start(DataSourceConfig config) {
+    public HikariDataSourceService(DataSourceConfig config) {
         try {
             Validate.isTrue(StringUtils.isNotEmpty(config.poolName()), "JDBC Pool Name can't be blank!!");
             this.dataSource = DataSources.newDataSource(config);
@@ -87,6 +71,16 @@ public class HikariDataSourceService implements DataSourceService {
             throw new DataSourceConfigurationException(ex);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataSource getDataSource() {
+        return new DataSourceWrapper(this.dataSource);
+    }
+
+    // <<------------------------------------- OSGi Internal  -------------------------------------->>
 
     /**
      * Close the {@link HikariDataSource}.

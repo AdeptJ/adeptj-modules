@@ -21,6 +21,7 @@
 package com.adeptj.modules.commons.jdbc.service.internal;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.Validate;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -38,9 +39,10 @@ import java.util.logging.Logger;
  */
 public class DataSourceWrapper implements DataSource {
 
-    private HikariDataSource delegate;
+    private final DataSource delegate;
 
-    DataSourceWrapper(HikariDataSource dataSource) {
+    DataSourceWrapper(DataSource dataSource) {
+        Validate.validState(dataSource != null, "HikariDataSource is not configured!!");
         this.delegate = dataSource;
     }
 

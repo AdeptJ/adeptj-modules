@@ -92,7 +92,7 @@ public class EntityManagerFactoryLifecycle {
                 String.format(PU_NOT_MATCHED_EXCEPTION_MSG, this.jpaRepository, JPA_UNIT_NAME));
         try {
             Map<String, Object> properties = JpaProperties.from(config);
-            properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource(config.dataSourceName()));
+            properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource());
             ValidationMode validationMode = ValidationMode.valueOf(config.validationMode());
             if (validationMode == AUTO || validationMode == CALLBACK) {
                 properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
