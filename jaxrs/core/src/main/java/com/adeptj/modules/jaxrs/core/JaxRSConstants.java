@@ -37,10 +37,6 @@ public final class JaxRSConstants {
 
     public static final String KEY_JWT_SUBJECT = "sub";
 
-    public static final String KEY_JWT_EXPIRED = "JWT_EXPIRED";
-
-    public static final String KEY_JWT_CLAIMS = "JWT_CLAIMS";
-
     public static final String ROLES = "roles";
 
     public static final String ROLES_DELIMITER = ",";

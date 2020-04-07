@@ -24,9 +24,6 @@ import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.annotation.versioning.ConsumerType;
 
 import javax.ws.rs.container.ContainerRequestContext;
-import java.util.Map;
-
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_EXPIRED;
 
 /**
  * Service interface for introspecting the JWT claims(Registered as well as public).
@@ -54,9 +51,8 @@ public interface JwtClaimsIntrospector {
      * the appropriate action such as abort the request processing by setting a 401.
      *
      * @param requestContext the JaxRs request context
-     * @param claims         the JWT claims
      */
-    void introspect(ContainerRequestContext requestContext, Map<String, Object> claims);
+    void introspect(ContainerRequestContext requestContext);
 
     /**
      * Checks whether the jwt is expired by checking ContainerRequestContext attribute JWT_EXPIRED.
@@ -65,16 +61,7 @@ public interface JwtClaimsIntrospector {
      * @return a boolean to indicate whether the jwt is expired or not.
      */
     default boolean isJwtExpired(ContainerRequestContext requestContext) {
-        return (boolean) requestContext.getProperty(KEY_JWT_EXPIRED);
-    }
-
-    /**
-     * Sets the {@link JwtSecurityContext} to the {@link ContainerRequestContext}.
-     *
-     * @param requestContext the JaxRs request context
-     * @param claims         the JWT claims
-     */
-    default void setJwtSecurityContext(ContainerRequestContext requestContext, Map<String, Object> claims) {
-        requestContext.setSecurityContext(new JwtSecurityContext(requestContext, claims));
+        JwtSecurityContext securityContext = (JwtSecurityContext) requestContext.getSecurityContext();
+        return securityContext.getClaimsWrapper().isExpired();
     }
 }

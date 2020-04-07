@@ -2,6 +2,7 @@ package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
 import com.adeptj.modules.jaxrs.core.AnonymousSecurityContext;
 import com.adeptj.modules.jaxrs.core.JaxRSProvider;
+import com.adeptj.modules.jaxrs.core.JwtClaimsWrapper;
 import com.adeptj.modules.jaxrs.core.jwt.JwtExtractor;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
 import com.adeptj.modules.security.jwt.JwtClaims;
@@ -15,7 +16,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_CLAIMS;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -46,7 +46,7 @@ public class JwtFilter implements ContainerRequestFilter {
             requestContext.setSecurityContext(new AnonymousSecurityContext(requestContext));
             return;
         }
-        requestContext.setProperty(KEY_JWT_CLAIMS, claims);
-        requestContext.setSecurityContext(new JwtSecurityContext(requestContext, claims.asMap()));
+        JwtClaimsWrapper claimsWrapper = new JwtClaimsWrapper(claims.asMap(), claims.isExpired());
+        requestContext.setSecurityContext(new JwtSecurityContext(requestContext, claimsWrapper));
     }
 }

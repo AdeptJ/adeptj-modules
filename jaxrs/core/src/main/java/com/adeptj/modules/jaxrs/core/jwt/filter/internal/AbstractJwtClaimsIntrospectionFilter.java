@@ -28,8 +28,6 @@ import com.adeptj.modules.security.jwt.JwtService;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_CLAIMS;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_EXPIRED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
@@ -51,12 +49,10 @@ public abstract class AbstractJwtClaimsIntrospectionFilter implements JwtClaimsI
      */
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        JwtClaims claims = (JwtClaims) requestContext.getProperty(KEY_JWT_CLAIMS);
-        if (claims == null || !(requestContext.getSecurityContext() instanceof JwtSecurityContext)) {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
+        if (requestContext.getSecurityContext() instanceof JwtSecurityContext) {
+            this.getClaimsIntrospector().introspect(requestContext);
             return;
         }
-        requestContext.setProperty(KEY_JWT_EXPIRED, claims.isExpired());
-        this.getClaimsIntrospector().introspect(requestContext, claims.asMap());
+        requestContext.abortWith(Response.status(UNAUTHORIZED).build());
     }
 }

@@ -20,11 +20,12 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.JwtClaimsWrapper;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,27 +42,25 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 public class JwtSecurityContext implements SecurityContext {
 
-    private final String subject;
-
-    private final Set<String> roles;
+    private final JwtClaimsWrapper claimsWrapper;
 
     private final boolean secure;
 
-    public JwtSecurityContext(ContainerRequestContext requestContext, Map<String, Object> claims) {
-        this.subject = (String) claims.get(KEY_JWT_SUBJECT);
-        this.roles = Stream.of(((String) claims.getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
-                .collect(Collectors.toSet());
+    public JwtSecurityContext(ContainerRequestContext requestContext, JwtClaimsWrapper claimsWrapper) {
+        this.claimsWrapper = claimsWrapper;
         this.secure = requestContext.getSecurityContext().isSecure();
     }
 
     @Override
     public Principal getUserPrincipal() {
-        return () -> this.subject;
+        return () -> (String) this.claimsWrapper.getClaims().get(KEY_JWT_SUBJECT);
     }
 
     @Override
     public boolean isUserInRole(String role) {
-        return this.roles != null && this.roles.contains(role);
+        return Stream.of(((String) this.claimsWrapper.getClaims().getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
+                .collect(Collectors.toSet())
+                .contains(role);
     }
 
     @Override
@@ -72,5 +71,9 @@ public class JwtSecurityContext implements SecurityContext {
     @Override
     public String getAuthenticationScheme() {
         return AUTH_SCHEME_TOKEN;
+    }
+
+    public JwtClaimsWrapper getClaimsWrapper() {
+        return this.claimsWrapper;
     }
 }
