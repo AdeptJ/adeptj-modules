@@ -18,37 +18,30 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
+package com.adeptj.modules.jaxrs.core;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
-import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 
 import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
-
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import javax.ws.rs.core.SecurityContext;
 
 /**
- * Implements the {@link #filter} from {@link ContainerRequestContext}.
+ * Utilities for JAX-RS {@link javax.ws.rs.core.SecurityContext}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public abstract class AbstractJwtClaimsIntrospectionFilter implements JwtClaimsIntrospectionFilter {
+public final class SecurityContextUtil {
 
-    /**
-     * This method Checks if the SecurityContext is an instance of {@link JwtSecurityContext}, if yes, then introspect
-     * the JwtClaims using either the default implementation of JwtClaimsIntrospector or with the one provided by consumer.
-     * <p>
-     * Else send an Unauthorized(401) and abort the request processing.
-     *
-     * @param requestContext the JaxRS request context
-     */
-    @Override
-    public void filter(ContainerRequestContext requestContext) {
-        if (requestContext.getSecurityContext() instanceof JwtSecurityContext) {
-            this.getClaimsIntrospector().introspect(requestContext);
-        } else {
-            requestContext.abortWith(Response.status(UNAUTHORIZED).build());
-        }
+    // Just static utilities, no instance needed.
+    private SecurityContextUtil() {
     }
+
+    public static JwtSecurityContext getJwtSecurityContext(ContainerRequestContext requestContext) {
+        SecurityContext securityContext = requestContext.getSecurityContext();
+        if (securityContext instanceof JwtSecurityContext) {
+            return (JwtSecurityContext) securityContext;
+        }
+        return null;
+    }
+
 }

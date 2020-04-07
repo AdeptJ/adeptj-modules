@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.JwtClaimsWrapper;
-
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
@@ -42,30 +40,33 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 public class JwtSecurityContext implements SecurityContext {
 
-    private final JwtClaimsWrapper claimsWrapper;
+    private final Map<String, Object> claims;
 
-    private final boolean secure;
+    private final boolean jwtExpired;
 
-    public JwtSecurityContext(ContainerRequestContext requestContext, JwtClaimsWrapper claimsWrapper) {
-        this.claimsWrapper = claimsWrapper;
-        this.secure = requestContext.getSecurityContext().isSecure();
+    private final boolean httpsRequest;
+
+    public JwtSecurityContext(ContainerRequestContext requestContext, Map<String, Object> claims, boolean jwtExpired) {
+        this.claims = claims;
+        this.jwtExpired = jwtExpired;
+        this.httpsRequest = requestContext.getSecurityContext().isSecure();
     }
 
     @Override
     public Principal getUserPrincipal() {
-        return () -> (String) this.claimsWrapper.getClaims().get(KEY_JWT_SUBJECT);
+        return () -> (String) this.claims.get(KEY_JWT_SUBJECT);
     }
 
     @Override
     public boolean isUserInRole(String role) {
-        return Stream.of(((String) this.claimsWrapper.getClaims().getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
+        return Stream.of(((String) this.claims.getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
                 .collect(Collectors.toSet())
                 .contains(role);
     }
 
     @Override
     public boolean isSecure() {
-        return this.secure;
+        return this.httpsRequest;
     }
 
     @Override
@@ -73,7 +74,15 @@ public class JwtSecurityContext implements SecurityContext {
         return AUTH_SCHEME_TOKEN;
     }
 
-    public JwtClaimsWrapper getClaimsWrapper() {
-        return this.claimsWrapper;
+    public Map<String, Object> getClaims() {
+        return this.claims;
+    }
+
+    public Object getClaim(String key) {
+        return this.claims.get(key);
+    }
+
+    public boolean isJwtExpired() {
+        return jwtExpired;
     }
 }

@@ -23,7 +23,6 @@ import com.adeptj.modules.jaxrs.core.JaxRSProvider;
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
-import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -35,15 +34,10 @@ import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtClaimsI
 import static javax.ws.rs.Priorities.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
+import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * This filter will kick in for any resource class/method that is annotated with {@link RequiresJwt}.
- * Filter will try to extract the Jwt first from HTTP Authorization header and if that resolves to null
- * then try to extract from Cookies.
- * <p>
- * A Cookie named as per configuration should be present in request.
- * <p>
- * If a non null Jwt is resolved then verify it using {@link JwtService}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -56,7 +50,7 @@ public class StaticJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntrosp
 
     static final String FILTER_NAME = "jwt.filter.type=static";
 
-    @Reference(cardinality = OPTIONAL, policy = DYNAMIC)
+    @Reference(cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
     private volatile JwtClaimsIntrospector claimsIntrospector;
 
     @Override

@@ -22,7 +22,6 @@ package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
-import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,16 +29,10 @@ import org.osgi.service.component.annotations.Reference;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter.FILTER_NAME;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
+import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * This filter will kick in for resource classes and methods configured by JwtDynamicFeature.
- * Filter will try to extract the Jwt from HTTP Authorization header first and if that resolves to null
- * then try to extract from Cookies.
- * However, in case JwtCookieConfig#enabled returns true then the functionality reversed.
- * <p>
- * A Cookie named as per configuration should be present in request.
- * <p>
- * If a non null Jwt is resolved then verify it using {@link JwtService}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -48,7 +41,7 @@ public class DynamicJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntros
 
     static final String FILTER_NAME = "jwt.filter.type=dynamic";
 
-    @Reference(cardinality = OPTIONAL, policy = DYNAMIC)
+    @Reference(cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
     private volatile JwtClaimsIntrospector claimsIntrospector;
 
     @Override

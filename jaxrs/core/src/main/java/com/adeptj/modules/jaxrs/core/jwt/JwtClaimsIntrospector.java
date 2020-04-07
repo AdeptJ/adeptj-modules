@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.SecurityContextUtil;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.annotation.versioning.ConsumerType;
 
@@ -50,18 +51,18 @@ public interface JwtClaimsIntrospector {
      * Implementation must check if the jwt is expired by calling {@link #isJwtExpired}, if jwt is expired then take
      * the appropriate action such as abort the request processing by setting a 401.
      *
-     * @param requestContext the JaxRs request context
+     * @param requestContext the JaxRS request context
      */
     void introspect(ContainerRequestContext requestContext);
 
     /**
-     * Checks whether the jwt is expired by checking ContainerRequestContext attribute JWT_EXPIRED.
+     * Checks whether the jwt is expired by using the {@link JwtSecurityContext#isJwtExpired()}.
      *
-     * @param requestContext the JaxRs request context
+     * @param requestContext the JaxRS request context
      * @return a boolean to indicate whether the jwt is expired or not.
      */
     default boolean isJwtExpired(ContainerRequestContext requestContext) {
-        JwtSecurityContext securityContext = (JwtSecurityContext) requestContext.getSecurityContext();
-        return securityContext.getClaimsWrapper().isExpired();
+        JwtSecurityContext securityContext = SecurityContextUtil.getJwtSecurityContext(requestContext);
+        return securityContext != null && securityContext.isJwtExpired();
     }
 }

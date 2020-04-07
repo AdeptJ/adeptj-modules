@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
- * Default implementation of {@link JwtClaimsIntrospector}, which just checks whether the Jwt is expired or not.
+ * Default implementation of {@link JwtClaimsIntrospector}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -36,11 +36,15 @@ public class DefaultJwtClaimsIntrospector implements JwtClaimsIntrospector {
 
     static final JwtClaimsIntrospector INSTANCE = new DefaultJwtClaimsIntrospector();
 
+    /**
+     * This method checks if the jwt is expired by calling {@link #isJwtExpired}, if jwt is expired then abort
+     * the request processing by setting an Unauthorized(401).
+     *
+     * @param requestContext the JaxRS request context
+     */
     @Override
     public void introspect(ContainerRequestContext requestContext) {
         if (this.isJwtExpired(requestContext)) {
-            // Send Unauthorized if JwtService finds token to be expired.
-            // 401 is better suited for token verification failure.
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         }
     }
