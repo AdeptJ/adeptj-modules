@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.auth.spi;
+package com.adeptj.modules.jaxrs.core.auth.api;
 
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;

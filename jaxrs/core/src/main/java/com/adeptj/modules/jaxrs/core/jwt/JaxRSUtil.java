@@ -40,7 +40,7 @@ final class JaxRSUtil {
 
     static Response createResponseWithJwt(String jwt) {
         JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
-        return cookieConfig.enabled()
+        return (cookieConfig != null && cookieConfig.enabled())
                 ? Response.ok().cookie(newJwtCookie(jwt, cookieConfig)).build()
                 : Response.ok().header(AUTHORIZATION, jwt).build();
     }

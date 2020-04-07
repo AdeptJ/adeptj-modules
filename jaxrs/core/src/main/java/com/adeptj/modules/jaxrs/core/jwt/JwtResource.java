@@ -23,7 +23,7 @@ package com.adeptj.modules.jaxrs.core.jwt;
 import com.adeptj.modules.jaxrs.core.JaxRSResource;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
-import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticator;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,11 +39,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
-import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
-import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
-import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * JAX-RS resource for issuance and verification of JWT.
@@ -56,20 +52,15 @@ import static org.osgi.service.component.annotations.ReferencePolicyOption.GREED
 @Component(service = JwtResource.class)
 public class JwtResource {
 
-    /**
-     * The {@link JwtService} is optionally referenced.
-     * If unavailable this resource will set a Service Unavailable (503) status.
-     * <p>
-     * Note: As per Felix SCR, dynamic references should be declared as volatile.
-     */
-    @Reference(cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
-    private volatile JwtService jwtService;
+    private final JwtService jwtService;
 
-    /**
-     * The JaxRSAuthenticator reference;
-     */
-    @Reference
-    private JaxRSAuthenticator authenticator;
+    private final JaxRSAuthenticator authenticator;
+
+    @Activate
+    public JwtResource(@Reference JwtService jwtService, @Reference JaxRSAuthenticator authenticator) {
+        this.jwtService = jwtService;
+        this.authenticator = authenticator;
+    }
 
     /**
      * Create Jwt for the username with given credentials.
@@ -80,22 +71,17 @@ public class JwtResource {
      */
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response createJwt(@NotEmpty @FormParam("username") String username,
-                              @NotEmpty @FormParam("password") String password) {
-        if (this.jwtService == null) {
-            return Response.status(SERVICE_UNAVAILABLE).build();
-        }
+    public Response createJwt(@NotEmpty @FormParam("username") String username, @NotEmpty @FormParam("password") String password) {
         JaxRSAuthenticationOutcome outcome = this.authenticator.handleSecurity(SimpleCredentials.of(username, password));
         return outcome == null || outcome.isEmpty()
                 ? Response.status(UNAUTHORIZED).build()
                 : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
     }
 
-    // <<-------------------------------------------- OSGi INTERNAL ---------------------------------------------->>
+    // <<---------------------------------------- OSGi INTERNAL ------------------------------------------>>
 
     @Modified
-    @Activate
-    protected void start(JwtCookieConfig cookieConfig) {
+    protected void update(JwtCookieConfig cookieConfig) {
         JwtCookieConfigHolder.getInstance().setJwtCookieConfig(cookieConfig);
     }
 }

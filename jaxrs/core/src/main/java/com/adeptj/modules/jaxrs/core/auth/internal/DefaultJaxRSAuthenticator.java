@@ -23,7 +23,7 @@ package com.adeptj.modules.jaxrs.core.auth.internal;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticationRealm;
-import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

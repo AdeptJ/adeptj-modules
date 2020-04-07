@@ -54,7 +54,7 @@ public final class JwtExtractor {
         String jwt = null;
         // if JwtCookieConfig is enabled then always extract the Jwt from cookies first.
         JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
-        if (cookieConfig.enabled()) {
+        if (cookieConfig != null && cookieConfig.enabled()) {
             Cookie jwtCookie = requestContext.getCookies().get(cookieConfig.name());
             if (jwtCookie != null) {
                 jwt = cleanseJwt(jwtCookie.getValue());

@@ -22,7 +22,6 @@ package com.adeptj.modules.jaxrs.core.auth.api;
 
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
-import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.annotation.versioning.ConsumerType;
 
