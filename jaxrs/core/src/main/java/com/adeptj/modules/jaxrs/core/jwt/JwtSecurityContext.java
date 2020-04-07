@@ -34,7 +34,7 @@ import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
- * JAX-RS {@link SecurityContext}.
+ * Jwt based JAX-RS {@link SecurityContext}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
