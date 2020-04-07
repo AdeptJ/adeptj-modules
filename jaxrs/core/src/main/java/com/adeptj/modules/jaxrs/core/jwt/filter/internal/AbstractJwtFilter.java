@@ -30,7 +30,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_EXPIRED;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.VALUE_JWT_EXPIRED;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -66,9 +65,7 @@ public abstract class AbstractJwtFilter implements JwtFilter {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
             return;
         }
-        if (claims.isExpired()) {
-            claims.asMap().put(KEY_JWT_EXPIRED, VALUE_JWT_EXPIRED);
-        }
+        requestContext.setProperty(KEY_JWT_EXPIRED, claims.isExpired());
         this.getClaimsIntrospector().introspect(requestContext, claims.asMap());
     }
 }

@@ -39,7 +39,7 @@ public class DefaultJwtClaimsIntrospector implements JwtClaimsIntrospector {
 
     @Override
     public void introspect(ContainerRequestContext requestContext, Map<String, Object> claims) {
-        if (this.isJwtExpiredKeyExists(claims)) {
+        if (this.isJwtExpired(requestContext)) {
             // Send Unauthorized if JwtService finds token to be expired.
             // 401 is better suited for token verification failure.
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());

@@ -57,8 +57,8 @@ public interface JwtClaimsIntrospector {
      * <p>
      * Any public claims like username, roles and other important information can be introspected as per the need.
      * <p>
-     * Implementation must check if the key JWT_EXPIRED exists in the passed claims by calling {@link #isJwtExpiredKeyExists},
-     * if exists, then take appropriate action such as abort the request processing by setting a 401.
+     * Implementation must check if the jwt is expired by calling {@link #isJwtExpired}, if jwt is expired then take
+     * the appropriate action such as abort the request processing by setting a 401.
      *
      * @param requestContext the JaxRs request context
      * @param claims         the JWT claims
@@ -66,13 +66,13 @@ public interface JwtClaimsIntrospector {
     void introspect(ContainerRequestContext requestContext, Map<String, Object> claims);
 
     /**
-     * Checks whether the claims contains the key JWT_EXPIRED.
+     * Checks whether the jwt is expired by checking ContainerRequestContext attribute JWT_EXPIRED.
      *
-     * @param claims the Jwt claims
-     * @return a boolean to indicate whether the claims contains the key JWT_EXPIRED.
+     * @param requestContext the JaxRs request context
+     * @return a boolean to indicate whether the jwt is expired or not.
      */
-    default boolean isJwtExpiredKeyExists(Map<String, Object> claims) {
-        return Boolean.parseBoolean((String) claims.get(KEY_JWT_EXPIRED));
+    default boolean isJwtExpired(ContainerRequestContext requestContext) {
+        return (boolean) requestContext.getProperty(KEY_JWT_EXPIRED);
     }
 
     /**
