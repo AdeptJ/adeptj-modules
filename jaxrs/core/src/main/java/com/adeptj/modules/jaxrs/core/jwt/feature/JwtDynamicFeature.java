@@ -21,7 +21,8 @@
 package com.adeptj.modules.jaxrs.core.jwt.feature;
 
 import com.adeptj.modules.jaxrs.core.JaxRSProvider;
-import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
+import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
+import com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -44,7 +45,7 @@ import static javax.ws.rs.RuntimeType.SERVER;
 import static org.apache.commons.lang3.StringUtils.containsAny;
 
 /**
- * A {@link DynamicFeature} that enables the {@link JwtFilter} for the configured JAX-RS filterMapping.
+ * A {@link DynamicFeature} that enables the {@link JwtClaimsIntrospectionFilter} for the configured JAX-RS filterMapping.
  * <p>
  * Note: AX-RS resource to methods filterMapping must be provided before bootstrapping RESTEasy.
  * {@link DynamicFeature#configure} will only be called once while RESTEasy bootstraps.
@@ -77,13 +78,13 @@ public class JwtDynamicFeature implements DynamicFeature {
     private String[] filterMapping;
 
     /**
-     * Inject {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter}
+     * Inject {@link DynamicJwtClaimsIntrospectionFilter}
      */
     @Reference(target = "(jwt.filter.type=dynamic)")
-    private JwtFilter dynamicJwtFilter;
+    private JwtClaimsIntrospectionFilter claimsIntrospectionFilter;
 
     /**
-     * Registers the {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter} for interception
+     * Registers the {@link DynamicJwtClaimsIntrospectionFilter} for interception
      * in case of a match of configured resource class and methods.
      * <p>
      * See documentation on {@link JwtDynamicFeature#filterMapping} to know how the algo will work.
@@ -100,7 +101,7 @@ public class JwtDynamicFeature implements DynamicFeature {
                 .map(row -> row.split(EQ))
                 .filter(mapping -> resource.equals(mapping[0]) && containsAny(mapping[1], method, ASTERISK))
                 .forEach(mapping -> {
-                    context.register(this.dynamicJwtFilter, AUTHENTICATION);
+                    context.register(this.claimsIntrospectionFilter, AUTHENTICATION);
                     LOGGER.info(FILTER_REG_MSG, resource, method);
                 });
     }

@@ -17,29 +17,25 @@
 #                                                                             #
 ###############################################################################
 */
+
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
-import com.adeptj.modules.jaxrs.core.JaxRSProvider;
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
-import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
-import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
+import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.annotation.Priority;
-import javax.ws.rs.ext.Provider;
-
-import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter.FILTER_NAME;
-import static javax.ws.rs.Priorities.AUTHENTICATION;
+import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter.FILTER_NAME;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
- * This filter will kick in for any resource class/method that is annotated with {@link RequiresJwt}.
- * Filter will try to extract the Jwt first from HTTP Authorization header and if that resolves to null
+ * This filter will kick in for resource classes and methods configured by JwtDynamicFeature.
+ * Filter will try to extract the Jwt from HTTP Authorization header first and if that resolves to null
  * then try to extract from Cookies.
+ * However, in case JwtCookieConfig#enabled returns true then the functionality reversed.
  * <p>
  * A Cookie named as per configuration should be present in request.
  * <p>
@@ -47,29 +43,13 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxRSProvider(name = "StaticJwtFilter")
-@RequiresJwt
-@Priority(AUTHENTICATION)
-@Provider
-@Component(immediate = true, property = FILTER_NAME)
-public class StaticJwtFilter extends AbstractJwtFilter implements JwtFilter {
+@Component(service = JwtClaimsIntrospectionFilter.class, immediate = true, property = FILTER_NAME)
+public class DynamicJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntrospectionFilter {
 
-    static final String FILTER_NAME = "jwt.filter.type=static";
-
-    /**
-     * The {@link JwtService} is optionally referenced.
-     * If unavailable this filter will set a Service Unavailable (503) status.
-     */
-    @Reference(cardinality = OPTIONAL, policy = DYNAMIC)
-    private volatile JwtService jwtService;
+    static final String FILTER_NAME = "jwt.filter.type=dynamic";
 
     @Reference(cardinality = OPTIONAL, policy = DYNAMIC)
     private volatile JwtClaimsIntrospector claimsIntrospector;
-
-    @Override
-    public JwtService getJwtService() {
-        return this.jwtService;
-    }
 
     @Override
     public JwtClaimsIntrospector getClaimsIntrospector() {

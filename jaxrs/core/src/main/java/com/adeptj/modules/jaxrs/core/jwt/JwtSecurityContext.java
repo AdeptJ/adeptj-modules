@@ -20,9 +20,19 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_SUBJECT;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * JAX-RS {@link SecurityContext}.
@@ -31,39 +41,17 @@ import java.util.Set;
  */
 public class JwtSecurityContext implements SecurityContext {
 
-    private String subject;
+    private final String subject;
 
-    private Set<String> roles;
+    private final Set<String> roles;
 
-    private boolean secure;
+    private final boolean secure;
 
-    private String authScheme;
-
-    private JwtSecurityContext() {
-    }
-
-    public static JwtSecurityContext newSecurityContext() {
-        return new JwtSecurityContext();
-    }
-
-    public JwtSecurityContext withSubject(String subject) {
-        this.subject = subject;
-        return this;
-    }
-
-    public JwtSecurityContext withRoles(Set<String> roles) {
-        this.roles = roles;
-        return this;
-    }
-
-    public JwtSecurityContext withSecure(boolean secure) {
-        this.secure = secure;
-        return this;
-    }
-
-    public JwtSecurityContext withAuthScheme(String authScheme) {
-        this.authScheme = authScheme;
-        return this;
+    public JwtSecurityContext(ContainerRequestContext requestContext, Map<String, Object> claims) {
+        this.subject = (String) claims.get(KEY_JWT_SUBJECT);
+        this.roles = Stream.of(((String) claims.getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
+                .collect(Collectors.toSet());
+        this.secure = requestContext.getSecurityContext().isSecure();
     }
 
     @Override
@@ -83,6 +71,6 @@ public class JwtSecurityContext implements SecurityContext {
 
     @Override
     public String getAuthenticationScheme() {
-        return this.authScheme;
+        return AUTH_SCHEME_TOKEN;
     }
 }

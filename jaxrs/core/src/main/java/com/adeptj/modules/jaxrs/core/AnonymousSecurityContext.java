@@ -18,30 +18,42 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt.filter;
+package com.adeptj.modules.jaxrs.core;
 
-import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
-import com.adeptj.modules.security.jwt.JwtService;
-
-import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.SecurityContext;
+import java.security.Principal;
 
 /**
- * Interface helping in exposing {@link JwtFilter} as a service in OSGi service registry.
- * Thereafter can be injected as a reference in other services and components.
- * <p>
- * It is implemented in two variants as described below.
- * <p>
- * 1. {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter} deals with
- * {@link com.adeptj.modules.jaxrs.core.jwt.RequiresJwt} annotated resource classes and methods.
- * <p>
- * 2. {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtFilter} deals with
- * resource classes and methods configured via {@link com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature}
+ * JAX-RS {@link SecurityContext}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JwtFilter extends ContainerRequestFilter {
+public class AnonymousSecurityContext implements SecurityContext {
 
-    JwtService getJwtService();
+    private final boolean secure;
 
-    JwtClaimsIntrospector getClaimsIntrospector();
+    public AnonymousSecurityContext(ContainerRequestContext requestContext) {
+        this.secure = requestContext.getSecurityContext().isSecure();
+    }
+
+    @Override
+    public Principal getUserPrincipal() {
+        return () -> "anonymous";
+    }
+
+    @Override
+    public boolean isUserInRole(String role) {
+        return false;
+    }
+
+    @Override
+    public boolean isSecure() {
+        return this.secure;
+    }
+
+    @Override
+    public String getAuthenticationScheme() {
+        return null;
+    }
 }

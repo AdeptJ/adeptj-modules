@@ -43,6 +43,10 @@ Import-Package: \
   javax.servlet.http;\
   javax.servlet.descriptor;\
   javax.servlet.annotation,\
+  com.adeptj.modules.jaxrs.core;\
+  com.adeptj.modules.jaxrs.core.auth;\
+  com.adeptj.modules.jaxrs.core.auth.api;\
+  com.adeptj.modules.jaxrs.core.jwt,\
   com.sun.el.parser;\
   com.sun.el.lang;\
   com.sun.el.stream;\

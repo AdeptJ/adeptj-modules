@@ -25,15 +25,8 @@ import org.osgi.annotation.versioning.ConsumerType;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_EXPIRED;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_SUBJECT;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Service interface for introspecting the JWT claims(Registered as well as public).
@@ -82,11 +75,6 @@ public interface JwtClaimsIntrospector {
      * @param claims         the JWT claims
      */
     default void setJwtSecurityContext(ContainerRequestContext requestContext, Map<String, Object> claims) {
-        requestContext.setSecurityContext(JwtSecurityContext.newSecurityContext()
-                .withSubject((String) claims.get(KEY_JWT_SUBJECT))
-                .withRoles(Stream.of(((String) claims.getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
-                        .collect(Collectors.toSet()))
-                .withSecure(requestContext.getSecurityContext().isSecure())
-                .withAuthScheme(AUTH_SCHEME_TOKEN));
+        requestContext.setSecurityContext(new JwtSecurityContext(requestContext, claims));
     }
 }

@@ -20,17 +20,16 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
-import com.adeptj.modules.jaxrs.core.jwt.JwtExtractor;
-import com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter;
+import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
+import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_CLAIMS;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.KEY_JWT_EXPIRED;
-import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
@@ -38,7 +37,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public abstract class AbstractJwtFilter implements JwtFilter {
+public abstract class AbstractJwtClaimsIntrospectionFilter implements JwtClaimsIntrospectionFilter {
 
     /**
      * This method does the following.
@@ -52,16 +51,8 @@ public abstract class AbstractJwtFilter implements JwtFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        JwtService jwtService = this.getJwtService();
-        if (jwtService == null) {
-            requestContext.abortWith(Response.status(SERVICE_UNAVAILABLE).build());
-            return;
-        }
-        JwtClaims claims;
-        String jwt = JwtExtractor.extract(requestContext);
-        // Send Unauthorized(401) if JWT itself is null/empty or JwtService returns null JwtClaims after verification,
-        // probably due to malformed jwt.
-        if (StringUtils.isEmpty(jwt) || (claims = jwtService.verifyJwt(jwt)) == null) {
+        JwtClaims claims = (JwtClaims) requestContext.getProperty(KEY_JWT_CLAIMS);
+        if (claims == null || !(requestContext.getSecurityContext() instanceof JwtSecurityContext)) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
             return;
         }

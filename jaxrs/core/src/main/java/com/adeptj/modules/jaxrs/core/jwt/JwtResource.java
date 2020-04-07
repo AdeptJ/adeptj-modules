@@ -24,6 +24,7 @@ import com.adeptj.modules.jaxrs.core.JaxRSResource;
 import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
 import com.adeptj.modules.jaxrs.core.auth.spi.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtClaimsIntrospectionFilter;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -97,21 +98,21 @@ public class JwtResource {
     /**
      * This resource method exists to verify the Jwt issued earlier. Should not be called by clients directly.
      * <p>
-     * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter}
+     * Rather use the {@link RequiresJwt} annotation for automatic verification by {@link StaticJwtClaimsIntrospectionFilter}
      *
-     * @return response 200 if {@link com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtFilter} was able to verify the Jwt issued earlier.
+     * @return response 200 if {@link StaticJwtClaimsIntrospectionFilter} was able to verify the Jwt issued earlier.
      */
     @GET
     @Path("/verify")
     @RequiresJwt
     public Response verifyJwt(@Context SecurityContext securityContext) {
-        return Response.ok("Verified subject: " + securityContext.getUserPrincipal().getName()).build();
+        return Response.ok("Current subject: " + securityContext.getUserPrincipal().getName()).build();
     }
 
     @GET
     @Path("/dynamic")
     public Response hello(@Context SecurityContext securityContext) {
-        return Response.ok("Verified subject: " + securityContext.getUserPrincipal()).build();
+        return Response.ok("Current subject: " + securityContext.getUserPrincipal().getName()).build();
     }
 
     // <<-------------------------------------------- OSGi INTERNAL ---------------------------------------------->>

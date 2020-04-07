@@ -18,31 +18,29 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.jwt.filter;
+
+import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
+import com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter;
+import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtClaimsIntrospectionFilter;
+
+import javax.ws.rs.container.ContainerRequestFilter;
 
 /**
- * Constants for Jax-RS modules.
+ * Interface helping in exposing {@link JwtClaimsIntrospectionFilter} as a service in OSGi service registry.
+ * Thereafter can be injected as a reference in other services and components.
+ * <p>
+ * It is implemented in two variants as described below.
+ * <p>
+ * 1. {@link StaticJwtClaimsIntrospectionFilter} deals with
+ * {@link com.adeptj.modules.jaxrs.core.jwt.RequiresJwt} annotated resource classes and methods.
+ * <p>
+ * 2. {@link DynamicJwtClaimsIntrospectionFilter} deals with
+ * resource classes and methods configured via {@link com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JaxRSConstants {
+public interface JwtClaimsIntrospectionFilter extends ContainerRequestFilter {
 
-    // Just declaring constants, no instances required.
-    private JaxRSConstants() {
-    }
-
-    public static final String AUTH_SCHEME_BEARER = "Bearer";
-
-    public static final String AUTH_SCHEME_TOKEN = "TOKEN";
-
-    public static final String KEY_JWT_SUBJECT = "sub";
-
-    public static final String KEY_JWT_EXPIRED = "JWT_EXPIRED";
-
-    public static final String KEY_JWT_CLAIMS = "JWT_CLAIMS";
-
-    public static final String ROLES = "roles";
-
-    public static final String ROLES_DELIMITER = ",";
-
+    JwtClaimsIntrospector getClaimsIntrospector();
 }
