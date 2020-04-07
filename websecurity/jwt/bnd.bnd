@@ -16,9 +16,15 @@
 #                                                                          #
 ############################################################################
 
+# Scan all packages for Metatype and DS annotations as of now.
+
 -metatypeannotations: *
 
+-metatypeannotations-options: version;minimum=1.4.0
+
 -dsannotations: *
+
+-dsannotations-options: version;minimum=1.4.0
 
 -includeresource: jjwt-*.jar;lib:=true
 

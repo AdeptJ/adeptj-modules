@@ -16,11 +16,19 @@
 #                                                                          #
 ############################################################################
 
+# Scan all packages for Metatype and DS annotations as of now.
+
 -metatypeannotations: *
+
+-metatypeannotations-options: version;minimum=1.4.0
 
 -dsannotations: *
 
-Export-Package: com.adeptj.modules.security.core
+-dsannotations-options: version;minimum=1.4.0
+
+Export-Package: com.adeptj.modules.security.core, \
+                com.adeptj.modules.security.core.identitystore, \
+                com.adeptj.modules.security.core.credential
   
 Bundle-Name: ${project.name}
 

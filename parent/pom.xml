@@ -194,24 +194,12 @@
                 <version>${resteasy.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>commons-io</groupId>
-                        <artifactId>commons-io</artifactId>
+                        <groupId>com.sun.activation</groupId>
+                        <artifactId>jakarta.activation</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.validation</groupId>
-                        <artifactId>validation-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>net.jcip</groupId>
-                        <artifactId>jcip-annotations</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.httpcomponents</groupId>
-                        <artifactId>httpclient</artifactId>
+                        <groupId>jakarta.validation</groupId>
+                        <artifactId>jakarta.validation-api</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.jboss.logging</groupId>
@@ -232,10 +220,6 @@
                     <exclusion>
                         <groupId>org.jboss.spec.javax.annotation</groupId>
                         <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.jboss.spec.javax.servlet</groupId>
-                        <artifactId>jboss-servlet-api_4.0_spec</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -259,7 +243,7 @@
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.mail</groupId>
-                        <artifactId>javax.mail</artifactId>
+                        <artifactId>jakarta.mail</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.apache.james</groupId>
@@ -272,6 +256,10 @@
                     <exclusion>
                         <groupId>org.apache.james</groupId>
                         <artifactId>apache-mime4j-storage</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.microprofile.config</groupId>
+                        <artifactId>microprofile-config-api</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.jboss.logging</groupId>

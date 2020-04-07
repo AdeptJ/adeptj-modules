@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import io.smallrye.config.SmallRyeConfigProviderResolver;
+import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ServletBootstrap;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -67,6 +69,8 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     public void init(ServletConfig servletConfig) throws ServletException {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
         ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
+        // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
+        ConfigProviderResolver.setInstance(new SmallRyeConfigProviderResolver());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
         this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
         this.deployment.start();
@@ -88,12 +92,8 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     @Override
     public void destroy() {
         if (this.deployment != null) {
-            try {
-                this.deployment.stop();
-                LOGGER.info("ResteasyDeployment stopped!!");
-            } catch (Exception ex) { // NOSONAR
-                LOGGER.error(ex.getMessage(), ex);
-            }
+            this.deployment.stop();
+            LOGGER.info("ResteasyDeployment stopped!!");
         }
     }
 }
