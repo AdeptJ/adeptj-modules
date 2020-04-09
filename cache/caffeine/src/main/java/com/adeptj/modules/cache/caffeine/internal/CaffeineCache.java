@@ -36,17 +36,17 @@ import java.util.function.Function;
  */
 public final class CaffeineCache<K, V> implements Cache<K, V> {
 
-    private final String name;
+    private final String cacheName;
 
     private final com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache;
 
-    CaffeineCache(String name, String cacheSpec) {
-        this.name = name;
+    CaffeineCache(String cacheName, String cacheSpec) {
+        this.cacheName = cacheName;
         this.caffeineCache = Caffeine.from(cacheSpec).build();
     }
 
     String getName() {
-        return this.name;
+        return this.cacheName;
     }
 
     @Override
@@ -112,11 +112,11 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CaffeineCache<?, ?> that = (CaffeineCache<?, ?>) o;
-        return Objects.equals(this.name, that.name);
+        return Objects.equals(this.cacheName, that.cacheName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.name);
+        return Objects.hash(this.cacheName);
     }
 }

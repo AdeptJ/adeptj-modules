@@ -20,10 +20,13 @@
 
 -metatypeannotations: *
 
+-metatypeannotations-options: version;minimum=1.4.0
+
 -dsannotations: *
 
-Export-Package: com.adeptj.modules.commons.validator, \
-                com.adeptj.modules.commons.validator.service
+-dsannotations-options: version;minimum=1.4.0
+
+Export-Package: com.adeptj.modules.commons.validator.service
 
 Bundle-Name: ${project.name}
 

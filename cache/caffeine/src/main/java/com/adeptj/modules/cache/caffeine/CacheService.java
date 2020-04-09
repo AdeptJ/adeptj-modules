@@ -20,16 +20,19 @@
 
 package com.adeptj.modules.cache.caffeine;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 /**
  * The {@link CacheService} for in memory local caching.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 public interface CacheService {
 
     <K, V> Cache<K, V> getCache(String cacheName);
 
     void evictCache(String cacheName);
 
-    void evictAllCaches();
+    void evictCaches(Iterable<String> cacheNames);
 }

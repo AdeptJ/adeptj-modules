@@ -35,8 +35,8 @@ public class SaltHashPair {
     private String hash;
 
     public SaltHashPair(String salt, String hash) {
-        Validate.isTrue(StringUtils.isNotEmpty(hash), "hash can't be blank!!");
         Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(hash), "hash can't be blank!!");
         this.salt = salt;
         this.hash = hash;
     }

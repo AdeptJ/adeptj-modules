@@ -24,6 +24,7 @@ import com.adeptj.modules.cache.caffeine.Cache;
 import com.adeptj.modules.cache.caffeine.CacheService;
 import com.adeptj.modules.cache.caffeine.CaffeineCacheConfigFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
@@ -31,14 +32,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
- * Default implementation of {@link CacheService}.
+ * Caffeine cache based implementation of {@link CacheService}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -47,56 +49,67 @@ public class CaffeineCacheService implements CacheService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<CaffeineCache<?, ?>> caches;
+    private final ConcurrentMap<String, CaffeineCache<?, ?>> caches;
 
     public CaffeineCacheService() {
-        this.caches = new CopyOnWriteArrayList<>();
+        this.caches = new ConcurrentHashMap<>();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <K, V> Cache<K, V> getCache(String cacheName) {
-        return (Cache<K, V>) this.caches.stream()
-                .filter(cache -> StringUtils.equals(cache.getName(), cacheName))
+        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cacheName can't be blank!!");
+        return (Cache<K, V>) this.caches.entrySet().stream()
+                .filter(entry -> StringUtils.equals(entry.getKey(), cacheName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(String.format("No cache exists with name [%s]!!", cacheName)));
     }
 
     @Override
     public void evictCache(String cacheName) {
-        this.caches.stream()
-                .filter(cache -> StringUtils.equals(cache.getName(), cacheName))
+        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cacheName can't be blank!!");
+        this.caches.entrySet().stream()
+                .filter(entry -> StringUtils.equals(entry.getKey(), cacheName))
                 .findFirst()
-                .ifPresent(CaffeineCache::clear);
+                .ifPresent(entry -> entry.getValue().clear());
     }
 
     @Override
-    public void evictAllCaches() {
-        this.caches.forEach(cache -> {
-            try {
-                LOGGER.info("Invalidating cache: [{}]", cache.getName());
-                cache.clear();
-            } catch (Exception ex) { // NOSONAR
-                LOGGER.error(ex.getMessage(), ex);
-            }
-        });
+    public void evictCaches(Iterable<String> cacheNames) {
+        cacheNames.forEach((String cacheName) -> Optional.ofNullable(this.caches.get(cacheName))
+                .ifPresent(cache -> {
+                    try {
+                        LOGGER.info("Invalidating cache: [{}]", cache.getName());
+                        cache.clear();
+                    } catch (Exception ex) { // NOSONAR
+                        LOGGER.error(ex.getMessage(), ex);
+                    }
+                }));
     }
 
     // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
     @Deactivate
     protected void stop() {
-        this.evictAllCaches();
+        this.caches.forEach((String cacheName, Cache<?, ?> cache) -> {
+            try {
+                LOGGER.info("Invalidating cache: [{}]", cacheName);
+                cache.clear();
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error(ex.getMessage(), ex);
+            }
+        });
         this.caches.clear();
     }
 
     @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
-        this.caches.add(new CaffeineCache<>(cacheConfigFactory.getCacheName(), cacheConfigFactory.getCacheSpec()));
+    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
+        CaffeineCache<?, ?> cache = new CaffeineCache<>(configFactory.getCacheName(), configFactory.getCacheSpec());
+        this.caches.put(configFactory.getCacheName(), cache);
     }
 
-    protected void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory cacheConfigFactory) {
-        this.evictCache(cacheConfigFactory.getCacheName());
-        this.caches.removeIf(cache -> StringUtils.equals(cache.getName(), cacheConfigFactory.getCacheName()));
+    protected void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
+        Optional.ofNullable(this.caches.remove(configFactory.getCacheName()))
+                .ifPresent(CaffeineCache::clear);
     }
 }
