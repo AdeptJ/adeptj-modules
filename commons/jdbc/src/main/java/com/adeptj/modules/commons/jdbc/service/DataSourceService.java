@@ -34,11 +34,10 @@ public interface DataSourceService {
 
     /**
      * Returns the configured Hikari {@link DataSource} instance.
-     *
+     * <p>
      * Note: Caller should NEVER try to close the DataSource as it's lifecycle is managed by HikariDataSourceService.
      *
      * @return The configured Hikari {@link DataSource} instance.
-     * @throws IllegalStateException if {@link DataSource} is not configured.
      */
     DataSource getDataSource();
 }

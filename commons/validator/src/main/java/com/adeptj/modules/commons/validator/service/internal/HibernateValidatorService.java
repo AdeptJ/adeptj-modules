@@ -24,7 +24,6 @@ import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.validator.HibernateValidator;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
@@ -32,8 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.NoProviderFoundException;
 import javax.validation.Validation;
+import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.lang.invoke.MethodHandles;
@@ -46,12 +45,27 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component
+@Component(service = ValidatorService.class)
 public class HibernateValidatorService implements ValidatorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private ValidatorFactory validatorFactory;
+    public static final String VALIDATOR_FACTORY_INIT_MSG = "HibernateValidator initialized in [{}] ms!!";
+
+    private final ValidatorFactory validatorFactory;
+
+    public HibernateValidatorService() {
+        try {
+            final long startTime = System.nanoTime();
+            this.validatorFactory = Validation.byProvider(HibernateValidator.class)
+                    .configure()
+                    .buildValidatorFactory();
+            LOGGER.info(VALIDATOR_FACTORY_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
+        } catch (ValidationException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
 
     /**
      * {@inheritDoc}
@@ -89,7 +103,7 @@ public class HibernateValidatorService implements ValidatorService {
      */
     @Override
     public ValidatorFactory getValidatorFactory() {
-        return this.validatorFactory;
+        return new ValidatorFactoryWrapper(this.validatorFactory);
     }
 
     /**
@@ -101,20 +115,6 @@ public class HibernateValidatorService implements ValidatorService {
     }
 
     // <<------------------------------------------ OSGi INTERNAL ---------------------------------------------->>
-
-    @Activate
-    protected void start() {
-        try {
-            final long startTime = System.nanoTime();
-            this.validatorFactory = Validation.byProvider(HibernateValidator.class)
-                    .configure()
-                    .buildValidatorFactory();
-            LOGGER.info("HibernateValidator initialized in [{}] ms!!", NANOSECONDS.toMillis(System.nanoTime() - startTime));
-        } catch (NoProviderFoundException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw ex;
-        }
-    }
 
     @Deactivate
     protected void stop() {

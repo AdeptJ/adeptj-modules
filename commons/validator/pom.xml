@@ -131,6 +131,13 @@
                 </configuration>
             </plugin>
 
+            <!-- AdeptJ maven plugin for bundle installation etc -->
+            <plugin>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-maven-plugin</artifactId>
+                <version>${adeptj-maven-plugin.version}</version>
+            </plugin>
+
         </plugins>
 
     </build>
@@ -139,13 +146,13 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
+            <artifactId>osgi.annotation</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -185,12 +192,6 @@
                     <artifactId>jboss-logging</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-commons-utils</artifactId>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

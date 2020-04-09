@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.commons.validator.service;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -30,6 +32,7 @@ import java.util.Set;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 public interface ValidatorService {
 
     /**

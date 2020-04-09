@@ -108,7 +108,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public void close() {
-        throw new IllegalStateException("Managed EntityManagerFactory can't be closed by consumer code!!");
+        throw new UnsupportedOperationException("Managed EntityManagerFactory can't be closed by consumer code!!");
     }
 
     /**

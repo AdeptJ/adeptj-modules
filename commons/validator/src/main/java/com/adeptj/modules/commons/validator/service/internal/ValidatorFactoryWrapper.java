@@ -18,101 +18,99 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.service.internal;
+package com.adeptj.modules.commons.validator.service.internal;
 
-import com.zaxxer.hikari.HikariDataSource;
-
-import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.logging.Logger;
-
+import javax.validation.ClockProvider;
+import javax.validation.ConstraintValidatorFactory;
+import javax.validation.MessageInterpolator;
+import javax.validation.ParameterNameProvider;
+import javax.validation.TraversableResolver;
+import javax.validation.Validator;
+import javax.validation.ValidatorContext;
+import javax.validation.ValidatorFactory;
 
 /**
- * A simple wrapper for {@link HikariDataSource}, this way {@link HikariDataSource} object is not directly exposed
- * which further prevents the possibility of calling {@link HikariDataSource#close()} by consumers.
+ * Wrapper around {@link ValidatorFactory} to prevent close method call by consumer code.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-public class DataSourceWrapper implements DataSource {
+public class ValidatorFactoryWrapper implements ValidatorFactory {
 
-    private final DataSource delegate;
+    private final ValidatorFactory delegate;
 
-    DataSourceWrapper(DataSource dataSource) {
-        this.delegate = dataSource;
+    ValidatorFactoryWrapper(ValidatorFactory delegate) {
+        this.delegate = delegate;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Connection getConnection() throws SQLException {
-        return this.delegate.getConnection();
+    public Validator getValidator() {
+        return this.delegate.getValidator();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Connection getConnection(String username, String password) throws SQLException {
-        return this.delegate.getConnection(username, password);
+    public ValidatorContext usingContext() {
+        return this.delegate.usingContext();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        return this.delegate.unwrap(iface);
+    public MessageInterpolator getMessageInterpolator() {
+        return this.delegate.getMessageInterpolator();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return this.delegate.isWrapperFor(iface);
+    public TraversableResolver getTraversableResolver() {
+        return this.delegate.getTraversableResolver();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PrintWriter getLogWriter() throws SQLException {
-        return this.delegate.getLogWriter();
+    public ConstraintValidatorFactory getConstraintValidatorFactory() {
+        return this.delegate.getConstraintValidatorFactory();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setLogWriter(PrintWriter out) throws SQLException {
-        this.delegate.setLogWriter(out);
+    public ParameterNameProvider getParameterNameProvider() {
+        return this.delegate.getParameterNameProvider();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setLoginTimeout(int seconds) throws SQLException {
-        this.delegate.setLoginTimeout(seconds);
+    public ClockProvider getClockProvider() {
+        return this.delegate.getClockProvider();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getLoginTimeout() throws SQLException {
-        return this.delegate.getLoginTimeout();
+    public <T> T unwrap(Class<T> type) {
+        return this.delegate.unwrap(type);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return this.delegate.getParentLogger();
+    public void close() {
+        throw new UnsupportedOperationException("Caller is not supposed to close ValidatorFactory!!");
     }
 }
