@@ -20,53 +20,43 @@
 
 package com.adeptj.modules.cache.caffeine.internal;
 
-import com.adeptj.modules.cache.caffeine.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 
-import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheFactory.PID;
+import static com.adeptj.modules.cache.caffeine.internal.CaffeineCacheConfigFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
- * Factory for creating Caffeine cache.
+ * Factory for creating CaffeineCache configurations.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = CaffeineCacheConfig.class, factory = true)
-@Component(service = CaffeineCacheFactory.class, name = PID, configurationPolicy = REQUIRE)
-public class CaffeineCacheFactory {
+@Component(service = CaffeineCacheConfigFactory.class, name = PID, configurationPolicy = REQUIRE)
+public class CaffeineCacheConfigFactory {
 
-    static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCache.factory";
+    static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCacheConfig.factory";
 
-    private final Cache<?, ?> cache;
+    private final String cacheName;
+
+    private final String cacheSpec;
 
     @Activate
-    public CaffeineCacheFactory(CaffeineCacheConfig cacheConfig) {
-        String cacheName = cacheConfig.cache_name();
-        String cacheSpec = cacheConfig.cache_spec();
-        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cacheName can't be blank!!");
-        Validate.isTrue(StringUtils.isNotEmpty(cacheSpec), "cacheSpec can't be blank!!");
-        this.cache = new CaffeineCache<>(cacheName, Caffeine.from(cacheSpec).build());
+    public CaffeineCacheConfigFactory(CaffeineCacheConfig cacheConfig) {
+        this.cacheName = cacheConfig.cache_name();
+        this.cacheSpec = cacheConfig.cache_spec();
+        Validate.isTrue(StringUtils.isNotEmpty(this.cacheName), "cacheName can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(this.cacheSpec), "cacheSpec can't be blank!!");
     }
 
-    public Cache<?, ?> getCache() {
-        return this.cache;
+    public String getCacheName() {
+        return this.cacheName;
     }
 
-    @Override
-    public String toString() {
-        return String.format("CaffeineCacheFactory: [%s]", this.cache.getName());
-    }
-
-    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
-
-    @Deactivate
-    protected void stop() {
-        this.cache.clear();
+    public String getCacheSpec() {
+        return this.cacheSpec;
     }
 }

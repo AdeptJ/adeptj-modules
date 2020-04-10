@@ -53,7 +53,7 @@ public interface Cache<K, V> {
 
     void remove(Iterable<K> keys);
 
-    void clear();
+    void evict();
 
     long size();
 

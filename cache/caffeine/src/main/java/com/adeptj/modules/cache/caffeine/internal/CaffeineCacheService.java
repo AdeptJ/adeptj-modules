@@ -25,13 +25,13 @@ import com.adeptj.modules.cache.caffeine.CacheService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -72,33 +72,46 @@ public class CaffeineCacheService implements CacheService {
                 .stream()
                 .filter(entry -> StringUtils.equals(entry.getKey(), cacheName))
                 .findFirst()
-                .ifPresent(entry -> entry.getValue().clear());
+                .ifPresent(entry -> this.safeEvict(entry.getValue()));
     }
 
     @Override
     public void evictCaches(List<String> cacheNames) {
         LOGGER.info("Caches to be evicted: {}", cacheNames);
-        cacheNames.forEach((String cacheName) -> Optional.ofNullable(this.caches.get(cacheName))
-                .ifPresent(cache -> {
-                    try {
-                        cache.clear();
-                    } catch (Exception ex) { // NOSONAR
-                        LOGGER.error(ex.getMessage(), ex);
-                    }
-                }));
+        cacheNames.forEach(cacheName -> this.safeEvict(this.caches.get(cacheName)));
+    }
+
+    private void safeEvict(Cache<?, ?> cache) {
+        if (cache != null) {
+            try {
+                cache.evict();
+                LOGGER.info("CaffeineCache:[{}] evicted!!", cache.getName());
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error(ex.getMessage(), ex);
+            }
+        }
     }
 
     // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
-    @Reference(service = CaffeineCacheFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
-        LOGGER.info("Bind {}", cacheFactory);
-        Cache<?, ?> cache = cacheFactory.getCache();
-        this.caches.put(cache.getName(), cache);
+    /**
+     * First evict all the caches and then clears the cache instance holding map.
+     */
+    @Deactivate
+    protected void stop() {
+        this.caches.forEach((cacheName, cache) -> this.safeEvict(cache));
+        this.caches.clear();
     }
 
-    protected void unbindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
-        LOGGER.info("Unbind: {}", cacheFactory);
-        this.caches.remove(cacheFactory.getCache().getName());
+    @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
+        String cacheName = configFactory.getCacheName();
+        String cacheSpec = configFactory.getCacheSpec();
+        LOGGER.info("Creating CaffeineCache:[{}] with spec:[{}]", cacheName, cacheSpec);
+        this.safeEvict(this.caches.put(cacheName, new CaffeineCache<>(cacheName, cacheSpec)));
+    }
+
+    protected void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
+        this.safeEvict(this.caches.remove(configFactory.getCacheName()));
     }
 }
