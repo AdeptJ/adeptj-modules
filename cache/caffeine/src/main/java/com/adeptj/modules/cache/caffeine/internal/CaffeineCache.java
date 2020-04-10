@@ -21,7 +21,6 @@
 package com.adeptj.modules.cache.caffeine.internal;
 
 import com.adeptj.modules.cache.caffeine.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,12 +39,13 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
 
     private final com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache;
 
-    CaffeineCache(String cacheName, String cacheSpec) {
+    CaffeineCache(String cacheName, com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache) {
         this.cacheName = cacheName;
-        this.caffeineCache = Caffeine.from(cacheSpec).build();
+        this.caffeineCache = caffeineCache;
     }
 
-    String getName() {
+    @Override
+    public String getName() {
         return this.cacheName;
     }
 

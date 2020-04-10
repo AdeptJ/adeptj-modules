@@ -32,6 +32,13 @@ import java.util.function.Function;
  */
 public interface Cache<K, V> {
 
+    /**
+     * Each cache instance has a name which this method returns to the caller.
+     *
+     * @return the unique cache name.
+     */
+    String getName();
+
     V get(K key, Function<? super K, ? extends V> mappingFunction);
 
     V getIfPresent(K key);

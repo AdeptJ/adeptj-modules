@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine;
+package com.adeptj.modules.cache.caffeine.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -29,8 +29,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ Caffeine Cache Configuration Factory",
-        description = "Service Configuration for AdeptJ CaffeineCacheConfig Factory."
+        name = "AdeptJ CaffeineCache Factory Configurations",
+        description = "Service Configurations for AdeptJ CaffeineCache Factory."
 )
 public @interface CaffeineCacheConfig {
 
@@ -38,5 +38,8 @@ public @interface CaffeineCacheConfig {
     String cache_name();
 
     @AttributeDefinition(name = "Cache Spec", description = "The cache spec literal for configuring Caffeine cache.")
-    String cache_spec();
+    String cache_spec() default "maximumSize=16,expireAfterWrite=3600s";
+
+    // name hint non editable property
+    String webconsole_configurationFactory_nameHint() default "Caffeine Cache: {" + "cache.name" + "}"; // NOSONAR
 }

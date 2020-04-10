@@ -22,16 +22,15 @@ package com.adeptj.modules.cache.caffeine.internal;
 
 import com.adeptj.modules.cache.caffeine.Cache;
 import com.adeptj.modules.cache.caffeine.CacheService;
-import com.adeptj.modules.cache.caffeine.CaffeineCacheConfigFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -49,7 +48,7 @@ public class CaffeineCacheService implements CacheService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final ConcurrentMap<String, CaffeineCache<?, ?>> caches;
+    private final ConcurrentMap<String, Cache<?, ?>> caches;
 
     public CaffeineCacheService() {
         this.caches = new ConcurrentHashMap<>();
@@ -59,7 +58,8 @@ public class CaffeineCacheService implements CacheService {
     @Override
     public <K, V> Cache<K, V> getCache(String cacheName) {
         Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cacheName can't be blank!!");
-        return (Cache<K, V>) this.caches.entrySet().stream()
+        return (Cache<K, V>) this.caches.entrySet()
+                .stream()
                 .filter(entry -> StringUtils.equals(entry.getKey(), cacheName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(String.format("No cache exists with name [%s]!!", cacheName)));
@@ -68,18 +68,19 @@ public class CaffeineCacheService implements CacheService {
     @Override
     public void evictCache(String cacheName) {
         Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cacheName can't be blank!!");
-        this.caches.entrySet().stream()
+        this.caches.entrySet()
+                .stream()
                 .filter(entry -> StringUtils.equals(entry.getKey(), cacheName))
                 .findFirst()
                 .ifPresent(entry -> entry.getValue().clear());
     }
 
     @Override
-    public void evictCaches(Iterable<String> cacheNames) {
+    public void evictCaches(List<String> cacheNames) {
+        LOGGER.info("Caches to be evicted: {}", cacheNames);
         cacheNames.forEach((String cacheName) -> Optional.ofNullable(this.caches.get(cacheName))
                 .ifPresent(cache -> {
                     try {
-                        LOGGER.info("Invalidating cache: [{}]", cache.getName());
                         cache.clear();
                     } catch (Exception ex) { // NOSONAR
                         LOGGER.error(ex.getMessage(), ex);
@@ -89,27 +90,15 @@ public class CaffeineCacheService implements CacheService {
 
     // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
-    @Deactivate
-    protected void stop() {
-        this.caches.forEach((String cacheName, Cache<?, ?> cache) -> {
-            try {
-                LOGGER.info("Invalidating cache: [{}]", cacheName);
-                cache.clear();
-            } catch (Exception ex) { // NOSONAR
-                LOGGER.error(ex.getMessage(), ex);
-            }
-        });
-        this.caches.clear();
+    @Reference(service = CaffeineCacheFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
+        LOGGER.info("Bind {}", cacheFactory);
+        Cache<?, ?> cache = cacheFactory.getCache();
+        this.caches.put(cache.getName(), cache);
     }
 
-    @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
-        CaffeineCache<?, ?> cache = new CaffeineCache<>(configFactory.getCacheName(), configFactory.getCacheSpec());
-        this.caches.put(configFactory.getCacheName(), cache);
-    }
-
-    protected void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
-        Optional.ofNullable(this.caches.remove(configFactory.getCacheName()))
-                .ifPresent(CaffeineCache::clear);
+    protected void unbindCaffeineCacheFactory(CaffeineCacheFactory cacheFactory) {
+        LOGGER.info("Unbind: {}", cacheFactory);
+        this.caches.remove(cacheFactory.getCache().getName());
     }
 }

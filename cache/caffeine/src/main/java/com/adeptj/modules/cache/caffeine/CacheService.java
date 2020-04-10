@@ -22,6 +22,8 @@ package com.adeptj.modules.cache.caffeine;
 
 import org.osgi.annotation.versioning.ProviderType;
 
+import java.util.List;
+
 /**
  * The {@link CacheService} for in memory local caching.
  *
@@ -34,5 +36,5 @@ public interface CacheService {
 
     void evictCache(String cacheName);
 
-    void evictCaches(Iterable<String> cacheNames);
+    void evictCaches(List<String> cacheNames);
 }
