@@ -33,7 +33,7 @@ import java.util.function.Function;
 public interface Cache<K, V> {
 
     /**
-     * Each cache instance has a name which this method returns to the caller.
+     * Each Cache instance has a name which this method returns to the caller.
      *
      * @return the unique cache name.
      */
