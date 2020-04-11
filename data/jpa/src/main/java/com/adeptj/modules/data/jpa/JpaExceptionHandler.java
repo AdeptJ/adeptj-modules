@@ -28,7 +28,7 @@ import java.lang.invoke.MethodHandles;
 
 /**
  * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
- * the {@link org.eclipse.persistence.exceptions.ExceptionHandler} interface and provides a default (zero-argument) constructor.
+ * the {@link ExceptionHandler} interface and provides a default (zero-argument) constructor.
  * <p>
  * See more at: http://eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_exception_handler.htm
  *
@@ -38,10 +38,13 @@ public class JpaExceptionHandler implements ExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object handleException(RuntimeException exception) {
         // Log it as of now, perform any other task on passed Exception if needed.
-        LOGGER.error("Handling Exception via JpaExceptionHandler!!", exception);
+        LOGGER.error(exception.getMessage(), exception);
         throw exception;
     }
 }

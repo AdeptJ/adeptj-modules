@@ -101,7 +101,7 @@ public class EntityManagerFactoryLifecycle {
             // Important Note: The ClassLoader must be the one which loaded the given JpaRepository implementation
             // and it must have the visibility to the entity classes and persistence.xml/orm.xml
             // otherwise EclipseLink may not be able to create the EntityManagerFactory.
-            LOGGER.info("Using ClassLoader of JpaRepository implementation class: [{}]", this.jpaRepository.getClass().getName());
+            LOGGER.info("Using ClassLoader of JpaRepository: [{}]", this.jpaRepository.getClass().getName());
             properties.put(CLASSLOADER, this.jpaRepository.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(persistenceUnit, properties);
             this.jpaRepository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));

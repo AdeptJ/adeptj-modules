@@ -41,12 +41,12 @@ import java.util.Map;
  */
 public class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
-    private static final String EMF_NULL_EXCEPTION_MSG = "EntityManagerFactory is null, probably due to missing persistence.xml!!";
+    private static final String EMF_NULL_MSG = "EntityManagerFactory is null, probably due to missing persistence.xml!!";
 
     private final EntityManagerFactory delegate;
 
     EntityManagerFactoryWrapper(EntityManagerFactory delegate) {
-        Validate.validState(delegate != null, EMF_NULL_EXCEPTION_MSG);
+        Validate.validState(delegate != null, EMF_NULL_MSG);
         this.delegate = delegate;
     }
 

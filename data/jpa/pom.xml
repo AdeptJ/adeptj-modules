@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <eclipselink.version>2.7.6</eclipselink.version>
+        <adeptj-modules-commons-jdbc.version>1.0.0.Final</adeptj-modules-commons-jdbc.version>
     </properties>
 
     <!-- Project Information -->
@@ -203,7 +203,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-jdbc</artifactId>
-            <version>1.0.0.Final</version>
+            <version>${adeptj-modules-commons-jdbc.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
-import static com.adeptj.modules.data.jpa.JpaConstants.PERSISTENCE_PROVIDER;
 import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
@@ -59,7 +58,6 @@ public class JpaProperties {
         jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());
         jpaProperties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
         jpaProperties.put(VALIDATION_MODE, config.validationMode());
-        jpaProperties.put(PERSISTENCE_PROVIDER, config.persistenceProviderClassName());
         if (config.useExceptionHandler()) {
             jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         }

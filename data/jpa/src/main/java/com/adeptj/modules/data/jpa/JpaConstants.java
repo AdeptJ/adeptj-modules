@@ -32,6 +32,4 @@ public final class JpaConstants {
     }
 
     public static final String SHARED_CACHE_MODE = "javax.persistence.sharedCache.mode";
-
-    public static final String PERSISTENCE_PROVIDER = "javax.persistence.provider";
 }

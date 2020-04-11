@@ -56,7 +56,7 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "PersistenceUnit Name",
-            description = "Note: Must be same as in persistence.xml"
+            description = "Note: Must be same as provided in persistence.xml"
     )
     String persistenceUnit(); // NOSONAR
 
@@ -65,18 +65,6 @@ public @interface EntityManagerFactoryConfig {
             description = "Location of the persistence.xml file"
     )
     String persistenceXmlLocation() default ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
-
-    @AttributeDefinition(
-            name = "JPA Provider",
-            description = "Fully qualified class name of PersistenceProvider"
-    )
-    String persistenceProviderClassName() default "org.eclipse.persistence.jpa.PersistenceProvider";
-
-    @AttributeDefinition(
-            name = "JPA Properties",
-            description = "JPA Properties(key=value) format"
-    )
-    String[] jpaProperties();
 
     @AttributeDefinition(
             name = "Deploy on Startup",
@@ -158,4 +146,10 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "NONE", value = NONE),
             })
     String ddlGeneration() default CREATE_OR_EXTEND;
+
+    @AttributeDefinition(
+            name = "JPA Properties",
+            description = "JPA Properties(key=value) format"
+    )
+    String[] jpaProperties();
 }
