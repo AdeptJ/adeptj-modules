@@ -45,7 +45,7 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
      */
     public static class Builder<T extends BaseEntity> {
 
-        private Class<T> entity;
+        private final Class<T> entity;
 
         private Builder(Class<T> entity) {
             this.entity = entity;

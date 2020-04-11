@@ -54,7 +54,7 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
      */
     public static class Builder<T extends BaseEntity> {
 
-        private Class<T> entity;
+        private final Class<T> entity;
 
         private Map<String, Object> criteriaAttributes;
 

@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public abstract class BaseCriteria<T extends BaseEntity> {
 
-    private Class<T> entity;
+    private final Class<T> entity;
 
     Map<String, Object> criteriaAttributes;
 

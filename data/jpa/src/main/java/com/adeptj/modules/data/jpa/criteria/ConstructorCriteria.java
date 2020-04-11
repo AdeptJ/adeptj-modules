@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T> {
 
-    private Class<C> constructorClass;
+    private final Class<C> constructorClass;
 
     private List<String> selections;
 
@@ -61,9 +61,9 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
      */
     public static class Builder<T extends BaseEntity, C> {
 
-        private Class<T> entity;
+        private final Class<T> entity;
 
-        private Class<C> constructorClass;
+        private final Class<C> constructorClass;
 
         private Map<String, Object> criteriaAttributes;
 

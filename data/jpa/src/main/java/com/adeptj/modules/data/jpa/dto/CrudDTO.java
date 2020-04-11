@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class CrudDTO<T extends BaseEntity> {
 
-    private Class<T> entity;
+    private final Class<T> entity;
 
     private String namedQuery;
 
@@ -82,7 +82,7 @@ public class CrudDTO<T extends BaseEntity> {
      */
     public static class Builder<T extends BaseEntity> {
 
-        private Class<T> entity;
+        private final Class<T> entity;
 
         private String namedQuery;
 

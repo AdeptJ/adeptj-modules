@@ -35,9 +35,9 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,17 +45,19 @@ import java.util.List;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Disabled
+//@Disabled
 public class JpaRepositoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final String UNIT_NAME = "AdeptJ_PU";
+
     private static EclipseLinkRepository jpaRepository;
 
     @BeforeAll
-    public static void init() throws Exception {
+    public static void init() {
         jpaRepository = new EclipseLinkRepository();
-        jpaRepository.setEntityManagerFactory(Persistence.createEntityManagerFactory("AdeptJ_PU"));
+        jpaRepository.setEntityManagerFactory(Persistence.createEntityManagerFactory(UNIT_NAME));
         LOGGER.info("EntityManagerFactory created!!");
     }
 
@@ -67,12 +69,12 @@ public class JpaRepositoryTest {
     @Test
     public void testInsert() {
         User user = new User();
-        //user.setContact("1234567890");
+        user.setContact("1234567890");
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("john.doe@johndoe.com");
         user = jpaRepository.insert(user);
-        System.out.println("User ID: " + user.getId());
+        LOGGER.info("User ID: {}", user.getId());
     }
 
     @Test
@@ -84,7 +86,7 @@ public class JpaRepositoryTest {
         user.setLastName("Doe_Updated");
         user.setEmail("john.doe@johndoe.com");
         user = jpaRepository.update(user);
-        System.out.println("User's Contact No is: " + user.getContact());
+        LOGGER.info("User's Contact No is: {}", user.getContact());
     }
 
     @Test
@@ -93,7 +95,7 @@ public class JpaRepositoryTest {
                 .addCriteriaAttribute("firstName", "John")
                 .addUpdateAttribute("contact", "1234567891")
                 .build());
-        System.out.println("Rows updated: " + rowsUpdated);
+        LOGGER.info("Rows updated: {}", rowsUpdated);
     }
 
     @Test
@@ -106,7 +108,7 @@ public class JpaRepositoryTest {
         int rows = jpaRepository.deleteByCriteria(DeleteCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
-        System.out.println("Rows deleted: " + rows);
+        LOGGER.info("Rows deleted: {}", rows);
     }
 
     @Test
@@ -115,7 +117,7 @@ public class JpaRepositoryTest {
                 .namedQuery("User.deleteUserByContact.JPA")
                 .addPosParam("1234567890")
                 .build());
-        System.out.println("Rows deleted: " + rows);
+        LOGGER.info("Rows deleted: {}", rows);
     }
 
     @Test
@@ -123,7 +125,7 @@ public class JpaRepositoryTest {
         List<User> users = jpaRepository.findByCriteria(ReadCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
-        System.out.println("Rows found: " + users.size());
+        LOGGER.info("Rows found: {}", users.size());
     }
 
     @Test
@@ -140,56 +142,48 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaNamedQueryAsUser() {
-        List<Object> posParams = new ArrayList<>();
-        posParams.add("1234567890");
-        jpaRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User", posParams)
+        jpaRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User", List.of("1234567890"))
                 .forEach(user -> {
-                    System.out.println("FirstName: " + user.getFirstName());
-                    System.out.println("LastName: " + user.getLastName());
+                    LOGGER.info("FirstName: {}", user.getFirstName());
+                    LOGGER.info("LastName: {}", user.getLastName());
                 });
     }
 
     @Test
     public void testFindByJpaNamedQueryAsObjectArray() {
-        List<Object> posParams = new ArrayList<>();
-        posParams.add("1234567890");
-        jpaRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray", posParams)
+        jpaRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray", List.of("1234567890"))
                 .forEach(objectArray -> {
-                    System.out.println("FirstName: " + objectArray[0]);
-                    System.out.println("LastName: " + objectArray[1]);
+                    LOGGER.info("FirstName: {}", objectArray[0]);
+                    LOGGER.info("LastName: {}", objectArray[1]);
                 });
     }
 
     @Test
     public void testFindByJPQLNamedQuery() {
-        List<Object> posParams = new ArrayList<>();
-        posParams.add("1234567890");
-        jpaRepository.findByNamedQuery("User.findUserByContact.JPA.User", posParams)
+        jpaRepository.findByNamedQuery("User.findUserByContact.JPA.User", List.of("1234567890"))
                 .forEach(object -> {
                     if (object instanceof User) {
-                        System.out.println("User!!");
+                        LOGGER.info("User!!");
                         User user = (User) object;
-                        System.out.println("FirstName: " + user.getFirstName());
-                        System.out.println("LastName: " + user.getLastName());
+                        LOGGER.info("FirstName: {}", user.getFirstName());
+                        LOGGER.info("LastName: {}", user.getLastName());
                     } else if (object instanceof Object[]) {
-                        System.out.println("Object[]!!");
+                        LOGGER.info("Object[]!!");
                         Object[] objectArray = (Object[]) object;
-                        System.out.println("FirstName: " + objectArray[0]);
-                        System.out.println("LastName: " + objectArray[1]);
+                        LOGGER.info("FirstName: {}", objectArray[0]);
+                        LOGGER.info("LastName: {}", objectArray[1]);
                     }
                 });
     }
 
     @Test
     public void testFindByNativeNamedQuery() {
-        List<Object> posParams = new ArrayList<>();
-        posParams.add("1234567890");
-        jpaRepository.findByNamedQuery("User.findUserByContact.NATIVE", posParams)
+        jpaRepository.findByNamedQuery("User.findUserByContact.NATIVE", List.of("1234567890"))
                 .forEach(object -> {
                     if (object instanceof Object[]) {
                         Object[] objectArray = (Object[]) object;
-                        System.out.println("FirstName: " + objectArray[0]);
-                        System.out.println("LastName: " + objectArray[1]);
+                        LOGGER.info("FirstName: {}", objectArray[0]);
+                        LOGGER.info("LastName: {}", objectArray[1]);
                     }
                 });
     }
@@ -197,7 +191,7 @@ public class JpaRepositoryTest {
     @Test
     public void testFindPaginatedRecords() {
         Long count = jpaRepository.count(User.class);
-        System.out.println("Total no of users: " + count);
+        LOGGER.info("Total no of users: {}", count);
         int pageSize = count.intValue() / 3;
         this.paginate(0, pageSize);
         this.paginate(pageSize, pageSize);
@@ -207,8 +201,8 @@ public class JpaRepositoryTest {
     private void paginate(int startPos, int pageSize) {
         List<User> users = jpaRepository.findPaginatedRecords(User.class, startPos, pageSize);
         users.forEach(user -> {
-            System.out.println("FirstName: " + user.getFirstName());
-            System.out.println("LastName: " + user.getLastName());
+            LOGGER.info("FirstName: {}", user.getFirstName());
+            LOGGER.info("LastName: {}", user.getLastName());
 
         });
     }
@@ -220,31 +214,27 @@ public class JpaRepositoryTest {
                 .addPosParams("John", "1234567890")
                 .build());
         users.forEach(user -> {
-            System.out.println("FirstName: " + user.getFirstName());
-            System.out.println("LastName: " + user.getLastName());
+            LOGGER.info("FirstName: {}", user.getFirstName());
+            LOGGER.info("LastName: {}", user.getLastName());
 
         });
     }
 
     @Test
     public void testGetTypedScalarResultByNamedQueryAndPosParams() {
-        List<Object> posParams = new ArrayList<>();
-        posParams.add("123456789167");
         String firstName = jpaRepository
-                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar", posParams);
+                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar", List.of("123456789167"));
         if (firstName != null) {
-            System.out.println("FirstName: " + firstName);
+            LOGGER.info("FirstName: {}", firstName);
         }
     }
 
     @Test
     public void testGetScalarResultByNamedQueryAndPosParams() {
-        List<Object> posParams = new ArrayList<>();
-        posParams.add("123456789167");
         String firstName = jpaRepository
-                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar", posParams);
+                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar", List.of("123456789167"));
         if (firstName != null) {
-            System.out.println("FirstName: " + firstName);
+            LOGGER.info("FirstName: {}", firstName);
         }
     }
 
@@ -257,8 +247,8 @@ public class JpaRepositoryTest {
                 .build());
         users.forEach(user -> {
             System.out.printf("User ID: %s", user.getId());
-            System.out.println("FirstName: " + user.getFirstName());
-            System.out.println("LastName: " + user.getLastName());
+            LOGGER.info("FirstName: {}", user.getFirstName());
+            LOGGER.info("LastName: {}", user.getLastName());
         });
     }
 
@@ -266,13 +256,11 @@ public class JpaRepositoryTest {
     public void testFindAndMapConstructorByQuery() {
         String jpaQuery = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) " +
                 "FROM User u WHERE u.contact = ?1";
-        List<Object> posParams = new ArrayList<>();
-        posParams.add("1234567890");
-        jpaRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery, posParams)
+        jpaRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery, List.of("1234567890"))
                 .forEach(user -> {
-                    System.out.println("User ID: " + user.getId());
-                    System.out.println("FirstName: " + user.getFirstName());
-                    System.out.println("LastName: " + user.getLastName());
+                    LOGGER.info("User ID: {}", user.getId());
+                    LOGGER.info("FirstName: {}", user.getFirstName());
+                    LOGGER.info("LastName: {}", user.getLastName());
                 });
     }
 
@@ -283,10 +271,10 @@ public class JpaRepositoryTest {
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
         list.forEach(dto -> {
-            System.out.println("User ID: " + dto.getId());
-            System.out.println("FirstName: " + dto.getFirstName());
-            System.out.println("LastName: " + dto.getLastName());
-
+            LOGGER.info("User ID: {}", dto.getId());
+            LOGGER.info("FirstName: {}", dto.getFirstName());
+            LOGGER.info("LastName: {}", dto.getLastName());
+            LOGGER.info("Email: {}", dto.getEmail());
         });
     }
 }

@@ -7,13 +7,13 @@ package com.adeptj.modules.data.jpa;
  */
 public class UserDTO {
 
-    private Long id;
+    private final Long id;
 
-    private String firstName;
+    private final String firstName;
 
-    private String lastName;
+    private final String lastName;
 
-    private String email;
+    private final String email;
 
     public UserDTO(Long id, String firstName, String lastName, String email) {
         this.id = id;

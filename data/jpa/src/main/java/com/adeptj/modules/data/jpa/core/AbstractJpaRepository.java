@@ -106,12 +106,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @Override
     public <T extends BaseEntity> void batchInsert(List<T> entities, int batchSize) {
-        Validate.isTrue(entities != null && !entities.isEmpty() && batchSize > 1, "Invalid inputs!!");
+        Validate.isTrue(entities != null && !entities.isEmpty() && batchSize < 1, "Invalid inputs!!");
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
             for (int index = 0; index < entities.size(); index++) {
-                if (index > 0 && index % batchSize == 0) {
+                if (index > 0 && (index % batchSize == 0)) {
                     em.getTransaction().commit();
                     em.getTransaction().begin();
                     em.clear();
