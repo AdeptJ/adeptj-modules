@@ -35,8 +35,8 @@ public final class Predicates {
     private Predicates() {
     }
 
-    public static <T> Predicate[] from(Map<String, Object> attributes, CriteriaBuilder cb, Root<T> root) {
-        return attributes.entrySet()
+    public static <T> Predicate[] using(CriteriaBuilder cb, Root<T> root, Map<String, Object> criteriaAttributes) {
+        return criteriaAttributes.entrySet()
                 .stream()
                 .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
                 .toArray(Predicate[]::new);

@@ -161,9 +161,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
             criteria.getUpdateAttributes().forEach(cu::set);
             Root<T> root = cu.from(criteria.getEntity());
-            int rowsUpdated = em
-                    .createQuery(cu.where(cb.and(Predicates.from(criteria.getCriteriaAttributes(), cb, root))))
-                    .executeUpdate();
+            Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
+            int rowsUpdated = em.createQuery(cu.where(cb.and(predicates))).executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
@@ -234,9 +233,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
             Root<T> root = cd.from(criteria.getEntity());
-            int rowsDeleted = em
-                    .createQuery(cd.where(cb.and(Predicates.from(criteria.getCriteriaAttributes(), cb, root))))
-                    .executeUpdate();
+            Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
+            int rowsDeleted = em.createQuery(cd.where(cb.and(predicates))).executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
@@ -295,8 +293,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
-            return em.createQuery(cq.where(cb.and(Predicates.from(criteria.getCriteriaAttributes(), cb, root))))
-                    .getResultList();
+            Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
+            return em.createQuery(cq.where(cb.and(predicates))).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -318,7 +316,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
                     .stream()
                     .map(root::get)
                     .toArray(Selection[]::new))
-                    .where(cb.and(Predicates.from(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(Predicates.using(cb, root, criteria.getCriteriaAttributes()))))
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -338,7 +336,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq
-                    .where(cb.and(Predicates.from(criteria.getCriteriaAttributes(), cb, root))))
+                    .where(cb.and(Predicates.using(cb, root, criteria.getCriteriaAttributes()))))
                     .setFirstResult(criteria.getStartPos())
                     .setMaxResults(criteria.getMaxResult())
                     .getResultList();
@@ -537,7 +535,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
                     .stream()
                     .map(root::get)
                     .toArray(Selection[]::new)))
-                    .where(Predicates.from(criteria.getCriteriaAttributes(), cb, root)))
+                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
