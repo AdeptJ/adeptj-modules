@@ -39,6 +39,7 @@ public interface JpaCallback<T> {
      *
      * @param em an active EntityManager
      * @return a result object, or null if none
+     * @throws com.adeptj.modules.data.jpa.exception.JpaException if something goes wrong.
      */
     T doInJpa(EntityManager em);
 }

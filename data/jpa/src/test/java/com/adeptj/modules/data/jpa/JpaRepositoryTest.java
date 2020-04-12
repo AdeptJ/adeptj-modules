@@ -23,22 +23,23 @@ package com.adeptj.modules.data.jpa;
 import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
-import com.adeptj.modules.data.jpa.criteria.TupleQueryCriteria;
+import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.entity.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+
+import static com.adeptj.modules.data.jpa.QueryType.JPA;
+import static com.adeptj.modules.data.jpa.QueryType.NATIVE;
 
 /**
  * JpaCrudRepositoryTest
@@ -68,12 +69,26 @@ public class JpaRepositoryTest {
 
     @Test
     public void testInsert() {
-        User user = new User();
-        user.setContact("1234567890");
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setEmail("john.doe@johndoe.com");
-        user = jpaRepository.insert(user);
+        User usr = new User();
+        usr.setContact("1234567890");
+        usr.setFirstName("John");
+        usr.setLastName("Doe");
+        usr.setEmail("john.doe@johndoe.com");
+        User user = jpaRepository.insert(usr);
+        LOGGER.info("User ID: {}", user.getId());
+    }
+
+    @Test
+    public void testExecuteInTransaction() {
+        User user = jpaRepository.executeInTransaction(em -> {
+            User usr = new User();
+            usr.setContact("1234567890");
+            usr.setFirstName("John");
+            usr.setLastName("Doe");
+            usr.setEmail("john.doe@johndoe.com");
+            em.persist(usr);
+            return usr;
+        });
         LOGGER.info("User ID: {}", user.getId());
     }
 
@@ -129,8 +144,8 @@ public class JpaRepositoryTest {
     }
 
     @Test
-    public void testFindByTupleQuery() {
-        jpaRepository.findByTupleQuery(TupleQueryCriteria.builder(User.class)
+    public void testFindByTupleCriteria() {
+        jpaRepository.findByTupleCriteria(TupleCriteria.builder(User.class)
                 .addSelections("firstName", "lastName")
                 .addCriteriaAttribute("contact", "1234567891")
                 .build())
@@ -276,5 +291,35 @@ public class JpaRepositoryTest {
             LOGGER.info("LastName: {}", dto.getLastName());
             LOGGER.info("Email: {}", dto.getEmail());
         });
+    }
+
+    @Test
+    public void testCountByNativeQuery() {
+        Long count = jpaRepository.count("SELECT count(ID) FROM adeptj.USERS", NATIVE);
+        LOGGER.info("Count: {}", count);
+    }
+
+    @Test
+    public void testCountByJpaQuery() {
+        Long count = jpaRepository.count("SELECT count(u.id) FROM User u", JPA);
+        LOGGER.info("Count: {}", count);
+    }
+
+    @Test
+    public void testCountByNamedJpaQuery() {
+        Long count = jpaRepository.count("Count.NamedJpaQuery");
+        LOGGER.info("Count: {}", count);
+    }
+
+    @Test
+    public void testCountByNamedNativeQuery() {
+        Long count = jpaRepository.count("Count.NamedNativeQuery");
+        LOGGER.info("Count: {}", count);
+    }
+    @Test
+    public void testScalarResultOfTypeJpaQuery() {
+        String query = "SELECT u.email FROM User u where u.d= ?1";
+        String user = jpaRepository.getScalarResultOfType(String.class, JPA, query, List.of(1));
+        LOGGER.info("User: {}", user);
     }
 }

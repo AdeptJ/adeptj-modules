@@ -73,7 +73,7 @@ public @interface EntityManagerFactoryConfig {
     boolean deployOnStartup() default true;
 
     @AttributeDefinition(
-            name = "Use ExceptionHandler",
+            name = "Use EclipseLink ExceptionHandler",
             description = "Whether to use EclipseLink's ExceptionHandler mechanism"
     )
     boolean useExceptionHandler() default true;

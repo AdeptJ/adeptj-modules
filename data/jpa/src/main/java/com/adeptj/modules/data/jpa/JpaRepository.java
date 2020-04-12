@@ -23,7 +23,7 @@ package com.adeptj.modules.data.jpa;
 import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
-import com.adeptj.modules.data.jpa.criteria.TupleQueryCriteria;
+import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
@@ -150,7 +150,7 @@ public interface JpaRepository {
      * @param <T>      type of the JPA entity
      * @return returns no. of rows found
      */
-    <T extends BaseEntity> List<Tuple> findByTupleQuery(TupleQueryCriteria<T> criteria);
+    <T extends BaseEntity> List<Tuple> findByTupleCriteria(TupleCriteria<T> criteria);
 
     /**
      * Finds the given JPA entity using Criteria API. Helpful wherever pagination is required.
@@ -348,7 +348,7 @@ public interface JpaRepository {
      * @param type  type of the JPA or native query
      * @return count of no. of rows of given JPA entity
      */
-    Number count(String query, QueryType type);
+    Long count(String query, QueryType type);
 
     /**
      * Count the no. of rows of given JPA entity.
@@ -356,7 +356,7 @@ public interface JpaRepository {
      * @param namedQuery the query string
      * @return count of no. of rows of given JPA entity
      */
-    Number count(String namedQuery);
+    Long count(String namedQuery);
 
     /**
      * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager without a transaction.

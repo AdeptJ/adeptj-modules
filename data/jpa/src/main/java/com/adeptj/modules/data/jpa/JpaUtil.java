@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.data.jpa;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public final class JpaUtil {
 
     public static EntityManager createEntityManager(EntityManagerFactory entityManagerFactory) {
         if (entityManagerFactory == null) {
-            throw new IllegalArgumentException("EntityManagerFactory is null!!");
+            throw new IllegalStateException("EntityManagerFactory can't be null!!");
         }
         return entityManagerFactory.createEntityManager();
     }
@@ -77,14 +78,13 @@ public final class JpaUtil {
      * @param posParams positional parameters
      */
     public static void bindQueryParams(Query query, List<Object> posParams) {
-        if (posParams != null && !posParams.isEmpty()) {
-            for (int index = 0; index < posParams.size(); index++) {
-                int position = index + 1;
-                Object value = posParams.get(index);
-                LOGGER.debug("Binding JPA Query parameter: [{}] at position: [{}]", value, position);
-                // Query parameter index starts with 1
-                query.setParameter(position, value);
-            }
+        Validate.noNullElements(posParams);
+        for (int index = 0; index < posParams.size(); index++) {
+            int position = index + 1;
+            Object value = posParams.get(index);
+            LOGGER.debug("Binding JPA Query parameter: [{}] at position: [{}]", value, position);
+            // Query parameter index starts with 1
+            query.setParameter(position, value);
         }
     }
 }

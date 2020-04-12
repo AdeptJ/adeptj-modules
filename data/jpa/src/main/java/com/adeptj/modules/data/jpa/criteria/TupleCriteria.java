@@ -33,11 +33,11 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
+public class TupleCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
     private List<String> selections;
 
-    private TupleQueryCriteria(Class<T> entity) {
+    private TupleCriteria(Class<T> entity) {
         super(entity);
     }
 
@@ -50,7 +50,7 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
     }
 
     /**
-     * Builder for creating {@link TupleQueryCriteria}
+     * Builder for creating {@link TupleCriteria}
      */
     public static class Builder<T extends BaseEntity> {
 
@@ -88,8 +88,8 @@ public class TupleQueryCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public TupleQueryCriteria<T> build() {
-            TupleQueryCriteria<T> criteria = new TupleQueryCriteria<>(this.entity);
+        public TupleCriteria<T> build() {
+            TupleCriteria<T> criteria = new TupleCriteria<>(this.entity);
             criteria.criteriaAttributes = this.criteriaAttributes;
             criteria.selections = this.selections;
             return criteria;

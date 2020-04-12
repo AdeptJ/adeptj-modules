@@ -30,7 +30,7 @@ import com.adeptj.modules.data.jpa.Transactions;
 import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
-import com.adeptj.modules.data.jpa.criteria.TupleQueryCriteria;
+import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
@@ -89,6 +89,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> T insert(T entity) {
+        Validate.notNull(entity, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
@@ -106,7 +107,8 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @Override
     public <T extends BaseEntity> void batchInsert(List<T> entities, int batchSize) {
-        Validate.isTrue(entities != null && !entities.isEmpty() && batchSize < 1, "Invalid inputs!!");
+        Validate.noNullElements(entities);
+        Validate.isTrue(batchSize > 1, "batchSize can't be less than 1!!");
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
@@ -133,6 +135,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      */
     @Override
     public <T extends BaseEntity> T update(T entity) {
+        Validate.notNull(entity, "Entity can't be null!");
         T updated;
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
@@ -156,12 +159,12 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public <T extends BaseEntity> int updateByCriteria(UpdateCriteria<T> criteria) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
-            em.getTransaction().begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
             criteria.getUpdateAttributes().forEach(cu::set);
             Root<T> root = cu.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
+            em.getTransaction().begin();
             int rowsUpdated = em.createQuery(cu.where(cb.and(predicates))).executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("No. of rows updated: {}", rowsUpdated);
@@ -182,11 +185,11 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     public <T extends BaseEntity> void delete(Class<T> entity, Object primaryKey) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
-            em.getTransaction().begin();
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
                 LOGGER.warn("Entity couldn't be deleted as it doesn't exists in DB: [{}]", entity);
             } else {
+                em.getTransaction().begin();
                 em.remove(entityToDelete);
                 em.getTransaction().commit();
             }
@@ -306,7 +309,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
      * {@inheritDoc}
      */
     @Override
-    public <T extends BaseEntity> List<Tuple> findByTupleQuery(TupleQueryCriteria<T> criteria) {
+    public <T extends BaseEntity> List<Tuple> findByTupleCriteria(TupleCriteria<T> criteria) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -587,6 +590,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getScalarResult(String namedQuery, List<Object> posParams) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
@@ -601,6 +607,9 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends BaseEntity> Long count(Class<T> entity) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
@@ -615,15 +624,18 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Number count(String query, QueryType type) {
+    public Long count(String query, QueryType type) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             switch (type) {
                 case JPA:
-                    return (Number) em.createQuery(query).getSingleResult();
+                    return (Long) em.createQuery(query).getSingleResult();
                 case NATIVE:
-                    return (Number) em.createNativeQuery(query).getSingleResult();
+                    return (Long) em.createNativeQuery(query).getSingleResult();
                 default:
                     throw new IllegalStateException("Invalid QueryType!!");
             }
@@ -634,11 +646,14 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Number count(String namedQuery) {
+    public Long count(String namedQuery) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
-            return (Number) em.createNamedQuery(namedQuery).getSingleResult();
+            return (Long) em.createNamedQuery(namedQuery).getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {

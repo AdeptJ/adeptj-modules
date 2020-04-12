@@ -54,8 +54,10 @@ import javax.persistence.Table;
         query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.contact = ?1")
 @NamedQuery(name = "User.deleteUserByContact.JPA",
         query = "DELETE FROM User u WHERE u.contact = ?1")
+@NamedQuery(name = "Count.NamedJpaQuery", query = "SELECT count(u.id) FROM User u")
 @NamedNativeQuery(name = "User.findUserByContact.NATIVE",
         query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM  Users u WHERE MOBILE_NO = ?1")
+@NamedNativeQuery(name = "Count.NamedNativeQuery", query = "SELECT count(ID) FROM adeptj.USERS")
 @SqlResultSetMapping(
         name = "User.findUserByContact.EntityMapping",
         entities = {
