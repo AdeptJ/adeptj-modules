@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.dto;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import com.adeptj.modules.data.jpa.query.QueryParam;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class CrudDTO<T extends BaseEntity> {
 
     private String jpaQuery;
 
-    private List<Object> posParams;
+    private QueryParam[] queryParams;
 
     private int startPos;
 
@@ -61,8 +62,8 @@ public class CrudDTO<T extends BaseEntity> {
         return jpaQuery;
     }
 
-    public List<Object> getPosParams() {
-        return posParams;
+    public QueryParam[] getQueryParams() {
+        return this.queryParams;
     }
 
     public int getStartPos() {
@@ -88,7 +89,7 @@ public class CrudDTO<T extends BaseEntity> {
 
         private String jpaQuery;
 
-        private List<Object> posParams;
+        private List<QueryParam> queryParams;
 
         private int startPos;
 
@@ -108,19 +109,19 @@ public class CrudDTO<T extends BaseEntity> {
             return this;
         }
 
-        public Builder<T> addPosParam(Object param) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
+        public Builder<T> addQueryParam(QueryParam param) {
+            if (this.queryParams == null) {
+                this.queryParams = new ArrayList<>();
             }
-            this.posParams.add(param);
+            this.queryParams.add(param);
             return this;
         }
 
-        public Builder<T> addPosParams(Object... params) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
+        public Builder<T> addQueryParams(QueryParam... params) {
+            if (this.queryParams == null) {
+                this.queryParams = new ArrayList<>();
             }
-            this.posParams.addAll(Arrays.asList(params));
+            this.queryParams.addAll(Arrays.asList(params));
             return this;
         }
 
@@ -138,7 +139,7 @@ public class CrudDTO<T extends BaseEntity> {
             CrudDTO<T> crudDTO = new CrudDTO<>(this.entity);
             crudDTO.namedQuery = this.namedQuery;
             crudDTO.jpaQuery = this.jpaQuery;
-            crudDTO.posParams = this.posParams;
+            crudDTO.queryParams = this.queryParams.toArray(new QueryParam[0]);
             crudDTO.startPos = this.startPos;
             crudDTO.maxResult = this.maxResult;
             return crudDTO;

@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.data.jpa.dto;
 
+import com.adeptj.modules.data.jpa.query.QueryParam;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +37,7 @@ public class ResultSetMappingDTO {
 
     private String resultSetMapping;
 
-    private List<Object> posParams;
+    private QueryParam[] queryParams;
 
     private ResultSetMappingDTO() {
     }
@@ -48,8 +50,8 @@ public class ResultSetMappingDTO {
         return resultSetMapping;
     }
 
-    public List<Object> getPosParams() {
-        return posParams;
+    public QueryParam[] getQueryParams() {
+        return queryParams;
     }
 
     public static Builder builder() {
@@ -69,7 +71,7 @@ public class ResultSetMappingDTO {
 
         private String resultSetMapping;
 
-        private List<Object> posParams;
+        private List<QueryParam> queryParams;
 
         public Builder nativeQuery(String nativeQuery) {
             this.nativeQuery = nativeQuery;
@@ -81,19 +83,19 @@ public class ResultSetMappingDTO {
             return this;
         }
 
-        public Builder addPosParam(Object param) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
+        public Builder addQueryParamParam(QueryParam param) {
+            if (this.queryParams == null) {
+                this.queryParams = new ArrayList<>();
             }
-            this.posParams.add(param);
+            this.queryParams.add(param);
             return this;
         }
 
-        public Builder addPosParams(Object... params) {
-            if (this.posParams == null) {
-                this.posParams = new ArrayList<>();
+        public Builder addQueryParamParams(QueryParam... params) {
+            if (this.queryParams == null) {
+                this.queryParams = new ArrayList<>();
             }
-            this.posParams.addAll(Arrays.asList(params));
+            this.queryParams.addAll(Arrays.asList(params));
             return this;
         }
 
@@ -101,7 +103,7 @@ public class ResultSetMappingDTO {
             ResultSetMappingDTO resultSetMappingDTO = new ResultSetMappingDTO();
             resultSetMappingDTO.nativeQuery = this.nativeQuery;
             resultSetMappingDTO.resultSetMapping = this.resultSetMapping;
-            resultSetMappingDTO.posParams = this.posParams;
+            resultSetMappingDTO.queryParams = this.queryParams.toArray(new QueryParam[0]);
             return resultSetMappingDTO;
         }
     }

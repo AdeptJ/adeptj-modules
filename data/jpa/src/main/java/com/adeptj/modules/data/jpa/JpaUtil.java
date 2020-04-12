@@ -20,6 +20,9 @@
 
 package com.adeptj.modules.data.jpa;
 
+import com.adeptj.modules.data.jpa.query.NamedParam;
+import com.adeptj.modules.data.jpa.query.PositionalParam;
+import com.adeptj.modules.data.jpa.query.QueryParam;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 
 /**
  * Common JPA Utilities.
@@ -74,17 +76,27 @@ public final class JpaUtil {
     /**
      * This method binds the the positional parameters to the given JPA {@link Query} or {@link TypedQuery}.
      *
-     * @param query     the JPA {@link Query} or {@link TypedQuery}
-     * @param posParams positional parameters
+     * @param query  the JPA {@link Query} or {@link TypedQuery}
+     * @param params query bind parameters, either a {@link NamedParam} or a {@link PositionalParam}
      */
-    public static void bindQueryParams(Query query, List<Object> posParams) {
-        Validate.noNullElements(posParams);
-        for (int index = 0; index < posParams.size(); index++) {
-            int position = index + 1;
-            Object value = posParams.get(index);
-            LOGGER.debug("Binding JPA Query parameter: [{}] at position: [{}]", value, position);
-            // Query parameter index starts with 1
-            query.setParameter(position, value);
+    public static void bindQueryParams(Query query, QueryParam... params) {
+        Validate.noNullElements(params);
+        for (QueryParam param : params) {
+            if (param instanceof NamedParam) {
+                NamedParam namedParam = (NamedParam) param;
+                String name = namedParam.getName();
+                Object value = namedParam.getValue();
+                LOGGER.debug("Binding JPA Query parameter value: [{}] for name: [{}]", value, name);
+                // Query parameter index starts with 1
+                query.setParameter(name, value);
+            } else if (param instanceof PositionalParam) {
+                PositionalParam positionalParam = (PositionalParam) param;
+                int position = positionalParam.getPosition();
+                Object value = positionalParam.getValue();
+                LOGGER.debug("Binding JPA Query parameter value: [{}] at position: [{}]", value, position);
+                // Query parameter index starts with 1
+                query.setParameter(position, value);
+            }
         }
     }
 }

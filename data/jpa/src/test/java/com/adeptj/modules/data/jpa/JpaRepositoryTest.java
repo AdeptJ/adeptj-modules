@@ -29,6 +29,7 @@ import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.entity.Address;
 import com.adeptj.modules.data.jpa.entity.User;
+import com.adeptj.modules.data.jpa.query.PositionalParam;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -142,7 +143,7 @@ public class JpaRepositoryTest {
     public void testDeleteByJpaNamedQuery() {
         int rows = jpaRepository.deleteByJpaNamedQuery(CrudDTO.builder(User.class)
                 .namedQuery("User.deleteUserByContact.JPA")
-                .addPosParam("1234567890")
+                .addQueryParam(new PositionalParam(1, "1234567890"))
                 .build());
         LOGGER.info("Rows deleted: {}", rows);
     }
@@ -176,7 +177,8 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaNamedQueryAsUser() {
-        jpaRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User", List.of("1234567890"))
+        jpaRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User",
+                new PositionalParam(1, "1234567890"))
                 .forEach(user -> {
                     LOGGER.info("FirstName: {}", user.getFirstName());
                     LOGGER.info("LastName: {}", user.getLastName());
@@ -185,7 +187,8 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaNamedQueryAsObjectArray() {
-        jpaRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray", List.of("1234567890"))
+        jpaRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray",
+                new PositionalParam(1, "1234567890"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);
                     LOGGER.info("LastName: {}", objectArray[1]);
@@ -194,7 +197,8 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJPQLNamedQuery() {
-        jpaRepository.findByNamedQuery("User.findUserByContact.JPA.User", List.of("1234567890"))
+        jpaRepository.findByNamedQuery("User.findUserByContact.JPA.User",
+                new PositionalParam(1, "1234567890"))
                 .forEach(object -> {
                     if (object instanceof User) {
                         LOGGER.info("User!!");
@@ -212,7 +216,8 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByNativeNamedQuery() {
-        jpaRepository.findByNamedQuery("User.findUserByContact.NATIVE", List.of("1234567890"))
+        jpaRepository.findByNamedQuery("User.findUserByContact.NATIVE",
+                new PositionalParam(1, "1234567890"))
                 .forEach(object -> {
                     if (object instanceof Object[]) {
                         Object[] objectArray = (Object[]) object;
@@ -245,7 +250,8 @@ public class JpaRepositoryTest {
     public void testFindByJpaQuery() {
         List<User> users = jpaRepository.findByJpaQuery(CrudDTO.builder(User.class)
                 .jpaQuery("SELECT u FROM  User u WHERE u.firstName = ?1 and u.contact = ?2")
-                .addPosParams("John", "1234567890")
+                .addQueryParams(new PositionalParam(1, "John"),
+                        new PositionalParam(2, "1234567890"))
                 .build());
         users.forEach(user -> {
             LOGGER.info("FirstName: {}", user.getFirstName());
@@ -257,7 +263,8 @@ public class JpaRepositoryTest {
     @Test
     public void testGetTypedScalarResultByNamedQueryAndPosParams() {
         String firstName = jpaRepository
-                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar", List.of("123456789167"));
+                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
+                        new PositionalParam(1, "123456789167"));
         if (firstName != null) {
             LOGGER.info("FirstName: {}", firstName);
         }
@@ -266,7 +273,8 @@ public class JpaRepositoryTest {
     @Test
     public void testGetScalarResultByNamedQueryAndPosParams() {
         String firstName = jpaRepository
-                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar", List.of("123456789167"));
+                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
+                        new PositionalParam(1, "123456789167"));
         if (firstName != null) {
             LOGGER.info("FirstName: {}", firstName);
         }
@@ -277,7 +285,7 @@ public class JpaRepositoryTest {
         List<User> users = jpaRepository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
                 .nativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1")
                 .resultSetMapping("User.findUserByContact.EntityMapping")
-                .addPosParam("John")
+                .addQueryParamParam(new PositionalParam(1, "John"))
                 .build());
         users.forEach(user -> {
             System.out.printf("User ID: %s", user.getId());
@@ -290,7 +298,8 @@ public class JpaRepositoryTest {
     public void testFindAndMapConstructorByQuery() {
         String jpaQuery = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) " +
                 "FROM User u WHERE u.contact = ?1";
-        jpaRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery, List.of("1234567890"))
+        jpaRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery,
+                new PositionalParam(1, "1234567890"))
                 .forEach(user -> {
                     LOGGER.info("User ID: {}", user.getId());
                     LOGGER.info("FirstName: {}", user.getFirstName());
@@ -338,14 +347,21 @@ public class JpaRepositoryTest {
 
     @Test
     public void testScalarResultOfTypeJpaQuery() {
-        String query = "SELECT u.email FROM User u where u.d= ?1";
-        String user = jpaRepository.getScalarResultOfType(String.class, JPA, query, List.of(1));
+        String query = "SELECT u.email FROM User u where u.id= ?1";
+        String user = jpaRepository.getScalarResultOfType(String.class, JPA, query,
+                new PositionalParam(1, 1L));
         LOGGER.info("User: {}", user);
     }
 
     @Test
-    public void testStoredProcedure() {
+    public void testNamedStoredProcedure() {
         List<User> users = jpaRepository.findByNamedStoredProcedure("allUsers");
+        LOGGER.info("Users: {}", users);
+    }
+
+    @Test
+    public void testStoredProcedure() {
+        List<User> users = jpaRepository.findByStoredProcedure("fetchAllUsers", User.class);
         LOGGER.info("Users: {}", users);
     }
 }

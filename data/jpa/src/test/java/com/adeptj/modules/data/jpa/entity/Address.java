@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * User Entity
+ * Address Entity
  *
  * @author Rakesh.Kumar, AdeptJ
  */
