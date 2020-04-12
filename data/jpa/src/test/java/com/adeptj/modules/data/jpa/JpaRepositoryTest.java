@@ -345,7 +345,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testStoredProcedure() {
-        List<User> users = jpaRepository.findByStoredProcedure("fetchAllUsers", User.class);
+        List<User> users = jpaRepository.findByNamedStoredProcedure("allUsers");
         LOGGER.info("Users: {}", users);
     }
 }

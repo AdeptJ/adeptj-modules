@@ -377,13 +377,11 @@ public interface JpaRepository {
      */
     <T> T executeInTransaction(JpaCallback<T> action);
 
-    Object executeNamedStoredProcedure(String name, List<InParameter> inParams, String outParamName);
+    Object executeNamedStoredProcedure(String name, List<InParameter> params, String outParamName);
 
-    Object executeStoredProcedure(String procedureName, List<InParameter> inParams, OutParameter outParam);
+    Object executeStoredProcedure(String procedureName, List<InParameter> params, OutParameter outParam);
 
-    <T> List<T> findByNamedStoredProcedure(String name, List<InParameter> inParams);
+    <T> List<T> findByNamedStoredProcedure(String name, InParameter... params);
 
-    <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass);
-
-    <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, List<InParameter> inParams);
+    <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, InParameter... params);
 }
