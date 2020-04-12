@@ -30,6 +30,7 @@ import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 
 import javax.persistence.Tuple;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JPA 2.2 Repository for CRUD operations to be performed by the application on underlying DB.
@@ -375,4 +376,14 @@ public interface JpaRepository {
      * @return a result object returned by the action, or null
      */
     <T> T executeInTransaction(JpaCallback<T> action);
+
+    Object executeNamedStoredProcedure(String name, List<InParameter> inParams, String outParamName);
+
+    Object executeStoredProcedure(String procedureName, List<InParameter> inParams, OutParameter outParam);
+
+    <T> List<T> findByNamedStoredProcedure(String name, List<InParameter> inParams);
+
+    <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass);
+
+    <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, List<InParameter> inParams);
 }

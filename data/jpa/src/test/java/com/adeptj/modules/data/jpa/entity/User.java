@@ -23,19 +23,28 @@ package com.adeptj.modules.data.jpa.entity;
 import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.UserDTO;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityResult;
+import javax.persistence.FetchType;
 import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
 
 /**
  * User Entity
@@ -86,6 +95,7 @@ import javax.persistence.Table;
                         })
         }
 )
+@NamedStoredProcedureQuery(name = "allUsers", procedureName = "fetchAllUsers", resultClasses = User.class)
 public class User implements BaseEntity {
 
     @Id
@@ -104,6 +114,10 @@ public class User implements BaseEntity {
 
     @Column(name = "MOBILE_NO", length = 25)
     private String contact;
+
+    @JoinColumn(name = "USER_ID")
+    @OneToMany(cascade = ALL, orphanRemoval = true, fetch = LAZY)
+    private List<Address> addresses;
 
     public Long getId() {
         return this.id;
@@ -143,5 +157,13 @@ public class User implements BaseEntity {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
     }
 }

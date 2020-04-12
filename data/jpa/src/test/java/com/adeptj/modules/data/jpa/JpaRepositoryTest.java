@@ -27,6 +27,7 @@ import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
+import com.adeptj.modules.data.jpa.entity.Address;
 import com.adeptj.modules.data.jpa.entity.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -70,10 +71,21 @@ public class JpaRepositoryTest {
     @Test
     public void testInsert() {
         User usr = new User();
-        usr.setContact("1234567890");
-        usr.setFirstName("John");
-        usr.setLastName("Doe");
-        usr.setEmail("john.doe@johndoe.com");
+        usr.setContact("1234567893");
+        usr.setFirstName("John4");
+        usr.setLastName("Doe4");
+        usr.setEmail("john.doe4@johndoe.com");
+        Address address1 = new Address();
+        address1.setCity("Gurugram");
+        address1.setState("Haryana");
+        address1.setCountry("India");
+        address1.setPin("122001");
+        Address address2 = new Address();
+        address2.setCity("New Delhi ");
+        address2.setState("Delhi");
+        address2.setCountry("India");
+        address2.setPin("110018");
+        usr.setAddresses(List.of(address1, address2));
         User user = jpaRepository.insert(usr);
         LOGGER.info("User ID: {}", user.getId());
     }
@@ -138,9 +150,16 @@ public class JpaRepositoryTest {
     @Test
     public void testFindByCriteria() {
         List<User> users = jpaRepository.findByCriteria(ReadCriteria.builder(User.class)
-                .addCriteriaAttribute("contact", "1234567890")
+                .addCriteriaAttribute("contact", "1234567893")
                 .build());
+        users.get(0).getAddresses().forEach(address -> LOGGER.info(address.toString()));
         LOGGER.info("Rows found: {}", users.size());
+    }
+
+    @Test
+    public void testFindById() {
+        User user = jpaRepository.findById(User.class, 9L);
+        user.getAddresses().forEach(address -> LOGGER.info(address.toString()));
     }
 
     @Test
@@ -316,10 +335,17 @@ public class JpaRepositoryTest {
         Long count = jpaRepository.count("Count.NamedNativeQuery");
         LOGGER.info("Count: {}", count);
     }
+
     @Test
     public void testScalarResultOfTypeJpaQuery() {
         String query = "SELECT u.email FROM User u where u.d= ?1";
         String user = jpaRepository.getScalarResultOfType(String.class, JPA, query, List.of(1));
         LOGGER.info("User: {}", user);
+    }
+
+    @Test
+    public void testStoredProcedure() {
+        List<User> users = jpaRepository.findByStoredProcedure("fetchAllUsers", User.class);
+        LOGGER.info("Users: {}", users);
     }
 }

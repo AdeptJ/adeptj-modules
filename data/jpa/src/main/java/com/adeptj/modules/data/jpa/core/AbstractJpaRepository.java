@@ -21,9 +21,11 @@
 package com.adeptj.modules.data.jpa.core;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import com.adeptj.modules.data.jpa.InParameter;
 import com.adeptj.modules.data.jpa.JpaCallback;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.JpaUtil;
+import com.adeptj.modules.data.jpa.OutParameter;
 import com.adeptj.modules.data.jpa.Predicates;
 import com.adeptj.modules.data.jpa.QueryType;
 import com.adeptj.modules.data.jpa.Transactions;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -54,6 +57,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+
+import static javax.persistence.ParameterMode.IN;
+import static javax.persistence.ParameterMode.OUT;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
@@ -165,7 +171,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             Root<T> root = cu.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
             em.getTransaction().begin();
-            int rowsUpdated = em.createQuery(cu.where(cb.and(predicates))).executeUpdate();
+            int rowsUpdated = em.createQuery(cu.where(predicates)).executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
@@ -237,7 +243,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
             Root<T> root = cd.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
-            int rowsDeleted = em.createQuery(cd.where(cb.and(predicates))).executeUpdate();
+            int rowsDeleted = em.createQuery(cd.where(predicates)).executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
@@ -297,7 +303,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
-            return em.createQuery(cq.where(cb.and(predicates))).getResultList();
+            return em.createQuery(cq.where(predicates)).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -319,7 +325,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
                     .stream()
                     .map(root::get)
                     .toArray(Selection[]::new))
-                    .where(cb.and(Predicates.using(cb, root, criteria.getCriteriaAttributes()))))
+                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -339,7 +345,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq
-                    .where(cb.and(Predicates.using(cb, root, criteria.getCriteriaAttributes()))))
+                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
                     .setFirstResult(criteria.getStartPos())
                     .setMaxResults(criteria.getMaxResult())
                     .getResultList();
@@ -695,6 +701,92 @@ public abstract class AbstractJpaRepository implements JpaRepository {
             JpaUtil.closeEntityManager(em);
         }
         return result;
+    }
+
+    @Override
+    public Object executeNamedStoredProcedure(String name, List<InParameter> inParams, String outParamName) {
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
+        try {
+            StoredProcedureQuery procedureQuery = em.createNamedStoredProcedureQuery(name);
+            inParams.forEach(param -> procedureQuery.setParameter(param.getName(), param.getValue()));
+            procedureQuery.execute();
+            return procedureQuery.getOutputParameterValue(outParamName);
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @Override
+    public Object executeStoredProcedure(String procedureName, List<InParameter> inParams, OutParameter outParam) {
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
+        try {
+            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(procedureName);
+            inParams.forEach(param -> procedureQuery.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
+                    .setParameter(param.getName(), param.getValue()));
+            procedureQuery.registerStoredProcedureParameter(outParam.getName(), outParam.getType(), OUT);
+            procedureQuery.execute();
+            return procedureQuery.getOutputParameterValue(outParam.getName());
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> findByNamedStoredProcedure(String name, List<InParameter> inParams) {
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
+        try {
+            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(name);
+            inParams.forEach(param -> procedureQuery.setParameter(param.getName(), param.getValue()));
+            return procedureQuery.getResultList();
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass) {
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
+        try {
+            return em.createStoredProcedureQuery(procedureName, resultClass).getResultList();
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, List<InParameter> inParams) {
+        EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
+        try {
+            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(procedureName, resultClass);
+            inParams.forEach(param -> procedureQuery.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
+                    .setParameter(param.getName(), param.getValue()));
+            return procedureQuery.getResultList();
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
     }
 
     protected EntityManagerFactory getEntityManagerFactory() {

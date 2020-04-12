@@ -7,8 +7,10 @@
 
         <!-- JPA Entities -->
         <class>com.adeptj.modules.data.jpa.entity.User</class>
+        <class>com.adeptj.modules.data.jpa.entity.Address</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>NONE</shared-cache-mode>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
