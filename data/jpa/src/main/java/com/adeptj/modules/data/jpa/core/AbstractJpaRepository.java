@@ -62,19 +62,12 @@ import java.util.List;
 import static javax.persistence.ParameterMode.OUT;
 
 /**
- * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
+ * Abstract implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation.
  * <p>
- * This will be registered with the OSGi service registry whenever there is a new EntityManagerFactory configuration
- * created from OSGi console.
+ * The consumer should subclass this and registered with the OSGi service registry.
  * <p>
- * Therefore there will be a separate service for each PersistenceUnit.
- * <p>
- * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaRepository}
- *
- * <code>
- * &#064;Reference(target="(osgi.unit.name=my_persistence_unit)")
- * private JpaRepository repository;
- * </code>
+ * The {@link EntityManagerFactoryLifecycle} will bind to the {@link JpaRepository} implementations as and when they
+ * become available and set an active {@link EntityManagerFactory} instance to the {@link AbstractJpaRepository}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -114,7 +107,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     @Override
     public <T extends BaseEntity> void batchInsert(List<T> entities, int batchSize) {
         Validate.noNullElements(entities);
-        Validate.isTrue(batchSize > 1, "batchSize can't be less than 1!!");
+        Validate.isTrue(batchSize > 1, "batchSize should be greater than 1!!");
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             em.getTransaction().begin();
