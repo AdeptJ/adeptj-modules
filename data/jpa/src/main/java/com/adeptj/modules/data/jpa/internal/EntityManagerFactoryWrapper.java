@@ -34,14 +34,14 @@ import javax.persistence.metamodel.Metamodel;
 import java.util.Map;
 
 /**
- * A simple wrapper for {@link EntityManagerFactory}, this way {@link EntityManagerFactory} object is not directly exposed
- * which further prevents the possibility of closing a managed {@link EntityManagerFactory}.
+ * A simple wrapper for {@link EntityManagerFactory}, this way {@link EntityManagerFactory} object isn't directly exposed
+ * which further prevents the possibility of closing a managed {@link EntityManagerFactory} by consumer.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
 public class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
-    private static final String EMF_NULL_MSG = "EntityManagerFactory is null, probably due to missing persistence.xml!!";
+    private static final String EMF_NULL_MSG = "Couldn't create EntityManagerFactory, please check server logs!!";
 
     private final EntityManagerFactory delegate;
 

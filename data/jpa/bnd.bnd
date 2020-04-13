@@ -26,6 +26,7 @@
 
 Export-Package: com.adeptj.modules.data.jpa, \
                 com.adeptj.modules.data.jpa.core, \
+                com.adeptj.modules.data.jpa.query, \
                 com.adeptj.modules.data.jpa.criteria, \
                 com.adeptj.modules.data.jpa.dto, \
                 com.adeptj.modules.data.jpa.exception

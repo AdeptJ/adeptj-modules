@@ -23,12 +23,13 @@ package com.adeptj.modules.data.jpa.internal;
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
-import com.adeptj.modules.data.jpa.util.JpaUtil;
+import com.adeptj.modules.data.jpa.PersistenceInfoProvider;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 import com.adeptj.modules.data.jpa.core.EntityManagerFactoryConfig;
 import com.adeptj.modules.data.jpa.core.JpaProperties;
 import com.adeptj.modules.data.jpa.exception.JpaBootstrapException;
 import com.adeptj.modules.data.jpa.exception.JpaRepositoryBindException;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -51,6 +52,8 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOAD
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
 /**
@@ -66,46 +69,38 @@ public class EntityManagerFactoryLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String PU_NOT_MATCHED_EXCEPTION_MSG = "JpaRepository [%s]'s service property [%s] must be equal to " +
-            "EntityManagerFactoryConfig#persistenceUnit!!";
+    private static final String PU_NAME_UNMATCHED_EX_MSG = "PersistenceInfoProvider [%s]#getPersistenceUnitName" +
+            " must provide a unit name equal to EntityManagerFactoryConfig#persistenceUnitName!!";
 
-    private String repositoryPersistenceUnit;
+    private final EntityManagerFactory entityManagerFactory;
 
-    private EntityManagerFactory entityManagerFactory;
-
-    private AbstractJpaRepository jpaRepository;
-
-    @Reference
-    private DataSourceService dataSourceService;
-
-    @Reference
-    private ValidatorService validatorService;
-
-    // <<------------------------------------- OSGi Internal  -------------------------------------->>
+    private final EntityManagerFactoryWrapper entityManagerFactoryWrapper;
 
     @Activate
-    protected void start(EntityManagerFactoryConfig config) {
-        Validate.validState(this.jpaRepository != null, "JpaRepository must not be null!!");
-        String persistenceUnit = config.persistenceUnit();
-        Validate.isTrue(StringUtils.isNotEmpty(persistenceUnit), "PersistenceUnit name can't be empty!!");
-        Validate.validState(StringUtils.equals(this.repositoryPersistenceUnit, persistenceUnit),
-                String.format(PU_NOT_MATCHED_EXCEPTION_MSG, this.jpaRepository, JPA_UNIT_NAME));
+    public EntityManagerFactoryLifecycle(@Reference DataSourceService dataSourceService,
+                                         @Reference ValidatorService validatorService,
+                                         @Reference PersistenceInfoProvider provider,
+                                         EntityManagerFactoryConfig config) {
+        String unitName = config.persistenceUnitName();
+        Validate.isTrue(StringUtils.isNotEmpty(unitName), "PersistenceUnit name can't be empty!!");
+        Validate.validState(StringUtils.equals(provider.getPersistenceUnitName(), unitName),
+                String.format(PU_NAME_UNMATCHED_EX_MSG, provider));
         try {
             Map<String, Object> properties = JpaProperties.from(config);
-            properties.put(NON_JTA_DATASOURCE, this.dataSourceService.getDataSource());
+            properties.put(NON_JTA_DATASOURCE, dataSourceService.getDataSource());
             ValidationMode validationMode = ValidationMode.valueOf(config.validationMode());
             if (validationMode == AUTO || validationMode == CALLBACK) {
-                properties.put(VALIDATOR_FACTORY, this.validatorService.getValidatorFactory());
+                properties.put(VALIDATOR_FACTORY, validatorService.getValidatorFactory());
             }
-            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
-            // Important Note: The ClassLoader must be the one which loaded the given JpaRepository implementation
-            // and it must have the visibility to the entity classes and persistence.xml/orm.xml
+            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
+            // Important Note: The ClassLoader must be the one which loaded the given PersistenceInfoProvider
+            // implementation and it must have the visibility to the entity classes and persistence.xml/orm.xml
             // otherwise EclipseLink may not be able to create the EntityManagerFactory.
-            LOGGER.info("Using ClassLoader of JpaRepository: [{}]", this.jpaRepository.getClass().getName());
-            properties.put(CLASSLOADER, this.jpaRepository.getClass().getClassLoader());
-            this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(persistenceUnit, properties);
-            this.jpaRepository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
-            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", persistenceUnit);
+            LOGGER.info("Using ClassLoader of PersistenceInfoProvider: [{}]", provider.getClass().getName());
+            properties.put(CLASSLOADER, provider.getClass().getClassLoader());
+            this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, properties);
+            this.entityManagerFactoryWrapper = new EntityManagerFactoryWrapper(this.entityManagerFactory);
+            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", unitName);
         } catch (RuntimeException ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             // Throw exception so that SCR won't register the component instance.
@@ -113,29 +108,34 @@ public class EntityManagerFactoryLifecycle {
         }
     }
 
+    // <<------------------------------------- OSGi Internal  -------------------------------------->>
+
     @Deactivate
     protected void stop(EntityManagerFactoryConfig config) {
-        LOGGER.info("Closing EntityManagerFactory for PU [{}]", config.persistenceUnit());
+        LOGGER.info("Closing EntityManagerFactory for PU [{}]", config.persistenceUnitName());
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
-        this.entityManagerFactory = null;
-        this.jpaRepository.setEntityManagerFactory(null);
-        this.jpaRepository = null;
     }
 
     // <<----------------------------------- JpaRepository Bind ------------------------------------>>
 
-    @Reference(service = JpaRepository.class)
-    protected void bindJpaRepository(JpaRepository jpaRepository, Map<String, Object> properties) {
-        this.repositoryPersistenceUnit = (String) properties.get(JPA_UNIT_NAME);
+    @Reference(service = JpaRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
+        String unitName = (String) properties.get(JPA_UNIT_NAME);
         try {
-            Validate.isTrue(StringUtils.isNotEmpty(this.repositoryPersistenceUnit),
-                    String.format("%s must specify the [%s] service property!!", jpaRepository, JPA_UNIT_NAME));
-            LOGGER.info("Binding JpaRepository for PU [{}]", this.repositoryPersistenceUnit);
+            Validate.isTrue(StringUtils.isNotEmpty(unitName),
+                    String.format("%s must specify the [%s] service property!!", repository, JPA_UNIT_NAME));
+            LOGGER.info("Binding JpaRepository: {} for persistence unit: [{}]", repository, unitName);
             // Not doing any type check purposely, the JpaRepository must be a subclass of AbstractJpaRepository.
-            this.jpaRepository = (AbstractJpaRepository) jpaRepository;
+            ((AbstractJpaRepository) repository).setEntityManagerFactory(this.entityManagerFactoryWrapper);
         } catch (IllegalArgumentException | ClassCastException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaRepositoryBindException(ex);
         }
+    }
+
+    protected void unbindJpaRepository(JpaRepository repository, Map<String, Object> properties) {
+        String unitName = (String) properties.get(JPA_UNIT_NAME);
+        LOGGER.info("Unbinding JpaRepository: {} for persistence unit: [{}]", repository, unitName);
+        ((AbstractJpaRepository) repository).setEntityManagerFactory(null);
     }
 }

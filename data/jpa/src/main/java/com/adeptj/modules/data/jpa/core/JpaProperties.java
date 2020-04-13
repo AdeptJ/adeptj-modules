@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.data.jpa.core;
 
-import com.adeptj.modules.data.jpa.exception.JpaExceptionHandler;
+import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 

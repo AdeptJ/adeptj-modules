@@ -18,33 +18,24 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.exception;
+package com.adeptj.modules.data.jpa;
 
-import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
- * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
- * the {@link ExceptionHandler} interface and provides a default (zero-argument) constructor.
- * <p>
- * See more at: http://eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_exception_handler.htm
+ * Service implementation must have the visibility to the entity classes and persistence.xml/orm.xml otherwise
+ * EclipseLink may not be able to create the EntityManagerFactory.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JpaExceptionHandler implements ExceptionHandler {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+@ConsumerType
+public interface PersistenceInfoProvider {
 
     /**
-     * {@inheritDoc}
+     * Implementor must return the JPA persistence unit name exactly defined in persistence.xml as well as in
+     * EntityManagerFactoryLifecycle service configurations.
+     *
+     * @return the persistence unit name.
      */
-    @Override
-    public Object handleException(RuntimeException exception) {
-        // Log it as of now, perform any other task on passed Exception if needed.
-        LOGGER.error(exception.getMessage(), exception);
-        throw exception;
-    }
+    String getPersistenceUnitName();
 }

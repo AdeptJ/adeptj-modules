@@ -22,7 +22,7 @@
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
             <property name="eclipselink.logging.file" value="jpa.log"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
-            <property name="eclipselink.exception-handler" value="com.adeptj.modules.data.jpa.exception.JpaExceptionHandler"/>
+            <property name="eclipselink.exception-handler" value="com.adeptj.modules.data.jpa.JpaExceptionHandler"/>
         </properties>
 
     </persistence-unit>
