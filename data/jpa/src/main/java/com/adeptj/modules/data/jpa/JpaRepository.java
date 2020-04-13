@@ -27,7 +27,10 @@ import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
+import com.adeptj.modules.data.jpa.query.InParameter;
+import com.adeptj.modules.data.jpa.query.OutParameter;
 import com.adeptj.modules.data.jpa.query.QueryParam;
+import com.adeptj.modules.data.jpa.query.QueryType;
 
 import javax.persistence.Tuple;
 import java.util.List;

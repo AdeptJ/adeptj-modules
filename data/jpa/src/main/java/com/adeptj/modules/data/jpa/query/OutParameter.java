@@ -1,4 +1,4 @@
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.query;
 
 public class OutParameter {
 

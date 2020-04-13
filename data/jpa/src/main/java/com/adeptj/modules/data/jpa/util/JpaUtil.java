@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.util;
 
 import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;

@@ -18,16 +18,16 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.query;
 
 /**
- * Enum specifying the query type, whether JPQL or Native sql.
+ * To specify if a given named query is either JPA query or native one.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public enum QueryType {
-
-    NATIVE,
+public enum NamedQueryType {
 
     JPA,
+
+    NATIVE,
 }

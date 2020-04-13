@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa;
 
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation

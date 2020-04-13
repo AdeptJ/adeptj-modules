@@ -23,7 +23,7 @@ package com.adeptj.modules.data.jpa.internal;
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
-import com.adeptj.modules.data.jpa.JpaUtil;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 import com.adeptj.modules.data.jpa.core.EntityManagerFactoryConfig;
 import com.adeptj.modules.data.jpa.core.JpaProperties;

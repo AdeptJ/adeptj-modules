@@ -21,14 +21,14 @@
 package com.adeptj.modules.data.jpa.core;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
-import com.adeptj.modules.data.jpa.InParameter;
+import com.adeptj.modules.data.jpa.query.InParameter;
 import com.adeptj.modules.data.jpa.JpaCallback;
 import com.adeptj.modules.data.jpa.JpaRepository;
-import com.adeptj.modules.data.jpa.JpaUtil;
-import com.adeptj.modules.data.jpa.OutParameter;
-import com.adeptj.modules.data.jpa.Predicates;
-import com.adeptj.modules.data.jpa.QueryType;
-import com.adeptj.modules.data.jpa.Transactions;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
+import com.adeptj.modules.data.jpa.query.OutParameter;
+import com.adeptj.modules.data.jpa.util.Predicates;
+import com.adeptj.modules.data.jpa.query.QueryType;
+import com.adeptj.modules.data.jpa.util.Transactions;
 import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;

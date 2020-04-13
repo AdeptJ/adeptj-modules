@@ -18,7 +18,7 @@
                       value="jdbc:mysql://localhost:3306/AdeptJ?useSSL=false&amp;nullNamePatternMatchesAll=true&amp;allowPublicKeyRetrieval=true"/>
             <property name="javax.persistence.jdbc.user" value="ut"/>
             <property name="javax.persistence.jdbc.password" value="EclipseLink@2018"/>
-            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <property name="eclipselink.ddl-generation" value="NONE"/>
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
             <property name="eclipselink.logging.file" value="jpa.log"/>
             <property name="eclipselink.logging.level" value="FINEST"/>

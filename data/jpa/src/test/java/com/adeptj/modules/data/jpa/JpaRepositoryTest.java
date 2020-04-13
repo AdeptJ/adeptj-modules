@@ -40,8 +40,8 @@ import javax.persistence.Persistence;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import static com.adeptj.modules.data.jpa.QueryType.JPA;
-import static com.adeptj.modules.data.jpa.QueryType.NATIVE;
+import static com.adeptj.modules.data.jpa.query.QueryType.JPA;
+import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
 
 /**
  * JpaCrudRepositoryTest
@@ -108,11 +108,11 @@ public class JpaRepositoryTest {
     @Test
     public void testUpdate() {
         User user = new User();
-        user.setId(1L);
+        user.setId(7L);
         user.setContact("1234567890");
-        user.setFirstName("John_Updated_Again");
+        user.setFirstName("John_Updated_Again_");
         user.setLastName("Doe_Updated");
-        user.setEmail("john.doe@johndoe.com");
+        user.setEmail("john.doe1@johndoe.com");
         user = jpaRepository.update(user);
         LOGGER.info("User's Contact No is: {}", user.getContact());
     }
@@ -264,7 +264,7 @@ public class JpaRepositoryTest {
     public void testGetTypedScalarResultByNamedQueryAndPosParams() {
         String firstName = jpaRepository
                 .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
-                        new PositionalParam(1, "123456789167"));
+                        new PositionalParam(1, "1234567892"));
         if (firstName != null) {
             LOGGER.info("FirstName: {}", firstName);
         }
@@ -274,7 +274,7 @@ public class JpaRepositoryTest {
     public void testGetScalarResultByNamedQueryAndPosParams() {
         String firstName = jpaRepository
                 .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
-                        new PositionalParam(1, "123456789167"));
+                        new PositionalParam(1, "1234567892"));
         if (firstName != null) {
             LOGGER.info("FirstName: {}", firstName);
         }
@@ -349,7 +349,7 @@ public class JpaRepositoryTest {
     public void testScalarResultOfTypeJpaQuery() {
         String query = "SELECT u.email FROM User u where u.id= ?1";
         String user = jpaRepository.getScalarResultOfType(String.class, JPA, query,
-                new PositionalParam(1, 1L));
+                new PositionalParam(1, 7L));
         LOGGER.info("User: {}", user);
     }
 

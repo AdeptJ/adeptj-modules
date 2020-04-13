@@ -18,41 +18,27 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import java.lang.invoke.MethodHandles;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Map;
 
 /**
- * Utilities for Jpa {@link EntityTransaction}.
+ * Utilities for Jpa {@link Predicate}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class Transactions {
+public final class Predicates {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private Transactions() {
+    private Predicates() {
     }
 
-    public static void markRollback(EntityManager em) {
-        if (em.getTransaction().isActive() && !em.getTransaction().getRollbackOnly()) {
-            em.getTransaction().setRollbackOnly();
-        }
-    }
-
-    public static void rollback(EntityManager em) {
-        if (em.getTransaction().isActive() && em.getTransaction().getRollbackOnly()) {
-            try {
-                LOGGER.warn("Rolling back transaction!!");
-                em.getTransaction().rollback();
-            } catch (RuntimeException ex) {
-                LOGGER.error("Exception while rolling back transaction!!", ex);
-            }
-        }
+    public static <T> Predicate[] using(CriteriaBuilder cb, Root<T> root, Map<String, Object> criteriaAttributes) {
+        return criteriaAttributes.entrySet()
+                .stream()
+                .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
+                .toArray(Predicate[]::new);
     }
 }
