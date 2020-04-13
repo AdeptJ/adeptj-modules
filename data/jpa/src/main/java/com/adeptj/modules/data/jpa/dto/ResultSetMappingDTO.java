@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.dto;
 
 import com.adeptj.modules.data.jpa.query.QueryParam;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,7 +84,7 @@ public class ResultSetMappingDTO {
             return this;
         }
 
-        public Builder addQueryParamParam(QueryParam param) {
+        public Builder queryParam(QueryParam param) {
             if (this.queryParams == null) {
                 this.queryParams = new ArrayList<>();
             }
@@ -91,11 +92,13 @@ public class ResultSetMappingDTO {
             return this;
         }
 
-        public Builder addQueryParamParams(QueryParam... params) {
-            if (this.queryParams == null) {
-                this.queryParams = new ArrayList<>();
+        public Builder queryParams(QueryParam... params) {
+            if (ArrayUtils.isNotEmpty(params)) {
+                if (this.queryParams == null) {
+                    this.queryParams = new ArrayList<>();
+                }
+                this.queryParams.addAll(Arrays.asList(params));
             }
-            this.queryParams.addAll(Arrays.asList(params));
             return this;
         }
 
@@ -103,7 +106,9 @@ public class ResultSetMappingDTO {
             ResultSetMappingDTO resultSetMappingDTO = new ResultSetMappingDTO();
             resultSetMappingDTO.nativeQuery = this.nativeQuery;
             resultSetMappingDTO.resultSetMapping = this.resultSetMapping;
-            resultSetMappingDTO.queryParams = this.queryParams.toArray(new QueryParam[0]);
+            if (this.queryParams != null) {
+                resultSetMappingDTO.queryParams = this.queryParams.toArray(new QueryParam[0]);
+            }
             return resultSetMappingDTO;
         }
     }

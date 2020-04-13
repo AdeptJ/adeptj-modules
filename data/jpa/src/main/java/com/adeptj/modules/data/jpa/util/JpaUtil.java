@@ -20,18 +20,22 @@
 
 package com.adeptj.modules.data.jpa.util;
 
+import com.adeptj.modules.data.jpa.query.InParameter;
 import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
-import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TypedQuery;
 import java.lang.invoke.MethodHandles;
+
+import static javax.persistence.ParameterMode.IN;
 
 /**
  * Common JPA Utilities.
@@ -74,29 +78,42 @@ public final class JpaUtil {
     }
 
     /**
-     * This method binds the the positional parameters to the given JPA {@link Query} or {@link TypedQuery}.
+     * This method binds the the query parameters to the given JPA {@link Query} or {@link TypedQuery}.
      *
      * @param query  the JPA {@link Query} or {@link TypedQuery}
-     * @param params query bind parameters, either a {@link NamedParam} or a {@link PositionalParam}
+     * @param params query bind parameters, either an array of {@link NamedParam} or a {@link PositionalParam}
      */
     public static void bindQueryParams(Query query, QueryParam... params) {
-        Validate.noNullElements(params);
+        if (ArrayUtils.isEmpty(params)) {
+            return;
+        }
         for (QueryParam param : params) {
             if (param instanceof NamedParam) {
                 NamedParam namedParam = (NamedParam) param;
-                String name = namedParam.getName();
-                Object value = namedParam.getValue();
-                LOGGER.debug("Binding JPA Query parameter value: [{}] for name: [{}]", value, name);
-                // Query parameter index starts with 1
-                query.setParameter(name, value);
+                query.setParameter(namedParam.getName(), namedParam.getValue());
             } else if (param instanceof PositionalParam) {
                 PositionalParam positionalParam = (PositionalParam) param;
-                int position = positionalParam.getPosition();
-                Object value = positionalParam.getValue();
-                LOGGER.debug("Binding JPA Query parameter value: [{}] at position: [{}]", value, position);
-                // Query parameter index starts with 1
-                query.setParameter(position, value);
+                query.setParameter(positionalParam.getPosition(), positionalParam.getValue());
             }
+        }
+    }
+
+    public static void bindStoredProcedureInParams(StoredProcedureQuery query, InParameter... params) {
+        if (ArrayUtils.isEmpty(params)) {
+            return;
+        }
+        for (InParameter param : params) {
+            query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
+                    .setParameter(param.getName(), param.getValue());
+        }
+    }
+
+    public static void bindNamedStoredProcedureInParams(StoredProcedureQuery query, InParameter... params) {
+        if (ArrayUtils.isEmpty(params)) {
+            return;
+        }
+        for (InParameter param : params) {
+            query.setParameter(param.getName(), param.getValue());
         }
     }
 }

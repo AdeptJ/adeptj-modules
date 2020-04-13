@@ -18,18 +18,33 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.exception;
+
+import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
- * SQL Logical operators.
+ * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
+ * the {@link ExceptionHandler} interface and provides a default (zero-argument) constructor.
+ * <p>
+ * See more at: http://eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_exception_handler.htm
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public enum Operator {
+public class JpaExceptionHandler implements ExceptionHandler {
 
-    AND,
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    OR,
-
-    NOT,
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object handleException(RuntimeException exception) {
+        // Log it as of now, perform any other task on passed Exception if needed.
+        LOGGER.error(exception.getMessage(), exception);
+        throw exception;
+    }
 }

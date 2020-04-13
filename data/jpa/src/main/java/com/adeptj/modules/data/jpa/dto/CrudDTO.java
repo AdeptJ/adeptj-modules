@@ -22,6 +22,7 @@ package com.adeptj.modules.data.jpa.dto;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.query.QueryParam;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,7 +110,7 @@ public class CrudDTO<T extends BaseEntity> {
             return this;
         }
 
-        public Builder<T> addQueryParam(QueryParam param) {
+        public Builder<T> queryParam(QueryParam param) {
             if (this.queryParams == null) {
                 this.queryParams = new ArrayList<>();
             }
@@ -117,11 +118,13 @@ public class CrudDTO<T extends BaseEntity> {
             return this;
         }
 
-        public Builder<T> addQueryParams(QueryParam... params) {
-            if (this.queryParams == null) {
-                this.queryParams = new ArrayList<>();
+        public Builder<T> queryParams(QueryParam... params) {
+            if (ArrayUtils.isNotEmpty(params)) {
+                if (this.queryParams == null) {
+                    this.queryParams = new ArrayList<>();
+                }
+                this.queryParams.addAll(Arrays.asList(params));
             }
-            this.queryParams.addAll(Arrays.asList(params));
             return this;
         }
 
@@ -139,7 +142,9 @@ public class CrudDTO<T extends BaseEntity> {
             CrudDTO<T> crudDTO = new CrudDTO<>(this.entity);
             crudDTO.namedQuery = this.namedQuery;
             crudDTO.jpaQuery = this.jpaQuery;
-            crudDTO.queryParams = this.queryParams.toArray(new QueryParam[0]);
+            if (this.queryParams != null) {
+                crudDTO.queryParams = this.queryParams.toArray(new QueryParam[0]);
+            }
             crudDTO.startPos = this.startPos;
             crudDTO.maxResult = this.maxResult;
             return crudDTO;

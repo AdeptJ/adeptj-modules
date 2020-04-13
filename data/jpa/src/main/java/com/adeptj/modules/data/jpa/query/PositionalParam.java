@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.data.jpa.query;
 
+import org.apache.commons.lang3.Validate;
+
 /**
  * Positional parameter based QueryParam.
  *
@@ -27,10 +29,14 @@ package com.adeptj.modules.data.jpa.query;
  */
 public class PositionalParam extends AbstractQueryParam {
 
+    /**
+     * Note: Query parameter position always starts with 1 therefore it should always be non zero.
+     */
     private final int position;
 
     public PositionalParam(int position, Object value) {
         super(value);
+        Validate.isTrue(position!= 0, "Query bind parameter position can't be zero!");
         this.position = position;
     }
 

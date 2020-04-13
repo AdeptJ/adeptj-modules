@@ -21,14 +21,8 @@
 package com.adeptj.modules.data.jpa.core;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
-import com.adeptj.modules.data.jpa.query.InParameter;
 import com.adeptj.modules.data.jpa.JpaCallback;
 import com.adeptj.modules.data.jpa.JpaRepository;
-import com.adeptj.modules.data.jpa.util.JpaUtil;
-import com.adeptj.modules.data.jpa.query.OutParameter;
-import com.adeptj.modules.data.jpa.util.Predicates;
-import com.adeptj.modules.data.jpa.query.QueryType;
-import com.adeptj.modules.data.jpa.util.Transactions;
 import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
@@ -38,8 +32,13 @@ import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
 import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryLifecycle;
+import com.adeptj.modules.data.jpa.query.InParameter;
+import com.adeptj.modules.data.jpa.query.OutParameter;
 import com.adeptj.modules.data.jpa.query.QueryParam;
-import org.apache.commons.lang3.ArrayUtils;
+import com.adeptj.modules.data.jpa.query.QueryType;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
+import com.adeptj.modules.data.jpa.util.Predicates;
+import com.adeptj.modules.data.jpa.util.Transactions;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +58,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static javax.persistence.ParameterMode.IN;
 import static javax.persistence.ParameterMode.OUT;
 
 /**
@@ -711,7 +708,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery(name);
-            params.forEach(param -> query.setParameter(param.getName(), param.getValue()));
+            JpaUtil.bindNamedStoredProcedureInParams(query, params.toArray(new InParameter[0]));
             query.execute();
             return query.getOutputParameterValue(outParamName);
         } catch (Exception ex) { // NOSONAR
@@ -726,8 +723,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createStoredProcedureQuery(procedureName);
-            params.forEach(param -> query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
-                    .setParameter(param.getName(), param.getValue()));
+            JpaUtil.bindStoredProcedureInParams(query, params.toArray(new InParameter[0]));
             query.registerStoredProcedureParameter(outParam.getName(), outParam.getType(), OUT);
             query.execute();
             return query.getOutputParameterValue(outParam.getName());
@@ -744,9 +740,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery(name);
-            if (ArrayUtils.isNotEmpty(params)) {
-                Stream.of(params).forEach(param -> query.setParameter(param.getName(), param.getValue()));
-            }
+            JpaUtil.bindNamedStoredProcedureInParams(query, params);
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -761,11 +755,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createStoredProcedureQuery(procedureName, resultClass);
-            if (ArrayUtils.isNotEmpty(params)) {
-                Stream.of(params)
-                        .forEach(param -> query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
-                                .setParameter(param.getName(), param.getValue()));
-            }
+            JpaUtil.bindStoredProcedureInParams(query, params);
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);

@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.data.jpa.query;
 
-import com.adeptj.modules.data.jpa.JpaRepository;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Abstract impl of {@link QueryParam}.
@@ -32,6 +32,7 @@ public abstract class AbstractQueryParam implements QueryParam {
     private final Object value;
 
     public AbstractQueryParam(Object value) {
+        Validate.notNull(value, "Query bind parameter value can't be null!");
         this.value = value;
     }
 

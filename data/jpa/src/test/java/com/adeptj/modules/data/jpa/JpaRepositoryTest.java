@@ -29,6 +29,7 @@ import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.entity.Address;
 import com.adeptj.modules.data.jpa.entity.User;
+import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -143,7 +144,7 @@ public class JpaRepositoryTest {
     public void testDeleteByJpaNamedQuery() {
         int rows = jpaRepository.deleteByJpaNamedQuery(CrudDTO.builder(User.class)
                 .namedQuery("User.deleteUserByContact.JPA")
-                .addQueryParam(new PositionalParam(1, "1234567890"))
+                .queryParam(new PositionalParam(1, "1234567890"))
                 .build());
         LOGGER.info("Rows deleted: {}", rows);
     }
@@ -198,7 +199,7 @@ public class JpaRepositoryTest {
     @Test
     public void testFindByJPQLNamedQuery() {
         jpaRepository.findByNamedQuery("User.findUserByContact.JPA.User",
-                new PositionalParam(1, "1234567890"))
+                new PositionalParam(1, "1234567892"))
                 .forEach(object -> {
                     if (object instanceof User) {
                         LOGGER.info("User!!");
@@ -249,9 +250,9 @@ public class JpaRepositoryTest {
     @Test
     public void testFindByJpaQuery() {
         List<User> users = jpaRepository.findByJpaQuery(CrudDTO.builder(User.class)
-                .jpaQuery("SELECT u FROM  User u WHERE u.firstName = ?1 and u.contact = ?2")
-                .addQueryParams(new PositionalParam(1, "John"),
-                        new PositionalParam(2, "1234567890"))
+                .jpaQuery("SELECT u FROM  User u WHERE u.firstName = :firstName and u.contact = :contact")
+                .queryParams(new NamedParam("firstName", "John3"),
+                        new NamedParam("contact", "1234567892"))
                 .build());
         users.forEach(user -> {
             LOGGER.info("FirstName: {}", user.getFirstName());
@@ -285,7 +286,7 @@ public class JpaRepositoryTest {
         List<User> users = jpaRepository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
                 .nativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1")
                 .resultSetMapping("User.findUserByContact.EntityMapping")
-                .addQueryParamParam(new PositionalParam(1, "John"))
+                .queryParam(new PositionalParam(1, "John"))
                 .build());
         users.forEach(user -> {
             System.out.printf("User ID: %s", user.getId());

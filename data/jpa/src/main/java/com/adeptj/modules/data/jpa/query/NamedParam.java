@@ -20,6 +20,9 @@
 
 package com.adeptj.modules.data.jpa.query;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+
 /**
  * Named parameter based QueryParam.
  *
@@ -31,6 +34,7 @@ public class NamedParam extends AbstractQueryParam {
 
     public NamedParam(String name, Object value) {
         super(value);
+        Validate.isTrue(StringUtils.isNotEmpty(name), "Query bind parameter name can't be null or empty!");
         this.name = name;
     }
 
