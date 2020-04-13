@@ -21,7 +21,13 @@
 package com.adeptj.modules.data.jpa;
 
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
+import com.adeptj.modules.data.jpa.dto.CrudDTO;
+import com.adeptj.modules.data.jpa.entity.User;
+import com.adeptj.modules.data.jpa.query.NamedParam;
+import com.adeptj.modules.data.jpa.query.QueryParam;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
+
+import java.util.List;
 
 /**
  * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
@@ -44,5 +50,9 @@ public class EclipseLinkRepository extends AbstractJpaRepository {
 
     void closeEntityManagerFactory() {
         JpaUtil.closeEntityManagerFactory(super.getEntityManagerFactory());
+    }
+
+    List<User> findAllUsers() {
+        return super.execute(em -> em.createQuery("Select u from User u", User.class).getResultList());
     }
 }

@@ -257,7 +257,15 @@ public class JpaRepositoryTest {
         users.forEach(user -> {
             LOGGER.info("FirstName: {}", user.getFirstName());
             LOGGER.info("LastName: {}", user.getLastName());
+        });
+    }
 
+    @Test
+    public void testFindAll() {
+        List<User> users = jpaRepository.findAllUsers();
+        users.forEach(user -> {
+            LOGGER.info("FirstName: {}", user.getFirstName());
+            LOGGER.info("LastName: {}", user.getLastName());
         });
     }
 
