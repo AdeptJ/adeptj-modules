@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.security.jwt;
 
+import com.fasterxml.uuid.Generators;
 import io.jsonwebtoken.lang.Assert;
 
 import java.util.Map;
@@ -68,5 +69,9 @@ public final class JwtUtil {
         assertClaims(claims);
         Stream.of(mandatoryClaims)
                 .forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
+    }
+
+    public static String generateJwtId() {
+        return Generators.randomBasedGenerator().generate().toString();
     }
 }

@@ -44,7 +44,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 
 import static io.jsonwebtoken.Claims.ID;
 import static io.jsonwebtoken.Claims.ISSUER;
@@ -112,7 +111,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(subject)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
-                .setId(claims.containsKey(ID) ? (String) claims.get(ID) : UUID.randomUUID().toString())
+                .setId(claims.containsKey(ID) ? (String) claims.get(ID) : JwtUtil.generateJwtId())
                 .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
                 .signWith(this.keyInfo.getPrivateKey(), this.keyInfo.getSignatureAlgorithm())
                 .serializeToJsonWith(this.serializer)
