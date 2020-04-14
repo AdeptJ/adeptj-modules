@@ -20,13 +20,11 @@
 
 package com.adeptj.modules.data.jpa;
 
-import java.io.Serializable;
-
 /**
  * Marker Interface, acting as a super of all the JPA Entities that {@link JpaRepository} will be dealing with.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface BaseEntity extends Serializable {
+public interface BaseEntity {
 
 }
