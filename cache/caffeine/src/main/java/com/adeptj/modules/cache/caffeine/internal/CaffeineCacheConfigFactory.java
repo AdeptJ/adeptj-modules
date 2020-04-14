@@ -62,7 +62,7 @@ public class CaffeineCacheConfigFactory {
 
     @Override
     public String toString() {
-        return "CaffeineCacheConfigFactory [" +
+        return "CaffeineCacheConfigFactory[" +
                 "cacheName='" + cacheName + '\'' +
                 ", cacheSpec='" + cacheSpec + '\'' +
                 ']';
