@@ -20,37 +20,26 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import io.jsonwebtoken.SignatureAlgorithm;
-
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import com.adeptj.modules.security.jwt.JwtClaims;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtHandlerAdapter;
 
 /**
- * Holder of JWT {@link SignatureAlgorithm}, signing and verification keys.
+ * Simple implementation of {@link JwtHandlerAdapter}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class KeyInfo {
+final class JwsHandler extends JwtHandlerAdapter<JwtClaims> {
 
-    private final SignatureAlgorithm signatureAlgorithm;
-
-    private final KeyPair keyPair;
-
-    KeyInfo(SignatureAlgorithm signatureAlgorithm, PrivateKey signingKey, PublicKey verificationKey) {
-        this.signatureAlgorithm = signatureAlgorithm;
-        this.keyPair = new KeyPair(verificationKey, signingKey);
-    }
-
-    SignatureAlgorithm getSignatureAlgorithm() {
-        return signatureAlgorithm;
-    }
-
-    PrivateKey getPrivateKey() {
-        return this.keyPair.getPrivate();
-    }
-
-    PublicKey getPublicKey() {
-        return this.keyPair.getPublic();
+    /**
+     * Simply returns the {@link JwtClaims} by composing the Jwt {@link Claims}.
+     *
+     * @param jws the Json web signature.
+     * @return the {@link JwtClaims}.
+     */
+    @Override
+    public JwtClaims onClaimsJws(Jws<Claims> jws) {
+        return new JwtClaims(jws.getBody());
     }
 }

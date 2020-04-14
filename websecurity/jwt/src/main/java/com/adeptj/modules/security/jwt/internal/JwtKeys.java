@@ -99,7 +99,7 @@ final class JwtKeys {
             return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodePrivateKeyData(keyData, false)));
         } catch (GeneralSecurityException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new KeyInitializationException(ex.getMessage(), ex);
+            throw new JwtKeyInitializationException(ex.getMessage(), ex);
         }
     }
 
@@ -118,7 +118,7 @@ final class JwtKeys {
             return keyFactory.generatePublic(new X509EncodedKeySpec(publicKeyData));
         } catch (GeneralSecurityException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new KeyInitializationException(ex.getMessage(), ex);
+            throw new JwtKeyInitializationException(ex.getMessage(), ex);
         }
     }
 

@@ -69,9 +69,9 @@ public class JwtServiceImpl implements JwtService {
 
     private final Duration expirationDuration;
 
-    private final KeyInfo keyInfo;
+    private final JwtKeyInfo keyInfo;
 
-    private final ClaimsJwsHandler jwtHandler;
+    private final JwsHandler jwsHandler;
 
     private final Serializer<Map<String, ?>> serializer;
 
@@ -79,7 +79,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Activate
     public JwtServiceImpl(JwtConfig config) {
-        this.jwtHandler = new ClaimsJwsHandler();
+        this.jwsHandler = new JwsHandler();
         this.serializer = new JwtSerializer<>();
         this.deserializer = new JwtDeserializer<>();
         try {
@@ -90,8 +90,8 @@ public class JwtServiceImpl implements JwtService {
             LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm.getJcaName());
             PrivateKey signingKey = JwtKeys.createSigningKey(config, algorithm.getFamilyName());
             PublicKey verificationKey = JwtKeys.createVerificationKey(algorithm.getFamilyName(), config.publicKey());
-            this.keyInfo = new KeyInfo(algorithm, signingKey, verificationKey);
-        } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
+            this.keyInfo = new JwtKeyInfo(algorithm, signingKey, verificationKey);
+        } catch (SignatureException | JwtKeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
         }
@@ -144,7 +144,7 @@ public class JwtServiceImpl implements JwtService {
                     .setSigningKey(this.keyInfo.getPublicKey())
                     .deserializeJsonWith(this.deserializer)
                     .build()
-                    .parse(jwt, this.jwtHandler);
+                    .parse(jwt, this.jwsHandler);
         } catch (ExpiredJwtException ex) {
             // to reduce noise in logs.
             if (LOGGER.isDebugEnabled()) {

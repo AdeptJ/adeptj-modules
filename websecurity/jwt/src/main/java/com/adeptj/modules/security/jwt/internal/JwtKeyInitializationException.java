@@ -25,11 +25,11 @@ package com.adeptj.modules.security.jwt.internal;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class KeyInitializationException extends RuntimeException {
+final class JwtKeyInitializationException extends RuntimeException {
 
     private static final long serialVersionUID = 3525176439467354181L;
 
-    KeyInitializationException(String message, Throwable cause) {
+    JwtKeyInitializationException(String message, Throwable cause) {
         super(message, cause);
     }
 }
