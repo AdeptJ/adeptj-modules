@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.security.jwt;
 
+import com.adeptj.modules.security.jwt.internal.JwtConfig;
 import org.osgi.annotation.versioning.ProviderType;
 
 import java.util.Map;

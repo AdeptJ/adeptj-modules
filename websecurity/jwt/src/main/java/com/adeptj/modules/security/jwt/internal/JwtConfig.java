@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt;
+package com.adeptj.modules.security.jwt.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -53,7 +53,7 @@ public @interface JwtConfig {
                     @Option(label = "RSA 512", value = "RS512"),
             }
     )
-    String signatureAlgo();
+    String signatureAlgorithm();
 
     @AttributeDefinition(
             name = "RSA PrivateKey(Signing Key)",

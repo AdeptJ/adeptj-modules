@@ -18,21 +18,12 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.core;
+package com.adeptj.modules.data.jpa.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.ALL;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.CONFIG;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.FINE;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.FINER;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.FINEST;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.INFO;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.OFF;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.SEVERE;
-import static com.adeptj.modules.data.jpa.core.LoggingLevel.WARNING;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CREATE_ONLY;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CREATE_OR_EXTEND;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_BOTH_GENERATION;
@@ -53,6 +44,30 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
         description = "EntityManagerFactory(EclipseLink) Configuration"
 )
 public @interface EntityManagerFactoryConfig {
+
+    // EclipseLink logging levels.
+
+    String OFF = "OFF";
+
+    String SEVERE = "SEVERE";
+
+    String WARNING = "WARNING";
+
+    String INFO = "INFO";
+
+    String CONFIG = "CONFIG";
+
+    String FINE = "FINE";
+
+    String FINER = "FINER";
+
+    String FINEST = "FINEST";
+
+    String ALL = "ALL";
+
+    // Common Constants
+
+    String JPA_TRANSACTION_TYPE = "RESOURCE_LOCAL";
 
     @AttributeDefinition(
             name = "PersistenceUnit Name",
@@ -85,7 +100,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "RESOURCE_LOCAL", value = "RESOURCE_LOCAL"),
                     @Option(label = "JTA", value = "JTA")
             })
-    String persistenceUnitTransactionType() default "RESOURCE_LOCAL";
+    String persistenceUnitTransactionType() default JPA_TRANSACTION_TYPE;
 
     @AttributeDefinition(
             name = "L2 Cache Mode",

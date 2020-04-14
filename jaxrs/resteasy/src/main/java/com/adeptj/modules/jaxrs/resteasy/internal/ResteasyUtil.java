@@ -20,10 +20,8 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.resteasy.ResteasyConfig;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import java.util.Arrays;
 

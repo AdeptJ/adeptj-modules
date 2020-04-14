@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.security.jwt.JwtConfig;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -79,12 +77,12 @@ final class JwtKeys {
     private JwtKeys() {
     }
 
-    static PrivateKey createSigningKey(JwtConfig jwtConfig, SignatureAlgorithm signatureAlgo) {
+    static PrivateKey createSigningKey(JwtConfig jwtConfig, String algorithm) {
         LOGGER.info("Creating RSA signing key!!");
         String keyData = jwtConfig.privateKey();
         Assert.isTrue(StringUtils.startsWithAny(keyData, PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER), INVALID_PRIVATE_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgo.getFamilyName());
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
             if (StringUtils.startsWith(keyData, PRIVATE_ENCRYPTED_KEY_HEADER)) {
                 LOGGER.info("Creating PKCS8EncodedKeySpec from private [encrypted] key !!");
                 Assert.hasText(jwtConfig.privateKeyPassword(), KEYPASS_NULL_MSG);
@@ -105,11 +103,11 @@ final class JwtKeys {
         }
     }
 
-    static PublicKey createVerificationKey(SignatureAlgorithm signatureAlgo, String publicKey) {
+    static PublicKey createVerificationKey(String algorithm, String publicKey) {
         LOGGER.info("Creating RSA verification key!!");
         Assert.isTrue(StringUtils.startsWith(publicKey, PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(signatureAlgo.getFamilyName());
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
             byte[] publicKeyData = Base64.getDecoder().decode(publicKey
                     .replace(PUB_KEY_HEADER, EMPTY)
                     .replace(PUB_KEY_FOOTER, EMPTY)

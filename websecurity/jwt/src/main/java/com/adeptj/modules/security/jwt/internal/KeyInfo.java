@@ -18,33 +18,39 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.core;
+package com.adeptj.modules.security.jwt.internal;
+
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
- * EclipseLink Log levels.
+ * Holder of JWT {@link SignatureAlgorithm}, signing and verification keys.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class LoggingLevel {
+final class KeyInfo {
 
-    private LoggingLevel() {
+    private final SignatureAlgorithm signatureAlgorithm;
+
+    private final KeyPair keyPair;
+
+    KeyInfo(SignatureAlgorithm signatureAlgorithm, PrivateKey signingKey, PublicKey verificationKey) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        this.keyPair = new KeyPair(verificationKey, signingKey);
     }
 
-    static final String OFF = "OFF";
+    SignatureAlgorithm getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
 
-    static final String SEVERE = "SEVERE";
+    PrivateKey getPrivateKey() {
+        return this.keyPair.getPrivate();
+    }
 
-    static final String WARNING = "WARNING";
-
-    static final String INFO = "INFO";
-
-    static final String CONFIG = "CONFIG";
-
-    static final String FINE = "FINE";
-
-    static final String FINER = "FINER";
-
-    static final String FINEST = "FINEST";
-
-    static final String ALL = "ALL";
+    PublicKey getPublicKey() {
+        return this.keyPair.getPublic();
+    }
 }

@@ -25,8 +25,6 @@ import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.PersistenceInfoProvider;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
-import com.adeptj.modules.data.jpa.core.EntityManagerFactoryConfig;
-import com.adeptj.modules.data.jpa.core.JpaProperties;
 import com.adeptj.modules.data.jpa.exception.JpaBootstrapException;
 import com.adeptj.modules.data.jpa.exception.JpaRepositoryBindException;
 import com.adeptj.modules.data.jpa.util.JpaUtil;

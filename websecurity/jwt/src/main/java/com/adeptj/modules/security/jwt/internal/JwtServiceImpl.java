@@ -21,7 +21,6 @@
 package com.adeptj.modules.security.jwt.internal;
 
 import com.adeptj.modules.security.jwt.JwtClaims;
-import com.adeptj.modules.security.jwt.JwtConfig;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -34,13 +33,11 @@ import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.security.SignatureException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Duration;
@@ -67,15 +64,13 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private String defaultIssuer;
+    private final String defaultIssuer;
 
-    private String[] mandatoryClaims;
+    private final String[] mandatoryClaims;
 
-    private Duration expirationDuration;
+    private final Duration expirationDuration;
 
-    private SignatureAlgorithm signatureAlgo;
-
-    private KeyPair keyPair;
+    private final KeyInfo keyInfo;
 
     private final ClaimsJwsHandler jwtHandler;
 
@@ -83,10 +78,24 @@ public class JwtServiceImpl implements JwtService {
 
     private final Deserializer<Map<String, ?>> deserializer;
 
-    public JwtServiceImpl() {
+    @Activate
+    public JwtServiceImpl(JwtConfig config) {
         this.jwtHandler = new ClaimsJwsHandler();
         this.serializer = new JwtSerializer<>();
         this.deserializer = new JwtDeserializer<>();
+        try {
+            this.defaultIssuer = config.defaultIssuer();
+            this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
+            this.mandatoryClaims = config.mandatoryClaims();
+            SignatureAlgorithm algorithm = SignatureAlgorithm.forName(config.signatureAlgorithm());
+            LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm.getJcaName());
+            PrivateKey signingKey = JwtKeys.createSigningKey(config, algorithm.getFamilyName());
+            PublicKey verificationKey = JwtKeys.createVerificationKey(algorithm.getFamilyName(), config.publicKey());
+            this.keyInfo = new KeyInfo(algorithm, signingKey, verificationKey);
+        } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw ex;
+        }
     }
 
     /**
@@ -105,7 +114,7 @@ public class JwtServiceImpl implements JwtService {
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
                 .setId(claims.containsKey(ID) ? (String) claims.get(ID) : UUID.randomUUID().toString())
                 .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
-                .signWith(this.keyPair.getPrivate(), this.signatureAlgo)
+                .signWith(this.keyInfo.getPrivateKey(), this.keyInfo.getSignatureAlgorithm())
                 .serializeToJsonWith(this.serializer)
                 .compact();
     }
@@ -119,7 +128,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
-                .signWith(this.keyPair.getPrivate(), this.signatureAlgo)
+                .signWith(this.keyInfo.getPrivateKey(), this.keyInfo.getSignatureAlgorithm())
                 .serializeToJsonWith(this.serializer)
                 .compact();
     }
@@ -133,7 +142,7 @@ public class JwtServiceImpl implements JwtService {
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");
             claims = Jwts.parserBuilder()
-                    .setSigningKey(this.keyPair.getPublic())
+                    .setSigningKey(this.keyInfo.getPublicKey())
                     .deserializeJsonWith(this.deserializer)
                     .build()
                     .parse(jwt, this.jwtHandler);
@@ -148,29 +157,5 @@ public class JwtServiceImpl implements JwtService {
             LOGGER.error(ex.getMessage(), ex);
         }
         return claims;
-    }
-
-    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
-
-    @Modified
-    @Activate
-    protected void start(JwtConfig config) {
-        this.signatureAlgo = null;
-        this.keyPair = null;
-        this.expirationDuration = null;
-        this.defaultIssuer = null;
-        try {
-            this.defaultIssuer = config.defaultIssuer();
-            this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
-            this.mandatoryClaims = config.mandatoryClaims();
-            this.signatureAlgo = SignatureAlgorithm.forName(config.signatureAlgo());
-            LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", this.signatureAlgo.getJcaName());
-            PrivateKey signingKey = JwtKeys.createSigningKey(config, this.signatureAlgo);
-            PublicKey verificationKey = JwtKeys.createVerificationKey(this.signatureAlgo, config.publicKey());
-            this.keyPair = new KeyPair(verificationKey, signingKey);
-        } catch (SignatureException | KeyInitializationException | IllegalArgumentException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw ex;
-        }
     }
 }

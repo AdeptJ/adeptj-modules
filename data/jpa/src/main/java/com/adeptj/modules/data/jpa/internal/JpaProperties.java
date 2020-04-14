@@ -18,9 +18,10 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.core;
+package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
+import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryConfig;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,9 +46,9 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATIO
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JpaProperties {
+final class JpaProperties {
 
-    public static Map<String, Object> from(EntityManagerFactoryConfig config) {
+    static Map<String, Object> from(EntityManagerFactoryConfig config) {
         Map<String, Object> jpaProperties = new HashMap<>();
         jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
         jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
