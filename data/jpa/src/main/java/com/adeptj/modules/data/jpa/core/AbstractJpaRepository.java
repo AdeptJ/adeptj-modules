@@ -32,8 +32,8 @@ import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
 import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryLifecycle;
-import com.adeptj.modules.data.jpa.query.InParameter;
-import com.adeptj.modules.data.jpa.query.OutParameter;
+import com.adeptj.modules.data.jpa.query.InParam;
+import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
 import com.adeptj.modules.data.jpa.query.QueryType;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
@@ -697,11 +697,11 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     }
 
     @Override
-    public Object executeNamedStoredProcedure(String name, List<InParameter> params, String outParamName) {
+    public Object executeNamedStoredProcedure(String name, List<InParam> params, String outParamName) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery(name);
-            JpaUtil.bindNamedStoredProcedureInParams(query, params.toArray(new InParameter[0]));
+            JpaUtil.bindNamedStoredProcedureInParams(query, params.toArray(new InParam[0]));
             query.execute();
             return query.getOutputParameterValue(outParamName);
         } catch (Exception ex) { // NOSONAR
@@ -712,11 +712,11 @@ public abstract class AbstractJpaRepository implements JpaRepository {
     }
 
     @Override
-    public Object executeStoredProcedure(String procedureName, List<InParameter> params, OutParameter outParam) {
+    public Object executeStoredProcedure(String procedureName, List<InParam> params, OutParam outParam) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createStoredProcedureQuery(procedureName);
-            JpaUtil.bindStoredProcedureInParams(query, params.toArray(new InParameter[0]));
+            JpaUtil.bindStoredProcedureInParams(query, params.toArray(new InParam[0]));
             query.registerStoredProcedureParameter(outParam.getName(), outParam.getType(), OUT);
             query.execute();
             return query.getOutputParameterValue(outParam.getName());
@@ -729,7 +729,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> findByNamedStoredProcedure(String name, InParameter... params) {
+    public <T> List<T> findByNamedStoredProcedure(String name, InParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery(name);
@@ -744,7 +744,7 @@ public abstract class AbstractJpaRepository implements JpaRepository {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, InParameter... params) {
+    public <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, InParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.getEntityManagerFactory());
         try {
             StoredProcedureQuery query = em.createStoredProcedureQuery(procedureName, resultClass);

@@ -25,13 +25,13 @@ package com.adeptj.modules.data.jpa.query;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class OutParameter {
+public class OutParam {
 
     private final String name;
 
     private final Class<?> type;
 
-    public OutParameter(String name, Class<?> type) {
+    public OutParam(String name, Class<?> type) {
         this.name = name;
         this.type = type;
     }

@@ -33,6 +33,7 @@ import com.adeptj.modules.data.jpa.util.JpaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
+import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -63,6 +64,7 @@ import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 @Designate(ocd = EntityManagerFactoryConfig.class)
 @Component(service = EntityManagerFactoryLifecycle.class, immediate = true, configurationPolicy = REQUIRE)
 public class EntityManagerFactoryLifecycle {

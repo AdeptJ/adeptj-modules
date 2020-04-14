@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.data.jpa.util;
 
-import com.adeptj.modules.data.jpa.query.InParameter;
+import com.adeptj.modules.data.jpa.query.InParam;
 import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
@@ -98,21 +98,21 @@ public final class JpaUtil {
         }
     }
 
-    public static void bindStoredProcedureInParams(StoredProcedureQuery query, InParameter... params) {
+    public static void bindStoredProcedureInParams(StoredProcedureQuery query, InParam... params) {
         if (ArrayUtils.isEmpty(params)) {
             return;
         }
-        for (InParameter param : params) {
+        for (InParam param : params) {
             query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
                     .setParameter(param.getName(), param.getValue());
         }
     }
 
-    public static void bindNamedStoredProcedureInParams(StoredProcedureQuery query, InParameter... params) {
+    public static void bindNamedStoredProcedureInParams(StoredProcedureQuery query, InParam... params) {
         if (ArrayUtils.isEmpty(params)) {
             return;
         }
-        for (InParameter param : params) {
+        for (InParam param : params) {
             query.setParameter(param.getName(), param.getValue());
         }
     }

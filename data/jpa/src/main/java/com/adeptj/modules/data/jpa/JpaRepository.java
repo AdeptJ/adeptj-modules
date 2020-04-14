@@ -27,10 +27,11 @@ import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
-import com.adeptj.modules.data.jpa.query.InParameter;
-import com.adeptj.modules.data.jpa.query.OutParameter;
+import com.adeptj.modules.data.jpa.query.InParam;
+import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
 import com.adeptj.modules.data.jpa.query.QueryType;
+import org.osgi.annotation.versioning.ConsumerType;
 
 import javax.persistence.Tuple;
 import java.util.List;
@@ -45,6 +46,7 @@ import java.util.List;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ConsumerType
 public interface JpaRepository {
 
     /**
@@ -380,11 +382,11 @@ public interface JpaRepository {
      */
     <T> T executeInTransaction(JpaCallback<T> action);
 
-    Object executeNamedStoredProcedure(String name, List<InParameter> params, String outParamName);
+    Object executeNamedStoredProcedure(String name, List<InParam> params, String outParamName);
 
-    Object executeStoredProcedure(String procedureName, List<InParameter> params, OutParameter outParam);
+    Object executeStoredProcedure(String procedureName, List<InParam> params, OutParam outParam);
 
-    <T> List<T> findByNamedStoredProcedure(String name, InParameter... params);
+    <T> List<T> findByNamedStoredProcedure(String name, InParam... params);
 
-    <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, InParameter... params);
+    <T> List<T> findByStoredProcedure(String procedureName, Class<T> resultClass, InParam... params);
 }

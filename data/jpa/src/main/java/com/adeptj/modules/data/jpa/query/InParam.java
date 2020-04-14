@@ -25,26 +25,13 @@ package com.adeptj.modules.data.jpa.query;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class InParameter {
-
-    private final String name;
-
-    private final Object value;
+public class InParam extends NamedParam {
 
     private final Class<?> type;
 
-    public InParameter(String name, Object value, Class<?> type) {
-        this.name = name;
-        this.value = value;
+    public InParam(String name, Object value, Class<?> type) {
+        super(name, value);
         this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Object getValue() {
-        return value;
     }
 
     public Class<?> getType() {
