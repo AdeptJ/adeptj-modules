@@ -56,21 +56,21 @@ public @interface JwtConfig {
     String signatureAlgorithm();
 
     @AttributeDefinition(
-            name = "RSA PrivateKey(Signing Key)",
+            name = "Jwt PrivateKey(Signing Key)",
             description = "PrivateKey data (PEM-encoded PKCS#8 format) for JWT signing."
     )
     String privateKey();
 
     @AttributeDefinition(
-            name = "RSA PrivateKey Password",
-            description = "Pass phrase of the RSA PrivateKey, leave unaltered if not a password protected key.",
+            name = "Jwt PrivateKey Password",
+            description = "Pass phrase of the Jwt PrivateKey, leave unaltered if not a password protected key.",
             type = PASSWORD
     )
     String privateKeyPassword();
 
     @AttributeDefinition(
-            name = "RSA PublicKey(Verification Key)",
-            description = "PublicKey data (PEM-encoded X.509 format) for JWT verification."
+            name = "Jwt PublicKey(Verification Key)",
+            description = "PublicKey data (PEM-encoded) for JWT verification."
     )
     String publicKey();
 

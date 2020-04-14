@@ -89,7 +89,7 @@ public class JwtServiceImpl implements JwtService {
             SignatureAlgorithm algorithm = SignatureAlgorithm.forName(config.signatureAlgorithm());
             LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm.getJcaName());
             PrivateKey signingKey = JwtKeys.createSigningKey(config, algorithm.getFamilyName());
-            PublicKey verificationKey = JwtKeys.createVerificationKey(algorithm.getFamilyName(), config.publicKey());
+            PublicKey verificationKey = JwtKeys.createVerificationKey(config, algorithm.getFamilyName());
             this.keyInfo = new JwtKeyInfo(algorithm, signingKey, verificationKey);
         } catch (SignatureException | JwtKeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);

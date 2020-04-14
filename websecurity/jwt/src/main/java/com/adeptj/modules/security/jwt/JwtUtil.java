@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.jwt;
 
-import com.fasterxml.uuid.Generators;
+import com.adeptj.modules.commons.utils.Randomizer;
 import io.jsonwebtoken.lang.Assert;
 
 import java.util.Map;
@@ -72,6 +72,6 @@ public final class JwtUtil {
     }
 
     public static String generateJwtId() {
-        return Generators.randomBasedGenerator().generate().toString();
+        return Randomizer.randomUUIDString();
     }
 }

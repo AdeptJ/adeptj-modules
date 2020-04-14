@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -18,32 +18,40 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine;
+package com.adeptj.modules.commons.utils;
 
-import org.osgi.annotation.versioning.ProviderType;
+import com.fasterxml.uuid.Generators;
+
+import java.security.SecureRandom;
+import java.util.UUID;
 
 /**
- * The {@link CacheService} for in memory local caching.
+ * Provides random bytes using {@link SecureRandom}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ProviderType
-public interface CacheService {
+public class Randomizer {
 
-    /**
-     * Gets the {@link Cache} configured for the given name.
-     *
-     * @param cacheName The cache name.
-     * @param <K>       The cache key.
-     * @param <V>       The cache value
-     * @return the {@link Cache} instance or null if none exists for given name.
-     */
-    <K, V> Cache<K, V> getCache(String cacheName);
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    /**
-     * Evict all the {@link Cache} resolved against the given names.
-     *
-     * @param cacheNames The cache names.
-     */
-    void evictCaches(String... cacheNames);
+    private Randomizer() {
+    }
+
+    public static byte[] randomBytes(int length) {
+        byte[] randomBytes = new byte[length];
+        SECURE_RANDOM.nextBytes(randomBytes);
+        return randomBytes;
+    }
+
+    public static void randomBytes(byte[] bytes) {
+        SECURE_RANDOM.nextBytes(bytes);
+    }
+
+    public static UUID randomUUID() {
+        return Generators.randomBasedGenerator().generate();
+    }
+
+    public static String randomUUIDString() {
+        return randomUUID().toString();
+    }
 }

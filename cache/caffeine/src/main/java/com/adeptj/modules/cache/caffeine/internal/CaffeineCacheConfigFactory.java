@@ -59,4 +59,12 @@ public class CaffeineCacheConfigFactory {
     public String getCacheSpec() {
         return this.cacheSpec;
     }
+
+    @Override
+    public String toString() {
+        return "CaffeineCacheConfigFactory [" +
+                "cacheName='" + cacheName + '\'' +
+                ", cacheSpec='" + cacheSpec + '\'' +
+                ']';
+    }
 }

@@ -84,36 +84,33 @@ public final class JpaUtil {
      * @param params query bind parameters, either an array of {@link NamedParam} or a {@link PositionalParam}
      */
     public static void bindQueryParams(Query query, QueryParam... params) {
-        if (ArrayUtils.isEmpty(params)) {
-            return;
-        }
-        for (QueryParam param : params) {
-            if (param instanceof NamedParam) {
-                NamedParam namedParam = (NamedParam) param;
-                query.setParameter(namedParam.getName(), namedParam.getValue());
-            } else if (param instanceof PositionalParam) {
-                PositionalParam positionalParam = (PositionalParam) param;
-                query.setParameter(positionalParam.getPosition(), positionalParam.getValue());
+        if (ArrayUtils.isNotEmpty(params)) {
+            for (QueryParam param : params) {
+                if (param instanceof NamedParam) {
+                    NamedParam namedParam = (NamedParam) param;
+                    query.setParameter(namedParam.getName(), namedParam.getValue());
+                } else if (param instanceof PositionalParam) {
+                    PositionalParam positionalParam = (PositionalParam) param;
+                    query.setParameter(positionalParam.getPosition(), positionalParam.getValue());
+                }
             }
         }
     }
 
     public static void bindStoredProcedureInParams(StoredProcedureQuery query, InParam... params) {
-        if (ArrayUtils.isEmpty(params)) {
-            return;
-        }
-        for (InParam param : params) {
-            query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
-                    .setParameter(param.getName(), param.getValue());
+        if (ArrayUtils.isNotEmpty(params)) {
+            for (InParam param : params) {
+                query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
+                        .setParameter(param.getName(), param.getValue());
+            }
         }
     }
 
     public static void bindNamedStoredProcedureInParams(StoredProcedureQuery query, InParam... params) {
-        if (ArrayUtils.isEmpty(params)) {
-            return;
-        }
-        for (InParam param : params) {
-            query.setParameter(param.getName(), param.getValue());
+        if (ArrayUtils.isNotEmpty(params)) {
+            for (InParam param : params) {
+                query.setParameter(param.getName(), param.getValue());
+            }
         }
     }
 }
