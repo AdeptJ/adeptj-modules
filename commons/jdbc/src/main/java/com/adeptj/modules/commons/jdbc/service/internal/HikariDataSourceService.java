@@ -26,6 +26,7 @@ import com.adeptj.modules.commons.jdbc.util.DataSources;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -61,7 +62,7 @@ public class HikariDataSourceService implements DataSourceService {
      * @throws DataSourceConfigurationException so that component activation fails and SCR ignores the service.
      */
     @Activate
-    public HikariDataSourceService(DataSourceConfig config) {
+    public HikariDataSourceService(@NonNull DataSourceConfig config) {
         try {
             Validate.isTrue(StringUtils.isNotEmpty(config.poolName()), "JDBC Pool Name can't be blank!!");
             this.dataSource = DataSources.newDataSource(config);
@@ -76,7 +77,7 @@ public class HikariDataSourceService implements DataSourceService {
      * {@inheritDoc}
      */
     @Override
-    public DataSource getDataSource() {
+    public @NonNull DataSource getDataSource() {
         return new DataSourceWrapper(this.dataSource);
     }
 

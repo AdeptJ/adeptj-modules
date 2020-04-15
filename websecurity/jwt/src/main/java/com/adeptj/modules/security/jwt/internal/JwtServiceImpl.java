@@ -31,6 +31,8 @@ import io.jsonwebtoken.io.Deserializer;
 import io.jsonwebtoken.io.Serializer;
 import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.security.SignatureException;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
@@ -78,7 +80,7 @@ public class JwtServiceImpl implements JwtService {
     private final Deserializer<Map<String, ?>> deserializer;
 
     @Activate
-    public JwtServiceImpl(JwtConfig config) {
+    public JwtServiceImpl(@NonNull JwtConfig config) {
         this.jwsHandler = new JwsHandler();
         this.serializer = new JwtSerializer<>();
         this.deserializer = new JwtDeserializer<>();
@@ -101,7 +103,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public String createJwt(String subject, Map<String, Object> claims) {
+    public @NonNull String createJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be blank!!");
         JwtUtil.assertClaims(claims);
         Instant now = Instant.now();
@@ -122,7 +124,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public String createJwt(Map<String, Object> claims) {
+    public @NonNull String createJwt(Map<String, Object> claims) {
         JwtUtil.assertClaims(claims, this.mandatoryClaims);
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
@@ -136,7 +138,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public JwtClaims verifyJwt(String jwt) {
+    public @Nullable JwtClaims verifyJwt(String jwt) {
         JwtClaims claims = null;
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");

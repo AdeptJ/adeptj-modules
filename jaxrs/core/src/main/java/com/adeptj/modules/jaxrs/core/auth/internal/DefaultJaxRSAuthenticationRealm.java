@@ -47,7 +47,7 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private List<SimpleCredentials> credentials = new CopyOnWriteArrayList<>();
+    private final List<SimpleCredentials> credentials = new CopyOnWriteArrayList<>();
 
     /**
      * {@inheritDoc}
@@ -78,7 +78,7 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
                 .orElse(null);
     }
 
-    // <----------------------------------------------- OSGi INTERNAL ------------------------------------------------->
+    // <<------------------------------------------ OSGi INTERNAL -------------------------------------------->>
 
     @Reference(service = JaxRSCredentialsFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindJaxRSCredentialsFactory(JaxRSCredentialsFactory credentialsFactory) {

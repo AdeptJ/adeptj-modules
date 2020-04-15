@@ -72,7 +72,7 @@ public @interface DataSourceConfig {
     @AttributeDefinition(name = JDBC_URL, description = "JDBC URL of target database")
     String jdbcUrl() default DEFAULT_JDBC_URL;
 
-    @AttributeDefinition(name = DRIVER_CLASS_NAME, description = "JDBC driver FQCN")
+    @AttributeDefinition(name = DRIVER_CLASS_NAME, description = "JDBC Driver FQCN")
     String driverClassName() default JDBC_DRIVER_CLASSNAME;
 
     @AttributeDefinition(name = USERNAME, description = "JDBC default authentication username")

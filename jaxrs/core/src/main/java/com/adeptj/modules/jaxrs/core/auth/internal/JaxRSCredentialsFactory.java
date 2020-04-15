@@ -31,7 +31,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 
 import static com.adeptj.modules.jaxrs.core.auth.internal.JaxRSCredentialsFactory.PID;
-import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -41,35 +40,28 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  */
 @ProviderType
 @Designate(ocd = JaxRSCredentialsConfig.class, factory = true)
-@Component(
-        service = JaxRSCredentialsFactory.class,
-        name = PID,
-        property = SERVICE_PID + "=" + PID,
-        configurationPolicy = REQUIRE
-)
+@Component(service = JaxRSCredentialsFactory.class, name = PID, configurationPolicy = REQUIRE)
 public class JaxRSCredentialsFactory {
 
     static final String PID = "com.adeptj.modules.jaxrs.core.JaxRSCredentials.factory";
 
-    private String username;
-
-    private char[] password;
-
-    SimpleCredentials getCredentials() {
-        return SimpleCredentials.of(this.username, this.password);
-    }
+    private final SimpleCredentials credentials;
 
     @Activate
-    protected void start(JaxRSCredentialsConfig config) {
+    public JaxRSCredentialsFactory(JaxRSCredentialsConfig config) {
         Validate.isTrue(StringUtils.isNotEmpty(config.username()), "Username can't be blank!!");
         Validate.isTrue(StringUtils.isNotEmpty(config.password()), "Password can't be blank!!");
-        this.username = config.username();
-        this.password = config.password().toCharArray();
+        this.credentials = SimpleCredentials.of(config.username(), config.password());
     }
+
+    SimpleCredentials getCredentials() {
+        return this.credentials;
+    }
+
+    // <<------------------------------------- OSGi Internal  -------------------------------------->>
 
     @Deactivate
     protected void stop() {
-        this.username = null;
-        this.password = null;
+        this.credentials.clear();
     }
 }

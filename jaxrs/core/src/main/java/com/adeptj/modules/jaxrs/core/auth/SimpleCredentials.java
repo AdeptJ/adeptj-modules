@@ -30,9 +30,11 @@ import java.util.Objects;
  */
 public final class SimpleCredentials {
 
+    private static final char[] EMPTY_CHAR_ARRAY = new char[0];
+
     private final String username;
 
-    private final char[] password;
+    private char[] password;
 
     private SimpleCredentials(String username, char[] password) {
         this.username = username;
@@ -53,6 +55,15 @@ public final class SimpleCredentials {
 
     public char[] getPassword() {
         return this.password;
+    }
+
+    public void clear() {
+        if (EMPTY_CHAR_ARRAY == this.password) {
+            return;
+        }
+        char[] temp = this.password;
+        this.password = EMPTY_CHAR_ARRAY;
+        Arrays.fill(temp, (char) 0x00);
     }
 
     // <---------------- Generated ----------------->
