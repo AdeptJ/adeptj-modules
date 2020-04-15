@@ -21,13 +21,10 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
-import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryConfig;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
@@ -49,25 +46,24 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATIO
 final class JpaProperties {
 
     static Map<String, Object> from(EntityManagerFactoryConfig config) {
-        Map<String, Object> jpaProperties = new HashMap<>();
-        jpaProperties.put(DDL_GENERATION, config.ddlGeneration());
-        jpaProperties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(DDL_GENERATION, config.ddlGeneration());
+        properties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
         // DEPLOY_ON_STARTUP must be a string value
-        jpaProperties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
-        jpaProperties.put(LOGGING_LEVEL, config.loggingLevel());
-        jpaProperties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());
-        jpaProperties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());
-        jpaProperties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
-        jpaProperties.put(VALIDATION_MODE, config.validationMode());
+        properties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
+        properties.put(LOGGING_LEVEL, config.loggingLevel());
+        properties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());
+        properties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());
+        properties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
+        properties.put(VALIDATION_MODE, config.validationMode());
         if (config.useExceptionHandler()) {
-            jpaProperties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
+            properties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
         }
         // Extra properties are in [key=value] format.
-        jpaProperties.putAll(Stream.of(config.jpaProperties())
-                .filter(StringUtils::isNotEmpty)
+        Stream.of(config.jpaProperties())
+                .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
                 .map(row -> row.split(EQ))
-                .filter(mapping -> ArrayUtils.getLength(mapping) == 2)
-                .collect(Collectors.toMap(elem -> elem[0], elem -> elem[1])));
-        return jpaProperties;
+                .forEach(mapping -> properties.put(mapping[0], mapping[1]));
+        return properties;
     }
 }

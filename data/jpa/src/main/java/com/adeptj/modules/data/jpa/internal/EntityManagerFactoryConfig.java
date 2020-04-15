@@ -164,7 +164,7 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "JPA Properties",
-            description = "JPA Properties(key=value) format"
+            description = "Extra JPA Properties(key=value) format"
     )
     String[] jpaProperties();
 }

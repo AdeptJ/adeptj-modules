@@ -94,7 +94,7 @@ public class EntityManagerFactoryLifecycle {
             }
             LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", unitName);
             // Important Note: The ClassLoader must be the one which loaded the given PersistenceInfoProvider
-            // implementation and it must have the visibility to the entity classes and persistence.xml/orm.xml
+            // implementation and it must have the visibility to all the entity classes and persistence.xml/orm.xml
             // otherwise EclipseLink may not be able to create the EntityManagerFactory.
             LOGGER.info("Using ClassLoader of PersistenceInfoProvider: [{}]", provider.getClass().getName());
             properties.put(CLASSLOADER, provider.getClass().getClassLoader());
