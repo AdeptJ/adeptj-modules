@@ -56,7 +56,7 @@ final class JpaProperties {
         properties.put(LOGGING_LEVEL, config.loggingLevel());
         properties.put(LOGGING_LOGGER, SLF4JLogger.class.getName());
         // Add all loggers
-        Stream.of(config.eclipseLinkLoggers()).forEach(logger -> properties.put(logger, config.loggingLevel()));
+        Stream.of(config.loggers()).forEach(logger -> properties.put(logger, config.loggingLevel()));
         properties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());
         properties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());
         properties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
