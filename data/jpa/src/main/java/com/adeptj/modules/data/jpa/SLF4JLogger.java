@@ -15,9 +15,6 @@
  */
 package com.adeptj.modules.data.jpa;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.LogCategory;
 import org.eclipse.persistence.logging.LogLevel;
@@ -25,7 +22,7 @@ import org.eclipse.persistence.logging.SessionLogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.AccessController;
+import java.util.Arrays;
 
 /**
  * EclipseLink logger bridge over SLF4J.
@@ -154,9 +151,7 @@ public class SLF4JLogger extends AbstractSessionLog {
 
     static {
         // Initialize loggers lookup array.
-        for (int i = 0; i < LogCategory.length; i++) {
-            categoryLoggers[i] = null;
-        }
+        Arrays.fill(categoryLoggers, null);
         // Initialize SLF4J logger calls mapping for EclipseLink logging levels.
         loggerCall[LogLevel.ALL.getId()] = loggerCall[LogLevel.FINEST.getId()] = new LogTrace();
         loggerCall[LogLevel.FINER.getId()] = loggerCall[LogLevel.FINE.getId()] = new LogDebug();
@@ -172,12 +167,12 @@ public class SLF4JLogger extends AbstractSessionLog {
      * @param category EclipseLink logging category
      * @return Logger for the given logging category.
      */
-    private static Logger getLogger(final LogCategory category) {
+    private Logger getLogger(final LogCategory category) {
         final Logger logger = categoryLoggers[category.getId()];
-        if (logger != null) {
-            return logger;
+        if (logger == null) {
+            return categoryLoggers[category.getId()] = LoggerFactory.getLogger(category.getNameSpace());
         }
-        return categoryLoggers[category.getId()] = LoggerFactory.getLogger(category.getNameSpace());
+        return logger;
     }
 
     /**
@@ -189,23 +184,10 @@ public class SLF4JLogger extends AbstractSessionLog {
      * Creates an instance of EclipseLink logger bridge over SLF4J
      */
     public SLF4JLogger() {
-        super();
         // Set default logging levels for all logging categories.
         final byte defaultLevel = LogLevel.toValue(level).getId();
-        logLevels = new LogLevel[LogCategory.length];
-        for (LogCategory category : LogCategory.values()) {
-            final int i = category.getId();
-            if (category == LogCategory.ALL) {
-                logLevels[i] = LogLevel.toValue(defaultLevel);
-            } else {
-                final String property = PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_ + category.getName();
-                final String logLevelStr = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                        ? AccessController.doPrivileged(new PrivilegedGetSystemProperty(property))
-                        : System.getProperty(property);
-                logLevels[i] = LogLevel.toValue(
-                        logLevelStr != null ? translateStringToLoggingLevel(logLevelStr) : defaultLevel);
-            }
-        }
+        this.logLevels = new LogLevel[LogCategory.length];
+        Arrays.fill(this.logLevels, LogLevel.toValue(defaultLevel));
     }
 
     /**
@@ -215,7 +197,7 @@ public class SLF4JLogger extends AbstractSessionLog {
      */
     @Override
     public int getLevel() {
-        return logLevels[LogCategory.ALL.getId()].getId();
+        return this.logLevels[LogCategory.ALL.getId()].getId();
     }
 
     /**
@@ -230,7 +212,7 @@ public class SLF4JLogger extends AbstractSessionLog {
         if (category == null) {
             throw new IllegalArgumentException("Unknown logging category name.");
         }
-        return logLevels[category.getId()].getId();
+        return this.logLevels[category.getId()].getId();
     }
 
     /**
@@ -241,7 +223,7 @@ public class SLF4JLogger extends AbstractSessionLog {
     @Override
     public void setLevel(final int level) {
         super.setLevel(level);
-        logLevels[LogCategory.ALL.getId()] = LogLevel.toValue(level);
+        this.logLevels[LogCategory.ALL.getId()] = LogLevel.toValue(level);
     }
 
     /**
@@ -256,7 +238,7 @@ public class SLF4JLogger extends AbstractSessionLog {
         if (category == null) {
             throw new IllegalArgumentException("Unknown logging category name.");
         }
-        logLevels[category.getId()] = LogLevel.toValue(level);
+        this.logLevels[category.getId()] = LogLevel.toValue(level);
     }
 
     /**
@@ -268,7 +250,7 @@ public class SLF4JLogger extends AbstractSessionLog {
      */
     @Override
     public boolean shouldLog(final int level) {
-        return logLevels[LogCategory.ALL.getId()].shouldLog((byte) level);
+        return this.logLevels[LogCategory.ALL.getId()].shouldLog((byte) level);
     }
 
     /**
@@ -285,7 +267,7 @@ public class SLF4JLogger extends AbstractSessionLog {
         if (category == null) {
             throw new IllegalArgumentException("Unknown logging category name.");
         }
-        return logLevels[category.getId()].shouldLog((byte) level);
+        return this.logLevels[category.getId()].shouldLog((byte) level);
     }
 
     /**
@@ -301,11 +283,11 @@ public class SLF4JLogger extends AbstractSessionLog {
             throw new IllegalArgumentException("Unknown logging category name.");
         }
         final byte levelId = (byte) logEntry.getLevel();
-        if (logLevels[category.getId()].shouldLog(levelId)) {
+        if (this.logLevels[category.getId()].shouldLog(levelId)) {
             final LogLevel level = LogLevel.toValue(levelId);
-            final Logger logger = getLogger(category);
+            final Logger logger = this.getLogger(category);
             if (logEntry.hasException()) {
-                if (shouldLogExceptionStackTrace()) {
+                if (this.shouldLogExceptionStackTrace()) {
                     // Message is rendered on EclipseLink side. SLF4J gets final String. Exception is passed too.
                     loggerCall[level.getId()].log(logger, formatMessage(logEntry), logEntry.getException());
                 } else {
