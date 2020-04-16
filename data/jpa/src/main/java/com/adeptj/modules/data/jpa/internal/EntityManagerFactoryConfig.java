@@ -24,6 +24,7 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
+import static org.eclipse.persistence.config.PersistenceUnitProperties.CATEGORY_LOGGING_LEVEL_;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CREATE_ONLY;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CREATE_OR_EXTEND;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_BOTH_GENERATION;
@@ -33,6 +34,15 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_ONLY;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
+import static org.eclipse.persistence.logging.SessionLog.CONNECTION;
+import static org.eclipse.persistence.logging.SessionLog.JPA;
+import static org.eclipse.persistence.logging.SessionLog.METADATA;
+import static org.eclipse.persistence.logging.SessionLog.METAMODEL;
+import static org.eclipse.persistence.logging.SessionLog.PROPERTIES;
+import static org.eclipse.persistence.logging.SessionLog.QUERY;
+import static org.eclipse.persistence.logging.SessionLog.SQL;
+import static org.eclipse.persistence.logging.SessionLog.TRANSACTION;
+import static org.eclipse.persistence.logging.SessionLog.WEAVER;
 
 /**
  * EntityManagerFactory configuration.
@@ -139,6 +149,22 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = ALL, value = ALL)
             })
     String loggingLevel() default FINE;
+
+    @AttributeDefinition(
+            name = "EclipseLink Loggers",
+            description = "EclipseLink Loggers For SLF4J Logging"
+    )
+    String[] eclipseLinkLoggers() default {
+            CATEGORY_LOGGING_LEVEL_ + CONNECTION,
+            CATEGORY_LOGGING_LEVEL_ + JPA,
+            CATEGORY_LOGGING_LEVEL_ + SQL,
+            CATEGORY_LOGGING_LEVEL_ + QUERY,
+            CATEGORY_LOGGING_LEVEL_ + TRANSACTION,
+            CATEGORY_LOGGING_LEVEL_ + WEAVER,
+            CATEGORY_LOGGING_LEVEL_ + METADATA,
+            CATEGORY_LOGGING_LEVEL_ + METAMODEL,
+            CATEGORY_LOGGING_LEVEL_ + PROPERTIES
+    };
 
     @AttributeDefinition(
             name = "DDL Generation Mode",

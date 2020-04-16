@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
+import com.adeptj.modules.data.jpa.SLF4JLogger;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LOGGER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
 
@@ -52,6 +54,9 @@ final class JpaProperties {
         // DEPLOY_ON_STARTUP must be a string value
         properties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
         properties.put(LOGGING_LEVEL, config.loggingLevel());
+        properties.put(LOGGING_LOGGER, SLF4JLogger.class.getName());
+        // Add all loggers
+        Stream.of(config.eclipseLinkLoggers()).forEach(logger -> properties.put(logger, config.loggingLevel()));
         properties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());
         properties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());
         properties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
