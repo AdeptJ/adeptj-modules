@@ -41,8 +41,8 @@
         <!-- AdeptJ Maven Plugin properties start -->
 
         <adeptj-maven-plugin.version>1.1.2.Final</adeptj-maven-plugin.version>
-        <adeptj.console.url>http://localhost:9007/system/console</adeptj.console.url>
-        <adeptj.auth.url>http://localhost:9007/auth/j_security_check</adeptj.auth.url>
+        <adeptj.console.url>http://localhost:8080/system/console</adeptj.console.url>
+        <adeptj.auth.url>http://localhost:8080/admin/auth/j_security_check</adeptj.auth.url>
         <adeptj.user>admin</adeptj.user>
         <adeptj.password>admin</adeptj.password>
 

@@ -58,7 +58,7 @@ public @interface DataSourceConfig {
 
     int DEFAULT_MAX_POOL_SIZE = 8;
 
-    String DEFAULT_JDBC_URL = "jdbc:mysql://localhost:3306/db?useSSL=false&nullNamePatternMatchesAll=true&allowPublicKeyRetrieval=true";
+    String DEFAULT_JDBC_URL = "jdbc:mysql://localhost:3306/db?useSSL=false&allowPublicKeyRetrieval=true";
 
     String JDBC_DRIVER_CLASSNAME = "com.mysql.cj.jdbc.Driver";
 

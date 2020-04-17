@@ -15,7 +15,7 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
             <property name="javax.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/AdeptJ?useSSL=false&amp;nullNamePatternMatchesAll=true&amp;allowPublicKeyRetrieval=true"/>
+                      value="jdbc:mysql://localhost:3306/AdeptJ?useSSL=false&amp;allowPublicKeyRetrieval=true"/>
             <property name="javax.persistence.jdbc.user" value="ut"/>
             <property name="javax.persistence.jdbc.password" value="EclipseLink@2018"/>
             <property name="eclipselink.ddl-generation" value="NONE"/>
