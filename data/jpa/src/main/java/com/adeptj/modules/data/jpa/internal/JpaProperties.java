@@ -37,6 +37,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELI
 import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LOGGER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_PARAMETERS;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
 
@@ -55,6 +56,7 @@ final class JpaProperties {
         properties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
         properties.put(LOGGING_LEVEL, config.loggingLevel());
         properties.put(LOGGING_LOGGER, SLF4JLogger.class.getName());
+        properties.put(LOGGING_PARAMETERS, Boolean.toString(config.logQueryParameters()));
         // Add all loggers
         Stream.of(config.loggers()).forEach(logger -> properties.put(logger, config.loggingLevel()));
         properties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());

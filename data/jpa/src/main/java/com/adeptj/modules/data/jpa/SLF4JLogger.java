@@ -15,6 +15,7 @@
  */
 package com.adeptj.modules.data.jpa;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.LogCategory;
 import org.eclipse.persistence.logging.LogLevel;
@@ -167,7 +168,7 @@ public class SLF4JLogger extends AbstractSessionLog {
      * @param category EclipseLink logging category
      * @return Logger for the given logging category.
      */
-    private Logger getLogger(final LogCategory category) {
+    private Logger getLogger(@NonNull final LogCategory category) {
         final Logger logger = categoryLoggers[category.getId()];
         if (logger == null) {
             return categoryLoggers[category.getId()] = LoggerFactory.getLogger(category.getNameSpace());

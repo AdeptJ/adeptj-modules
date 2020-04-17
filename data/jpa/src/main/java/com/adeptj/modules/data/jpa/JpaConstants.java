@@ -32,4 +32,6 @@ public final class JpaConstants {
     }
 
     public static final String SHARED_CACHE_MODE = "javax.persistence.sharedCache.mode";
+
+    public static final String SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING = "enable.eclipselink.exceptionhandler.logging";
 }

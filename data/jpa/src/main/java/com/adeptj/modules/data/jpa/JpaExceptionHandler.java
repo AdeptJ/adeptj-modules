@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
+import static com.adeptj.modules.data.jpa.JpaConstants.SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING;
+
 /**
  * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
  * the {@link ExceptionHandler} interface and provides a default (zero-argument) constructor.
@@ -45,8 +47,10 @@ public class JpaExceptionHandler implements ExceptionHandler {
      */
     @Override
     public Object handleException(RuntimeException exception) {
-        // Log it as of now, perform any other task on passed Exception if needed.
-        LOGGER.error(exception.getMessage(), exception);
+        if (Boolean.getBoolean(SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING)) {
+            // Log it as of now, perform any other task on passed Exception if needed.
+            LOGGER.error(exception.getMessage(), exception);
+        }
         throw exception;
     }
 }

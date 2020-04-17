@@ -34,12 +34,17 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_ONLY;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
+import static org.eclipse.persistence.logging.SessionLog.CACHE;
 import static org.eclipse.persistence.logging.SessionLog.CONNECTION;
+import static org.eclipse.persistence.logging.SessionLog.DDL;
+import static org.eclipse.persistence.logging.SessionLog.EVENT;
 import static org.eclipse.persistence.logging.SessionLog.JPA;
 import static org.eclipse.persistence.logging.SessionLog.METADATA;
 import static org.eclipse.persistence.logging.SessionLog.METAMODEL;
+import static org.eclipse.persistence.logging.SessionLog.MISC;
 import static org.eclipse.persistence.logging.SessionLog.PROPERTIES;
 import static org.eclipse.persistence.logging.SessionLog.QUERY;
+import static org.eclipse.persistence.logging.SessionLog.SERVER;
 import static org.eclipse.persistence.logging.SessionLog.SQL;
 import static org.eclipse.persistence.logging.SessionLog.TRANSACTION;
 import static org.eclipse.persistence.logging.SessionLog.WEAVER;
@@ -104,6 +109,12 @@ public @interface EntityManagerFactoryConfig {
     boolean useExceptionHandler() default true;
 
     @AttributeDefinition(
+            name = "Log JPA Query Parameters",
+            description = "Whether to log JPA query parameters"
+    )
+    boolean logQueryParameters();
+
+    @AttributeDefinition(
             name = "Transaction Type",
             description = "JPA Transaction Type(JTA is not supported at this moment!)",
             options = {
@@ -159,11 +170,16 @@ public @interface EntityManagerFactoryConfig {
             CATEGORY_LOGGING_LEVEL_ + JPA,
             CATEGORY_LOGGING_LEVEL_ + SQL,
             CATEGORY_LOGGING_LEVEL_ + QUERY,
+            CATEGORY_LOGGING_LEVEL_ + CACHE,
             CATEGORY_LOGGING_LEVEL_ + TRANSACTION,
             CATEGORY_LOGGING_LEVEL_ + WEAVER,
             CATEGORY_LOGGING_LEVEL_ + METADATA,
             CATEGORY_LOGGING_LEVEL_ + METAMODEL,
-            CATEGORY_LOGGING_LEVEL_ + PROPERTIES
+            CATEGORY_LOGGING_LEVEL_ + PROPERTIES,
+            CATEGORY_LOGGING_LEVEL_ + DDL,
+            CATEGORY_LOGGING_LEVEL_ + SERVER,
+            CATEGORY_LOGGING_LEVEL_ + EVENT,
+            CATEGORY_LOGGING_LEVEL_ + MISC
     };
 
     @AttributeDefinition(
