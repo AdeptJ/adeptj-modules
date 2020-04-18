@@ -99,7 +99,7 @@ public class ResteasyLifecycle {
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))
-                        //.register(new GenericExceptionHandler(this.config.sendExceptionTrace()))
+                        .register(new GenericExceptionHandler(this.config.sendExceptionTrace()))
                         .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new ObjectMapperContextResolver());
                 this.providerTracker = new ProviderTracker(this.bundleContext, providerFactory);
