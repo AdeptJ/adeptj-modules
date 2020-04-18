@@ -18,28 +18,55 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.jaxrs.consumer;
 
-import org.osgi.annotation.versioning.ConsumerType;
+import com.adeptj.modules.jaxrs.consumer.entity.User;
+import com.adeptj.modules.jaxrs.core.JaxRSResource;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-import java.util.Map;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import java.util.List;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Service implementation must have the visibility to the entity classes and persistence.xml/orm.xml otherwise
- * EclipseLink may not be able to create the EntityManagerFactory.
+ * JAX-RS resource for issuance and verification of JWT.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ConsumerType
-public interface PersistenceInfoProvider {
+@JaxRSResource(name = "users")
+@Path("/api/users")
+@Component(service = UserResource.class)
+public class UserResource {
 
-    /**
-     * Implementor must return the JPA persistence unit name exactly defined in persistence.xml as well as in
-     * EntityManagerFactoryLifecycle service configurations.
-     *
-     * @return the persistence unit name.
-     */
-    String getPersistenceUnitName();
+    private final UserRepository userRepository;
 
-    Map<String, Object> getPersistenceUnitProperties();
+    @Activate
+    public UserResource(@Reference UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @GET
+    @Produces(APPLICATION_JSON)
+    public List<User> getUsers() {
+        List<User> users = this.userRepository.findAll(User.class);
+        return users;
+    }
+
+    @Path("/create")
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    public Response insertUser(@NotNull User user) {
+        User insert = this.userRepository.insert(user);
+        return Response.ok(insert).build();
+    }
 }

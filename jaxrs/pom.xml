@@ -34,6 +34,7 @@
 
         <module>core</module>
         <module>resteasy</module>
+        <module>consumer</module>
 
     </modules>
 
