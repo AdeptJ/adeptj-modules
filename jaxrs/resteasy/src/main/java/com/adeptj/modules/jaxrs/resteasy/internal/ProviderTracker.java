@@ -48,11 +48,6 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
         this.providerFactory = providerFactory;
     }
 
-    ProviderTracker openTracker() {
-        super.open();
-        return this;
-    }
-
     /**
      * Registers the JAX-RS provider with the RESTEasy {@link ResteasyProviderFactory}.
      *

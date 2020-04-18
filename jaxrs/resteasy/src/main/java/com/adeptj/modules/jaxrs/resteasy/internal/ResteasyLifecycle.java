@@ -99,11 +99,13 @@ public class ResteasyLifecycle {
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))
-                        .register(new GenericExceptionHandler(this.config.sendExceptionTrace()))
+                        //.register(new GenericExceptionHandler(this.config.sendExceptionTrace()))
                         .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new ObjectMapperContextResolver());
-                this.providerTracker = new ProviderTracker(this.bundleContext, providerFactory).openTracker();
-                this.resourceTracker = new ResourceTracker(this.bundleContext, dispatcher.getRegistry()).openTracker();
+                this.providerTracker = new ProviderTracker(this.bundleContext, providerFactory);
+                this.providerTracker.open();
+                this.resourceTracker = new ResourceTracker(this.bundleContext, dispatcher.getRegistry());
+                this.resourceTracker.open();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
