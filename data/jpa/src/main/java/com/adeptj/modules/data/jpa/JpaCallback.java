@@ -25,7 +25,7 @@ import javax.persistence.EntityManager;
 /**
  * This is a functional interface and can therefore be used as the assignment target for a lambda expression or method reference.
  * <p>
- * Callback interface for JPA code. To be used with {@link JpaRepository#execute} method.
+ * Callback interface for JPA code. To be used with {@link JpaRepository#executeCallback} method.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -33,7 +33,7 @@ import javax.persistence.EntityManager;
 public interface JpaCallback<T> {
 
     /**
-     * Gets called by {@link JpaRepository#execute} with an active JPA EntityManager.
+     * Gets called by {@link JpaRepository#executeCallback} with an active JPA EntityManager.
      * <p>
      * Caller does not need to care about activating or closing the EntityManager, or handling transactions.
      *

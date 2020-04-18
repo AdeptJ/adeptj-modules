@@ -23,13 +23,11 @@ package com.adeptj.modules.data.jpa.entity;
 import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.UserDTO;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityResult;
-import javax.persistence.FetchType;
 import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -115,6 +113,12 @@ public class User implements BaseEntity {
     @Column(name = "MOBILE_NO", length = 25)
     private String contact;
 
+    @Column(name = "SECONDARY_MOBILE_NO", length = 25)
+    private String secondaryContact;
+
+    @Column(name = "GOVT_ID", length = 25)
+    private String govtId;
+
     @JoinColumn(name = "USER_ID")
     @OneToMany(cascade = ALL, orphanRemoval = true, fetch = LAZY)
     private List<Address> addresses;
@@ -157,6 +161,22 @@ public class User implements BaseEntity {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public String getSecondaryContact() {
+        return secondaryContact;
+    }
+
+    public void setSecondaryContact(String secondaryContact) {
+        this.secondaryContact = secondaryContact;
+    }
+
+    public String getGovtId() {
+        return govtId;
+    }
+
+    public void setGovtId(String govtId) {
+        this.govtId = govtId;
     }
 
     public List<Address> getAddresses() {

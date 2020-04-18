@@ -27,13 +27,10 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.lang.invoke.MethodHandles;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
 
@@ -49,8 +46,6 @@ import static javax.crypto.Cipher.ENCRYPT_MODE;
 @Designate(ocd = EncryptionConfig.class)
 @Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class EncryptionServiceImpl implements EncryptionService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger((MethodHandles.lookup().lookupClass()));
 
     private static final int IV_LENGTH_BYTE = 12;
 

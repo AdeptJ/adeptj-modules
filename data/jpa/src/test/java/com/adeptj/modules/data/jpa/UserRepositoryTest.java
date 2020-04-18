@@ -42,7 +42,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import static com.adeptj.modules.data.jpa.query.QueryType.JPA;
-import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
 
 /**
  * JpaCrudRepositoryTest
@@ -50,24 +49,24 @@ import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
  * @author Rakesh.Kumar, AdeptJ
  */
 //@Disabled
-public class JpaRepositoryTest {
+public class UserRepositoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String UNIT_NAME = "AdeptJ_PU";
+    private static final String UNIT_NAME = "AdeptJ_PU_PG";
 
-    private static EclipseLinkRepository jpaRepository;
+    private static UserRepository repository;
 
     @BeforeAll
     public static void init() {
-        jpaRepository = new EclipseLinkRepository();
-        jpaRepository.setEntityManagerFactory(Persistence.createEntityManagerFactory(UNIT_NAME));
+        repository = new UserRepository();
+        repository.setEntityManagerFactory(Persistence.createEntityManagerFactory(UNIT_NAME));
         LOGGER.info("EntityManagerFactory created!!");
     }
 
     @AfterAll
     public static void destroy() {
-        jpaRepository.closeEntityManagerFactory();
+        repository.closeEntityManagerFactory();
     }
 
     @Test
@@ -88,18 +87,18 @@ public class JpaRepositoryTest {
         address2.setCountry("India");
         address2.setPin("110018");
         usr.setAddresses(List.of(address1, address2));
-        User user = jpaRepository.insert(usr);
+        User user = repository.insert(usr);
         LOGGER.info("User ID: {}", user.getId());
     }
 
     @Test
     public void testExecuteInTransaction() {
-        User user = jpaRepository.executeInTransaction(em -> {
+        User user = repository.executeCallbackInTransaction(em -> {
             User usr = new User();
-            usr.setContact("1234567890");
+            usr.setContact("12345678915");
             usr.setFirstName("John");
             usr.setLastName("Doe");
-            usr.setEmail("john.doe@johndoe.com");
+            usr.setEmail("john.doe15@johndoe.com");
             em.persist(usr);
             return usr;
         });
@@ -114,13 +113,13 @@ public class JpaRepositoryTest {
         user.setFirstName("John_Updated_Again_");
         user.setLastName("Doe_Updated");
         user.setEmail("john.doe1@johndoe.com");
-        user = jpaRepository.update(user);
+        user = repository.update(user);
         LOGGER.info("User's Contact No is: {}", user.getContact());
     }
 
     @Test
     public void testUpdateByCriteria() {
-        int rowsUpdated = jpaRepository.updateByCriteria(UpdateCriteria.builder(User.class)
+        int rowsUpdated = repository.updateByCriteria(UpdateCriteria.builder(User.class)
                 .addCriteriaAttribute("firstName", "John")
                 .addUpdateAttribute("contact", "1234567891")
                 .build());
@@ -129,12 +128,12 @@ public class JpaRepositoryTest {
 
     @Test
     public void testDelete() {
-        jpaRepository.delete(User.class, 19L);
+        repository.delete(User.class, 19L);
     }
 
     @Test
     public void testDeleteByCriteria() {
-        int rows = jpaRepository.deleteByCriteria(DeleteCriteria.builder(User.class)
+        int rows = repository.deleteByCriteria(DeleteCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
         LOGGER.info("Rows deleted: {}", rows);
@@ -142,8 +141,8 @@ public class JpaRepositoryTest {
 
     @Test
     public void testDeleteByJpaNamedQuery() {
-        int rows = jpaRepository.deleteByJpaNamedQuery(CrudDTO.builder(User.class)
-                .namedQuery("User.deleteUserByContact.JPA")
+        int rows = repository.deleteByJpaNamedQuery(CrudDTO.builder(User.class)
+                .namedQueryName("User.deleteUserByContact.JPA")
                 .queryParam(new PositionalParam(1, "1234567890"))
                 .build());
         LOGGER.info("Rows deleted: {}", rows);
@@ -151,7 +150,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByCriteria() {
-        List<User> users = jpaRepository.findByCriteria(ReadCriteria.builder(User.class)
+        List<User> users = repository.findByCriteria(ReadCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567893")
                 .build());
         users.get(0).getAddresses().forEach(address -> LOGGER.info(address.toString()));
@@ -160,13 +159,13 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindById() {
-        User user = jpaRepository.findById(User.class, 9L);
+        User user = repository.findById(User.class, 9L);
         user.getAddresses().forEach(address -> LOGGER.info(address.toString()));
     }
 
     @Test
     public void testFindByTupleCriteria() {
-        jpaRepository.findByTupleCriteria(TupleCriteria.builder(User.class)
+        repository.findByTupleCriteria(TupleCriteria.builder(User.class)
                 .addSelections("firstName", "lastName")
                 .addCriteriaAttribute("contact", "1234567891")
                 .build())
@@ -178,8 +177,8 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaNamedQueryAsUser() {
-        jpaRepository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User",
-                new PositionalParam(1, "1234567890"))
+        repository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User",
+                new PositionalParam(1, "1234567895"))
                 .forEach(user -> {
                     LOGGER.info("FirstName: {}", user.getFirstName());
                     LOGGER.info("LastName: {}", user.getLastName());
@@ -188,8 +187,8 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaNamedQueryAsObjectArray() {
-        jpaRepository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray",
-                new PositionalParam(1, "1234567890"))
+        repository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray",
+                new PositionalParam(1, "1234567892"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);
                     LOGGER.info("LastName: {}", objectArray[1]);
@@ -198,7 +197,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJPQLNamedQuery() {
-        jpaRepository.findByNamedQuery("User.findUserByContact.JPA.User",
+        repository.findByNamedQuery("User.findUserByContact.JPA.User",
                 new PositionalParam(1, "1234567892"))
                 .forEach(object -> {
                     if (object instanceof User) {
@@ -217,7 +216,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByNativeNamedQuery() {
-        jpaRepository.findByNamedQuery("User.findUserByContact.NATIVE",
+        repository.findByNamedQuery("User.findUserByContact.NATIVE",
                 new PositionalParam(1, "1234567890"))
                 .forEach(object -> {
                     if (object instanceof Object[]) {
@@ -230,7 +229,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindPaginatedRecords() {
-        Long count = jpaRepository.count(User.class);
+        Long count = repository.count(User.class);
         LOGGER.info("Total no of users: {}", count);
         int pageSize = count.intValue() / 3;
         this.paginate(0, pageSize);
@@ -239,7 +238,7 @@ public class JpaRepositoryTest {
     }
 
     private void paginate(int startPos, int pageSize) {
-        List<User> users = jpaRepository.findPaginatedRecords(User.class, startPos, pageSize);
+        List<User> users = repository.findPaginatedRecords(User.class, startPos, pageSize);
         users.forEach(user -> {
             LOGGER.info("FirstName: {}", user.getFirstName());
             LOGGER.info("LastName: {}", user.getLastName());
@@ -249,7 +248,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindByJpaQuery() {
-        List<User> users = jpaRepository.findByJpaQuery(CrudDTO.builder(User.class)
+        List<User> users = repository.findByJpaQuery(CrudDTO.builder(User.class)
                 .jpaQuery("SELECT u FROM  User u WHERE u.firstName = :firstName and u.contact = :contact")
                 .queryParams(new NamedParam("firstName", "John3"),
                         new NamedParam("contact", "1234567892"))
@@ -262,7 +261,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindAll() {
-        List<User> users = jpaRepository.findAllUsers();
+        List<User> users = repository.findAllUsers();
         users.forEach(user -> {
             LOGGER.info("FirstName: {}", user.getFirstName());
             LOGGER.info("LastName: {}", user.getLastName());
@@ -271,7 +270,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testGetTypedScalarResultByNamedQueryAndPosParams() {
-        String firstName = jpaRepository
+        String firstName = repository
                 .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
                         new PositionalParam(1, "1234567892"));
         if (firstName != null) {
@@ -281,7 +280,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testGetScalarResultByNamedQueryAndPosParams() {
-        String firstName = jpaRepository
+        String firstName = repository
                 .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
                         new PositionalParam(1, "1234567892"));
         if (firstName != null) {
@@ -291,7 +290,7 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindAndMapResultSet() {
-        List<User> users = jpaRepository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
+        List<User> users = repository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
                 .nativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1")
                 .resultSetMapping("User.findUserByContact.EntityMapping")
                 .queryParam(new PositionalParam(1, "John"))
@@ -307,7 +306,7 @@ public class JpaRepositoryTest {
     public void testFindAndMapConstructorByQuery() {
         String jpaQuery = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) " +
                 "FROM User u WHERE u.contact = ?1";
-        jpaRepository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery,
+        repository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery,
                 new PositionalParam(1, "1234567890"))
                 .forEach(user -> {
                     LOGGER.info("User ID: {}", user.getId());
@@ -318,9 +317,9 @@ public class JpaRepositoryTest {
 
     @Test
     public void testFindAndMapConstructorByCriteria() {
-        List<UserDTO> list = jpaRepository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder(User.class, UserDTO.class)
+        List<UserDTO> list = repository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder(User.class, UserDTO.class)
                 .addSelections("id", "firstName", "lastName", "email")
-                .addCriteriaAttribute("contact", "1234567890")
+                .addCriteriaAttribute("contact", "1234567892")
                 .build());
         list.forEach(dto -> {
             LOGGER.info("User ID: {}", dto.getId());
@@ -332,45 +331,45 @@ public class JpaRepositoryTest {
 
     @Test
     public void testCountByNativeQuery() {
-        Long count = jpaRepository.count("SELECT count(ID) FROM adeptj.USERS", NATIVE);
+        Long count = repository.count("SELECT count(ID) FROM adeptj.USERS", null);
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByJpaQuery() {
-        Long count = jpaRepository.count("SELECT count(u.id) FROM User u", JPA);
+        Long count = repository.count("SELECT count(u.id) FROM User u", JPA);
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByNamedJpaQuery() {
-        Long count = jpaRepository.count("Count.NamedJpaQuery");
+        Long count = repository.count("Count.NamedJpaQuery");
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByNamedNativeQuery() {
-        Long count = jpaRepository.count("Count.NamedNativeQuery");
+        Long count = repository.count("Count.NamedNativeQuery");
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testScalarResultOfTypeJpaQuery() {
         String query = "SELECT u.email FROM User u where u.id= ?1";
-        String user = jpaRepository.getScalarResultOfType(String.class, JPA, query,
+        String user = repository.getScalarResultOfType(String.class, JPA, query,
                 new PositionalParam(1, 7L));
         LOGGER.info("User: {}", user);
     }
 
     @Test
     public void testNamedStoredProcedure() {
-        List<User> users = jpaRepository.findByNamedStoredProcedure("allUsers");
+        List<User> users = repository.findByNamedStoredProcedure("allUsers");
         LOGGER.info("Users: {}", users);
     }
 
     @Test
     public void testStoredProcedure() {
-        List<User> users = jpaRepository.findByStoredProcedure("fetchAllUsers", User.class);
+        List<User> users = repository.findByStoredProcedure(User.class, "fetchAllUsers");
         LOGGER.info("Users: {}", users);
     }
 }

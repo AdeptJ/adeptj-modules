@@ -120,23 +120,23 @@ public class EntityManagerFactoryLifecycle {
     // <<----------------------------------- JpaRepository Bind ------------------------------------>>
 
     @Reference(service = JpaRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindJpaRepository(@NonNull JpaRepository repository, @NonNull Map<String, Object> properties) {
+    protected void bindJpaRepository(@NonNull JpaRepository<?, ?> repository, @NonNull Map<String, Object> properties) {
         String unitName = (String) properties.get(JPA_UNIT_NAME);
         try {
             Validate.isTrue(StringUtils.isNotEmpty(unitName),
                     String.format("%s must specify the [%s] service property!!", repository, JPA_UNIT_NAME));
             LOGGER.info("Binding JpaRepository: {} for persistence unit: [{}]", repository, unitName);
             // Not doing any type check purposely, the JpaRepository must be a subclass of AbstractJpaRepository.
-            ((AbstractJpaRepository) repository).setEntityManagerFactory(this.entityManagerFactoryWrapper);
+            ((AbstractJpaRepository<?, ?>) repository).setEntityManagerFactory(this.entityManagerFactoryWrapper);
         } catch (IllegalArgumentException | ClassCastException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new JpaRepositoryBindException(ex);
         }
     }
 
-    protected void unbindJpaRepository(@NonNull JpaRepository repository, @NonNull Map<String, Object> properties) {
+    protected void unbindJpaRepository(@NonNull JpaRepository<?, ?> repository, @NonNull Map<String, Object> properties) {
         String unitName = (String) properties.get(JPA_UNIT_NAME);
         LOGGER.info("Unbinding JpaRepository: {} for persistence unit: [{}]", repository, unitName);
-        ((AbstractJpaRepository) repository).setEntityManagerFactory(null);
+        ((AbstractJpaRepository<?, ?>) repository).setEntityManagerFactory(null);
     }
 }

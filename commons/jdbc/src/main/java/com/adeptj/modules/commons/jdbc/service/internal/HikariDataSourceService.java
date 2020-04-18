@@ -65,7 +65,7 @@ public class HikariDataSourceService implements DataSourceService {
     public HikariDataSourceService(@NonNull DataSourceConfig config) {
         try {
             Validate.isTrue(StringUtils.isNotEmpty(config.poolName()), "JDBC Pool Name can't be blank!!");
-            this.dataSource = DataSources.newDataSource(config);
+            this.dataSource = DataSources.createHikariDataSource(config);
             LOGGER.info("HikariDataSource: [{}] initialized!!", config.poolName());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -89,7 +89,7 @@ public class HikariDataSourceService implements DataSourceService {
      * @param config the Hikari {@link DataSourceConfig}
      */
     @Deactivate
-    protected void stop(DataSourceConfig config) {
+    protected void stop(@NonNull DataSourceConfig config) {
         try {
             this.dataSource.close();
             LOGGER.info("HikariDataSource: [{}] closed!!", config.poolName());

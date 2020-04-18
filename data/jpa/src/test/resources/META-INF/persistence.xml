@@ -18,13 +18,36 @@
                       value="jdbc:mysql://localhost:3306/AdeptJ?useSSL=false&amp;allowPublicKeyRetrieval=true"/>
             <property name="javax.persistence.jdbc.user" value="ut"/>
             <property name="javax.persistence.jdbc.password" value="EclipseLink@2018"/>
-            <property name="eclipselink.ddl-generation" value="NONE"/>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
             <property name="eclipselink.logging.file" value="jpa.log"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
             <property name="eclipselink.exception-handler" value="com.adeptj.modules.data.jpa.JpaExceptionHandler"/>
         </properties>
 
+    </persistence-unit>
+
+    <persistence-unit name="AdeptJ_PU_PG" transaction-type="RESOURCE_LOCAL">
+
+        <!-- JPA Entities -->
+        <class>com.adeptj.modules.data.jpa.entity.User</class>
+        <class>com.adeptj.modules.data.jpa.entity.Address</class>
+
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>NONE</shared-cache-mode>
+
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url"
+                      value="jdbc:postgresql://localhost:5432/AdeptJ"/>
+            <property name="javax.persistence.jdbc.user" value="ut"/>
+            <property name="javax.persistence.jdbc.password" value="Secret2020"/>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.logging.file" value="jpa.log"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.exception-handler" value="com.adeptj.modules.data.jpa.JpaExceptionHandler"/>
+        </properties>
     </persistence-unit>
 
 </persistence>

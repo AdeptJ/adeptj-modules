@@ -37,7 +37,7 @@ public class CrudDTO<T extends BaseEntity> {
 
     private final Class<T> entity;
 
-    private String namedQuery;
+    private String namedQueryName;
 
     private String jpaQuery;
 
@@ -55,8 +55,8 @@ public class CrudDTO<T extends BaseEntity> {
         return entity;
     }
 
-    public String getNamedQuery() {
-        return namedQuery;
+    public String getNamedQueryName() {
+        return namedQueryName;
     }
 
     public String getJpaQuery() {
@@ -86,7 +86,7 @@ public class CrudDTO<T extends BaseEntity> {
 
         private final Class<T> entity;
 
-        private String namedQuery;
+        private String namedQueryName;
 
         private String jpaQuery;
 
@@ -100,8 +100,8 @@ public class CrudDTO<T extends BaseEntity> {
             this.entity = entity;
         }
 
-        public Builder<T> namedQuery(String namedQuery) {
-            this.namedQuery = namedQuery;
+        public Builder<T> namedQueryName(String namedQueryName) {
+            this.namedQueryName = namedQueryName;
             return this;
         }
 
@@ -140,7 +140,7 @@ public class CrudDTO<T extends BaseEntity> {
 
         public CrudDTO<T> build() {
             CrudDTO<T> crudDTO = new CrudDTO<>(this.entity);
-            crudDTO.namedQuery = this.namedQuery;
+            crudDTO.namedQueryName = this.namedQueryName;
             crudDTO.jpaQuery = this.jpaQuery;
             if (this.queryParams != null) {
                 crudDTO.queryParams = this.queryParams.toArray(new QueryParam[0]);

@@ -44,6 +44,7 @@ import static org.eclipse.persistence.logging.SessionLog.METAMODEL;
 import static org.eclipse.persistence.logging.SessionLog.MISC;
 import static org.eclipse.persistence.logging.SessionLog.PROPERTIES;
 import static org.eclipse.persistence.logging.SessionLog.QUERY;
+import static org.eclipse.persistence.logging.SessionLog.SEQUENCING;
 import static org.eclipse.persistence.logging.SessionLog.SERVER;
 import static org.eclipse.persistence.logging.SessionLog.SQL;
 import static org.eclipse.persistence.logging.SessionLog.TRANSACTION;
@@ -168,6 +169,7 @@ public @interface EntityManagerFactoryConfig {
     String[] loggers() default {
             CATEGORY_LOGGING_LEVEL_ + CONNECTION,
             CATEGORY_LOGGING_LEVEL_ + JPA,
+            CATEGORY_LOGGING_LEVEL_ + SEQUENCING,
             CATEGORY_LOGGING_LEVEL_ + SQL,
             CATEGORY_LOGGING_LEVEL_ + QUERY,
             CATEGORY_LOGGING_LEVEL_ + CACHE,

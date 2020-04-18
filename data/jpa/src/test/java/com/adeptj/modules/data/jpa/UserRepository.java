@@ -21,38 +21,23 @@
 package com.adeptj.modules.data.jpa;
 
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
-import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.entity.User;
-import com.adeptj.modules.data.jpa.query.NamedParam;
-import com.adeptj.modules.data.jpa.query.QueryParam;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
 
 import java.util.List;
 
 /**
- * Implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation
- * <p>
- * This will be registered with the OSGi service registry whenever there is a new EntityManagerFactory configuration
- * created from OSGi console.
- * <p>
- * Therefore there will be a separate service for each PersistenceUnit.
- * <p>
- * Callers will have to provide an OSGi filter while injecting a reference of {@link JpaRepository}
- *
- * <code>
- * &#064;Reference(target="(osgi.unit.name=my_persistence_unit)")
- * private JpaRepository repository;
- * </code>
+ * Basic {@link User} repository.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class EclipseLinkRepository extends AbstractJpaRepository {
+public class UserRepository extends AbstractJpaRepository<User, Long> {
 
     void closeEntityManagerFactory() {
         JpaUtil.closeEntityManagerFactory(super.getEntityManagerFactory());
     }
 
     List<User> findAllUsers() {
-        return super.execute(em -> em.createQuery("Select u from User u", User.class).getResultList());
+        return super.executeCallback(em -> em.createQuery("Select u from User u", User.class).getResultList());
     }
 }
