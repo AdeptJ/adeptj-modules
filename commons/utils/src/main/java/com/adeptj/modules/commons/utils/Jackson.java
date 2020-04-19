@@ -89,6 +89,14 @@ public class Jackson {
         }
     }
 
+    public static <T> T readValue(byte[] bytes, Class<T> valueType) {
+        try {
+            return Jackson.objectReader().forType(valueType).readValue(bytes);
+        } catch (IOException ex) {
+            throw new JacksonException(ex);
+        }
+    }
+
     public static String asString(Object object) {
         try {
             return objectWriter().writeValueAsString(object);

@@ -32,11 +32,9 @@ Export-Package: com.adeptj.modules.jaxrs.core,\
                 !com.adeptj.modules.jaxrs.core.jwt.filter
 
 Import-Package: \
-  com.fasterxml.jackson.jaxrs.xml,\
   javax.annotation;\
   javax.annotation.sql;\
   javax.annotation.security,\
-  javax.mail,\
   javax.servlet;\
   javax.servlet.http;\
   javax.servlet.descriptor;\

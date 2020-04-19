@@ -34,7 +34,6 @@
                  *
 
 Import-Package: \
-  com.fasterxml.jackson.jaxrs.xml,\
   javax.annotation;\
   javax.annotation.sql;\
   javax.annotation.security,\
