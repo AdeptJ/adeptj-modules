@@ -1,0 +1,7 @@
+{
+  ":configurator:resource-version": 1,
+  "com.adeptj.modules.cache.caffeine.CaffeineCacheConfig.factory~MyCache": {
+    "cache.name": "MyCache",
+    "cache.spec": "maximumSize=16,expireAfterWrite=3600s"
+  }
+}

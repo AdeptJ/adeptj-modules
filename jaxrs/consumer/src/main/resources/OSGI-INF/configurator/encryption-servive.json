@@ -1,0 +1,12 @@
+{
+  ":configurator:resource-version": 1,
+  "com.adeptj.modules.commons.crypto.internal.EncryptionServiceImpl": {
+    "keySize:Integer": "32",
+    "key": "A random key",
+    "charsetToEncode": "US-ASCII",
+    "iv": {
+      "a" : 1,
+      "b" : "two"
+    }
+  }
+}

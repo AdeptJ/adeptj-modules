@@ -42,7 +42,7 @@ public @interface ConfigurationPluginProperties {
      *
      * @return Service PID of the targeted service.
      */
-    String cm_target(); // NOSONAR
+    String[] cm_target(); // NOSONAR
 
     /**
      * A service property to specify the order in which plugins are invoked.

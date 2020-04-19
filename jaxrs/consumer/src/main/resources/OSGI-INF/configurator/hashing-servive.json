@@ -1,0 +1,10 @@
+{
+  ":configurator:resource-version": 1,
+  "com.adeptj.modules.commons.crypto.internal.HashingServiceImpl": {
+    "saltSize:Integer": "32",
+    "iterationCount:Integer": "10000",
+    "keyLength:Integer": "256",
+    "secretKeyAlgo": "PBKDF2WithHmacSHA256",
+    "charsetToEncode": "US-ASCII"
+  }
+}

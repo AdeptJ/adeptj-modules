@@ -26,8 +26,6 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
--includeresource: jjwt-*.jar;lib:=true
-
 Export-Package: com.adeptj.modules.security.jwt
 
 Bundle-Name: ${project.name}

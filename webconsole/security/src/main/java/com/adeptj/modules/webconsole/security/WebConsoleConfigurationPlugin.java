@@ -45,6 +45,8 @@ public class WebConsoleConfigurationPlugin implements ConfigurationPlugin {
 
     @Override
     public void modifyConfiguration(ServiceReference<?> reference, Dictionary<String, Object> properties) {
-        OSGiConsolePasswordVault.getInstance().setPassword((String) properties.get(CFG_PWD));
+        if (properties != null && !properties.isEmpty()) {
+            OSGiConsolePasswordVault.getInstance().setPassword((String) properties.get(CFG_PWD));
+        }
     }
 }
