@@ -65,7 +65,7 @@ import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
  */
 @ProviderType
 @Designate(ocd = EntityManagerFactoryConfig.class)
-@Component(service = EntityManagerFactoryLifecycle.class, immediate = true, configurationPolicy = REQUIRE)
+@Component(immediate = true, configurationPolicy = REQUIRE)
 public class EntityManagerFactoryLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
