@@ -23,14 +23,16 @@ package com.adeptj.modules.webconsole.security;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
+
 /**
  * Configuration will be used by WebConsoleSecurityProvider for auth purpose.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ OSGi WebConsole Security Roles Configuration",
-        description = "Roles configured will be used by WebConsoleSecurityProvider for auth purpose."
+        name = "AdeptJ OSGi WebConsole Security Configuration",
+        description = "Roles, Admin password will be configured by this service."
 )
 public @interface WebConsoleSecurityConfig {
 
@@ -40,6 +42,10 @@ public @interface WebConsoleSecurityConfig {
 
     String DEFAULT_LOGOUT_URI = "/admin/logout";
 
+    String DEFAULT_CREDENTIALS_STORE = "credentials.dat";
+
+    String DEFAULT_ADMIN_CREDENTIALS_H2_MAP_NAME = "adminCredentials";
+
     @AttributeDefinition(
             name = "WebConsole Security Roles",
             description = "Security roles required by WebConsoleSecurityProvider for auth purpose.",
@@ -48,8 +54,27 @@ public @interface WebConsoleSecurityConfig {
     String[] roles() default {ROLE_OSGI_ADMIN,};
 
     @AttributeDefinition(
-            name = "Logout URI",
+            name = "WebConsole Post Logout URI",
             description = "URI where user will be redirected after logout."
     )
-    String logoutURI() default DEFAULT_LOGOUT_URI;
+    String logout_uri() default DEFAULT_LOGOUT_URI;
+
+    @AttributeDefinition(
+            name = "WebConsole Admin Credentials Store Name",
+            description = "Credentials store name for AdeptJ OSGi WebConsole admin."
+    )
+    String credentials_store_name() default DEFAULT_CREDENTIALS_STORE;
+
+    @AttributeDefinition(
+            name = "WebConsole Admin Credentials Map Name",
+            description = "Admin credentials map name in the AdeptJ OSGi WebConsole Password Store."
+    )
+    String credentials_map_name() default DEFAULT_ADMIN_CREDENTIALS_H2_MAP_NAME;
+
+    @AttributeDefinition(
+            name = "WebConsole Admin Password",
+            description = "Admin Password for AdeptJ OSGi WebConsole Admin.",
+            type = PASSWORD
+    )
+    String admin_password();
 }

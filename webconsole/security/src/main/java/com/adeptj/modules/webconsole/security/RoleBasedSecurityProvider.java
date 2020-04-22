@@ -20,8 +20,12 @@
 
 package com.adeptj.modules.webconsole.security;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.webconsole.WebConsoleSecurityProvider;
 import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
+import org.h2.mvstore.MVMap;
+import org.h2.mvstore.MVStore;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -30,8 +34,11 @@ import org.osgi.service.metatype.annotations.Designate;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_FOUND;
 import static org.osgi.service.http.HttpContext.AUTHORIZATION;
 import static org.osgi.service.http.HttpContext.REMOTE_USER;
@@ -43,7 +50,7 @@ import static org.osgi.service.http.HttpContext.REMOTE_USER;
  */
 @Designate(ocd = WebConsoleSecurityConfig.class)
 @Component(immediate = true, service = WebConsoleSecurityProvider.class)
-public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecurityProvider3 {
+public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
 
     private static final String HEADER_LOC = "Location";
 
@@ -80,7 +87,7 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
         response.setHeader(HEADER_LOC, this.logoutURI);
     }
 
-    // <---------------------- Below two methods from WebConsoleSecurityProvider never get called -------------------->
+    // <<----------------- Below two methods from WebConsoleSecurityProvider never get called --------------->>
 
     /**
      * {@inheritDoc}
@@ -104,7 +111,15 @@ public class RolesMatchingWebConsoleSecurityProvider implements WebConsoleSecuri
     @Modified
     protected void start(WebConsoleSecurityConfig config) {
         this.roles = config.roles();
-        this.logoutURI = config.logoutURI();
+        this.logoutURI = config.logout_uri();
+        if (StringUtils.isNotEmpty(config.admin_password())) {
+            try (MVStore store = MVStore.open(config.credentials_store_name())) {
+                MVMap<String, String> credentials = store.openMap(config.credentials_map_name());
+                byte[] encoded = Base64.getEncoder().encode(DigestUtils.sha256(config.admin_password()));
+                credentials.put(ADMIN, new String(encoded, UTF_8));
+                Arrays.fill(encoded, (byte) 0);
+            }
+        }
     }
 
 }
