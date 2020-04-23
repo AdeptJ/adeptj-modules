@@ -26,9 +26,6 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import java.util.Collections;
-import java.util.Map;
-
-import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
  * Provides {@link Jsonb} and other objects from Jakarta Json-P.
@@ -37,11 +34,11 @@ import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
  */
 public final class JsonUtil {
 
-    private static final Jsonb JSONB = JsonbBuilder.create(new JsonbConfig().withNullValues(true));
+    private static final Jsonb JSONB = JsonbBuilder.create(new JsonbConfig());
 
     private static final JsonReaderFactory READER_FACTORY = Json.createReaderFactory(Collections.emptyMap());
 
-    private static final JsonWriterFactory WRITER_FACTORY = Json.createWriterFactory(Map.of(PRETTY_PRINTING, true));
+    private static final JsonWriterFactory WRITER_FACTORY = Json.createWriterFactory(Collections.emptyMap());
 
     public static Jsonb jsonb() {
         return JSONB;
