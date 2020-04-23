@@ -10,7 +10,7 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * The Jwt serializer based on Jackson.
+ * The Jwt serializer based on Json-B.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
