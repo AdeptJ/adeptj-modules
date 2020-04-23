@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.commons.utils;
 
+import java.util.function.Supplier;
+
 /**
  * Utility methods to deal with exceptions.
  *
@@ -36,7 +38,7 @@ public final class Exceptions {
      * @param ex the given exception.
      * @return RuntimeException wrapping the original exception.
      */
-    public static RuntimeException unchecked(Exception ex) {
+    public static RuntimeException runtime(Exception ex) {
         return new RuntimeException(ex);
     }
 
@@ -51,6 +53,16 @@ public final class Exceptions {
     }
 
     /**
+     * Throw an {@link IllegalStateException} with the supplied message.
+     *
+     * @param messageSupplier the exception message {@link Supplier}.
+     * @return {@link IllegalStateException} with the supplied message.
+     */
+    public static IllegalStateException state(Supplier<String> messageSupplier) {
+        return new IllegalStateException(messageSupplier.get());
+    }
+
+    /**
      * Wraps the given exception in an {@link IllegalArgumentException} and rethrow.
      *
      * @param ex the given exception.
@@ -58,5 +70,15 @@ public final class Exceptions {
      */
     public static IllegalArgumentException arg(Exception ex) {
         return new IllegalArgumentException(ex);
+    }
+
+    /**
+     * Throw an {@link IllegalArgumentException} with the supplied message.
+     *
+     * @param messageSupplier the exception message {@link Supplier}.
+     * @return {@link IllegalArgumentException} with the supplied message.
+     */
+    public static IllegalArgumentException arg(Supplier<String> messageSupplier) {
+        return new IllegalArgumentException(messageSupplier.get());
     }
 }

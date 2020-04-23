@@ -62,7 +62,7 @@ public final class OSGiUtil {
     }
 
     public static boolean isNotFragment(Bundle bundle) {
-        return bundle.getHeaders().get(FRAGMENT_HOST) == null;
+        return !isFragment(bundle);
     }
 
     public static Filter specificServiceAndFilter(BundleContext context, Class<?> objectClass, String filterExpr) {
@@ -117,7 +117,7 @@ public final class OSGiUtil {
     }
 
     public static <S, T> void closeQuietly(ServiceTracker<S, T> tracker) {
-        if (tracker != null && !tracker.isEmpty()) {
+        if (tracker != null) {
             try {
                 tracker.close();
                 LOGGER.info("ServiceTracker [{}] closed!!", tracker);

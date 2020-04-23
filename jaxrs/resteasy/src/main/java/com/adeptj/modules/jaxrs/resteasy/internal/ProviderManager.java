@@ -19,55 +19,54 @@
 */
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.OSGiUtil;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.PROVIDER_TRACKER_FILTER;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * ProviderTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS &#064;Provider
- * annotation with RESTEasy provider registry.
+ * ProviderManager adds the JAX-RS provider to the RESTEasy {@link ResteasyProviderFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ProviderTracker extends ServiceTracker<Object, Object> {
+public class ProviderManager<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private final Lock lock;
+
     private final ResteasyProviderFactory providerFactory;
 
-    ProviderTracker(BundleContext context, ResteasyProviderFactory providerFactory) {
-        super(context, OSGiUtil.anyServiceFilter(context, PROVIDER_TRACKER_FILTER), null);
+    ProviderManager(ResteasyProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
+        this.lock = new ReentrantLock(true);
     }
 
     /**
      * Registers the JAX-RS provider with the RESTEasy {@link ResteasyProviderFactory}.
      *
-     * @param reference The reference to the service being added to this {@code ServiceTracker}.
-     * @return The service object to be tracked for the service added to this {@code ServiceTracker}.
+     * @param reference The reference to the provider service being added by the ServiceTracker.
+     * @return The provider service object to be tracked for the service added to the ServiceTracker.
      */
-    @Override
-    public Object addingService(ServiceReference<Object> reference) {
-        Object provider = super.addingService(reference);
+    public T addProvider(ServiceReference<T> reference, T provider) {
         // Quickly return null so that ServiceTracker will not track the instance.
         if (provider == null) {
-            LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", reference);
+            LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", ResteasyUtil.getProviderName(reference));
             return null;
         }
+        this.lock.lock();
         try {
             this.providerFactory.registerProviderInstance(provider);
-            LOGGER.info("Registered JAX-RS Provider: [{}]", provider);
+            LOGGER.info("Registered JAX-RS Provider: [{}]", ResteasyUtil.getProviderName(reference));
             return provider;
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
+        } finally {
+            this.lock.unlock();
         }
         return null;
     }
@@ -75,14 +74,16 @@ public class ProviderTracker extends ServiceTracker<Object, Object> {
     /**
      * Removes the JAX-RS provider from the RESTEasy {@link ResteasyProviderFactory}.
      *
-     * @param reference The reference to removed service.
-     * @param service   The service object for the removed service.
+     * @param provider The service object for the removed service.
      */
-    @Override
-    public void removedService(ServiceReference<Object> reference, Object service) {
-        super.removedService(reference, service);
-        if (this.providerFactory.getProviderInstances().remove(service)) {
-            LOGGER.info("Removed JAX-RS Provider: [{}]", service);
+    public void removeProvider(ServiceReference<T> reference, T provider) {
+        this.lock.lock();
+        try {
+            if (this.providerFactory.getProviderInstances().remove(provider)) {
+                LOGGER.info("Removed JAX-RS Provider: [{}]", ResteasyUtil.getProviderName(reference));
+            }
+        } finally {
+            this.lock.unlock();
         }
     }
 }

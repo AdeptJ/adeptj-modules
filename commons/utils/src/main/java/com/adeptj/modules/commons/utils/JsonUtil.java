@@ -17,56 +17,41 @@
 #                                                                             #
 ###############################################################################
 */
+package com.adeptj.modules.commons.utils;
 
-package com.adeptj.modules.security.jwt;
-
-import io.jsonwebtoken.lang.Assert;
-
+import javax.json.Json;
+import javax.json.JsonReaderFactory;
+import javax.json.JsonWriterFactory;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.JsonbConfig;
+import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Stream;
+
+import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
- * JWT utilities.
+ * Provides {@link Jsonb} and other objects from Jakarta Json-P.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JwtUtil {
+public final class JsonUtil {
 
-    private static final String CLAIM_NOT_FOUND_MSG = "JWT claim [%s] not found in claims map!!";
+    private static final Jsonb JSONB = JsonbBuilder.create(new JsonbConfig().withNullValues(true));
 
-    /**
-     * Utility methods only.
-     */
-    private JwtUtil() {
+    private static final JsonReaderFactory READER_FACTORY = Json.createReaderFactory(Collections.emptyMap());
+
+    private static final JsonWriterFactory WRITER_FACTORY = Json.createWriterFactory(Map.of(PRETTY_PRINTING, true));
+
+    public static Jsonb jsonb() {
+        return JSONB;
     }
 
-    /**
-     * Validates the claim information passed.
-     *
-     * @param claims Caller supplied JWT claims map
-     * @since 1.1.0.Final
-     */
-    public static void assertClaims(Map<String, Object> claims) {
-        Assert.notEmpty(claims, "Claims map can't be null or empty!!");
-        claims.forEach((claim, value) -> {
-            if (value instanceof String) {
-                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
-            } else {
-                Assert.notNull(value, String.format("%s can't be null!!", claim));
-            }
-        });
+    public static JsonReaderFactory readerFactory() {
+        return READER_FACTORY;
     }
 
-    /**
-     * Validates the claim information passed.
-     *
-     * @param claims          Caller supplied JWT claims map
-     * @param mandatoryClaims obligatory claims that should be present in claims map.
-     * @since 1.1.0.Final
-     */
-    public static void assertClaims(Map<String, Object> claims, String[] mandatoryClaims) {
-        assertClaims(claims);
-        Stream.of(mandatoryClaims)
-                .forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
+    public static JsonWriterFactory writerFactory() {
+        return WRITER_FACTORY;
     }
 }

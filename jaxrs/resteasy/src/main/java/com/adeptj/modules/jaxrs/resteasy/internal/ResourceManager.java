@@ -19,57 +19,56 @@
 */
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.OSGiUtil;
 import org.jboss.resteasy.spi.Registry;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESOURCE_TRACKER_FILTER;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * ResourceTracker is an OSGi ServiceTracker which registers the services annotated with JAX-RS &#064;Path
- * annotation with RESTEasy resource registry.
+ * ResourceManager adds the JAX-RS resource to the RESTEasy {@link Registry}
  * <p>
  * Note: All the registered JAX-RS resources are singleton by default.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResourceTracker extends ServiceTracker<Object, Object> {
+public class ResourceManager<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private final Lock lock;
+
     private final Registry registry;
 
-    ResourceTracker(BundleContext context, Registry registry) {
-        super(context, OSGiUtil.anyServiceFilter(context, RESOURCE_TRACKER_FILTER), null);
+    ResourceManager(Registry registry) {
         this.registry = registry;
+        this.lock = new ReentrantLock(true);
     }
 
     /**
      * Registers the JAX-RS resource with the RESTEasy {@link Registry}.
      *
-     * @param reference The reference to the service being added to this {@code ServiceTracker}.
-     * @return The service object to be tracked for the service added to this {@code ServiceTracker}.
+     * @param reference The reference to the resource service being added by the ServiceTracker.
+     * @return The resource service object to be tracked for the service added to the ServiceTracker.
      */
-    @Override
-    public Object addingService(ServiceReference<Object> reference) {
-        Object resource = super.addingService(reference);
+    public T addResource(ServiceReference<T> reference, T resource) {
         // Quickly return null so that ServiceTracker will not track the instance.
         if (resource == null) {
-            LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", reference);
+            LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", ResteasyUtil.getResourceName(reference));
             return null;
         }
+        this.lock.lock();
         try {
             this.registry.addSingletonResource(resource);
-            LOGGER.info("Added JAX-RS Resource: [{}]", resource);
+            LOGGER.info("Added JAX-RS Resource: [{}]", ResteasyUtil.getResourceName(reference));
             return resource;
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
+        } finally {
+            this.lock.unlock();
         }
         return null;
     }
@@ -77,13 +76,15 @@ public class ResourceTracker extends ServiceTracker<Object, Object> {
     /**
      * Removes the JAX-RS resource from the RESTEasy {@link Registry}.
      *
-     * @param reference The reference to removed service.
-     * @param service   The service object for the removed service.
+     * @param resource The service object for the removed service.
      */
-    @Override
-    public void removedService(ServiceReference<Object> reference, Object service) {
-        super.removedService(reference, service);
-        this.registry.removeRegistrations(service.getClass());
-        LOGGER.info("Removed JAX-RS Resource: [{}]", service);
+    public void removeResource(ServiceReference<T> reference, Object resource) {
+        this.lock.lock();
+        try {
+            this.registry.removeRegistrations(resource.getClass());
+            LOGGER.info("Removed JAX-RS Resource: [{}]", ResteasyUtil.getResourceName(reference));
+        } finally {
+            this.lock.unlock();
+        }
     }
 }

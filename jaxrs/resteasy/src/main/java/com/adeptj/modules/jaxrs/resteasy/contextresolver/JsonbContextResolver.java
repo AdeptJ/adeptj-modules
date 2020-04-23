@@ -18,30 +18,32 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
+package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
-import com.adeptj.modules.commons.utils.Jackson;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.adeptj.modules.commons.utils.JsonUtil;
 
 import javax.annotation.Priority;
+import javax.json.bind.Jsonb;
+import javax.ws.rs.Produces;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.ObjectMapperContextResolver.PRIORITY;
+import static com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver.PRIORITY;
 
 /**
- * ContextResolver for Jackson's {@link ObjectMapper}.
+ * ContextResolver for Jackson's {@link Jsonb}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@Produces({"application/json", "application/*+json", "text/json"})
 @Priority(PRIORITY)
 @Provider
-public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+public class JsonbContextResolver implements ContextResolver<Jsonb> {
 
     static final int PRIORITY = 5000;
 
     @Override
-    public ObjectMapper getContext(Class<?> type) {
-        return Jackson.objectMapper();
+    public Jsonb getContext(Class<?> type) {
+        return JsonUtil.jsonb();
     }
 }

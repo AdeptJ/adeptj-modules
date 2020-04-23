@@ -36,9 +36,11 @@ final class ResteasyConstants {
 
     static final String RESTEASY_DISPATCHER_SERVLET_PATH = "/";
 
-    static final String PROVIDER_TRACKER_FILTER = "(osgi.jaxrs.provider.name=*)";
+    static final String KEY_PROVIDER_NAME = "osgi.jaxrs.provider.name";
 
-    static final String RESOURCE_TRACKER_FILTER = "(osgi.jaxrs.resource.name=*)";
+    static final String KEY_RESOURCE_NAME = "osgi.jaxrs.resource.name";
+
+    static final String COMPOSITE_TRACKER_FILTER = "(|(osgi.jaxrs.resource.name=*)(osgi.jaxrs.provider.name=*))";
 
     static final String VALUE_TRUE = "true";
 

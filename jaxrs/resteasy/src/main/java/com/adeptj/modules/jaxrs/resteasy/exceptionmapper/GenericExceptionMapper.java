@@ -18,43 +18,50 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy.internal;
+package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
-import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableType;
-import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.util.EnumSet;
+import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.ValidatorContextResolver.PRIORITY;
-import static javax.validation.executable.ExecutableType.CONSTRUCTORS;
-import static javax.validation.executable.ExecutableType.NON_GETTER_METHODS;
+import static com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper.PRIORITY;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 /**
- * Priority based ContextResolver for RESTEasy's {@link GeneralValidator}.
+ * A global {@link ExceptionMapper} for handling all uncaught exception types.
+ * <p>
+ * Sends the uncaught exception's trace in response if sendExceptionTrace is set as true otherwise a generic error message is sent.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Priority(PRIORITY)
 @Provider
-public class ValidatorContextResolver implements ContextResolver<GeneralValidator> {
+public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
-    static final int PRIORITY = 4500;
+    static final int PRIORITY = 6500;
 
-    private final GeneralValidator validator;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    ValidatorContextResolver(ValidatorFactory validatorFactory) {
-        EnumSet<ExecutableType> executableTypes = EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS);
-        this.validator = new GeneralValidatorImpl(validatorFactory, true, executableTypes);
+    private static final String DEFAULT_ERROR_MSG = "Unexpected error, we are looking into it. Please try again later!!";
+
+    private final boolean sendExceptionTrace;
+
+    public GenericExceptionMapper(boolean sendExceptionTrace) {
+        this.sendExceptionTrace = sendExceptionTrace;
     }
 
     @Override
-    public GeneralValidator getContext(Class<?> type) {
-        // Not doing the type check of passed Class object as RESTEasy passes null while processing resource methods at bootstrap time.
-        return this.validator;
+    public Response toResponse(Exception exception) {
+        LOGGER.error(exception.getMessage(), exception);
+        return Response.serverError()
+                .type(TEXT_PLAIN)
+                .entity(this.sendExceptionTrace ? ExceptionUtils.getStackTrace(exception) : DEFAULT_ERROR_MSG)
+                .build();
     }
 }

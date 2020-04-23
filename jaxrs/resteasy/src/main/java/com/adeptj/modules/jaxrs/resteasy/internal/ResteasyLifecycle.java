@@ -24,8 +24,13 @@ import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
-import com.adeptj.modules.jaxrs.resteasy.GenericExceptionHandler;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
+import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonReaderFactoryContextResolver;
+import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonWriterFactoryContextResolver;
+import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver;
+import com.adeptj.modules.jaxrs.resteasy.contextresolver.ValidatorContextResolver;
+import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper;
+import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.osgi.framework.BundleContext;
@@ -56,9 +61,7 @@ public class ResteasyLifecycle {
 
     private static final String JAXRS_RT_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
-    private ProviderTracker providerTracker;
-
-    private ResourceTracker resourceTracker;
+    private CompositeServiceTracker<?> serviceTracker;
 
     private ResteasyServletDispatcher resteasyDispatcher;
 
@@ -97,15 +100,16 @@ public class ResteasyLifecycle {
                 this.resteasyDispatcher = new ResteasyServletDispatcher(this.config.blacklistedProviders());
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
-                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
+                ResteasyProviderFactory rpf = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))
-                        .register(new GenericExceptionHandler(this.config.sendExceptionTrace()))
+                        .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
+                        .register(new WebApplicationExceptionMapper())
                         .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
-                        .register(new ObjectMapperContextResolver());
-                this.providerTracker = new ProviderTracker(this.bundleContext, providerFactory);
-                this.providerTracker.open();
-                this.resourceTracker = new ResourceTracker(this.bundleContext, dispatcher.getRegistry());
-                this.resourceTracker.open();
+                        .register(new JsonbContextResolver())
+                        .register(new JsonReaderFactoryContextResolver())
+                        .register(new JsonWriterFactoryContextResolver());
+                this.serviceTracker = new CompositeServiceTracker<>(this.bundleContext, rpf, dispatcher.getRegistry());
+                this.serviceTracker.open();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
@@ -126,8 +130,7 @@ public class ResteasyLifecycle {
         this.resteasyDispatcher.destroy();
         ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
         LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);
-        OSGiUtil.closeQuietly(this.providerTracker);
-        OSGiUtil.closeQuietly(this.resourceTracker);
+        OSGiUtil.closeQuietly(this.serviceTracker);
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 

@@ -18,45 +18,37 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy;
+package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import javax.annotation.Priority;
+import javax.json.Json;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.lang.invoke.MethodHandles;
 
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper.PRIORITY;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * A global {@link ExceptionMapper} for handling all uncaught exception types.
- * <p>
- * Sends the uncaught exception's trace in response if sendExceptionTrace is set as true otherwise a generic error message is sent.
+ * An {@link ExceptionMapper} for handling exceptions of type {@link WebApplicationException}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@Priority(PRIORITY)
 @Provider
-public class GenericExceptionHandler implements ExceptionMapper<Exception> {
+public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final String DEFAULT_ERROR_MSG = "Unexpected error, we are looking into it. Please try again later!!";
-
-    private final boolean sendExceptionTrace;
-
-    public GenericExceptionHandler(boolean sendExceptionTrace) {
-        this.sendExceptionTrace = sendExceptionTrace;
-    }
+    static final int PRIORITY = 7000;
 
     @Override
-    public Response toResponse(Exception exception) {
-        LOGGER.error(exception.getMessage(), exception);
-        return Response.serverError()
-                .type(TEXT_PLAIN)
-                .entity(this.sendExceptionTrace ? ExceptionUtils.getStackTrace(exception) : DEFAULT_ERROR_MSG)
+    public Response toResponse(WebApplicationException exception) {
+        Response response = exception.getResponse();
+        return Response.status(response.getStatus())
+                .type(APPLICATION_JSON)
+                .entity(Json.createObjectBuilder()
+                        .add("code", response.getStatus())
+                        .add("message", exception.getMessage()).build())
                 .build();
     }
 }

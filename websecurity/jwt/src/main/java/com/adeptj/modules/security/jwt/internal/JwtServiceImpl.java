@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
+import com.adeptj.modules.commons.utils.Randomizer;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
@@ -31,8 +32,6 @@ import io.jsonwebtoken.io.Deserializer;
 import io.jsonwebtoken.io.Serializer;
 import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.security.SignatureException;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
@@ -80,10 +79,10 @@ public class JwtServiceImpl implements JwtService {
     private final Deserializer<Map<String, ?>> deserializer;
 
     @Activate
-    public JwtServiceImpl(@NonNull JwtConfig config) {
+    public JwtServiceImpl(JwtConfig config) {
         this.jwsHandler = new JwsHandler();
-        this.serializer = new JwtSerializer<>();
-        this.deserializer = new JwtDeserializer<>();
+        this.serializer = new JwtSerializer();
+        this.deserializer = new JwtDeserializer();
         try {
             this.defaultIssuer = config.defaultIssuer();
             this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
@@ -103,7 +102,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public @NonNull String createJwt(String subject, Map<String, Object> claims) {
+    public String createJwt(String subject, Map<String, Object> claims) {
         Assert.hasText(subject, "Subject can't be blank!!");
         JwtUtil.assertClaims(claims);
         Instant now = Instant.now();
@@ -113,7 +112,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(subject)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
-                .setId(claims.containsKey(ID) ? (String) claims.get(ID) : JwtUtil.generateJwtId())
+                .setId(claims.containsKey(ID) ? claims.get(ID).toString() : Randomizer.randomUUIDString())
                 .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
                 .signWith(this.keyInfo.getPrivateKey(), this.keyInfo.getSignatureAlgorithm())
                 .serializeToJsonWith(this.serializer)
@@ -124,7 +123,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public @NonNull String createJwt(Map<String, Object> claims) {
+    public String createJwt(Map<String, Object> claims) {
         JwtUtil.assertClaims(claims, this.mandatoryClaims);
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
@@ -138,7 +137,7 @@ public class JwtServiceImpl implements JwtService {
      * {@inheritDoc}
      */
     @Override
-    public @Nullable JwtClaims verifyJwt(String jwt) {
+    public JwtClaims verifyJwt(String jwt) {
         JwtClaims claims = null;
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");

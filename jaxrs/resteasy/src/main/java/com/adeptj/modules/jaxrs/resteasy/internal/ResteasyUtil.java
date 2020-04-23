@@ -20,12 +20,16 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+import org.osgi.framework.ServiceReference;
 
 import javax.servlet.ServletContext;
 import java.util.Arrays;
 
 import static com.adeptj.modules.commons.utils.Constants.COMMA;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.KEY_PROVIDER_NAME;
+import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.KEY_RESOURCE_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 
 /**
@@ -51,5 +55,21 @@ final class ResteasyUtil {
 
     static void clearPreviousResteasyDeployment(ServletContext servletContext) {
         servletContext.removeAttribute(RESTEASY_DEPLOYMENT);
+    }
+
+    static <T> String getResourceName(ServiceReference<T> reference) {
+        return (String) reference.getProperty(KEY_RESOURCE_NAME);
+    }
+
+    static <T> String getProviderName(ServiceReference<T> reference) {
+        return (String) reference.getProperty(KEY_PROVIDER_NAME);
+    }
+
+    static <T> boolean isProvider(ServiceReference<T> reference) {
+        return StringUtils.isNotEmpty(getProviderName(reference));
+    }
+
+    static <T> boolean isResource(ServiceReference<T> reference) {
+        return StringUtils.isNotEmpty(getResourceName(reference));
     }
 }
