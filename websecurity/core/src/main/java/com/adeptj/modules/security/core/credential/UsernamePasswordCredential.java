@@ -40,7 +40,7 @@ public class UsernamePasswordCredential implements Credential {
 
     private static final char[] EMPTY_CHAR_ARRAY = new char[0];
 
-    private String username;
+    private final String username;
 
     private char[] password;
 

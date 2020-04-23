@@ -4,9 +4,7 @@ import com.adeptj.modules.commons.utils.JsonUtil;
 import io.jsonwebtoken.io.DeserializationException;
 import io.jsonwebtoken.io.Deserializer;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.json.bind.JsonbException;
 import java.util.Map;
 
 /**
@@ -16,12 +14,11 @@ import java.util.Map;
  */
 final class JwtDeserializer implements Deserializer<Map<String, ?>> {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, ?> deserialize(byte[] bytes) throws DeserializationException {
-        try (InputStream stream = new ByteArrayInputStream(bytes)) {
-            return JsonUtil.jsonb().fromJson(stream, Map.class);
-        } catch (IOException ex) {
+    public Map<String, ?> deserialize(byte[] bytes) {
+        try {
+            return JsonUtil.deserialize(bytes, Map.class);
+        } catch (JsonbException ex) {
             throw new DeserializationException(ex.getMessage(), ex);
         }
     }

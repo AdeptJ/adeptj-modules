@@ -69,19 +69,19 @@ public class ResteasyLifecycle {
 
     private final ResteasyConfig config;
 
-    private final BundleContext bundleContext;
+    private final BundleContext bc;
 
     // Activation objects end.
 
     /**
      * Statically injected ValidatorService, this component will not become active until one is provided.
      */
-    private final ValidatorService validatorService;
+    private final ValidatorService vs;
 
     @Activate
     public ResteasyLifecycle(@Reference ValidatorService vs, BundleContext bc, ResteasyConfig config) {
-        this.validatorService = vs;
-        this.bundleContext = bc;
+        this.vs = vs;
+        this.bc = bc;
         this.config = config;
     }
 
@@ -104,11 +104,11 @@ public class ResteasyLifecycle {
                         .register(ResteasyUtil.newCorsFilter(this.config))
                         .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
                         .register(new WebApplicationExceptionMapper())
-                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
+                        .register(new ValidatorContextResolver(this.vs))
                         .register(new JsonbContextResolver())
                         .register(new JsonReaderFactoryContextResolver())
                         .register(new JsonWriterFactoryContextResolver());
-                this.serviceTracker = new CompositeServiceTracker<>(this.bundleContext, rpf, dispatcher.getRegistry());
+                this.serviceTracker = new CompositeServiceTracker<>(this.bc, rpf, dispatcher.getRegistry());
                 this.serviceTracker.open();
                 LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR

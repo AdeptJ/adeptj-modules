@@ -44,6 +44,6 @@ public class JsonbContextResolver implements ContextResolver<Jsonb> {
 
     @Override
     public Jsonb getContext(Class<?> type) {
-        return JsonUtil.jsonb();
+        return JsonUtil.getJsonb();
     }
 }

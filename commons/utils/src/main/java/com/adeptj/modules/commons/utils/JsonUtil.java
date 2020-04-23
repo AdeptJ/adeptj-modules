@@ -25,10 +25,13 @@ import javax.json.JsonWriterFactory;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
-import java.util.Collections;
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Provides {@link Jsonb} and other objects from Jakarta Json-P.
+ * Provides Jakarta {@link Jsonb} and other objects from Jakarta Json-P plus some utility methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -36,19 +39,35 @@ public final class JsonUtil {
 
     private static final Jsonb JSONB = JsonbBuilder.create(new JsonbConfig());
 
-    private static final JsonReaderFactory READER_FACTORY = Json.createReaderFactory(Collections.emptyMap());
+    private static final JsonReaderFactory READER_FACTORY = Json.createReaderFactory(null);
 
-    private static final JsonWriterFactory WRITER_FACTORY = Json.createWriterFactory(Collections.emptyMap());
+    private static final JsonWriterFactory WRITER_FACTORY = Json.createWriterFactory(null);
 
-    public static Jsonb jsonb() {
+    public static Jsonb getJsonb() {
         return JSONB;
     }
 
-    public static JsonReaderFactory readerFactory() {
+    public static <T> String serialize(T object) {
+        return JsonUtil.getJsonb().toJson(object);
+    }
+
+    public static <T> byte[] serializeToBytes(T object) {
+        return JsonUtil.serialize(object).getBytes(UTF_8);
+    }
+
+    public static <T> T deserialize(byte[] data, Type type) {
+        return JsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
+    }
+
+    public static <T> T deserialize(String data, Type type) {
+        return JsonUtil.getJsonb().fromJson(data, type);
+    }
+
+    public static JsonReaderFactory getJsonReaderFactory() {
         return READER_FACTORY;
     }
 
-    public static JsonWriterFactory writerFactory() {
+    public static JsonWriterFactory getJsonWriterFactory() {
         return WRITER_FACTORY;
     }
 }

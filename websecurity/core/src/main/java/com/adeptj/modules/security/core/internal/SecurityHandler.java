@@ -31,8 +31,6 @@ import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URL;
-import java.util.Set;
 
 import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_NAME;
 import static com.adeptj.modules.security.core.internal.SecurityHandler.ROOT_PATH;
@@ -50,20 +48,20 @@ public class SecurityHandler extends ServletContextHelper {
 
     static final String ROOT_PATH = "/";
 
-    private ServletContextHelperProxy contextHelperProxy;
+    private final Authenticator authenticator;
 
-    /**
-     * The {@link Authenticator} service is statically referenced.
-     */
-    @Reference
-    private Authenticator authenticator;
+    @Activate
+    public SecurityHandler(@Reference Authenticator authenticator, ComponentContext context) {
+        super(context.getUsingBundle());
+        this.authenticator = authenticator;
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public boolean handleSecurity(HttpServletRequest request, HttpServletResponse response) {
-        return this.contextHelperProxy.handleSecurity(request, response);
+        return this.authenticator.handleSecurity(request);
     }
 
     /**
@@ -71,45 +69,6 @@ public class SecurityHandler extends ServletContextHelper {
      */
     @Override
     public void finishSecurity(HttpServletRequest request, HttpServletResponse response) {
-        this.contextHelperProxy.finishSecurity(request, response);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public URL getResource(String name) {
-        return this.contextHelperProxy.getResource(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getMimeType(String name) {
-        return this.contextHelperProxy.getMimeType(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<String> getResourcePaths(String path) {
-        return this.contextHelperProxy.getResourcePaths(path);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getRealPath(String path) {
-        return this.contextHelperProxy.getRealPath(path);
-    }
-
-    // <<------------------------------------------ OSGi INTERNAL ------------------------------------------>>
-
-    @Activate
-    protected void start(ComponentContext context) {
-        this.contextHelperProxy = new ServletContextHelperProxy(context.getUsingBundle(), this.authenticator);
+        this.authenticator.finishSecurity(request);
     }
 }

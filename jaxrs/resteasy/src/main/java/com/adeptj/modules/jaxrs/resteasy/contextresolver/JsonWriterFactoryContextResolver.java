@@ -24,6 +24,6 @@ public class JsonWriterFactoryContextResolver implements ContextResolver<JsonWri
 
     @Override
     public JsonWriterFactory getContext(Class<?> type) {
-        return JsonUtil.writerFactory();
+        return type == JsonWriterFactory.class ? JsonUtil.getJsonWriterFactory() : null;
     }
 }

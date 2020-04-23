@@ -24,6 +24,6 @@ public class JsonReaderFactoryContextResolver implements ContextResolver<JsonRea
 
     @Override
     public JsonReaderFactory getContext(Class<?> type) {
-        return JsonUtil.readerFactory();
+        return type == JsonReaderFactory.class ? JsonUtil.getJsonReaderFactory() : null;
     }
 }

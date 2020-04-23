@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.adeptj.modules.security.core.SecurityConstants.ATTRIBUTE_TOKEN_CREDENTIAL;
 import static com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome.INVALID_OUTCOME;
@@ -34,16 +35,18 @@ public class AuthenticatorImpl implements Authenticator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private List<String> securityDisabledPaths;
+    private final CredentialResolver credentialResolver;
 
-    @Reference
-    private CredentialResolver credentialResolver;
+    private final List<String> securityDisabledPaths;
 
-    /**
-     * As per Felix SCR, dynamic references should be declared as volatile.
-     */
-    @Reference(service = IdentityStore.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    private volatile List<IdentityStore> identityStores;
+    private final List<IdentityStore> identityStores;
+
+    @Activate
+    public AuthenticatorImpl(@Reference CredentialResolver credentialResolver, AuthenticatorConfig config) {
+        this.credentialResolver = credentialResolver;
+        this.securityDisabledPaths = new ArrayList<>(Arrays.asList(config.security_disabled_paths()));
+        this.identityStores = new CopyOnWriteArrayList<>();
+    }
 
     @Override
     public boolean handleSecurity(HttpServletRequest request) {
@@ -71,7 +74,6 @@ public class AuthenticatorImpl implements Authenticator {
         }
         CredentialValidationOutcome outcome = this.identityStores.stream()
                 .sorted(Comparator.comparingInt(IdentityStore::priority).reversed())
-                .peek(store -> LOGGER.info("Asking credential validation from IdentityStore: {}", store.getName()))
                 .filter(store -> store.canValidate(credential))
                 .map(store -> store.validate(credential))
                 .findFirst()
@@ -85,10 +87,14 @@ public class AuthenticatorImpl implements Authenticator {
 
     }
 
-    // <<------------------------------------------ OSGi INTERNAL ------------------------------------------>>
+    // <<-------------------------------------- OSGi INTERNAL -------------------------------------->>
 
-    @Activate
-    protected void start(AuthenticatorConfig config) {
-        this.securityDisabledPaths = new ArrayList<>(Arrays.asList(config.security_disabled_paths()));
+    @Reference(service = IdentityStore.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindIdentityStore(IdentityStore identityStore) {
+        this.identityStores.add(identityStore);
+    }
+
+    protected void unbindIdentityStore(IdentityStore identityStore) {
+        this.identityStores.remove(identityStore);
     }
 }
