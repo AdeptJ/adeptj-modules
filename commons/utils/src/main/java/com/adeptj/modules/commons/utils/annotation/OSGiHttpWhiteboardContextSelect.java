@@ -15,12 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 @ComponentPropertyType
-public @interface HttpWhiteboardContextSelection {
+public @interface OSGiHttpWhiteboardContextSelect {
 
-    /**
-     * Prefix for the property name. This value is prepended to each property name.
-     */
-    String PREFIX_ = "osgi.http.whiteboard.context.";
-
-    String select();
+    String value();
 }

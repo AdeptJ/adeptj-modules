@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.annotation.HttpWhiteboardContextSelection;
+import com.adeptj.modules.commons.utils.annotation.OSGiHttpWhiteboardContextSelect;
 import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -50,7 +50,7 @@ import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHIT
  * @author Rakesh.Kumar, AdeptJ
  */
 @ResteasyServletInitParameters
-@HttpWhiteboardContextSelection(select = "(" + HTTP_WHITEBOARD_CONTEXT_NAME + "=" + "AdeptJSecurityHandler" + ")")
+@OSGiHttpWhiteboardContextSelect("(" + HTTP_WHITEBOARD_CONTEXT_NAME + "=" + "AdeptJSecurityHandler" + ")")
 @HttpWhiteboardServletAsyncSupported
 @HttpWhiteboardServletName(RESTEASY_PROXY_SERVLET_NAME)
 @HttpWhiteboardServletPattern(RESTEASY_DISPATCHER_SERVLET_PATH)
