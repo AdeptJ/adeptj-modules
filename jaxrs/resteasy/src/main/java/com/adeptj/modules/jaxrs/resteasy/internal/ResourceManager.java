@@ -20,6 +20,7 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.jboss.resteasy.spi.Registry;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ public class ResourceManager<T> {
      *
      * @param resource The service object for the removed service.
      */
-    public void removeResource(ServiceReference<T> reference, Object resource) {
+    public void removeResource(ServiceReference<T> reference, @NotNull Object resource) {
         this.lock.lock();
         try {
             this.registry.removeRegistrations(resource.getClass());

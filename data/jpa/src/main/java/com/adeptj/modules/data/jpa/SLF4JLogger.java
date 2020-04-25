@@ -19,6 +19,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.LogCategory;
 import org.eclipse.persistence.logging.LogLevel;
 import org.eclipse.persistence.logging.SessionLogEntry;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,12 +52,12 @@ public class SLF4JLogger extends AbstractSessionLog {
     private static final class LogTrace implements LoggerCall {
 
         @Override
-        public void log(final Logger logger, final String msg, final Throwable t) {
+        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
             logger.trace(msg, t);
         }
 
         @Override
-        public void log(final Logger logger, final String message) {
+        public void log(final @NotNull Logger logger, final String message) {
             logger.trace(message);
         }
     }
@@ -67,12 +68,12 @@ public class SLF4JLogger extends AbstractSessionLog {
     private static final class LogDebug implements LoggerCall {
 
         @Override
-        public void log(final Logger logger, final String msg, final Throwable t) {
+        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
             logger.debug(msg, t);
         }
 
         @Override
-        public void log(final Logger logger, final String message) {
+        public void log(final @NotNull Logger logger, final String message) {
             logger.debug(message);
         }
     }
@@ -83,12 +84,12 @@ public class SLF4JLogger extends AbstractSessionLog {
     private static final class LogInfo implements LoggerCall {
 
         @Override
-        public void log(final Logger logger, final String msg, final Throwable t) {
+        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
             logger.info(msg, t);
         }
 
         @Override
-        public void log(final Logger logger, final String message) {
+        public void log(final @NotNull Logger logger, final String message) {
             logger.info(message);
         }
     }
@@ -99,12 +100,12 @@ public class SLF4JLogger extends AbstractSessionLog {
     private static final class LogWarn implements LoggerCall {
 
         @Override
-        public void log(final Logger logger, final String msg, final Throwable t) {
+        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
             logger.warn(msg, t);
         }
 
         @Override
-        public void log(final Logger logger, final String message) {
+        public void log(final @NotNull Logger logger, final String message) {
             logger.warn(message);
         }
     }
@@ -115,12 +116,12 @@ public class SLF4JLogger extends AbstractSessionLog {
     private static final class LogError implements LoggerCall {
 
         @Override
-        public void log(final Logger logger, final String msg, final Throwable t) {
+        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
             logger.error(msg, t);
         }
 
         @Override
-        public void log(final Logger logger, final String message) {
+        public void log(final @NotNull Logger logger, final String message) {
             logger.error(message);
         }
     }
@@ -167,7 +168,7 @@ public class SLF4JLogger extends AbstractSessionLog {
      * @param category EclipseLink logging category
      * @return Logger for the given logging category.
      */
-    private Logger getLogger(final LogCategory category) {
+    private Logger getLogger(final @NotNull LogCategory category) {
         final Logger logger = categoryLoggers[category.getId()];
         if (logger == null) {
             return categoryLoggers[category.getId()] = LoggerFactory.getLogger(category.getNameSpace());

@@ -26,6 +26,7 @@ import com.adeptj.modules.commons.jdbc.util.DataSources;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -76,7 +77,7 @@ public class HikariDataSourceService implements DataSourceService {
      * {@inheritDoc}
      */
     @Override
-    public DataSource getDataSource() {
+    public @NotNull DataSource getDataSource() {
         return new DataSourceWrapper(this.dataSource);
     }
 

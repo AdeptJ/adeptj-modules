@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.logging;
 
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public class LogEntryConsumer implements LogListener {
      * {@inheritDoc}
      */
     @Override
-    public void logged(LogEntry entry) {
+    public void logged(@NotNull LogEntry entry) {
         switch (entry.getLogLevel()) {
             case ERROR:
                 LOGGER.error(entry.getMessage(), entry.getException());

@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.ServiceReference;
 
 import javax.servlet.ServletContext;
@@ -42,7 +43,7 @@ final class ResteasyUtil {
     private ResteasyUtil() {
     }
 
-    static CorsFilter newCorsFilter(ResteasyConfig config) {
+    static @NotNull CorsFilter newCorsFilter(@NotNull ResteasyConfig config) {
         CorsFilter corsFilter = new CorsFilter();
         corsFilter.setAllowCredentials(config.allowCredentials());
         corsFilter.setCorsMaxAge(config.corsMaxAge());
@@ -53,15 +54,15 @@ final class ResteasyUtil {
         return corsFilter;
     }
 
-    static void clearPreviousResteasyDeployment(ServletContext servletContext) {
+    static void clearPreviousResteasyDeployment(@NotNull ServletContext servletContext) {
         servletContext.removeAttribute(RESTEASY_DEPLOYMENT);
     }
 
-    static <T> String getResourceName(ServiceReference<T> reference) {
+    static <T> String getResourceName(@NotNull ServiceReference<T> reference) {
         return (String) reference.getProperty(KEY_RESOURCE_NAME);
     }
 
-    static <T> String getProviderName(ServiceReference<T> reference) {
+    static <T> String getProviderName(@NotNull ServiceReference<T> reference) {
         return (String) reference.getProperty(KEY_PROVIDER_NAME);
     }
 

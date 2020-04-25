@@ -28,8 +28,8 @@ import java.util.Objects;
 
 import static com.adeptj.modules.security.core.SecurityConstants.LOGIN_URI_SUFFIX;
 import static com.adeptj.modules.security.core.SecurityConstants.METHOD_POST;
-import static com.adeptj.modules.security.core.SecurityConstants.PARAM_PWD;
-import static com.adeptj.modules.security.core.SecurityConstants.PARAM_USERNAME;
+import static com.adeptj.modules.security.core.SecurityConstants.PARAM_J_PASSWORD;
+import static com.adeptj.modules.security.core.SecurityConstants.PARAM_J_USERNAME;
 
 /**
  * Represents simple username/password credentials.
@@ -54,10 +54,10 @@ public class UsernamePasswordCredential implements Credential {
     }
 
     public static UsernamePasswordCredential from(HttpServletRequest request) {
-        String username = request.getParameter(PARAM_USERNAME);
-        String password = request.getParameter(PARAM_PWD);
-        if (METHOD_POST.equals(request.getMethod()) && StringUtils.endsWith(request.getRequestURI(), LOGIN_URI_SUFFIX)
-                && StringUtils.isNoneEmpty(username, password)) {
+        String username = request.getParameter(PARAM_J_USERNAME);
+        String password = request.getParameter(PARAM_J_PASSWORD);
+        if (METHOD_POST.equals(request.getMethod()) && StringUtils.isNoneEmpty(username, password)
+                && StringUtils.endsWith(request.getRequestURI(), LOGIN_URI_SUFFIX)) {
             return new UsernamePasswordCredential(username, password.toCharArray());
         }
         return null;

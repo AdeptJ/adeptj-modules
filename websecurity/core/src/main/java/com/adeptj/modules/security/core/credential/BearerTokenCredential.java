@@ -11,7 +11,7 @@ public class BearerTokenCredential implements Credential {
 
     private static final int TOKEN_START_POS = 7;
 
-    private String token;
+    private final String token;
 
     private BearerTokenCredential(String token) {
         this.token = token;

@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.data.jpa.util;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +40,13 @@ public final class Transactions {
     private Transactions() {
     }
 
-    public static void markRollback(EntityManager em) {
+    public static void markRollback(@NotNull EntityManager em) {
         if (em.getTransaction().isActive() && !em.getTransaction().getRollbackOnly()) {
             em.getTransaction().setRollbackOnly();
         }
     }
 
-    public static void rollback(EntityManager em) {
+    public static void rollback(@NotNull EntityManager em) {
         if (em.getTransaction().isActive() && em.getTransaction().getRollbackOnly()) {
             try {
                 LOGGER.warn("Rolling back transaction!!");

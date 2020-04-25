@@ -24,6 +24,7 @@ import com.adeptj.modules.data.jpa.ConnectionRetrySessionCustomizer;
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import com.adeptj.modules.data.jpa.SLF4JLogger;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +51,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATIO
  */
 final class JpaProperties {
 
-    static Map<String, Object> from(EntityManagerFactoryConfig config) {
+    static @NotNull Map<String, Object> from(@NotNull EntityManagerFactoryConfig config) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(DDL_GENERATION, config.ddlGeneration());
         properties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());

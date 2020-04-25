@@ -10,6 +10,12 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public @interface AuthenticatorConfig {
 
     @AttributeDefinition(
+            name = "Disable Security",
+            description = "Enable or disable security."
+    )
+    boolean disable_security() default true;
+
+    @AttributeDefinition(
             name = "Security Disabled Paths",
             description = "Paths on which security is disabled"
     )

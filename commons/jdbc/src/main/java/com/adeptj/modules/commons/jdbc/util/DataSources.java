@@ -25,6 +25,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
@@ -37,7 +39,8 @@ public final class DataSources {
 
     private static final String EQ = "=";
 
-    public static HikariDataSource createHikariDataSource(DataSourceConfig config) {
+    @Contract("_ -> new")
+    public static @NotNull HikariDataSource createHikariDataSource(@NotNull DataSourceConfig config) {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName(config.poolName());
         hikariConfig.setJdbcUrl(config.jdbcUrl());

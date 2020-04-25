@@ -25,17 +25,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static com.adeptj.modules.security.core.SecurityConstants.ATTRIBUTE_TOKEN_CREDENTIAL;
 import static com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome.INVALID_OUTCOME;
 import static com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome.NOT_VALIDATED_OUTCOME;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Designate(ocd = AuthenticatorConfig.class)
-@Component(configurationPolicy = REQUIRE)
+@Component(immediate = true)
 public class AuthenticatorImpl implements Authenticator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final CredentialResolver credentialResolver;
+
+    private final boolean securityDisabled;
 
     private final List<String> securityDisabledPaths;
 
@@ -44,13 +45,14 @@ public class AuthenticatorImpl implements Authenticator {
     @Activate
     public AuthenticatorImpl(@Reference CredentialResolver credentialResolver, AuthenticatorConfig config) {
         this.credentialResolver = credentialResolver;
+        this.securityDisabled = config.disable_security();
         this.securityDisabledPaths = new ArrayList<>(Arrays.asList(config.security_disabled_paths()));
         this.identityStores = new CopyOnWriteArrayList<>();
     }
 
     @Override
     public boolean handleSecurity(HttpServletRequest request) {
-        if (this.securityDisabledPaths.contains(request.getRequestURI())) {
+        if (this.securityDisabled || this.securityDisabledPaths.contains(request.getRequestURI())) {
             return true;
         }
         Credential credential = this.credentialResolver.resolve(request);

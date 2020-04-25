@@ -32,6 +32,7 @@ import io.jsonwebtoken.io.Deserializer;
 import io.jsonwebtoken.io.Serializer;
 import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.security.SignatureException;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
@@ -79,7 +80,7 @@ public class JwtServiceImpl implements JwtService {
     private final Deserializer<Map<String, ?>> deserializer;
 
     @Activate
-    public JwtServiceImpl(JwtConfig config) {
+    public JwtServiceImpl(@NotNull JwtConfig config) {
         this.jwsHandler = new JwsHandler();
         this.serializer = new JwtSerializer();
         this.deserializer = new JwtDeserializer();

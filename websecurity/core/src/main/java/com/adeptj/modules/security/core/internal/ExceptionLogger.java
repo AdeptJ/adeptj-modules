@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.security.core.internal;
 
+import com.adeptj.modules.commons.utils.Randomizer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.whiteboard.Preprocessor;
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.UUID;
 
 import static com.adeptj.modules.security.core.SecurityConstants.KEY_REQUEST_ID;
 
@@ -56,7 +56,7 @@ public class ExceptionLogger implements Preprocessor {
             LOGGER.debug(PROCESSING_REQUEST_MSG, request.getMethod(), request.getRequestURI());
         }
         try {
-            MDC.put(KEY_REQUEST_ID, UUID.randomUUID().toString());
+            MDC.put(KEY_REQUEST_ID, Randomizer.randomUUIDString());
             chain.doFilter(req, resp);
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);

@@ -21,6 +21,8 @@
 package com.adeptj.modules.data.jpa.criteria;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +44,8 @@ public class UpdateCriteria<T extends BaseEntity> extends BaseCriteria<T> {
         return updateAttributes;
     }
 
-    public static <T extends BaseEntity> Builder<T> builder(Class<T> entity) {
+    @Contract(value = "_ -> new", pure = true)
+    public static <T extends BaseEntity> @NotNull Builder<T> builder(Class<T> entity) {
         return new Builder<>(entity);
     }
 

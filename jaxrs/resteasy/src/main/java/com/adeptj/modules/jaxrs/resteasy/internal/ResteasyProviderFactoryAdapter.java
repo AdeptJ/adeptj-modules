@@ -23,6 +23,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
     }
 
     @Override
-    public void registerProvider(Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
+    public void registerProvider(@NotNull Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
         if (ArrayUtils.contains(this.blacklistedProviders, provider.getName())) {
             LOGGER.info("Provider [{}] is blacklisted!!", provider);
             return;

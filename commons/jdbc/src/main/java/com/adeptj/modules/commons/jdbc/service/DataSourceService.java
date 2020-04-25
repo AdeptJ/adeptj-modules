@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.jdbc.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ProviderType;
 
 import javax.sql.DataSource;
@@ -39,5 +40,5 @@ public interface DataSourceService {
      *
      * @return The configured Hikari {@link DataSource} instance.
      */
-    DataSource getDataSource();
+    @NotNull DataSource getDataSource();
 }

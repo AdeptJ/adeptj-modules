@@ -23,6 +23,7 @@ package com.adeptj.modules.data.jpa;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A {@link SessionCustomizer} for setting the query retry attempt count to {@link DatabaseLogin}.
@@ -32,7 +33,7 @@ import org.eclipse.persistence.sessions.Session;
 public class ConnectionRetrySessionCustomizer implements SessionCustomizer {
 
     @Override
-    public void customize(Session session) {
+    public void customize(@NotNull Session session) {
         DatabaseLogin login = (DatabaseLogin) session.getDatasourceLogin();
         login.setConnectionHealthValidatedOnError(false);
         login.setQueryRetryAttemptCount(0);

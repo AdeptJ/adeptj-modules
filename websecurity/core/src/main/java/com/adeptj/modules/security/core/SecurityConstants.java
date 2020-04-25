@@ -30,23 +30,23 @@ public final class SecurityConstants {
     private SecurityConstants() {
     }
 
-    public static final String SERVLET_CONTEXT_NAME = "AdeptJ SecurityHandler";
+    public static final String SERVLET_CONTEXT_NAME = "AdeptJSecurityHandler";
+
+    public static final String SERVLET_CONTEXT_PATH = "/";
 
     public static final String METHOD_POST = "POST";
 
-    public static final String PARAM_USERNAME = "j_username";
+    public static final String PARAM_J_USERNAME = "j_username";
 
-    public static final String PARAM_PWD = "j_password";
+    public static final String PARAM_J_PASSWORD = "j_password";
 
     public static final String LOGIN_URI_SUFFIX = "j_security_check_osgi";
 
     public static final String AUTH_SCHEME_BEARER = "Bearer";
 
-    public static final String AUTH_SCHEME_BASIC = "Basic";
-
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
-    public static final String ATTRIBUTE_TOKEN_CREDENTIAL = ".TOKEN_CREDENTIAL";
+    public static final String ATTRIBUTE_TOKEN_CREDENTIAL = "com.adeptj.modules.security.core.Authenticator.token";
 
     public static final String KEY_REQUEST_ID = "REQ_ID";
 }

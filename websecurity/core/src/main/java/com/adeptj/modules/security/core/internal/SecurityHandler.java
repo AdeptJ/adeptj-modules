@@ -21,6 +21,7 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.Authenticator;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -33,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_NAME;
-import static com.adeptj.modules.security.core.internal.SecurityHandler.ROOT_PATH;
+import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_PATH;
 import static org.osgi.service.component.annotations.ServiceScope.BUNDLE;
 
 /**
@@ -42,16 +43,14 @@ import static org.osgi.service.component.annotations.ServiceScope.BUNDLE;
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
-@HttpWhiteboardContext(name = SERVLET_CONTEXT_NAME, path = ROOT_PATH)
+@HttpWhiteboardContext(name = SERVLET_CONTEXT_NAME, path = SERVLET_CONTEXT_PATH)
 @Component(service = ServletContextHelper.class, scope = BUNDLE)
 public class SecurityHandler extends ServletContextHelper {
-
-    static final String ROOT_PATH = "/";
 
     private final Authenticator authenticator;
 
     @Activate
-    public SecurityHandler(@Reference Authenticator authenticator, ComponentContext context) {
+    public SecurityHandler(@Reference Authenticator authenticator, @NotNull ComponentContext context) {
         super(context.getUsingBundle());
         this.authenticator = authenticator;
     }

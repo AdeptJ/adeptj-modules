@@ -31,6 +31,7 @@ import com.adeptj.modules.data.jpa.util.JpaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -79,8 +80,8 @@ public class EntityManagerFactoryLifecycle {
     @Activate
     public EntityManagerFactoryLifecycle(@Reference DataSourceService dataSourceService,
                                          @Reference ValidatorService validatorService,
-                                         @Reference PersistenceInfoProvider provider,
-                                         EntityManagerFactoryConfig config) {
+                                         @NotNull @Reference PersistenceInfoProvider provider,
+                                         @NotNull EntityManagerFactoryConfig config) {
         String unitName = config.persistenceUnitName();
         Validate.isTrue(StringUtils.isNotEmpty(unitName), "PersistenceUnit name can't be empty!!");
         Validate.validState(StringUtils.equals(provider.getPersistenceUnitName(), unitName),
@@ -111,7 +112,7 @@ public class EntityManagerFactoryLifecycle {
     // <<------------------------------------- OSGi Internal  -------------------------------------->>
 
     @Deactivate
-    protected void stop(EntityManagerFactoryConfig config) {
+    protected void stop(@NotNull EntityManagerFactoryConfig config) {
         LOGGER.info("Closing EntityManagerFactory for PU [{}]", config.persistenceUnitName());
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
     }
@@ -119,7 +120,7 @@ public class EntityManagerFactoryLifecycle {
     // <<----------------------------------- JpaRepository Bind ------------------------------------>>
 
     @Reference(service = JpaRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindJpaRepository(JpaRepository<?, ?> repository, Map<String, Object> properties) {
+    protected void bindJpaRepository(JpaRepository<?, ?> repository, @NotNull Map<String, Object> properties) {
         String unitName = (String) properties.get(JPA_UNIT_NAME);
         try {
             Validate.isTrue(StringUtils.isNotEmpty(unitName),
@@ -133,7 +134,7 @@ public class EntityManagerFactoryLifecycle {
         }
     }
 
-    protected void unbindJpaRepository(JpaRepository<?, ?> repository, Map<String, Object> properties) {
+    protected void unbindJpaRepository(JpaRepository<?, ?> repository, @NotNull Map<String, Object> properties) {
         String unitName = (String) properties.get(JPA_UNIT_NAME);
         LOGGER.info("Unbinding JpaRepository: {} for persistence unit: [{}]", repository, unitName);
         ((AbstractJpaRepository<?, ?>) repository).setEntityManagerFactory(null);

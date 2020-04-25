@@ -33,6 +33,7 @@ import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper;
 import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -126,7 +127,7 @@ public class ResteasyLifecycle {
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
-    void stop(ServletConfig servletConfig) {
+    void stop(@NotNull ServletConfig servletConfig) {
         this.resteasyDispatcher.destroy();
         ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
         LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);

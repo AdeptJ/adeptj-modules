@@ -25,6 +25,7 @@ import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ServletBootstrap;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     }
 
     @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
+    public void init(@NotNull ServletConfig servletConfig) throws ServletException {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
         ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().

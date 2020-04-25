@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.data.jpa.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -35,7 +37,7 @@ public final class Predicates {
     private Predicates() {
     }
 
-    public static <T> Predicate[] using(CriteriaBuilder cb, Root<T> root, Map<String, Object> criteriaAttributes) {
+    public static <T> Predicate[] using(CriteriaBuilder cb, Root<T> root, @NotNull Map<String, Object> criteriaAttributes) {
         return criteriaAttributes.entrySet()
                 .stream()
                 .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))

@@ -40,8 +40,16 @@
 
     <build>
 
-        <!-- Below BND plugin is required to process the OSGi Annotation-->
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <release>11</release>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
@@ -55,11 +63,6 @@
                 </executions>
             </plugin>
 
-            <!--
-			The following configuration is required because bnd-maven-plugin generates the manifest to
-			target/classes/META-INF/MANIFEST.MF but the normal maven-jar-plugin does not use it. If the jar-plugin
-			is patched to pick up the manifest from this location, then the following config is not needed.
-			-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -70,13 +73,11 @@
                 </configuration>
             </plugin>
 
+            <!-- AdeptJ maven plugin for bundle installation etc -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <release>11</release>
-                </configuration>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-maven-plugin</artifactId>
+                <version>${adeptj-maven-plugin.version}</version>
             </plugin>
 
         </plugins>
@@ -88,43 +89,41 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.annotation</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.jaas</artifactId>
-            <scope>provided</scope>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-commons-utils</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
         </dependency>
 
     </dependencies>
