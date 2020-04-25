@@ -38,12 +38,12 @@ import java.lang.invoke.MethodHandles;
 import static com.adeptj.modules.security.core.SecurityConstants.KEY_REQUEST_ID;
 
 /**
- * Logs the unhandled exceptions.
+ * Sets a random UUID in {@link MDC}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Component(service = Preprocessor.class)
-public class ExceptionLogger implements Preprocessor {
+public class RequestIdInitializer implements Preprocessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -58,9 +58,6 @@ public class ExceptionLogger implements Preprocessor {
         try {
             MDC.put(KEY_REQUEST_ID, Randomizer.randomUUIDString());
             chain.doFilter(req, resp);
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-            throw ex;
         } finally {
             MDC.remove(KEY_REQUEST_ID);
         }

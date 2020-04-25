@@ -46,7 +46,7 @@ public final class SecurityConstants {
 
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
-    public static final String ATTRIBUTE_TOKEN_CREDENTIAL = "com.adeptj.modules.security.core.Authenticator.token";
+    public static final String ATTRIBUTE_TOKEN_CREDENTIAL = ".token";
 
     public static final String KEY_REQUEST_ID = "REQ_ID";
 }

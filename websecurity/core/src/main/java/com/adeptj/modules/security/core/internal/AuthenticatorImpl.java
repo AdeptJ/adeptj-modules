@@ -6,6 +6,7 @@ import com.adeptj.modules.security.core.credential.Credential;
 import com.adeptj.modules.security.core.credential.CredentialResolver;
 import com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome;
 import com.adeptj.modules.security.core.identitystore.IdentityStore;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -64,7 +65,7 @@ public class AuthenticatorImpl implements Authenticator {
     }
 
     @Override
-    public void finishSecurity(HttpServletRequest request) {
+    public void finishSecurity(@NotNull HttpServletRequest request) {
         request.removeAttribute(ATTRIBUTE_TOKEN_CREDENTIAL);
     }
 
