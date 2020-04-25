@@ -22,7 +22,6 @@ package com.adeptj.modules.cache.caffeine.internal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
@@ -46,7 +45,7 @@ public class CaffeineCacheConfigFactory {
     private final String cacheSpec;
 
     @Activate
-    public CaffeineCacheConfigFactory(@NonNull CaffeineCacheConfig cacheConfig) {
+    public CaffeineCacheConfigFactory(CaffeineCacheConfig cacheConfig) {
         this.cacheName = cacheConfig.cache_name();
         this.cacheSpec = cacheConfig.cache_spec();
         Validate.isTrue(StringUtils.isNotEmpty(this.cacheName), "cacheName can't be blank!!");

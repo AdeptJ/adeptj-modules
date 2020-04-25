@@ -23,8 +23,6 @@ package com.adeptj.modules.cache.caffeine.internal;
 import com.adeptj.modules.cache.caffeine.Cache;
 import com.adeptj.modules.cache.caffeine.CacheService;
 import org.apache.commons.lang3.ArrayUtils;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
@@ -60,7 +58,7 @@ public class CaffeineCacheService implements CacheService {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <K, V> @Nullable Cache<K, V> getCache(String cacheName) {
+    public <K, V> Cache<K, V> getCache(String cacheName) {
         return (Cache<K, V>) this.caches.get(cacheName);
     }
 
@@ -97,13 +95,13 @@ public class CaffeineCacheService implements CacheService {
     }
 
     @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindCaffeineCacheConfigFactory(@NonNull CaffeineCacheConfigFactory configFactory) {
+    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
         LOGGER.info("Binding {}", configFactory);
         Cache<?, ?> cache = new CaffeineCache<>(configFactory.getCacheName(), configFactory.getCacheSpec());
         this.doEviction(this.caches.put(cache.getName(), cache));
     }
 
-    protected void unbindCaffeineCacheConfigFactory(@NonNull CaffeineCacheConfigFactory configFactory) {
+    protected void unbindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory configFactory) {
         LOGGER.info("Unbinding {}", configFactory);
         this.doEviction(this.caches.remove(configFactory.getCacheName()));
     }

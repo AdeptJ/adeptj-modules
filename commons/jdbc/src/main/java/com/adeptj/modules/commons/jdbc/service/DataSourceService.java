@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.commons.jdbc.service;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.osgi.annotation.versioning.ProviderType;
 
 import javax.sql.DataSource;
@@ -40,5 +39,5 @@ public interface DataSourceService {
      *
      * @return The configured Hikari {@link DataSource} instance.
      */
-    @NonNull DataSource getDataSource();
+    DataSource getDataSource();
 }
