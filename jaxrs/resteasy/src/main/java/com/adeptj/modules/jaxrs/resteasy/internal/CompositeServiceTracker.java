@@ -29,9 +29,9 @@ public class CompositeServiceTracker<T> extends ServiceTracker<T, T> {
 
     private final ResourceManager<T> resourceManager;
 
-    CompositeServiceTracker(BundleContext context, ResteasyProviderFactory providerFactory, Registry registry) {
+    CompositeServiceTracker(BundleContext context, ResteasyProviderFactory rpf, Registry registry) {
         super(context, OSGiUtil.anyServiceFilter(context, COMPOSITE_TRACKER_FILTER), null);
-        this.providerManager = new ProviderManager<>(providerFactory);
+        this.providerManager = new ProviderManager<>(rpf);
         this.resourceManager = new ResourceManager<>(registry);
     }
 

@@ -60,7 +60,7 @@ public class ResteasyLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String JAXRS_RT_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
+    private static final String JAX_RS_RUNTIME_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
     private CompositeServiceTracker<?> serviceTracker;
 
@@ -70,19 +70,19 @@ public class ResteasyLifecycle {
 
     private final ResteasyConfig config;
 
-    private final BundleContext bc;
+    private final BundleContext context;
 
     // Activation objects end.
 
     /**
      * Statically injected ValidatorService, this component will not become active until one is provided.
      */
-    private final ValidatorService vs;
+    private final ValidatorService validatorService;
 
     @Activate
     public ResteasyLifecycle(@Reference ValidatorService vs, BundleContext bc, ResteasyConfig config) {
-        this.vs = vs;
-        this.bc = bc;
+        this.validatorService = vs;
+        this.context = bc;
         this.config = config;
     }
 
@@ -98,20 +98,20 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyDispatcher = new ResteasyServletDispatcher(this.config.blacklistedProviders());
+                this.resteasyDispatcher = new ResteasyServletDispatcher(this.config);
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory rpf = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))
-                        .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
+                        .register(new GenericExceptionMapper(this.config))
                         .register(new WebApplicationExceptionMapper())
-                        .register(new ValidatorContextResolver(this.vs))
+                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new JsonbContextResolver())
                         .register(new JsonReaderFactoryContextResolver())
                         .register(new JsonWriterFactoryContextResolver());
-                this.serviceTracker = new CompositeServiceTracker<>(this.bc, rpf, dispatcher.getRegistry());
+                this.serviceTracker = new CompositeServiceTracker<>(this.context, rpf, dispatcher.getRegistry());
                 this.serviceTracker.open();
-                LOGGER.info(JAXRS_RT_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
+                LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
                 LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
                 throw new ResteasyBootstrapException(ex.getMessage(), ex);

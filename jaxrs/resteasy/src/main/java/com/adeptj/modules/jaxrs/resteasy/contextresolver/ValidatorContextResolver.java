@@ -20,11 +20,11 @@
 
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
-import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 
 import javax.annotation.Priority;
+import javax.validation.ValidatorFactory;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import java.util.EnumSet;
@@ -46,8 +46,8 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
 
     private final GeneralValidator validator;
 
-    public ValidatorContextResolver(ValidatorService vs) {
-        this.validator = new GeneralValidatorImpl(vs.getValidatorFactory(), true,
+    public ValidatorContextResolver(ValidatorFactory validatorFactory) {
+        this.validator = new GeneralValidatorImpl(validatorFactory, true,
                 EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS));
     }
 
