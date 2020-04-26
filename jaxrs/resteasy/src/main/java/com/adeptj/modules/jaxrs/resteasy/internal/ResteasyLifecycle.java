@@ -98,12 +98,12 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyDispatcher = new ResteasyServletDispatcher(this.config);
+                this.resteasyDispatcher = new ResteasyServletDispatcher(this.config.blacklistedProviders());
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory rpf = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))
-                        .register(new GenericExceptionMapper(this.config))
+                        .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
                         .register(new WebApplicationExceptionMapper())
                         .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new JsonbContextResolver())

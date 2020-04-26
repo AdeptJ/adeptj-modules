@@ -62,8 +62,8 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     private final transient String[] blacklistedProviders;
 
-    ResteasyServletDispatcher(@NotNull ResteasyConfig config) {
-        this.blacklistedProviders = config.blacklistedProviders();
+    ResteasyServletDispatcher(String[] blacklistedProviders) {
+        this.blacklistedProviders = blacklistedProviders;
     }
 
     @Override

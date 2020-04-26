@@ -20,9 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConfig;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +52,8 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
 
     private final boolean sendExceptionTrace;
 
-    public GenericExceptionMapper(@NotNull ResteasyConfig config) {
-        this.sendExceptionTrace = config.sendExceptionTrace();
+    public GenericExceptionMapper(boolean sendExceptionTrace) {
+        this.sendExceptionTrace = sendExceptionTrace;
     }
 
     @Override
