@@ -20,32 +20,17 @@
 
 package com.adeptj.modules.commons.crypto;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * Salt and Hash pair holder.
+ * Service interface for encrypting/decrypting any text using AES/GCM/NoPadding algorithm.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class SaltHashPair {
+@ProviderType
+public interface CryptoService {
 
-    private String salt;
+    String encrypt(String plainText);
 
-    private String hash;
-
-    public SaltHashPair(String salt, String hash) {
-        Validate.isTrue(StringUtils.isNotEmpty(salt), "salt can't be blank!!");
-        Validate.isTrue(StringUtils.isNotEmpty(hash), "hash can't be blank!!");
-        this.salt = salt;
-        this.hash = hash;
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public String getHash() {
-        return hash;
-    }
+    String decrypt(String cipherText);
 }

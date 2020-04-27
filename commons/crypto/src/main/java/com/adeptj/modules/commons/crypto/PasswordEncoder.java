@@ -18,48 +18,19 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.crypto.internal;
+package com.adeptj.modules.commons.crypto;
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.osgi.service.metatype.annotations.Option;
+import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * OSGi Configuration for {@link com.adeptj.modules.commons.crypto.EncryptionService}
+ * Service for encoding passwords using BCrypt or PBKDF2WithHmacSHA* algo.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ Crypto Encryption Configuration",
-        description = "Configuration for the AdeptJ EncryptionService"
-)
-public @interface EncryptionConfig {
+@ProviderType
+public interface PasswordEncoder {
 
-    @AttributeDefinition(
-            name = "Key Size",
-            description = "The key length in bits for encryption key."
-    )
-    int keySize() default 128;
+    String encode(String rawPassword);
 
-    @AttributeDefinition(
-            name = "Initialization Vector",
-            description = "The Initialization Vector."
-    )
-    String iv();
-
-    @AttributeDefinition(
-            name = "Encryption Key",
-            description = "The encryption key, which will be automatically generated and populate here."
-    )
-    String key();
-
-    @AttributeDefinition(
-            name = "Charset to encode",
-            description = "Charset to encode the salt and plain text",
-            options = {
-                    @Option(label = "US ASCII", value = "US-ASCII"),
-                    @Option(label = "UTF 8", value = "UTF-8"),
-            }
-    )
-    String charsetToEncode() default "US-ASCII";
+    boolean matches(String rawPassword, String encodedPassword);
 }

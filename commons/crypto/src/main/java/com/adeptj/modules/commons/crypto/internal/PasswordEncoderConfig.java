@@ -20,57 +20,58 @@
 
 package com.adeptj.modules.commons.crypto.internal;
 
+import com.adeptj.modules.commons.crypto.PasswordEncoder;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.metatype.annotations.Option;
 
 /**
- * OSGi Configuration for {@link com.adeptj.modules.commons.crypto.HashingService}
+ * OSGi Configuration for {@link PasswordEncoder}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ObjectClassDefinition(
-        name = "AdeptJ Crypto Hashing Configuration",
-        description = "Configuration for the AdeptJ HashingService"
+        name = "AdeptJ PasswordEncoder Configuration",
+        description = "Configuration for the AdeptJ PasswordEncoder"
 )
-public @interface HashingConfig {
+public @interface PasswordEncoderConfig {
+
+    String BCRYPT = "BCrypt";
 
     @AttributeDefinition(
-            name = "Salt Size",
-            description = "Size of the salt byte array."
+            name = "BCrypt Exponential Cost",
+            description = "The exponential cost (log2 factor) between 4 and 31 e.g. 12 will be 2^12 = 4096 iterations"
     )
-    int saltSize() default 32;
+    int bcrypt_exponential_cost() default 10;
 
     @AttributeDefinition(
-            name = "Iteration Count",
+            name = "PBEKeySpec Iteration Count",
             description = "The number of times that the given text is hashed during the derivation of the symmetric key."
     )
-    int iterationCount() default 10000;
+    int pbe_key_spec_iteration_count() default 150000;
 
     @AttributeDefinition(
-            name = "Key Length",
-            description = "The key length is the length of the derived symmetric key."
-    )
-    int keyLength() default 256;
-
-    @AttributeDefinition(
-            name = "Secret Key Algo",
-            description = "Algo to generate the hash, only [PBKDF2WithHmacSHA*] is supported at this moment.",
+            name = "PBE Key Length",
+            description = "The PBE key length in bits for generating SecretKeySpec key.",
             options = {
+                    @Option(label = "128", value = "128"),
+                    @Option(label = "192", value = "192"),
+                    @Option(label = "256", value = "256"),
+                    @Option(label = "384", value = "384"),
+                    @Option(label = "512", value = "512")
+            }
+    )
+    int pbe_key_length() default 256;
+
+    @AttributeDefinition(
+            name = "Password Encoding Method",
+            description = "Method to encode the password, only [BCrypt or PBKDF2WithHmacSHA*] supported at this moment.",
+            options = {
+                    @Option(label = "BCrypt", value = BCRYPT),
                     @Option(label = "PBKDF2 HmacSHA256", value = "PBKDF2WithHmacSHA256"),
                     @Option(label = "PBKDF2 HmacSHA384", value = "PBKDF2WithHmacSHA384"),
                     @Option(label = "PBKDF2 HmacSHA512", value = "PBKDF2WithHmacSHA512")
             }
     )
-    String secretKeyAlgo() default "PBKDF2WithHmacSHA256";
-
-    @AttributeDefinition(
-            name = "Charset to encode",
-            description = "Charset to encode the salt and plain text",
-            options = {
-                    @Option(label = "US ASCII", value = "US-ASCII"),
-                    @Option(label = "UTF 8", value = "UTF-8"),
-            }
-    )
-    String charsetToEncode() default "US-ASCII";
+    String password_encoding_method() default BCRYPT;
 }

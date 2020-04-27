@@ -20,27 +20,59 @@
 
 package com.adeptj.modules.commons.crypto;
 
+import org.jetbrains.annotations.NotNull;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * Provides random bytes using {@link SecureRandom}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class Randomness {
+public class CryptoUtil {
 
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    /**
+     * From : JJWT's SignatureProvider
+     * <p>
+     * Crypto module's default SecureRandom number generator. This RNG is initialized using the JVM default as follows:
+     *
+     * <pre><code>
+     * static {
+     *     DEFAULT_SECURE_RANDOM = new SecureRandom();
+     *     DEFAULT_SECURE_RANDOM.nextBytes(new byte[64]);
+     * }
+     * </code></pre>
+     *
+     * <p><code>nextBytes</code> is called to force the RNG to initialize itself if not already initialized.  The
+     * byte array is not used and discarded immediately for garbage collection.</p>
+     */
+    private static final SecureRandom DEFAULT_SECURE_RANDOM;
 
-    private Randomness() {
+    static {
+        DEFAULT_SECURE_RANDOM = new SecureRandom();
+        DEFAULT_SECURE_RANDOM.nextBytes(new byte[64]);
     }
 
-    public static byte[] randomBytes(int length) {
+    private CryptoUtil() {
+    }
+
+    public static byte @NotNull [] randomBytes(int length) {
         byte[] randomBytes = new byte[length];
-        SECURE_RANDOM.nextBytes(randomBytes);
+        DEFAULT_SECURE_RANDOM.nextBytes(randomBytes);
         return randomBytes;
     }
 
-    public static void randomBytes(byte[] bytes) {
-        SECURE_RANDOM.nextBytes(bytes);
+    public static byte[] newSecretKey(String algorithm, char[] password, byte[] salt, int iterationCount, int keyLength) {
+        try {
+            return SecretKeyFactory.getInstance(algorithm)
+                    .generateSecret(new PBEKeySpec(password, salt, iterationCount, keyLength))
+                    .getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            throw new CryptoException(ex);
+        }
     }
 }

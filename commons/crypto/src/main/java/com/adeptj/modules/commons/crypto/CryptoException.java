@@ -21,7 +21,7 @@
 package com.adeptj.modules.commons.crypto;
 
 /**
- * Exception thrown by {@link HashingService}
+ * Exception thrown by various services in crypto module.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
