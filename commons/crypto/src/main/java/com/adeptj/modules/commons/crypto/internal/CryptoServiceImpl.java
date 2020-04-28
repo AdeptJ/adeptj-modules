@@ -120,13 +120,13 @@ public class CryptoServiceImpl implements CryptoService {
             cipher.init(DECRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.specKeyLength, iv));
             byte[] cipherBytes = new byte[buffer.remaining()];
             buffer.get(cipherBytes);
-            byte[] decrypted = cipher.doFinal(cipherBytes);
-            String decryptedText = new String(decrypted, UTF_8);
+            byte[] decryptedBytes = cipher.doFinal(cipherBytes);
+            String decryptedText = new String(decryptedBytes, UTF_8);
             Arrays.fill(iv, (byte) 0);
             Arrays.fill(salt, (byte) 0);
             Arrays.fill(key, (byte) 0);
             Arrays.fill(cipherBytes, (byte) 0);
-            Arrays.fill(decrypted, (byte) 0);
+            Arrays.fill(decryptedBytes, (byte) 0);
             return decryptedText;
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);

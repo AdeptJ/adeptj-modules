@@ -37,15 +37,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <!-- AdeptJ Maven Plugin properties start -->
-
-        <adeptj-maven-plugin.version>1.1.2.Final</adeptj-maven-plugin.version>
         <adeptj.console.url>http://localhost:8080/system/console</adeptj.console.url>
         <adeptj.auth.url>http://localhost:8080/admin/auth/j_security_check</adeptj.auth.url>
         <adeptj.user>admin</adeptj.user>
         <adeptj.password>admin</adeptj.password>
-
         <!-- AdeptJ Maven Plugin properties end -->
     </properties>
 
@@ -78,7 +74,7 @@
             <timezone>+5:30</timezone>
             <properties>
                 <picUrl>
-                    https://pbs.twimg.com/profile_images/946630807312928770/E18eB0ng.jpg
+                    https://secure.gravatar.com/avatar/be26830472769171a96543880c651dcd
                 </picUrl>
             </properties>
         </developer>
