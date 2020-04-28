@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
-import com.adeptj.modules.data.jpa.ConnectionRetrySessionCustomizer;
+import com.adeptj.modules.data.jpa.QueryRetryCustomizer;
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import com.adeptj.modules.data.jpa.SLF4JLogger;
 import org.apache.commons.lang3.ArrayUtils;
@@ -55,7 +55,7 @@ final class JpaProperties {
         Map<String, Object> properties = new HashMap<>();
         properties.put(DDL_GENERATION, config.ddlGeneration());
         properties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
-        properties.put(SESSION_CUSTOMIZER, new ConnectionRetrySessionCustomizer());
+        properties.put(SESSION_CUSTOMIZER, new QueryRetryCustomizer(config.queryRetryAttemptCount()));
         // DEPLOY_ON_STARTUP must be a string value
         properties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
         properties.put(LOGGING_LEVEL, config.loggingLevel());

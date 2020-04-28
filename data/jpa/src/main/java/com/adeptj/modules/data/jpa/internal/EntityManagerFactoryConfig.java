@@ -116,6 +116,13 @@ public @interface EntityManagerFactoryConfig {
     boolean logQueryParameters();
 
     @AttributeDefinition(
+            name = "EclipseLink Query Retry Attempt Count",
+            description = "The number of attempts EclipseLink should make to re-connect to a database and re-execute" +
+                    " a query after a query has failed because of a communication issue."
+    )
+    int queryRetryAttemptCount();
+
+    @AttributeDefinition(
             name = "Transaction Type",
             description = "JPA Transaction Type(JTA is not supported at this moment!)",
             options = {

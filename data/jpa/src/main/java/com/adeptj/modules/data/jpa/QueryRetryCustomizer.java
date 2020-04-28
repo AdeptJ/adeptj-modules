@@ -30,12 +30,16 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ConnectionRetrySessionCustomizer implements SessionCustomizer {
+public class QueryRetryCustomizer implements SessionCustomizer {
+
+    private final int queryRetryAttemptCount;
+
+    public QueryRetryCustomizer(int queryRetryAttemptCount) {
+        this.queryRetryAttemptCount = queryRetryAttemptCount;
+    }
 
     @Override
     public void customize(@NotNull Session session) {
-        DatabaseLogin login = (DatabaseLogin) session.getDatasourceLogin();
-        login.setConnectionHealthValidatedOnError(false);
-        login.setQueryRetryAttemptCount(0);
+        ((DatabaseLogin) session.getDatasourceLogin()).setQueryRetryAttemptCount(this.queryRetryAttemptCount);
     }
 }
