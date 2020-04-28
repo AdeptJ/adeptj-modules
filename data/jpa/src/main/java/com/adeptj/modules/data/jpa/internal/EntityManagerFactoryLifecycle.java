@@ -88,6 +88,10 @@ public class EntityManagerFactoryLifecycle {
                 String.format(PU_NAME_UNMATCHED_EX_MSG, provider));
         try {
             Map<String, Object> properties = JpaProperties.from(config);
+            Map<String, Object> providerProperties = provider.getPersistenceUnitProperties();
+            if (providerProperties != null && !providerProperties.isEmpty()) {
+                properties.putAll(providerProperties);
+            }
             properties.put(NON_JTA_DATASOURCE, dataSourceService.getDataSource());
             ValidationMode validationMode = ValidationMode.valueOf(config.validationMode());
             if (validationMode == AUTO || validationMode == CALLBACK) {

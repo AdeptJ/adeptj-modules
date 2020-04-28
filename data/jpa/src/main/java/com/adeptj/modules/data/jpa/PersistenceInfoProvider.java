@@ -22,6 +22,7 @@ package com.adeptj.modules.data.jpa;
 
 import org.osgi.annotation.versioning.ConsumerType;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -41,5 +42,17 @@ public interface PersistenceInfoProvider {
      */
     String getPersistenceUnitName();
 
-    Map<String, Object> getPersistenceUnitProperties();
+    /**
+     * Implementor can put in extra properties which can't be provided using AdeptJ JPA EntityManagerFactory configuration.
+     * <p>
+     * For example an object of DescriptorCustomizer implementation could be provided or one or more configurations
+     * provided by AdeptJ JPA EntityManagerFactory configuration could be overridden.
+     * <p>
+     * Note: Be cautious while overriding configurations, this may result in unpredictable behaviour at runtime.
+     *
+     * @return the extra persistence info properties.
+     */
+    default Map<String, Object> getPersistenceUnitProperties() {
+        return Collections.emptyMap();
+    }
 }
