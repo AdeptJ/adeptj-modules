@@ -66,7 +66,7 @@
             <timezone>+5:30</timezone>
             <properties>
                 <picUrl>
-                    https://media.licdn.com/media/AAEAAQAAAAAAAAecAAAAJDdjMDcwZjM3LWY0OWYtNDkwYS05Njg4LWU0YWJjNWU5Mzk2Mw.jpg
+                    https://secure.gravatar.com/avatar/be26830472769171a96543880c651dcd
                 </picUrl>
             </properties>
         </developer>
@@ -183,12 +183,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-commons-utils</artifactId>
             <scope>provided</scope>
         </dependency>
 
