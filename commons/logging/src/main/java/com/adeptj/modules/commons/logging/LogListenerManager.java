@@ -53,7 +53,7 @@ public class LogListenerManager {
         this.logReaderService.addLogListener(this.logListener);
     }
 
-    // Component Lifecycle Methods
+    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
     @Deactivate
     protected void stop() {

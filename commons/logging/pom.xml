@@ -39,8 +39,16 @@
 
     <build>
 
-        <!-- Below BND plugin is required to process the OSGi Annotation-->
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <release>11</release>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
@@ -54,7 +62,6 @@
                 </executions>
             </plugin>
 
-            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -66,12 +73,8 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <release>11</release>
-                </configuration>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-maven-plugin</artifactId>
             </plugin>
 
         </plugins>
