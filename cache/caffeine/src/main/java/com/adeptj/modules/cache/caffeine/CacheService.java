@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.cache.caffeine;
 
+import org.jetbrains.annotations.Nullable;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -38,7 +39,7 @@ public interface CacheService {
      * @param <V>       The cache value
      * @return the {@link Cache} instance or null if none exists for given name.
      */
-    <K, V> Cache<K, V> getCache(String cacheName);
+    <K, V> @Nullable Cache<K, V> getCache(String cacheName);
 
     /**
      * Evict all the {@link Cache} resolved against the given names.

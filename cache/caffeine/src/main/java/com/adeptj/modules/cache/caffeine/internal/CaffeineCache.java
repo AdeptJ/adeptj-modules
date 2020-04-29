@@ -22,6 +22,8 @@ package com.adeptj.modules.cache.caffeine.internal;
 
 import com.adeptj.modules.cache.caffeine.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -56,17 +58,17 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public V getIfPresent(K key) {
+    public @Nullable V getIfPresent(K key) {
         return this.caffeineCache.getIfPresent(key);
     }
 
     @Override
-    public Map<K, V> getAllPresent(Iterable<K> keys) {
+    public @NotNull Map<K, V> getAllPresent(Iterable<K> keys) {
         return this.caffeineCache.getAllPresent(keys);
     }
 
     @Override
-    public Map<K, V> getAll() {
+    public @NotNull Map<K, V> getAll() {
         return this.caffeineCache.asMap();
     }
 
@@ -97,12 +99,12 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public Set<K> keys() {
+    public @NotNull Set<K> keys() {
         return this.caffeineCache.asMap().keySet();
     }
 
     @Override
-    public Collection<V> values() {
+    public @NotNull Collection<V> values() {
         return this.caffeineCache.asMap().values();
     }
 
