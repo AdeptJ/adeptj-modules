@@ -52,7 +52,7 @@ public class LogEntryConsumer implements LogListener {
                 break;
             case DEBUG:
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug(entry.getMessage());
+                    LOGGER.debug(entry.toString());
                 }
                 break;
             default:
