@@ -20,8 +20,8 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
 import com.adeptj.modules.jaxrs.core.JaxRSProvider;
+import com.adeptj.modules.jaxrs.core.RequiresAuthentication;
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
-import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,12 +37,12 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
- * This filter will kick in for any resource class/method that is annotated with {@link RequiresJwt}.
+ * This filter will kick in for any resource class/method that is annotated with {@link RequiresAuthentication}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @JaxRSProvider(name = "StaticJwtFilter")
-@RequiresJwt
+@RequiresAuthentication
 @Priority(AUTHORIZATION)
 @Provider
 @Component(service = JwtClaimsIntrospectionFilter.class, immediate = true, property = FILTER_NAME)

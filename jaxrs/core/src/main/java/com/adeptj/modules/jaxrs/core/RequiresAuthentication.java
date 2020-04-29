@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.core;
 
 import javax.ws.rs.NameBinding;
 import java.lang.annotation.Retention;
@@ -29,12 +29,12 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation to be used by JAX-RS resources which require to be protected via JWT.
+ * Annotation to be used by JAX-RS resources which require to be protected.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @NameBinding
 @Retention(RUNTIME)
 @Target({TYPE, METHOD})
-public @interface RequiresJwt {
+public @interface RequiresAuthentication {
 }

@@ -21,7 +21,7 @@
 package com.adeptj.modules.aws.s3;
 
 import com.adeptj.modules.aws.s3.api.StorageService;
-import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
+import com.adeptj.modules.jaxrs.core.RequiresAuthentication;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
@@ -60,7 +60,7 @@ public class UploadResource {
     @POST
     @Path(PATH_UPLOAD)
     @Consumes(MULTIPART_FORM_DATA)
-    @RequiresJwt
+    @RequiresAuthentication
     public Response uploadFile(@MultipartForm S3UploadForm form) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength((long) form.getData().length);

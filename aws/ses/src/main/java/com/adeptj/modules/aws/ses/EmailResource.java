@@ -21,7 +21,7 @@
 package com.adeptj.modules.aws.ses;
 
 import com.adeptj.modules.aws.ses.api.EmailService;
-import com.adeptj.modules.jaxrs.core.jwt.RequiresJwt;
+import com.adeptj.modules.jaxrs.core.RequiresAuthentication;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.annotations.Form;
 import org.osgi.service.component.annotations.Component;
@@ -60,7 +60,7 @@ public class EmailResource {
     @Path("/send")
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_FORM_URLENCODED)
-    @RequiresJwt
+    @RequiresAuthentication
     public Response sendEmail(@Form EmailForm form) {
         return Response.ok(this.emailService.sendEmail(EmailRequest.builder()
                 .addRecipientToList(Arrays.asList(form.getRecipientsTo().split(REGEX_COMMA)))
@@ -75,7 +75,7 @@ public class EmailResource {
     @POST
     @Path("/send-async")
     @Consumes(APPLICATION_FORM_URLENCODED)
-    @RequiresJwt
+    @RequiresAuthentication
     public Response sendEmailAsync(@Form EmailForm form) {
         this.emailService.sendEmailAsync(EmailRequest.builder()
                 .addRecipientToList(Arrays.asList(form.getRecipientsTo().split(REGEX_COMMA)))
