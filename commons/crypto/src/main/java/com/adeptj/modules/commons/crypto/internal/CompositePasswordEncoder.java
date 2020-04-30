@@ -53,22 +53,22 @@ public class CompositePasswordEncoder implements PasswordEncoder {
 
     private final int iterationCount;
 
-    private final int specKeyLength;
+    private final int keyLength;
 
-    private final String passwordEncodingMethod;
+    private final String algorithm;
 
     @Activate
     public CompositePasswordEncoder(@NotNull PasswordEncoderConfig config) {
         this.exponentialCost = config.bcrypt_exponential_cost();
         this.iterationCount = config.pbe_key_spec_iteration_count();
-        this.specKeyLength = config.pbe_key_length();
-        this.passwordEncodingMethod = config.password_encoding_method();
+        this.keyLength = config.pbe_key_length();
+        this.algorithm = config.password_encoding_method();
     }
 
     @Override
     public String encode(char[] rawPassword) {
         Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
-        if (BCRYPT.equals(this.passwordEncodingMethod)) {
+        if (BCRYPT.equals(this.algorithm)) {
             return BCrypt.withDefaults().hashToString(this.exponentialCost, rawPassword);
         }
         byte[] salt = null;
@@ -76,7 +76,7 @@ public class CompositePasswordEncoder implements PasswordEncoder {
         byte[] compositeDigest = null;
         try {
             salt = CryptoUtil.randomBytes(SALT_LENGTH);
-            digest = CryptoUtil.newSecretKey(this.passwordEncodingMethod, rawPassword, salt, this.iterationCount, this.specKeyLength);
+            digest = CryptoUtil.newSecretKey(this.algorithm, rawPassword, salt, this.iterationCount, this.keyLength);
             compositeDigest = ByteBuffer.allocate(salt.length + digest.length)
                     .put(salt)
                     .put(digest)
@@ -93,7 +93,7 @@ public class CompositePasswordEncoder implements PasswordEncoder {
     public boolean matches(char[] rawPassword, char[] encodedPassword) {
         Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
         Validate.isTrue(ArrayUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
-        if (BCRYPT.equals(this.passwordEncodingMethod)) {
+        if (BCRYPT.equals(this.algorithm)) {
             return BCrypt.verifyer().verify(rawPassword, encodedPassword).verified;
         }
         ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(Bytes.from(encodedPassword).array()));
@@ -105,8 +105,7 @@ public class CompositePasswordEncoder implements PasswordEncoder {
             buffer.get(salt);
             oldDigest = new byte[buffer.remaining()];
             buffer.get(oldDigest);
-            newDigest = CryptoUtil.newSecretKey(this.passwordEncodingMethod, rawPassword, salt, this.iterationCount,
-                    this.specKeyLength);
+            newDigest = CryptoUtil.newSecretKey(this.algorithm, rawPassword, salt, this.iterationCount, this.keyLength);
             return MessageDigest.isEqual(oldDigest, newDigest);
         } finally {
             CryptoUtil.nullSafeWipe(salt);
