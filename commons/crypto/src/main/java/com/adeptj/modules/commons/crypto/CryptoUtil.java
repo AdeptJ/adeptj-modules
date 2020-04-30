@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.crypto;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.SecretKeyFactory;
@@ -27,6 +28,7 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 
 /**
  * Provides random bytes using {@link SecureRandom}.
@@ -64,6 +66,12 @@ public class CryptoUtil {
         byte[] randomBytes = new byte[length];
         DEFAULT_SECURE_RANDOM.nextBytes(randomBytes);
         return randomBytes;
+    }
+
+    public static void nullSafeWipe(byte[] data) {
+        if (ArrayUtils.isNotEmpty(data)) {
+            Arrays.fill(data, (byte) 0);
+        }
     }
 
     public static byte[] newSecretKey(String algorithm, char[] password, byte[] salt, int iterationCount, int keyLength) {

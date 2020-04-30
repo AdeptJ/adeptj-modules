@@ -62,7 +62,7 @@ public class CryptoServiceImpl implements CryptoService {
 
     private final int keyLength;
 
-    private final int specKeyLength;
+    private final int authTagLength;
 
     private final int iterationCount;
 
@@ -73,7 +73,7 @@ public class CryptoServiceImpl implements CryptoService {
     @Activate
     public CryptoServiceImpl(@NotNull CryptoConfig config) {
         this.keyLength = config.aes_key_length();
-        this.specKeyLength = config.auth_tag_length();
+        this.authTagLength = config.auth_tag_length();
         this.iterationCount = config.pbe_key_spec_iteration_count();
         this.algorithm = config.pbe_key_spec_algorithm();
         this.cryptoKey = config.crypto_key().toCharArray();
@@ -82,27 +82,32 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public String encrypt(String plainText) {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
-        byte[] iv = CryptoUtil.randomBytes(IV_LENGTH);
-        byte[] salt = CryptoUtil.randomBytes(SALT_LENGTH);
-        byte[] key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
+        byte[] iv = null;
+        byte[] salt = null;
+        byte[] key = null;
+        byte[] cipherBytes = null;
+        byte[] compositeCipherBytes = null;
         try {
+            iv = CryptoUtil.randomBytes(IV_LENGTH);
+            salt = CryptoUtil.randomBytes(SALT_LENGTH);
+            key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
-            cipher.init(ENCRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.specKeyLength, iv));
-            byte[] cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
-            byte[] compositeCipherBytes = ByteBuffer.allocate(iv.length + salt.length + cipherBytes.length)
+            cipher.init(ENCRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.authTagLength, iv));
+            cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
+            compositeCipherBytes = ByteBuffer.allocate(iv.length + salt.length + cipherBytes.length)
                     .put(iv)
                     .put(salt)
                     .put(cipherBytes)
                     .array();
-            String cipherText = new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
-            Arrays.fill(iv, (byte) 0);
-            Arrays.fill(salt, (byte) 0);
-            Arrays.fill(key, (byte) 0);
-            Arrays.fill(cipherBytes, (byte) 0);
-            Arrays.fill(compositeCipherBytes, (byte) 0);
-            return cipherText;
+            return new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);
+        } finally {
+            CryptoUtil.nullSafeWipe(iv);
+            CryptoUtil.nullSafeWipe(salt);
+            CryptoUtil.nullSafeWipe(key);
+            CryptoUtil.nullSafeWipe(cipherBytes);
+            CryptoUtil.nullSafeWipe(compositeCipherBytes);
         }
     }
 
@@ -110,26 +115,31 @@ public class CryptoServiceImpl implements CryptoService {
     public String decrypt(String cipherText) {
         Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
         ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
-        byte[] iv = new byte[IV_LENGTH];
-        buffer.get(iv);
-        byte[] salt = new byte[SALT_LENGTH];
-        buffer.get(salt);
-        byte[] key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
+        byte[] iv = null;
+        byte[] salt = null;
+        byte[] key = null;
+        byte[] cipherBytes = null;
+        byte[] decryptedBytes = null;
         try {
+            iv = new byte[IV_LENGTH];
+            buffer.get(iv);
+            salt = new byte[SALT_LENGTH];
+            buffer.get(salt);
+            key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
-            cipher.init(DECRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.specKeyLength, iv));
-            byte[] cipherBytes = new byte[buffer.remaining()];
+            cipher.init(DECRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.authTagLength, iv));
+            cipherBytes = new byte[buffer.remaining()];
             buffer.get(cipherBytes);
-            byte[] decryptedBytes = cipher.doFinal(cipherBytes);
-            String decryptedText = new String(decryptedBytes, UTF_8);
-            Arrays.fill(iv, (byte) 0);
-            Arrays.fill(salt, (byte) 0);
-            Arrays.fill(key, (byte) 0);
-            Arrays.fill(cipherBytes, (byte) 0);
-            Arrays.fill(decryptedBytes, (byte) 0);
-            return decryptedText;
+            decryptedBytes = cipher.doFinal(cipherBytes);
+            return new String(decryptedBytes, UTF_8);
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);
+        } finally {
+            CryptoUtil.nullSafeWipe(iv);
+            CryptoUtil.nullSafeWipe(salt);
+            CryptoUtil.nullSafeWipe(key);
+            CryptoUtil.nullSafeWipe(cipherBytes);
+            CryptoUtil.nullSafeWipe(decryptedBytes);
         }
     }
 

@@ -30,7 +30,7 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface PasswordEncoder {
 
-    String encode(String rawPassword);
+    String encode(char[] rawPassword);
 
-    boolean matches(String rawPassword, String encodedPassword);
+    boolean matches(char[] rawPassword, char[] encodedPassword);
 }
