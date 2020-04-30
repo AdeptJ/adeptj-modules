@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER;
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER_WITH_SPACE;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
 /**
@@ -44,8 +44,6 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
  */
 public final class JwtExtractor {
 
-    private static final int JWT_START_POS = 7;
-
     // Just static utilities, no instance needed.
     private JwtExtractor() {
     }
@@ -57,15 +55,16 @@ public final class JwtExtractor {
         if (cookieConfig != null && cookieConfig.enabled()) {
             Cookie jwtCookie = requestContext.getCookies().get(cookieConfig.name());
             if (jwtCookie != null) {
-                jwt = cleanseJwt(jwtCookie.getValue());
+                jwt = StringUtils.trim(jwtCookie.getValue());
             }
         }
-        return StringUtils.isEmpty(jwt) ? cleanseJwt(requestContext.getHeaderString(AUTHORIZATION)) : jwt;
+        return StringUtils.isEmpty(jwt) ? extractFromAuthorizationHeader(requestContext) : jwt;
     }
 
-    private static String cleanseJwt(String jwt) {
-        return StringUtils.startsWith(jwt, AUTH_SCHEME_BEARER)
-                ? StringUtils.substring(jwt, JWT_START_POS)
-                : StringUtils.trim(jwt);
+    private static String extractFromAuthorizationHeader(ContainerRequestContext requestContext) {
+        String bearerToken = requestContext.getHeaderString(AUTHORIZATION);
+        return StringUtils.startsWith(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE)
+                ? StringUtils.substring(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE.length()).trim()
+                : null;
     }
 }
