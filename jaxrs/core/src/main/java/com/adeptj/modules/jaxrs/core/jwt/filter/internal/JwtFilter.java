@@ -67,6 +67,6 @@ public class JwtFilter implements ContainerRequestFilter {
         if (StringUtils.isEmpty(jwt) || (claims = tokenService.verifyJwt(jwt)) == null) {
             return;
         }
-        requestContext.setSecurityContext(new JwtSecurityContext(requestContext, claims));
+        requestContext.setSecurityContext(new JwtSecurityContext(claims, requestContext.getSecurityContext().isSecure()));
     }
 }

@@ -27,17 +27,17 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * The current logged in user with Jwt claims.
+ * A simple {@link Principal} implementation which holds the Jwt claims.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class User implements Principal {
+public class JwtPrincipal implements Principal {
 
     private final String name;
 
     private final JwtClaims claims;
 
-    public User(JwtClaims claims) {
+    public JwtPrincipal(JwtClaims claims) {
         this.claims = claims;
         this.name = this.claims.getSubject();
     }
@@ -51,8 +51,8 @@ public class User implements Principal {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return this.name.equals(user.name);
+        JwtPrincipal principal = (JwtPrincipal) o;
+        return this.name.equals(principal.name);
     }
 
     @Override

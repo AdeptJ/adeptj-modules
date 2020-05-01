@@ -47,9 +47,9 @@ public final class SecurityContextUtil {
         return null;
     }
 
-    public static @Nullable User getCurrentUser(SecurityContext securityContext) {
+    public static @Nullable JwtPrincipal getJwtPrincipal(SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
-        return principal instanceof User ? (User) principal : null;
+        return principal instanceof JwtPrincipal ? (JwtPrincipal) principal : null;
     }
 
 }

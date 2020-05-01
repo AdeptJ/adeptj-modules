@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.User;
+import com.adeptj.modules.jaxrs.core.JwtPrincipal;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,23 +41,23 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 public class JwtSecurityContext implements SecurityContext {
 
-    private final User user;
+    private final JwtPrincipal principal;
 
     private final boolean httpsRequest;
 
-    public JwtSecurityContext(@NotNull ContainerRequestContext requestContext, JwtClaims claims) {
-        this.user = new User(claims);
-        this.httpsRequest = requestContext.getSecurityContext().isSecure();
+    public JwtSecurityContext(JwtClaims claims, boolean httpsRequest) {
+        this.principal = new JwtPrincipal(claims);
+        this.httpsRequest = httpsRequest;
     }
 
     @Override
-    public User getUserPrincipal() {
-        return this.user;
+    public JwtPrincipal getUserPrincipal() {
+        return this.principal;
     }
 
     @Override
     public boolean isUserInRole(String role) {
-        return Stream.of(((String) this.user.getClaims().getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
+        return Stream.of(((String) this.principal.getClaims().getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
                 .collect(Collectors.toSet())
                 .contains(role);
     }
