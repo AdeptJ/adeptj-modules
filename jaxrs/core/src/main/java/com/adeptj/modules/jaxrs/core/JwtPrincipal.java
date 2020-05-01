@@ -33,18 +33,15 @@ import java.util.Objects;
  */
 public class JwtPrincipal implements Principal {
 
-    private final String name;
-
     private final JwtClaims claims;
 
     public JwtPrincipal(JwtClaims claims) {
         this.claims = claims;
-        this.name = this.claims.getSubject();
     }
 
     @Override
     public String getName() {
-        return this.name;
+        return this.claims.getSubject();
     }
 
     @Override
@@ -52,17 +49,17 @@ public class JwtPrincipal implements Principal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JwtPrincipal principal = (JwtPrincipal) o;
-        return this.name.equals(principal.name);
+        return this.getName().equals(principal.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.name);
+        return Objects.hash(this.getName());
     }
 
     @Override
     public String toString() {
-        return "User{" + "name='" + this.name + '\'' + '}';
+        return "User{" + "name='" + this.getName() + '\'' + '}';
     }
 
     public Map<String, Object> getClaims() {
