@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
+import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY;
+import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 
 /**
  * This class extends RESTEasy's {@link HttpServlet30Dispatcher} and does following.
@@ -71,6 +73,8 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
         ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
+        System.setProperty(RESTEASY_SERVLET_MAPPING_PREFIX, servletConfig.getInitParameter(RESTEASY_SERVLET_MAPPING_PREFIX));
+        System.setProperty(RESTEASY_ROLE_BASED_SECURITY, servletConfig.getInitParameter(RESTEASY_ROLE_BASED_SECURITY));
         ConfigProviderResolver.setInstance(new SmallRyeConfigProviderResolver());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
         this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
