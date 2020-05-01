@@ -47,16 +47,6 @@ public class User implements Principal {
         return this.name;
     }
 
-    public Map<String, Object> getClaims() {
-        return this.claims.asMap();
-    }
-
-    public boolean isHoldingExpiredJwt() {
-        return this.claims.isExpired();
-    }
-
-    // <<------------------------- Generated ------------------------->>
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,5 +63,13 @@ public class User implements Principal {
     @Override
     public String toString() {
         return "User{" + "name='" + this.name + '\'' + '}';
+    }
+
+    public Map<String, Object> getClaims() {
+        return this.claims.asMap();
+    }
+
+    public boolean isHoldingExpiredJwt() {
+        return this.claims.isExpired();
     }
 }
