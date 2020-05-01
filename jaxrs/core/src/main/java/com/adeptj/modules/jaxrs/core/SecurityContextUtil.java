@@ -21,9 +21,12 @@
 package com.adeptj.modules.jaxrs.core;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.SecurityContext;
+import java.security.Principal;
 
 /**
  * Utilities for JAX-RS {@link javax.ws.rs.core.SecurityContext}.
@@ -36,12 +39,17 @@ public final class SecurityContextUtil {
     private SecurityContextUtil() {
     }
 
-    public static JwtSecurityContext getJwtSecurityContext(ContainerRequestContext requestContext) {
+    public static @Nullable JwtSecurityContext getJwtSecurityContext(@NotNull ContainerRequestContext requestContext) {
         SecurityContext securityContext = requestContext.getSecurityContext();
         if (securityContext instanceof JwtSecurityContext) {
             return (JwtSecurityContext) securityContext;
         }
         return null;
+    }
+
+    public static @Nullable User getCurrentUser(SecurityContext securityContext) {
+        Principal principal = securityContext.getUserPrincipal();
+        return principal instanceof User ? (User) principal : null;
     }
 
 }

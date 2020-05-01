@@ -18,57 +18,60 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.core;
 
-import com.adeptj.modules.jaxrs.core.User;
 import com.adeptj.modules.security.jwt.JwtClaims;
-import org.jetbrains.annotations.NotNull;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.SecurityContext;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import java.security.Principal;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * Jwt based JAX-RS {@link SecurityContext}.
+ * The current logged in user with Jwt claims.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JwtSecurityContext implements SecurityContext {
+public class User implements Principal {
 
-    private final User user;
+    private final String name;
 
-    private final boolean httpsRequest;
+    private final JwtClaims claims;
 
-    public JwtSecurityContext(@NotNull ContainerRequestContext requestContext, JwtClaims claims) {
-        this.user = new User(claims);
-        this.httpsRequest = requestContext.getSecurityContext().isSecure();
+    public User(JwtClaims claims) {
+        this.claims = claims;
+        this.name = this.claims.getSubject();
     }
 
     @Override
-    public User getUserPrincipal() {
-        return this.user;
+    public String getName() {
+        return this.name;
+    }
+
+    public Map<String, Object> getClaims() {
+        return this.claims.asMap();
+    }
+
+    public boolean isHoldingExpiredJwt() {
+        return this.claims.isExpired();
+    }
+
+    // <<------------------------- Generated ------------------------->>
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return this.name.equals(user.name);
     }
 
     @Override
-    public boolean isUserInRole(String role) {
-        return Stream.of(((String) this.user.getClaims().getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
-                .collect(Collectors.toSet())
-                .contains(role);
+    public int hashCode() {
+        return Objects.hash(this.name);
     }
 
     @Override
-    public boolean isSecure() {
-        return this.httpsRequest;
-    }
-
-    @Override
-    public String getAuthenticationScheme() {
-        return AUTH_SCHEME_TOKEN;
+    public String toString() {
+        return "User{" + "name='" + this.name + '\'' + '}';
     }
 }

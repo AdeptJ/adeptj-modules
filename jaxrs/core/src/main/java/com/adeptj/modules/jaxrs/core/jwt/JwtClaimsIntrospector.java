@@ -56,13 +56,13 @@ public interface JwtClaimsIntrospector {
     void introspect(ContainerRequestContext requestContext);
 
     /**
-     * Checks whether the jwt is expired by using the {@link JwtSecurityContext#isJwtExpired()}.
+     * Checks whether the jwt is expired using the current logged in User's claims.
      *
      * @param requestContext the JaxRS request context
      * @return a boolean to indicate whether the jwt is expired or not.
      */
     default boolean isJwtExpired(ContainerRequestContext requestContext) {
         JwtSecurityContext securityContext = SecurityContextUtil.getJwtSecurityContext(requestContext);
-        return securityContext != null && securityContext.isJwtExpired();
+        return securityContext != null && securityContext.getUserPrincipal().isHoldingExpiredJwt();
     }
 }
