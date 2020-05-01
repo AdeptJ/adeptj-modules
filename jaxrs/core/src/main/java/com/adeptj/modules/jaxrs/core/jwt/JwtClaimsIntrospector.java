@@ -20,8 +20,10 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
+import com.adeptj.modules.jaxrs.core.JwtPrincipal;
 import com.adeptj.modules.jaxrs.core.SecurityContextUtil;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ConsumerType;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -61,8 +63,8 @@ public interface JwtClaimsIntrospector {
      * @param requestContext the JaxRS request context
      * @return a boolean to indicate whether the jwt is expired or not.
      */
-    default boolean isJwtExpired(ContainerRequestContext requestContext) {
-        JwtSecurityContext securityContext = SecurityContextUtil.getJwtSecurityContext(requestContext);
-        return securityContext != null && securityContext.getUserPrincipal().isHoldingExpiredJwt();
+    default boolean isJwtExpired(@NotNull ContainerRequestContext requestContext) {
+        JwtPrincipal principal = SecurityContextUtil.getJwtPrincipal(requestContext.getSecurityContext());
+        return principal != null && principal.isHoldingExpiredJwt();
     }
 }

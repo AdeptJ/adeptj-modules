@@ -45,10 +45,14 @@ public class JwtPrincipal implements Principal {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JwtPrincipal principal = (JwtPrincipal) o;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || this.getClass() != other.getClass()) {
+            return false;
+        }
+        JwtPrincipal principal = (JwtPrincipal) other;
         return this.getName().equals(principal.getName());
     }
 
@@ -59,7 +63,7 @@ public class JwtPrincipal implements Principal {
 
     @Override
     public String toString() {
-        return "User{" + "name='" + this.getName() + '\'' + '}';
+        return "JwtPrincipal {" + "name='" + this.getName() + '\'' + '}';
     }
 
     public Map<String, Object> getClaims() {
