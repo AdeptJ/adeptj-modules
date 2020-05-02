@@ -81,6 +81,12 @@ public @interface JwtConfig {
     long expirationTime() default DEFAULT_EXPIRATION_TIME;
 
     @AttributeDefinition(
+            name = "Log Jwt Verification Exception Trace",
+            description = "Whether to log the Jwt verification exception trace in server logs."
+    )
+    boolean logJwtVerificationExceptionTrace();
+
+    @AttributeDefinition(
             name = "Mandatory JWT Claims",
             description = "Mandatory JWT claims which need to be checked for null and emptiness."
     )

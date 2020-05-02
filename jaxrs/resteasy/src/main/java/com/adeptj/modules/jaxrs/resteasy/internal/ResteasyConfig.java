@@ -122,10 +122,9 @@ public @interface ResteasyConfig {
 
     @AttributeDefinition(
             name = "RESTEasy Provider Blacklist",
-            description = "RESTEasy blacklisted providers which are omitted from deployment."
+            description = "RESTEasy providers which are omitted from deployment."
     )
     String[] blacklistedProviders() default {
-            "org.jboss.resteasy.plugins.providers.jackson.PatchMethodFilter",
             "org.jboss.resteasy.plugins.validation.ValidatorContextResolver",
             "org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI",
     };

@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Priority;
 import javax.json.Json;
 import javax.ws.rs.WebApplicationException;
@@ -42,7 +44,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     static final int PRIORITY = 7000;
 
     @Override
-    public Response toResponse(WebApplicationException exception) {
+    public Response toResponse(@NotNull WebApplicationException exception) {
         Response response = exception.getResponse();
         return Response.status(response.getStatus())
                 .type(APPLICATION_JSON)

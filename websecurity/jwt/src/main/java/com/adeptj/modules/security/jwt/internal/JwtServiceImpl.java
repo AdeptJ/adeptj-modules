@@ -65,6 +65,8 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private final boolean logJwtVerificationExceptionTrace;
+
     private final String defaultIssuer;
 
     private final String[] mandatoryClaims;
@@ -84,10 +86,11 @@ public class JwtServiceImpl implements JwtService {
         this.jwsHandler = new JwsHandler();
         this.serializer = new JwtSerializer();
         this.deserializer = new JwtDeserializer();
+        this.logJwtVerificationExceptionTrace = config.logJwtVerificationExceptionTrace();
+        this.defaultIssuer = config.defaultIssuer();
+        this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
+        this.mandatoryClaims = config.mandatoryClaims();
         try {
-            this.defaultIssuer = config.defaultIssuer();
-            this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
-            this.mandatoryClaims = config.mandatoryClaims();
             SignatureAlgorithm algorithm = SignatureAlgorithm.forName(config.signatureAlgorithm());
             LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm.getJcaName());
             PrivateKey signingKey = JwtKeys.createSigningKey(config, algorithm.getFamilyName());
@@ -148,14 +151,15 @@ public class JwtServiceImpl implements JwtService {
                     .build()
                     .parse(jwt, this.jwsHandler);
         } catch (ExpiredJwtException ex) {
-            // to reduce noise in logs.
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(ex.getMessage(), ex);
+            if (this.logJwtVerificationExceptionTrace) {
+                LOGGER.error(ex.getMessage(), ex);
             }
             claims = new JwtClaims(ex.getClaims());
             claims.setExpired(true);
         } catch (JwtException | IllegalArgumentException ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            if (this.logJwtVerificationExceptionTrace) {
+                LOGGER.error(ex.getMessage(), ex);
+            }
         }
         return claims;
     }

@@ -49,4 +49,6 @@ public @interface ResteasyServletInitParameters {
     String servlet_mapping_prefix() default RESTEASY_DISPATCHER_SERVLET_PATH; // NOSONAR
 
     String role_based_security() default VALUE_TRUE; // NOSONAR
+
+    String allowGzip() default VALUE_TRUE; // NOSONAR
 }

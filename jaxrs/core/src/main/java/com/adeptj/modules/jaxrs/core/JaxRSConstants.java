@@ -35,8 +35,6 @@ public final class JaxRSConstants {
 
     public static final String AUTH_SCHEME_TOKEN = "TOKEN";
 
-    public static final String KEY_JWT_SUBJECT = "sub";
-
     public static final String ROLES = "roles";
 
     public static final String ROLES_DELIMITER = ",";

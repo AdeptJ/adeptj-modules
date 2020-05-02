@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import io.smallrye.config.SmallRyeConfigProviderResolver;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
+import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ServletBootstrap;
 import org.jboss.resteasy.spi.ResteasyDeployment;
@@ -37,8 +38,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
-import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_ROLE_BASED_SECURITY;
-import static org.jboss.resteasy.plugins.server.servlet.ResteasyContextParameters.RESTEASY_SERVLET_MAPPING_PREFIX;
 
 /**
  * This class extends RESTEasy's {@link HttpServlet30Dispatcher} and does following.
@@ -72,9 +71,9 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
     public void init(@NotNull ServletConfig servletConfig) throws ServletException {
         // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
         ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
+        // This is needed for resolving the ResteasyProxyServlet's init parameters by RESTEasy's ServletConfigSource.
+        ResteasyContext.pushContext(ServletConfig.class, servletConfig);
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
-        System.setProperty(RESTEASY_SERVLET_MAPPING_PREFIX, servletConfig.getInitParameter(RESTEASY_SERVLET_MAPPING_PREFIX));
-        System.setProperty(RESTEASY_ROLE_BASED_SECURITY, servletConfig.getInitParameter(RESTEASY_ROLE_BASED_SECURITY));
         ConfigProviderResolver.setInstance(new SmallRyeConfigProviderResolver());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
         this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
