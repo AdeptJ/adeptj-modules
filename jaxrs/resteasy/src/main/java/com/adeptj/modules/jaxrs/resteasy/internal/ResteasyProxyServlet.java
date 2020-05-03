@@ -29,6 +29,7 @@ import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,12 +72,12 @@ public class ResteasyProxyServlet extends HttpServlet {
      * Delegates the RESTEasy's bootstrap process in {@link ResteasyLifecycle#start}
      */
     @Override
-    public void init() {
+    public void init() throws ServletException {
         try {
             this.resteasyLifecycle.start(this.getServletConfig());
         } catch (ResteasyBootstrapException ex) {
             this.resteasyLifecycle.stop(this.getServletConfig());
-            throw ex;
+            throw new ServletException(ex);
         }
     }
 
