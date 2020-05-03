@@ -15,8 +15,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public @interface Sql2oConfig {
 
     @AttributeDefinition(
-            name = "PersistenceUnit Name",
-            description = "Note: Must be same as provided in persistence.xml"
+            name = "Default Column Mapping",
+            description = "Column mappings that will be applied globally."
     )
-    String persistenceUnitName(); // NOSONAR
+    String[] default_column_mappings(); // NOSONAR
 }

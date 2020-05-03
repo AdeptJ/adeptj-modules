@@ -1,8 +1,6 @@
 package com.adeptj.modules.data.sql2o;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public interface Sql2oRepository<T, K> {
 
@@ -17,8 +15,4 @@ public interface Sql2oRepository<T, K> {
     List<T> find(Class<T> type, String queryText, NamedParam... params);
 
     T findOne(Class<T> type, String queryText, NamedParam... params);
-
-    default List<ColumnMapping> getDefaultColumnMappings() {
-        return Collections.emptyList();
-    }
 }

@@ -1,6 +1,5 @@
 package com.adeptj.modules.data.sql2o.core;
 
-import com.adeptj.modules.data.sql2o.ColumnMapping;
 import com.adeptj.modules.data.sql2o.NamedParam;
 import com.adeptj.modules.data.sql2o.Sql2oRepository;
 import org.sql2o.Connection;
@@ -8,9 +7,7 @@ import org.sql2o.Query;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class AbstractSql2oRepository<T, K> implements Sql2oRepository<T, K> {
 
@@ -22,16 +19,6 @@ public abstract class AbstractSql2oRepository<T, K> implements Sql2oRepository<T
 
     public void setSql2o(Sql2o sql2o) {
         this.sql2o = sql2o;
-        if (this.sql2o != null) {
-            List<ColumnMapping> columnMappings = this.getDefaultColumnMappings();
-            if (!columnMappings.isEmpty()) {
-                Map<String, String> defaultColumnMappings = new HashMap<>(columnMappings.size());
-                for (ColumnMapping columnMapping : columnMappings) {
-                    defaultColumnMappings.put(columnMapping.getColumnName(), columnMapping.getPropertyName());
-                }
-                this.sql2o.setDefaultColumnMappings(defaultColumnMappings);
-            }
-        }
     }
 
     @Override
