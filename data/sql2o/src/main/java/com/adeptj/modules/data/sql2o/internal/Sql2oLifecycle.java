@@ -54,13 +54,13 @@ public class Sql2oLifecycle {
     // <<----------------------------------- Sql2oRepository Bind ------------------------------------>>
 
     @Reference(service = Sql2oRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected <T, K> void bindJpaRepository(Sql2oRepository<T, K> repository, Map<String, Object> properties) {
+    protected void bindSql2oRepository(Sql2oRepository<?, ?> repository) {
         LOGGER.info("Bind: {}", repository);
-        ((AbstractSql2oRepository<T, K>) repository).setSql2o(this.sql2o);
+        ((AbstractSql2oRepository<?, ?>) repository).setSql2o(this.sql2o);
     }
 
-    protected <T, K> void unbindJpaRepository(Sql2oRepository<T, K> repository, Map<String, Object> properties) {
+    protected void unbindSql2oRepository(Sql2oRepository<?, ?> repository) {
         LOGGER.info("Unbind: {}", repository);
-        ((AbstractSql2oRepository<T, K>) repository).setSql2o(null);
+        ((AbstractSql2oRepository<?, ?>) repository).setSql2o(null);
     }
 }

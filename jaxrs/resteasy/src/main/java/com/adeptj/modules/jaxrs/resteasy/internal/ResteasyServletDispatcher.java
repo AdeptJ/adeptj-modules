@@ -76,7 +76,7 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
         ConfigProviderResolver.setInstance(new SmallRyeConfigProviderResolver());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
-        this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(this.blacklistedProviders));
+        this.deployment.setProviderFactory(new ExtendedResteasyProviderFactory(this.blacklistedProviders));
         this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         servletConfig.getServletContext().setAttribute(RESTEASY_DEPLOYMENT, this.deployment);

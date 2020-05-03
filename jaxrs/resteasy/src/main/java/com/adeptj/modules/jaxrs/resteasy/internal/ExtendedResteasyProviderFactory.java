@@ -32,18 +32,22 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The {@link ResteasyProviderFactory} adapter sets the field providerInstances in ResteasyProviderFactoryImpl which is used in adding
- * and removing the provider instances through OSGi {@link org.osgi.util.tracker.ServiceTracker} mechanism.
+ * The {@link ResteasyProviderFactory} extension which adds the support of skipping the registration of desired
+ * provider instances as per the {@link #blacklistedProviders} array.
+ * <p>
+ * It also overrides the {@link #getProviderInstances} to expose the {@link #providerInstances} Set which helps in
+ * removing the provider instances through {@link ProviderManager#removeProvider}, this is needed because the super
+ * method returns the unmodifiable copy of {@link #providerInstances} Set which doesn't allow removal of any element.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl {
+public class ExtendedResteasyProviderFactory extends ResteasyProviderFactoryImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final String[] blacklistedProviders;
 
-    ResteasyProviderFactoryAdapter(String[] blacklistedProviders) {
+    ExtendedResteasyProviderFactory(String[] blacklistedProviders) {
         this.blacklistedProviders = blacklistedProviders;
     }
 
@@ -51,9 +55,9 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
     public void registerProvider(@NotNull Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
         if (ArrayUtils.contains(this.blacklistedProviders, provider.getName())) {
             LOGGER.info("Provider [{}] is blacklisted!!", provider);
-            return;
+        } else {
+            super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
         }
-        super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
     }
 
     @Override

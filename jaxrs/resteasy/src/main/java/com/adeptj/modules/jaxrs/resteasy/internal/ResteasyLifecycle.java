@@ -101,7 +101,7 @@ public class ResteasyLifecycle {
                 this.resteasyDispatcher = new ResteasyServletDispatcher(this.config.blacklistedProviders());
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
-                ResteasyProviderFactory rpf = dispatcher.getProviderFactory()
+                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
                         .register(ResteasyUtil.newCorsFilter(this.config))
                         .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
                         .register(new WebApplicationExceptionMapper())
@@ -109,7 +109,7 @@ public class ResteasyLifecycle {
                         .register(new JsonbContextResolver())
                         .register(new JsonReaderFactoryContextResolver())
                         .register(new JsonWriterFactoryContextResolver());
-                this.serviceTracker = new CompositeServiceTracker<>(this.context, rpf, dispatcher.getRegistry());
+                this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, dispatcher.getRegistry());
                 this.serviceTracker.open();
                 LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
