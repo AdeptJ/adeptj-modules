@@ -26,7 +26,9 @@
 
 -includeresource: sql2o-*.jar;lib:=true
 
-Export-Package: com.adeptj.modules.data.sql2o
+Export-Package: com.adeptj.modules.data.sql2o, \
+                com.adeptj.modules.data.sql2o.core, \
+                org.sql2o.*
 
 Import-Package: \
   javax.annotation;\
