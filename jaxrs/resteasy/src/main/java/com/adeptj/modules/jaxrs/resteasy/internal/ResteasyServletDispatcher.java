@@ -37,8 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
-
 /**
  * This class extends RESTEasy's {@link HttpServlet30Dispatcher} and does following.
  * <p>
@@ -69,8 +67,8 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     @Override
     public void init(@NotNull ServletConfig servletConfig) throws ServletException {
-        // First clear the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
-        ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
+        // First remove the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
+        ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
         // This is needed for resolving the ResteasyProxyServlet's init parameters by RESTEasy's ServletConfigSource.
         ResteasyContext.pushContext(ServletConfig.class, servletConfig);
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
@@ -79,7 +77,7 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
         this.deployment.setProviderFactory(new ExtendedResteasyProviderFactory(this.blacklistedProviders));
         this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
-        servletConfig.getServletContext().setAttribute(RESTEASY_DEPLOYMENT, this.deployment);
+        ResteasyUtil.addResteasyDeployment(servletConfig.getServletContext(), this.deployment);
         LOGGER.info("Initializing RESTEasy ServletContainerDispatcher!!");
         super.init(servletConfig);
         LOGGER.info("RESTEasy ServletContainerDispatcher Initialized!!");

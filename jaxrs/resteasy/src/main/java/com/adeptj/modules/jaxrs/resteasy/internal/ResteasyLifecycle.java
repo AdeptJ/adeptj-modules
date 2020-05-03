@@ -129,7 +129,7 @@ public class ResteasyLifecycle {
      */
     void stop(@NotNull ServletConfig servletConfig) {
         this.resteasyDispatcher.destroy();
-        ResteasyUtil.clearPreviousResteasyDeployment(servletConfig.getServletContext());
+        ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
         LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);
         OSGiUtil.closeQuietly(this.serviceTracker);
         LOGGER.info("JAX-RS Runtime stopped!!");

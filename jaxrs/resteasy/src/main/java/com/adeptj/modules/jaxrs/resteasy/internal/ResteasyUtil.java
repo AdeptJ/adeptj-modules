@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
+import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.ServiceReference;
 
@@ -54,7 +55,11 @@ final class ResteasyUtil {
         return corsFilter;
     }
 
-    static void clearPreviousResteasyDeployment(@NotNull ServletContext servletContext) {
+    static void addResteasyDeployment(@NotNull ServletContext servletContext, ResteasyDeployment deployment) {
+        servletContext.setAttribute(RESTEASY_DEPLOYMENT, deployment);
+    }
+
+    static void removeResteasyDeployment(@NotNull ServletContext servletContext) {
         servletContext.removeAttribute(RESTEASY_DEPLOYMENT);
     }
 
