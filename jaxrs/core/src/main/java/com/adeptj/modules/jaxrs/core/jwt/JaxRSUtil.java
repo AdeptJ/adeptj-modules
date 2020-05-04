@@ -21,6 +21,7 @@
 package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.jaxrs.core.CookieBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
@@ -45,7 +46,7 @@ final class JaxRSUtil {
                 : Response.ok().header(AUTHORIZATION, jwt).build();
     }
 
-    private static NewCookie newJwtCookie(String jwt, JwtCookieConfig cookieConfig) {
+    private static NewCookie newJwtCookie(String jwt, @NotNull JwtCookieConfig cookieConfig) {
         return CookieBuilder.builder()
                 .name(cookieConfig.name())
                 .value(jwt)
