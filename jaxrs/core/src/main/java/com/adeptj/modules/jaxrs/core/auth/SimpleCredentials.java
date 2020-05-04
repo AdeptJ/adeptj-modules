@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.core.auth;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -36,17 +38,9 @@ public final class SimpleCredentials {
 
     private char[] password;
 
-    private SimpleCredentials(String username, char[] password) {
+    public SimpleCredentials(@NotNull String username, @NotNull String password) {
         this.username = username;
-        this.password = password;
-    }
-
-    public static SimpleCredentials of(String username, String password) {
-        return new SimpleCredentials(username, password.toCharArray());
-    }
-
-    public static SimpleCredentials of(String username, char[] password) {
-        return new SimpleCredentials(username, password);
+        this.password = password.toCharArray();
     }
 
     public String getUsername() {

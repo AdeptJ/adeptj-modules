@@ -47,7 +47,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  * @author Rakesh.Kumar, AdeptJ
  */
 @JaxRSResource(name = "jwt")
-@Path("/auth/jwt")
+@Path("/auth/osgi_j_security_check")
 @Designate(ocd = JwtCookieConfig.class)
 @Component(service = JwtResource.class)
 public class JwtResource {
@@ -71,8 +71,9 @@ public class JwtResource {
      */
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response createJwt(@NotEmpty @FormParam("username") String username, @NotEmpty @FormParam("password") String password) {
-        JaxRSAuthenticationOutcome outcome = this.authenticator.handleSecurity(SimpleCredentials.of(username, password));
+    public Response createJwt(@NotEmpty @FormParam("j_username") String username,
+                              @NotEmpty @FormParam("j_password") String password) {
+        JaxRSAuthenticationOutcome outcome = this.authenticator.handleSecurity(new SimpleCredentials(username, password));
         return outcome == null || outcome.isEmpty()
                 ? Response.status(UNAUTHORIZED).build()
                 : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
