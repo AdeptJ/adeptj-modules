@@ -67,8 +67,6 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     @Override
     public void init(@NotNull ServletConfig servletConfig) throws ServletException {
-        // First remove the ResteasyDeployment from ServletContext attributes, if present somehow from previous deployment.
-        ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
         // This is needed for resolving the ResteasyProxyServlet's init parameters by RESTEasy's ServletConfigSource.
         ResteasyContext.pushContext(ServletConfig.class, servletConfig);
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
@@ -81,6 +79,8 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
         LOGGER.info("Initializing RESTEasy ServletContainerDispatcher!!");
         super.init(servletConfig);
         LOGGER.info("RESTEasy ServletContainerDispatcher Initialized!!");
+        // Resteasy is bootstrapped now so ResteasyDeployment can be removed from ServletContext attributes.
+        ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
     }
 
     @Override
