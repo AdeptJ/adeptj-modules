@@ -54,7 +54,7 @@ public class ExtendedResteasyProviderFactory extends ResteasyProviderFactoryImpl
     @Override
     public void registerProvider(@NotNull Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
         if (ArrayUtils.contains(this.blacklistedProviders, provider.getName())) {
-            LOGGER.info("Provider [{}] is blacklisted!!", provider);
+            LOGGER.info("Provider [{}] is blacklisted!!", provider.getName());
         } else {
             super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
         }

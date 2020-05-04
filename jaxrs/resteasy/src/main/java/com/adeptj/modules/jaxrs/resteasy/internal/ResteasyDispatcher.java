@@ -40,7 +40,7 @@ import java.lang.invoke.MethodHandles;
 /**
  * This class extends RESTEasy's {@link HttpServlet30Dispatcher} and does following.
  * <p>
- * 1. In {@link ResteasyServletDispatcher#init} create {@link ResteasyDeployment} and start it.
+ * 1. In {@link ResteasyDispatcher#init} create {@link ResteasyDeployment} and start it.
  * 2. Set the {@link ResteasyDeployment} as a servlet context attribute to be used by further bootstrapping process.
  * 3. Call {@link HttpServlet30Dispatcher#init} to do further bootstrapping.
  * 4. Once RESTEasy's {@link HttpServlet30Dispatcher} fully initialized, {@link #service} method becomes ready for
@@ -49,7 +49,7 @@ import java.lang.invoke.MethodHandles;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
+public class ResteasyDispatcher extends HttpServlet30Dispatcher {
 
     private static final long serialVersionUID = 983150981041495057L;
 
@@ -61,7 +61,7 @@ public class ResteasyServletDispatcher extends HttpServlet30Dispatcher {
 
     private final transient String[] blacklistedProviders;
 
-    ResteasyServletDispatcher(String[] blacklistedProviders) {
+    ResteasyDispatcher(String[] blacklistedProviders) {
         this.blacklistedProviders = blacklistedProviders;
     }
 

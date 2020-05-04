@@ -41,7 +41,7 @@ import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 
 
 /**
- * ResteasyProxyServlet delegates request processing to {@link ResteasyServletDispatcher}.
+ * ResteasyProxyServlet delegates request processing to {@link ResteasyDispatcher}.
  * <p>
  * RESTEasy's bootstrapping is delegated to {@link ResteasyLifecycle} which also registers the ServiceTracker for
  * JAX-RS resources and providers.
@@ -82,11 +82,11 @@ public class ResteasyProxyServlet extends HttpServlet {
     }
 
     /**
-     * Dispatches the request to {@link ResteasyServletDispatcher}.
+     * Dispatches the request to {@link ResteasyDispatcher}.
      *
      * @param req  current request to a resource method
      * @param resp required to set status code, content etc.
-     * @throws IOException exception thrown by {@link ResteasyServletDispatcher}
+     * @throws IOException exception thrown by {@link ResteasyDispatcher}
      */
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {

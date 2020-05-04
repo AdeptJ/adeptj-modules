@@ -64,7 +64,7 @@ public class ResteasyLifecycle {
 
     private CompositeServiceTracker<?> serviceTracker;
 
-    private ResteasyServletDispatcher resteasyDispatcher;
+    private ResteasyDispatcher resteasyDispatcher;
 
     // Activation objects start.
 
@@ -98,7 +98,7 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                this.resteasyDispatcher = new ResteasyServletDispatcher(this.config.blacklistedProviders());
+                this.resteasyDispatcher = new ResteasyDispatcher(this.config.blacklistedProviders());
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
@@ -123,7 +123,7 @@ public class ResteasyLifecycle {
      * The ResteasyLifecycle will first closeAll the {@link org.osgi.util.tracker.ServiceTracker} instances so that
      * the OSGi service instances can be released.
      * <p>
-     * Finally call {@link ResteasyServletDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
+     * Finally call {@link ResteasyDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
@@ -136,11 +136,11 @@ public class ResteasyLifecycle {
     }
 
     /**
-     * Gets the {@link ResteasyServletDispatcher}
+     * Gets the {@link ResteasyDispatcher}
      *
-     * @return {@link ResteasyServletDispatcher}
+     * @return {@link ResteasyDispatcher}
      */
-    ResteasyServletDispatcher getResteasyDispatcher() {
+    ResteasyDispatcher getResteasyDispatcher() {
         return resteasyDispatcher;
     }
 }
