@@ -47,7 +47,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  * @author Rakesh.Kumar, AdeptJ
  */
 @JaxRSResource(name = "jwt")
-@Path("/auth/j_security_check")
+@Path("/auth/osgi_j_security_check")
 @Designate(ocd = JwtCookieConfig.class)
 @Component(service = JwtResource.class)
 public class JwtResource {
