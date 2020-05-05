@@ -96,10 +96,12 @@ public @interface ResteasyConfig {
     String[] allowedHeaders() default {
             CACHE_CONTROL,
             CONTENT_LANGUAGE,
+            CONTENT_LENGTH,
             CONTENT_TYPE,
             EXPIRES,
             LAST_MODIFIED,
             PRAGMA,
+            ACCEPT
     };
 
     @AttributeDefinition(
@@ -110,7 +112,6 @@ public @interface ResteasyConfig {
     String[] exposedHeaders() default {
             CONTENT_LENGTH,
             AUTHORIZATION,
-            ACCEPT,
     };
 
     @AttributeDefinition(

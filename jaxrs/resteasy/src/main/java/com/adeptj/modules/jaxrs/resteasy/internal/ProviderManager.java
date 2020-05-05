@@ -37,13 +37,13 @@ public class ProviderManager<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final Lock lock;
-
     private final ResteasyProviderFactory providerFactory;
+
+    private final Lock lock;
 
     ProviderManager(ResteasyProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.lock = new ReentrantLock(true);
+        this.lock = new ReentrantLock();
     }
 
     /**

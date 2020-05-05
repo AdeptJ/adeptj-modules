@@ -46,7 +46,7 @@ public class ResourceManager<T> {
 
     ResourceManager(Registry registry) {
         this.registry = registry;
-        this.lock = new ReentrantLock(true);
+        this.lock = new ReentrantLock();
     }
 
     /**
