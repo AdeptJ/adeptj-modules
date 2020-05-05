@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletConfig;
 import java.lang.invoke.MethodHandles;
 
-import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 
@@ -98,6 +97,8 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
+                // Remove previous ResteasyDeployment, if any.
+                ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
                 this.resteasyDispatcher = new ResteasyDispatcher(this.config.blacklistedProviders());
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
@@ -120,18 +121,17 @@ public class ResteasyLifecycle {
     }
 
     /**
-     * The ResteasyLifecycle will first closeAll the {@link org.osgi.util.tracker.ServiceTracker} instances so that
-     * the OSGi service instances can be released.
+     * The ResteasyLifecycle will first close the {@link CompositeServiceTracker} instance so that the OSGi service
+     * instances(JAX-RS providers and resources) can be released.
      * <p>
      * Finally call {@link ResteasyDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void stop(@NotNull ServletConfig servletConfig) {
+        OSGiUtil.closeQuietly(this.serviceTracker);
         this.resteasyDispatcher.destroy();
         ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
-        LOGGER.info("ServletContext attribute [{}] removed!!", RESTEASY_DEPLOYMENT);
-        OSGiUtil.closeQuietly(this.serviceTracker);
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 
