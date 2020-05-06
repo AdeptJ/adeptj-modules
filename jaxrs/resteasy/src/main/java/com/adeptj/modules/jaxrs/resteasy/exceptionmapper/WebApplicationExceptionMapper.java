@@ -43,14 +43,26 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 
     static final int PRIORITY = 7000;
 
+    private static final String JSON_KEY_CODE = "code";
+
+    private static final String JSON_KEY_MESSAGE = "message";
+
+    /**
+     * Returns a {@link Response} object with status from the {@link Response} hold by the type of
+     * {@link WebApplicationException} currently being passed.
+     *
+     * @param exception a subtype of {@link WebApplicationException} or {@link WebApplicationException} itself.
+     * @return a new Json {@link Response} with status from the {@link Response} hold by the type of
+     * {@link WebApplicationException} currently being passed..
+     */
     @Override
     public Response toResponse(@NotNull WebApplicationException exception) {
-        Response response = exception.getResponse();
-        return Response.status(response.getStatus())
+        Response currentResponse = exception.getResponse();
+        return Response.status(currentResponse.getStatus())
                 .type(APPLICATION_JSON)
                 .entity(Json.createObjectBuilder()
-                        .add("code", response.getStatus())
-                        .add("message", exception.getMessage()).build())
+                        .add(JSON_KEY_CODE, currentResponse.getStatus())
+                        .add(JSON_KEY_MESSAGE, exception.getMessage()).build())
                 .build();
     }
 }

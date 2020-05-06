@@ -61,10 +61,6 @@ public class ResteasyLifecycle {
 
     private static final String JAX_RS_RUNTIME_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
-    private CompositeServiceTracker<?> serviceTracker;
-
-    private ResteasyDispatcher resteasyDispatcher;
-
     // Activation objects start.
 
     private final ResteasyConfig config;
@@ -73,15 +69,19 @@ public class ResteasyLifecycle {
 
     // Activation objects end.
 
+    private CompositeServiceTracker<?> serviceTracker;
+
+    private ResteasyDispatcher resteasyDispatcher;
+
     /**
      * Statically injected ValidatorService, this component will not become active until one is provided.
      */
     private final ValidatorService validatorService;
 
     @Activate
-    public ResteasyLifecycle(@Reference ValidatorService vs, BundleContext bc, ResteasyConfig config) {
+    public ResteasyLifecycle(@Reference ValidatorService vs, BundleContext context, ResteasyConfig config) {
         this.validatorService = vs;
-        this.context = bc;
+        this.context = context;
         this.config = config;
     }
 
@@ -97,7 +97,7 @@ public class ResteasyLifecycle {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                // Remove previous ResteasyDeployment, if any.
+                // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
                 ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
                 this.resteasyDispatcher = new ResteasyDispatcher(this.config.blacklistedProviders());
                 this.resteasyDispatcher.init(servletConfig);

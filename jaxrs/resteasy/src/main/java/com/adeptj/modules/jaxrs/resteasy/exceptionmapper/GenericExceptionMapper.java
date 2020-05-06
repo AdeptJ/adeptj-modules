@@ -36,7 +36,8 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 /**
  * A global {@link ExceptionMapper} for handling all uncaught exception types.
  * <p>
- * Sends the uncaught exception's trace in response if sendExceptionTrace is set as true otherwise a generic error message is sent.
+ * Sends the uncaught exception's trace in response if @link #sendExceptionTrace} is set as true otherwise a generic
+ * error message is sent.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -56,6 +57,12 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
         this.sendExceptionTrace = sendExceptionTrace;
     }
 
+    /**
+     * Returns a {@link Response} object with 500 status and stack trace if {@link #sendExceptionTrace} is true.
+     *
+     * @param exception the uncaught exception.
+     * @return a {@link Response} object with 500 status and stack trace if {@link #sendExceptionTrace} is true.
+     */
     @Override
     public Response toResponse(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);

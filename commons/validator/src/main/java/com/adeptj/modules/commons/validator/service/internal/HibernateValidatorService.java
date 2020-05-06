@@ -56,7 +56,7 @@ public class HibernateValidatorService implements ValidatorService {
 
     public HibernateValidatorService() {
         try {
-            final long startTime = System.nanoTime();
+            long startTime = System.nanoTime();
             this.validatorFactory = Validation.byProvider(HibernateValidator.class)
                     .configure()
                     .buildValidatorFactory();

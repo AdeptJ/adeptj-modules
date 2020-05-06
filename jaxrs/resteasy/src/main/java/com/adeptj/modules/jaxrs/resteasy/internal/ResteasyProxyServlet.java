@@ -61,7 +61,7 @@ public class ResteasyProxyServlet extends HttpServlet {
      * Service is statically injected so that this servlet doesn't get initialized until the reference
      * to {@link ResteasyLifecycle} becomes available which also manages RESTEasy's lifecycle.
      */
-    private final ResteasyLifecycle resteasyLifecycle;
+    private transient final ResteasyLifecycle resteasyLifecycle;
 
     @Activate
     public ResteasyProxyServlet(@Reference ResteasyLifecycle resteasyLifecycle) {

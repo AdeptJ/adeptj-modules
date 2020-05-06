@@ -111,7 +111,7 @@ public final class OSGiUtil {
     }
 
     public static <S, T> void close(ServiceTracker<S, T> tracker) {
-        if (tracker != null && !tracker.isEmpty()) {
+        if (tracker != null) {
             tracker.close();
         }
     }
