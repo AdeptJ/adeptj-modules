@@ -47,6 +47,14 @@ public final class JsonUtil {
         return JSONB;
     }
 
+    public static JsonReaderFactory getJsonReaderFactory() {
+        return READER_FACTORY;
+    }
+
+    public static JsonWriterFactory getJsonWriterFactory() {
+        return WRITER_FACTORY;
+    }
+
     public static <T> String serialize(T object) {
         return JsonUtil.getJsonb().toJson(object);
     }
@@ -61,13 +69,5 @@ public final class JsonUtil {
 
     public static <T> T deserialize(String data, Type type) {
         return JsonUtil.getJsonb().fromJson(data, type);
-    }
-
-    public static JsonReaderFactory getJsonReaderFactory() {
-        return READER_FACTORY;
-    }
-
-    public static JsonWriterFactory getJsonWriterFactory() {
-        return WRITER_FACTORY;
     }
 }

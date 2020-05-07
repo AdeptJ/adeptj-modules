@@ -20,6 +20,9 @@
 
 package com.adeptj.modules.commons.utils;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Supplier;
 
 /**
@@ -38,7 +41,8 @@ public final class Exceptions {
      * @param ex the given exception.
      * @return RuntimeException wrapping the original exception.
      */
-    public static RuntimeException runtime(Exception ex) {
+    @Contract(value = "_ -> new", pure = true)
+    public static @NotNull RuntimeException runtime(Exception ex) {
         return new RuntimeException(ex);
     }
 
@@ -48,7 +52,8 @@ public final class Exceptions {
      * @param ex the given exception.
      * @return IllegalStateException wrapping the original exception.
      */
-    public static IllegalStateException state(Exception ex) {
+    @Contract(value = "_ -> new", pure = true)
+    public static @NotNull IllegalStateException state(Exception ex) {
         return new IllegalStateException(ex);
     }
 
@@ -58,7 +63,8 @@ public final class Exceptions {
      * @param messageSupplier the exception message {@link Supplier}.
      * @return {@link IllegalStateException} with the supplied message.
      */
-    public static IllegalStateException state(Supplier<String> messageSupplier) {
+    @Contract("_ -> new")
+    public static @NotNull IllegalStateException state(@NotNull Supplier<String> messageSupplier) {
         return new IllegalStateException(messageSupplier.get());
     }
 
@@ -68,7 +74,8 @@ public final class Exceptions {
      * @param ex the given exception.
      * @return IllegalArgumentException wrapping the original exception.
      */
-    public static IllegalArgumentException arg(Exception ex) {
+    @Contract(value = "_ -> new", pure = true)
+    public static @NotNull IllegalArgumentException arg(Exception ex) {
         return new IllegalArgumentException(ex);
     }
 
@@ -78,7 +85,8 @@ public final class Exceptions {
      * @param messageSupplier the exception message {@link Supplier}.
      * @return {@link IllegalArgumentException} with the supplied message.
      */
-    public static IllegalArgumentException arg(Supplier<String> messageSupplier) {
+    @Contract("_ -> new")
+    public static @NotNull IllegalArgumentException arg(@NotNull Supplier<String> messageSupplier) {
         return new IllegalArgumentException(messageSupplier.get());
     }
 }

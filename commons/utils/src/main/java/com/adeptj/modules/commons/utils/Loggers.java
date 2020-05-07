@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.utils;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public final class Loggers {
     private Loggers() {
     }
 
-    public static Logger of(MethodHandles.Lookup lookup) {
+    public static Logger of(@NotNull MethodHandles.Lookup lookup) {
         return LoggerFactory.getLogger(lookup.lookupClass());
     }
 
