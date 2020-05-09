@@ -62,21 +62,31 @@ public class MongoClientLifecycle {
     }
 
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected <T extends BaseDocument> void bindMongoRepository(@NotNull MongoRepository<T> mongoRepository,
+    protected <T extends BaseDocument> void bindMongoRepository(@NotNull MongoRepository<T> repository,
                                                                 @NotNull Map<String, String> properties) {
         String databaseName = properties.get(KEY_DB_NAME);
         String collectionName = properties.get(KEY_COLLECTION_NAME);
-        AbstractMongoRepository<T> repository = (AbstractMongoRepository<T>) mongoRepository;
-        Class<T> documentClass = repository.getDocumentClass();
-        if (documentClass == null) {
-            throw new MongoRepositoryBindException("AbstractMongoRepository implementation must provide the DocumentClass!");
+        if (StringUtils.isAnyEmpty(databaseName, collectionName)) {
+            String message = String.format("MongoRepository service properties [%s] and [%s] can't be null, " +
+                            "please annotate the repository class with DocumentInfo annotation!",
+                    KEY_DB_NAME, KEY_COLLECTION_NAME);
+            throw new MongoRepositoryBindException(message);
         }
-        repository.setMongoCollection(JacksonMongoCollection.builder()
-                .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD));
+        if (!(repository instanceof AbstractMongoRepository)) {
+            throw new MongoRepositoryBindException("The repository instance must extend AbstractMongoRepository!");
+        }
+        AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
+        Class<T> documentClass = mongoRepository.getDocumentClass();
+        JacksonMongoCollection<T> mongoCollection = JacksonMongoCollection.builder()
+                .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD);
+        mongoRepository.setMongoCollection(mongoCollection);
     }
 
-    protected <T extends BaseDocument> void unbindMongoRepository(@NotNull MongoRepository<T> mongoRepository) {
-        AbstractMongoRepository<T> repository = (AbstractMongoRepository<T>) mongoRepository;
-        repository.setMongoCollection(null);
+    protected <T extends BaseDocument> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
+        // Let's not raise a CCE and do an explicit type check.
+        if (repository instanceof AbstractMongoRepository) {
+            AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
+            mongoRepository.setMongoCollection(null);
+        }
     }
 }
