@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,25 +16,33 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-data</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Data :: Builder</name>
-    <description>AdeptJ Modules :: Data :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.data.mongodb;
 
-        <module>jpa</module>
-        <module>sql2o</module>
-        <module>mongodb</module>
+import org.osgi.service.component.annotations.ComponentPropertyType;
 
-    </modules>
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-</project>
+/**
+ * A {@link ComponentPropertyType} for creating MongoDB database and collection names as service properties.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@ComponentPropertyType
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+public @interface DocumentInfo {
+
+    /**
+     * Prefix for the property name. This value is prepended to each property name.
+     */
+    String PREFIX_ = "mongodb."; // NOSONAR
+
+    String database_name(); // NOSONAR
+
+    String collection_name(); // NOSONAR
+}

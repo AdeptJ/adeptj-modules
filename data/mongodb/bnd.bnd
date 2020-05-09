@@ -24,28 +24,8 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
--includeresource: sql2o-*.jar;lib:=true
-
--exportcontents: com.adeptj.modules.data.sql2o, \
-                 com.adeptj.modules.data.sql2o.core, \
-                 org.sql2o.*
-
-Import-Package: \
-  javax.annotation;\
-  javax.annotation.sql;\
-  javax.annotation.security,\
-  javax.mail,\
-  javax.servlet;\
-  javax.servlet.http;\
-  javax.servlet.descriptor;\
-  javax.servlet.annotation,\
-  com.sun.el.parser;\
-  com.sun.el.lang;\
-  com.sun.el.stream;\
-  com.sun.el.util;\
-  com.sun.el,\
-  !org.joda.time;\
-  *
+Export-Package: com.adeptj.modules.data.mongodb, \
+                com.adeptj.modules.data.mongodb.core
   
 Bundle-Name: ${project.name}
 

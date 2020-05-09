@@ -173,7 +173,7 @@ public @interface EntityManagerFactoryConfig {
             name = "EclipseLink Loggers",
             description = "EclipseLink Logger Names For SLF4J Logging"
     )
-    String[] loggers() default {
+    String[] eclipselinkLoggers() default {
             CATEGORY_LOGGING_LEVEL_ + CONNECTION,
             CATEGORY_LOGGING_LEVEL_ + JPA,
             CATEGORY_LOGGING_LEVEL_ + SEQUENCING,
