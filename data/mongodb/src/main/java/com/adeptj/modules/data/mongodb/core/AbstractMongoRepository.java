@@ -21,7 +21,7 @@ public abstract class AbstractMongoRepository<T extends BaseDocument> implements
     // << --------------------------- Internal --------------------------- >>
 
     /**
-     * Initializes the {@link #documentClass} field with a non null document class.
+     * Initializes the {@link #documentClass} field with a non null document class object.
      *
      * @param documentClass the document class required by {@link JacksonMongoCollection}
      */
