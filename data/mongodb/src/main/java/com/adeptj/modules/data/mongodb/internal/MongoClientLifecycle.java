@@ -63,12 +63,12 @@ public class MongoClientLifecycle {
 
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
     protected <T extends BaseDocument> void bindMongoRepository(@NotNull MongoRepository<T> repository,
-                                                                @NotNull Map<String, String> properties) {
-        String databaseName = properties.get(KEY_DB_NAME);
-        String collectionName = properties.get(KEY_COLLECTION_NAME);
+                                                                @NotNull Map<String, Object> properties) {
+        String databaseName = (String) properties.get(KEY_DB_NAME);
+        String collectionName = (String) properties.get(KEY_COLLECTION_NAME);
         if (StringUtils.isAnyEmpty(databaseName, collectionName)) {
-            String message = String.format("MongoRepository service properties [%s] and [%s] can't be null, " +
-                            "please annotate the repository class with DocumentInfo annotation!",
+            String message = String.format("MongoRepository service properties [%s] and [%s] can't be empty, " +
+                            "please provide the mandatory non empty attributes of DocumentInfo annotation!",
                     KEY_DB_NAME, KEY_COLLECTION_NAME);
             throw new MongoRepositoryBindException(message);
         }
@@ -83,7 +83,7 @@ public class MongoClientLifecycle {
     }
 
     protected <T extends BaseDocument> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
-        // Let's not raise a CCE and do an explicit type check.
+        // Let's do an explicit type check to avoid a CCE.
         if (repository instanceof AbstractMongoRepository) {
             AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
             mongoRepository.setMongoCollection(null);
