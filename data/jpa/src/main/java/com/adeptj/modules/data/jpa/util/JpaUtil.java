@@ -66,6 +66,17 @@ public final class JpaUtil {
         }
     }
 
+    public static void closeEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
+            try {
+                entityManagerFactory.close();
+                LOGGER.info("EntityManagerFactory closed!!");
+            } catch (RuntimeException ex) {
+                LOGGER.error("Exception while closing EntityManagerFactory!!", ex);
+            }
+        }
+    }
+
     /**
      * This method binds the the query parameters to the given JPA {@link Query} or {@link TypedQuery}.
      *

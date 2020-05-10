@@ -21,12 +21,14 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.PersistenceInfoProvider;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 import com.adeptj.modules.data.jpa.exception.JpaBootstrapException;
 import com.adeptj.modules.data.jpa.exception.JpaRepositoryBindException;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -76,14 +78,16 @@ public class EntityManagerFactoryLifecycle {
 
     private final String unitName;
 
-    private final EntityManagerFactoryWrapper entityManagerFactoryWrapper;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Activate
     public EntityManagerFactoryLifecycle(@Reference DataSourceService dataSourceService,
                                          @Reference ValidatorService validatorService,
                                          @NotNull @Reference PersistenceInfoProvider provider,
                                          @NotNull EntityManagerFactoryConfig config) {
+        long startTime = System.nanoTime();
         this.unitName = provider.getPersistenceUnitName();
+        LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", this.unitName);
         if (StringUtils.isEmpty(this.unitName)) {
             throw new JpaBootstrapException(String.format(PU_NAME_NULL_EX_MSG, provider));
         }
@@ -98,16 +102,15 @@ public class EntityManagerFactoryLifecycle {
             if (validationMode == AUTO || validationMode == CALLBACK) {
                 properties.put(VALIDATOR_FACTORY, validatorService.getValidatorFactory());
             }
-            LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", this.unitName);
             // Important Note: The ClassLoader must be the one which loaded the given PersistenceInfoProvider
             // implementation and it must have the visibility to all the entity classes and persistence.xml/orm.xml
             // otherwise EclipseLink may not be able to create the EntityManagerFactory.
             LOGGER.info("Using ClassLoader of PersistenceInfoProvider: [{}]", provider.getClass().getName());
             properties.put(CLASSLOADER, provider.getClass().getClassLoader());
-            EntityManagerFactory emf = new PersistenceProvider().createEntityManagerFactory(this.unitName, properties);
-            Validate.validState(emf != null, EMF_NULL_EX_MSG);
-            this.entityManagerFactoryWrapper = new EntityManagerFactoryWrapper(emf);
-            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}]", this.unitName);
+            this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(this.unitName, properties);
+            Validate.validState(this.entityManagerFactory != null, EMF_NULL_EX_MSG);
+            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}] in [{}] ms!!", this.unitName,
+                    TimeUtil.elapsedMillis(startTime));
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             // Throw exception so that SCR won't register the component instance.
@@ -119,9 +122,10 @@ public class EntityManagerFactoryLifecycle {
 
     @Deactivate
     protected void stop(@NotNull EntityManagerFactoryConfig config) {
-        LOGGER.info("Closing EntityManagerFactory for PU [{}]", this.unitName);
-        this.entityManagerFactoryWrapper.close();
-        LOGGER.info("EntityManagerFactory closed!!");
+        long startTime = System.nanoTime();
+        JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
+        LOGGER.info("EntityManagerFactory closed for PU [{}] in [{}] ms!!", this.unitName,
+                TimeUtil.elapsedMillis(startTime));
     }
 
     // <<----------------------------------- JpaRepository Bind ------------------------------------>>
@@ -131,15 +135,15 @@ public class EntityManagerFactoryLifecycle {
         if (!(repository instanceof AbstractJpaRepository)) {
             throw new JpaRepositoryBindException("The repository instance must extend AbstractJpaRepository!");
         }
-        LOGGER.info("Binding JpaRepository: {} for persistence unit: [{}]", repository, this.unitName);
+        LOGGER.info("Binding JpaRepository: {} to persistence unit: [{}]", repository, this.unitName);
         AbstractJpaRepository<?, ?> jpaRepository = (AbstractJpaRepository<?, ?>) repository;
-        jpaRepository.setEntityManagerFactory(this.entityManagerFactoryWrapper);
+        jpaRepository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
     }
 
     protected void unbindJpaRepository(JpaRepository<?, ?> repository) {
         // Let's do an explicit type check to avoid a CCE.
         if (repository instanceof AbstractJpaRepository) {
-            LOGGER.info("Unbinding JpaRepository: {} for persistence unit: [{}]", repository, this.unitName);
+            LOGGER.info("Unbinding JpaRepository: {} from persistence unit: [{}]", repository, this.unitName);
             AbstractJpaRepository<?, ?> jpaRepository = (AbstractJpaRepository<?, ?>) repository;
             jpaRepository.setEntityManagerFactory(null);
         }

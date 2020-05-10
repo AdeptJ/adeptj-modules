@@ -22,6 +22,7 @@ package com.adeptj.modules.data.jpa;
 
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 import com.adeptj.modules.data.jpa.entity.User;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ import java.util.List;
 public class UserRepository extends AbstractJpaRepository<User, Long> {
 
     void closeEntityManagerFactory() {
-        this.getEntityManagerFactory().close();
+        JpaUtil.closeEntityManagerFactory(this.getEntityManagerFactory());
     }
 
     List<User> findAllUsers() {

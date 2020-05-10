@@ -31,8 +31,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import java.util.Map;
 
-import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
-
 /**
  * A simple wrapper for {@link EntityManagerFactory}, this way {@link EntityManagerFactory} object isn't directly
  * exposed which prevents the possibility of closing a managed {@link EntityManagerFactory} by consumer.
@@ -102,18 +100,12 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
     /**
      * Not allowing the consumer code to invoke the close on managed EntityManagerFactory.
-     * Only {@link EntityManagerFactoryLifecycle} is allowed to do it.
      *
-     * @throws UnsupportedOperationException if consumer code tries to close the EntityManagerFactory.
+     * @throws UnsupportedOperationException if consumer code invokes the {@link EntityManagerFactory#close} method.
      */
     @Override
     public void close() {
-        StackWalker stackWalker = StackWalker.getInstance(RETAIN_CLASS_REFERENCE);
-        if (stackWalker.getCallerClass() == EntityManagerFactoryLifecycle.class) {
-            this.entityManagerFactory.close();
-        } else {
-            throw new UnsupportedOperationException("Managed EntityManagerFactory can't be closed by consumer code!!");
-        }
+        throw new UnsupportedOperationException("Managed EntityManagerFactory can't be closed by consumer code");
     }
 
     /**
