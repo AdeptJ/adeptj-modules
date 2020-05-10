@@ -20,6 +20,9 @@
 
 package com.adeptj.modules.commons.utils;
 
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Execute provided functions by setting current Thread's context class loader.
  *
@@ -35,13 +38,13 @@ public final class Functions {
 
     /**
      * A function which will be executed by setting the provided class loader in current thread's
-     * context class loader and returns.
+     * context class loader and returns a value.
      *
      * @param <T> the return type of the execute method
      * @author Rakesh.Kumar, AdeptJ
      */
     @FunctionalInterface
-    public interface ReturningFunction<T> {
+    public interface ValueFunction<T> {
         T execute();
     }
 
@@ -52,18 +55,19 @@ public final class Functions {
      * @author Rakesh.Kumar, AdeptJ
      */
     @FunctionalInterface
-    public interface NonReturningFunction {
+    public interface VoidFunction {
         void execute();
     }
 
     /**
-     * Executes the provided {@link NonReturningFunction} by setting the provided {@link ClassLoader}
+     * Executes the provided {@link VoidFunction} by setting the provided {@link ClassLoader}
      * in current thread's context class loader.
      *
      * @param cl       the class loader to use as a context class loader for the execution
      * @param function the function to be executed under given class loader
      */
-    public static void execute(ClassLoader cl, NonReturningFunction function) {
+    public static void executeUnderContextClassLoader(ClassLoader cl, @NotNull Functions.VoidFunction function) {
+        Validate.isTrue(cl != null, "ClassLoader can't be null!!");
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(cl);
@@ -74,7 +78,7 @@ public final class Functions {
     }
 
     /**
-     * Executes the provided {@link ReturningFunction} by setting the provided {@link ClassLoader}
+     * Executes the provided {@link ValueFunction} by setting the provided {@link ClassLoader}
      * in current thread's context class loader.
      *
      * @param cl       the class loader to use as a context class loader for the execution
@@ -82,7 +86,8 @@ public final class Functions {
      * @param <T>      Type that ReturningFunction returns.
      * @return the result of the execution
      */
-    public static <T> T execute(ClassLoader cl, ReturningFunction<T> function) {
+    public static <T> T executeUnderContextClassLoader(ClassLoader cl, @NotNull Functions.ValueFunction<T> function) {
+        Validate.isTrue(cl != null, "ClassLoader can't be null!!");
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(cl);

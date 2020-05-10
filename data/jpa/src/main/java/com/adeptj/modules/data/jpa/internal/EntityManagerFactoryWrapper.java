@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.persistence.Cache;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -41,7 +43,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
     private final EntityManagerFactory entityManagerFactory;
 
-    EntityManagerFactoryWrapper(EntityManagerFactory entityManagerFactory) {
+    EntityManagerFactoryWrapper(@NotNull EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
 

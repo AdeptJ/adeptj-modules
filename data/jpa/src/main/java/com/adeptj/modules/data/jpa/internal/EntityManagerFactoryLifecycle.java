@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import com.adeptj.modules.commons.utils.CollectionUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
@@ -76,10 +77,27 @@ public class EntityManagerFactoryLifecycle {
     private static final String EMF_NULL_EX_MSG = "Couldn't create EntityManagerFactory, please check server logs " +
             "for exceptions or probably inspect your persistence.xml for any discrepancies!!";
 
+    private static final String EMF_CREATED_MSG = "Created EntityManagerFactory for PersistenceUnit: [{}] in [{}] ms!!";
+
+    private static final String EMF_CLOSED_MSG = "EntityManagerFactory closed for PersistenceUnit [{}] in [{}] ms!!";
+
     private final String unitName;
 
     private final EntityManagerFactory entityManagerFactory;
 
+    /**
+     * Initializes the {@link EntityManagerFactory} with necessary configurations.
+     * <p>
+     * Important Note: For creating the {@link EntityManagerFactory} the {@link ClassLoader} of the
+     * {@link PersistenceInfoProvider} service will be used and it must have the visibility to all the entity classes,
+     * persistence.xml and mapping files such as orm.xml otherwise EclipseLink may not be able to create
+     * the {@link EntityManagerFactory}
+     *
+     * @param dataSourceService for providing a non JTA JDBC DataSource.
+     * @param validatorService  for providing the bean ValidatorFactory.
+     * @param provider          for providing the persistence unit name and other properties.
+     * @param config            for providing the EntityManagerFactory configurations.
+     */
     @Activate
     public EntityManagerFactoryLifecycle(@Reference DataSourceService dataSourceService,
                                          @Reference ValidatorService validatorService,
@@ -87,14 +105,14 @@ public class EntityManagerFactoryLifecycle {
                                          @NotNull EntityManagerFactoryConfig config) {
         long startTime = System.nanoTime();
         this.unitName = provider.getPersistenceUnitName();
-        LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", this.unitName);
         if (StringUtils.isEmpty(this.unitName)) {
             throw new JpaBootstrapException(String.format(PU_NAME_NULL_EX_MSG, provider));
         }
+        LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", this.unitName);
         try {
             Map<String, Object> properties = JpaProperties.from(config);
             Map<String, Object> providerProperties = provider.getPersistenceUnitProperties();
-            if (providerProperties != null && !providerProperties.isEmpty()) {
+            if (CollectionUtil.isNotEmpty(providerProperties)) {
                 properties.putAll(providerProperties);
             }
             properties.put(NON_JTA_DATASOURCE, dataSourceService.getDataSource());
@@ -102,15 +120,10 @@ public class EntityManagerFactoryLifecycle {
             if (validationMode == AUTO || validationMode == CALLBACK) {
                 properties.put(VALIDATOR_FACTORY, validatorService.getValidatorFactory());
             }
-            // Important Note: The ClassLoader must be the one which loaded the given PersistenceInfoProvider
-            // implementation and it must have the visibility to all the entity classes and persistence.xml/orm.xml
-            // otherwise EclipseLink may not be able to create the EntityManagerFactory.
-            LOGGER.info("Using ClassLoader of PersistenceInfoProvider: [{}]", provider.getClass().getName());
             properties.put(CLASSLOADER, provider.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(this.unitName, properties);
             Validate.validState(this.entityManagerFactory != null, EMF_NULL_EX_MSG);
-            LOGGER.info("Created EntityManagerFactory for PersistenceUnit: [{}] in [{}] ms!!", this.unitName,
-                    TimeUtil.elapsedMillis(startTime));
+            LOGGER.info(EMF_CREATED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             // Throw exception so that SCR won't register the component instance.
@@ -124,8 +137,7 @@ public class EntityManagerFactoryLifecycle {
     protected void stop(@NotNull EntityManagerFactoryConfig config) {
         long startTime = System.nanoTime();
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
-        LOGGER.info("EntityManagerFactory closed for PU [{}] in [{}] ms!!", this.unitName,
-                TimeUtil.elapsedMillis(startTime));
+        LOGGER.info(EMF_CLOSED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));
     }
 
     // <<----------------------------------- JpaRepository Bind ------------------------------------>>

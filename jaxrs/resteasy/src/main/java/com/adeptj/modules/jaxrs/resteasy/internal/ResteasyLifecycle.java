@@ -93,7 +93,7 @@ public class ResteasyLifecycle {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void start(ServletConfig servletConfig) {
-        Functions.execute(this.getClass().getClassLoader(), () -> {
+        Functions.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
