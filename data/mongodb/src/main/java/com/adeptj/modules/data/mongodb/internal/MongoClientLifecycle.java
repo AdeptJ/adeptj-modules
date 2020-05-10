@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 import static com.adeptj.modules.data.mongodb.MongoConstants.DELIMITER_COLON;
 import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_COLLECTION_NAME;
 import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_DB_NAME;
-import static com.adeptj.modules.data.mongodb.MongoConstants.SERVICE_FILTER;
 import static org.bson.UuidRepresentation.STANDARD;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -34,6 +33,8 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Designate(ocd = MongoClientConfig.class)
 @Component(immediate = true, configurationPolicy = REQUIRE)
 public class MongoClientLifecycle {
+
+    private static final String SERVICE_FILTER = "(&(mongodb.database.name=*)(mongodb.collection.name=*))";
 
     private final MongoClient mongoClient;
 
@@ -64,6 +65,9 @@ public class MongoClientLifecycle {
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
     protected <T extends BaseDocument> void bindMongoRepository(@NotNull MongoRepository<T> repository,
                                                                 @NotNull Map<String, Object> properties) {
+        if (!(repository instanceof AbstractMongoRepository)) {
+            throw new MongoRepositoryBindException("The repository instance must extend AbstractMongoRepository!");
+        }
         String databaseName = (String) properties.get(KEY_DB_NAME);
         String collectionName = (String) properties.get(KEY_COLLECTION_NAME);
         if (StringUtils.isAnyEmpty(databaseName, collectionName)) {
@@ -71,9 +75,6 @@ public class MongoClientLifecycle {
                             "please provide the mandatory non empty attributes of DocumentInfo annotation!",
                     KEY_DB_NAME, KEY_COLLECTION_NAME);
             throw new MongoRepositoryBindException(message);
-        }
-        if (!(repository instanceof AbstractMongoRepository)) {
-            throw new MongoRepositoryBindException("The repository instance must extend AbstractMongoRepository!");
         }
         AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
         Class<T> documentClass = mongoRepository.getDocumentClass();

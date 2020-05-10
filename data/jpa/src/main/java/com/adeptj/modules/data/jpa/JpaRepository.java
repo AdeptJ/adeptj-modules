@@ -44,7 +44,6 @@ import java.util.List;
  * <p>
  *
  * @param <T>  The {@link BaseEntity} subclass type which this repository is dealing with.
- *             Compiler will enforce this as a result of using Java Generics thus enforcing Type Safe JPA operations.
  * @param <ID> The primary key of the JPA entity.
  * @author Rakesh.Kumar, AdeptJ
  */

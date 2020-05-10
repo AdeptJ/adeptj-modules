@@ -5,10 +5,12 @@ import com.adeptj.modules.data.mongodb.MongoRepository;
 import org.apache.commons.lang3.Validate;
 import org.bson.conversions.Bson;
 import org.mongojack.JacksonMongoCollection;
+import org.osgi.annotation.versioning.ConsumerType;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ConsumerType
 public abstract class AbstractMongoRepository<T extends BaseDocument> implements MongoRepository<T> {
 
     /**

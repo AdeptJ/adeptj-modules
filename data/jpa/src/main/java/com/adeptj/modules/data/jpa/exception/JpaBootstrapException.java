@@ -29,6 +29,10 @@ public class JpaBootstrapException extends RuntimeException {
 
     private static final long serialVersionUID = 4572809035305367737L;
 
+    public JpaBootstrapException(String message) {
+        super(message);
+    }
+
     public JpaBootstrapException(Throwable throwable) {
         super(throwable);
     }

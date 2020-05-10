@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
-import com.adeptj.modules.data.jpa.QueryRetryCustomizer;
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import com.adeptj.modules.data.jpa.SLF4JLogger;
 import org.apache.commons.lang3.ArrayUtils;

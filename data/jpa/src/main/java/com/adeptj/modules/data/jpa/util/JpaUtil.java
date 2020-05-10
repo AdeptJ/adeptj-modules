@@ -56,17 +56,6 @@ public final class JpaUtil {
         return entityManagerFactory.createEntityManager();
     }
 
-    public static void closeEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
-        if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
-            try {
-                entityManagerFactory.close();
-                LOGGER.info("EntityManagerFactory closed!!");
-            } catch (RuntimeException ex) {
-                LOGGER.error("Exception while closing EntityManagerFactory!!", ex);
-            }
-        }
-    }
-
     public static void closeEntityManager(EntityManager entityManager) {
         if (entityManager != null && entityManager.isOpen()) {
             try {

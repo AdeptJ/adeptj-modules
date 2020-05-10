@@ -9,7 +9,7 @@ public class JpaRepositoryBindException extends RuntimeException {
 
     private static final long serialVersionUID = -2925830631166038486L;
 
-    public JpaRepositoryBindException(Throwable throwable) {
-        super(throwable);
+    public JpaRepositoryBindException(String message) {
+        super(message);
     }
 }

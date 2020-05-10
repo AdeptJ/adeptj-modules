@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
-import org.apache.commons.lang3.Validate;
-
 import javax.persistence.Cache;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -33,21 +31,20 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 import java.util.Map;
 
+import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
+
 /**
- * A simple wrapper for {@link EntityManagerFactory}, this way {@link EntityManagerFactory} object isn't directly exposed
- * which further prevents the possibility of closing a managed {@link EntityManagerFactory} by consumer.
+ * A simple wrapper for {@link EntityManagerFactory}, this way {@link EntityManagerFactory} object isn't directly
+ * exposed which prevents the possibility of closing a managed {@link EntityManagerFactory} by consumer.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 public class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
-    private static final String EMF_NULL_MSG = "Couldn't create EntityManagerFactory, please check server logs!!";
+    private final EntityManagerFactory entityManagerFactory;
 
-    private final EntityManagerFactory delegate;
-
-    EntityManagerFactoryWrapper(EntityManagerFactory delegate) {
-        Validate.validState(delegate != null, EMF_NULL_MSG);
-        this.delegate = delegate;
+    EntityManagerFactoryWrapper(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     /**
@@ -55,7 +52,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public EntityManager createEntityManager() {
-        return this.delegate.createEntityManager();
+        return this.entityManagerFactory.createEntityManager();
     }
 
     /**
@@ -63,7 +60,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public EntityManager createEntityManager(Map map) {
-        return this.delegate.createEntityManager(map);
+        return this.entityManagerFactory.createEntityManager(map);
     }
 
     /**
@@ -71,12 +68,12 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        return this.delegate.createEntityManager(synchronizationType);
+        return this.entityManagerFactory.createEntityManager(synchronizationType);
     }
 
     @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        return this.delegate.createEntityManager(synchronizationType, map);
+        return this.entityManagerFactory.createEntityManager(synchronizationType, map);
     }
 
     /**
@@ -84,7 +81,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public CriteriaBuilder getCriteriaBuilder() {
-        return this.delegate.getCriteriaBuilder();
+        return this.entityManagerFactory.getCriteriaBuilder();
     }
 
     /**
@@ -92,7 +89,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public Metamodel getMetamodel() {
-        return this.delegate.getMetamodel();
+        return this.entityManagerFactory.getMetamodel();
     }
 
     /**
@@ -100,15 +97,23 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public boolean isOpen() {
-        return this.delegate.isOpen();
+        return this.entityManagerFactory.isOpen();
     }
 
     /**
      * Not allowing the consumer code to invoke the close on managed EntityManagerFactory.
+     * Only {@link EntityManagerFactoryLifecycle} is allowed to do it.
+     *
+     * @throws UnsupportedOperationException if consumer code tries to close the EntityManagerFactory.
      */
     @Override
     public void close() {
-        throw new UnsupportedOperationException("Managed EntityManagerFactory can't be closed by consumer code!!");
+        StackWalker stackWalker = StackWalker.getInstance(RETAIN_CLASS_REFERENCE);
+        if (stackWalker.getCallerClass() == EntityManagerFactoryLifecycle.class) {
+            this.entityManagerFactory.close();
+        } else {
+            throw new UnsupportedOperationException("Managed EntityManagerFactory can't be closed by consumer code!!");
+        }
     }
 
     /**
@@ -116,7 +121,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public Map<String, Object> getProperties() {
-        return this.delegate.getProperties();
+        return this.entityManagerFactory.getProperties();
     }
 
     /**
@@ -124,7 +129,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public Cache getCache() {
-        return this.delegate.getCache();
+        return this.entityManagerFactory.getCache();
     }
 
     /**
@@ -132,7 +137,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
-        return this.delegate.getPersistenceUnitUtil();
+        return this.entityManagerFactory.getPersistenceUnitUtil();
     }
 
     /**
@@ -140,7 +145,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public void addNamedQuery(String name, Query query) {
-        this.delegate.addNamedQuery(name, query);
+        this.entityManagerFactory.addNamedQuery(name, query);
     }
 
     /**
@@ -148,7 +153,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public <T> T unwrap(Class<T> cls) {
-        return this.delegate.unwrap(cls);
+        return this.entityManagerFactory.unwrap(cls);
     }
 
     /**
@@ -156,6 +161,6 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        this.delegate.addNamedEntityGraph(graphName, entityGraph);
+        this.entityManagerFactory.addNamedEntityGraph(graphName, entityGraph);
     }
 }

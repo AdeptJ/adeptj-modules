@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.internal;
 
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -30,11 +30,11 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class QueryRetryCustomizer implements SessionCustomizer {
+class QueryRetryCustomizer implements SessionCustomizer {
 
     private final int queryRetryAttemptCount;
 
-    public QueryRetryCustomizer(int queryRetryAttemptCount) {
+    QueryRetryCustomizer(int queryRetryAttemptCount) {
         this.queryRetryAttemptCount = queryRetryAttemptCount;
     }
 

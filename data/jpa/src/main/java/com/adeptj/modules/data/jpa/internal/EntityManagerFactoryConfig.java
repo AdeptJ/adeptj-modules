@@ -86,12 +86,6 @@ public @interface EntityManagerFactoryConfig {
     String JPA_TRANSACTION_TYPE = "RESOURCE_LOCAL";
 
     @AttributeDefinition(
-            name = "PersistenceUnit Name",
-            description = "Note: Must be same as provided in persistence.xml"
-    )
-    String persistenceUnitName(); // NOSONAR
-
-    @AttributeDefinition(
             name = "Persistence XML Location",
             description = "Location of the persistence.xml file"
     )

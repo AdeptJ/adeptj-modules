@@ -35,10 +35,9 @@ import java.util.Map;
 public interface PersistenceInfoProvider {
 
     /**
-     * Implementor must return the JPA persistence unit name exactly defined in persistence.xml as well as in
-     * EntityManagerFactoryLifecycle service configurations.
+     * Implementor must return the JPA persistence unit name exactly defined in persistence.xml.
      *
-     * @return the persistence unit name.
+     * @return a non null persistence unit name.
      */
     String getPersistenceUnitName();
 
