@@ -110,7 +110,7 @@ public class EntityManagerFactoryLifecycle {
         }
         LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", this.unitName);
         try {
-            Map<String, Object> properties = JpaProperties.from(config);
+            Map<String, Object> properties = JpaProperties.create(config);
             Map<String, Object> providerProperties = provider.getPersistenceUnitProperties();
             if (CollectionUtil.isNotEmpty(providerProperties)) {
                 properties.putAll(providerProperties);

@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.commons.jdbc.service.internal;
 
-import com.zaxxer.hikari.HikariDataSource;
+import org.jetbrains.annotations.NotNull;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -31,17 +31,17 @@ import java.util.logging.Logger;
 
 
 /**
- * A simple wrapper for {@link HikariDataSource}, this way {@link HikariDataSource} object is not directly exposed
- * which further prevents the possibility of calling {@link HikariDataSource#close()} by consumers.
+ * A simple wrapper for {@code HikariDataSource}, this way {@code HikariDataSource} object is not directly exposed
+ * which further prevents the direct possibility of calling {@code HikariDataSource#close()} by consumers.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
 public class DataSourceWrapper implements DataSource {
 
-    private final DataSource delegate;
+    private final DataSource dataSource;
 
-    DataSourceWrapper(DataSource dataSource) {
-        this.delegate = dataSource;
+    DataSourceWrapper(@NotNull DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
@@ -49,7 +49,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public Connection getConnection() throws SQLException {
-        return this.delegate.getConnection();
+        return this.dataSource.getConnection();
     }
 
     /**
@@ -57,7 +57,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return this.delegate.getConnection(username, password);
+        return this.dataSource.getConnection(username, password);
     }
 
     /**
@@ -65,7 +65,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return this.delegate.unwrap(iface);
+        return this.dataSource.unwrap(iface);
     }
 
     /**
@@ -73,7 +73,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return this.delegate.isWrapperFor(iface);
+        return this.dataSource.isWrapperFor(iface);
     }
 
     /**
@@ -81,7 +81,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        return this.delegate.getLogWriter();
+        return this.dataSource.getLogWriter();
     }
 
     /**
@@ -89,7 +89,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-        this.delegate.setLogWriter(out);
+        this.dataSource.setLogWriter(out);
     }
 
     /**
@@ -97,7 +97,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-        this.delegate.setLoginTimeout(seconds);
+        this.dataSource.setLoginTimeout(seconds);
     }
 
     /**
@@ -105,7 +105,7 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public int getLoginTimeout() throws SQLException {
-        return this.delegate.getLoginTimeout();
+        return this.dataSource.getLoginTimeout();
     }
 
     /**
@@ -113,6 +113,6 @@ public class DataSourceWrapper implements DataSource {
      */
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return this.delegate.getParentLogger();
+        return this.dataSource.getParentLogger();
     }
 }

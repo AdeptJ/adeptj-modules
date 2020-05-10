@@ -56,7 +56,7 @@ public class HikariDataSourceService implements DataSourceService {
     private final HikariDataSource dataSource;
 
     /**
-     * Initialize the {@link HikariDataSource} using the configuration passed.
+     * Initialize the {@link HikariDataSource} using the required configurations.
      *
      * @param config the Hikari {@link DataSourceConfig}
      * @throws DataSourceConfigurationException so that component activation fails and SCR ignores the service.
@@ -64,7 +64,7 @@ public class HikariDataSourceService implements DataSourceService {
     @Activate
     public HikariDataSourceService(DataSourceConfig config) {
         try {
-            Validate.isTrue(StringUtils.isNotEmpty(config.poolName()), "JDBC Pool Name can't be blank!!");
+            Validate.isTrue(StringUtils.isNotEmpty(config.poolName()), "JDBC Pool Name can't be null!!");
             this.dataSource = DataSources.createHikariDataSource(config);
             LOGGER.info("HikariDataSource: [{}] initialized!!", config.poolName());
         } catch (Exception ex) { // NOSONAR

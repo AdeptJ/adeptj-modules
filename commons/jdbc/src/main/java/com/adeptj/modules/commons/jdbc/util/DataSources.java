@@ -56,8 +56,8 @@ public final class DataSources {
         Stream.of(config.dataSourceProperties())
                 .filter(StringUtils::isNotEmpty)
                 .map(row -> row.split(EQ))
-                .filter(ArrayUtils::isNotEmpty)
-                .forEach(mapping -> hikariConfig.addDataSourceProperty(mapping[0], mapping[1]));
+                .filter(parts -> ArrayUtils.getLength(parts) == 2)
+                .forEach(parts -> hikariConfig.addDataSourceProperty(parts[0].trim(), parts[1].trim()));
         return new HikariDataSource(hikariConfig);
     }
 }

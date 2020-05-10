@@ -23,6 +23,7 @@ package com.adeptj.modules.data.jpa.internal;
 import com.adeptj.modules.data.jpa.JpaExceptionHandler;
 import com.adeptj.modules.data.jpa.SLF4JLogger;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -50,7 +51,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATIO
  */
 final class JpaProperties {
 
-    static @NotNull Map<String, Object> from(@NotNull EntityManagerFactoryConfig config) {
+    static @NotNull Map<String, Object> create(@NotNull EntityManagerFactoryConfig config) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(DDL_GENERATION, config.ddlGeneration());
         properties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
@@ -71,9 +72,10 @@ final class JpaProperties {
         }
         // Extra properties are in [key=value] format.
         Stream.of(config.jpaProperties())
-                .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
+                .filter(StringUtils::isNotEmpty)
                 .map(row -> row.split(EQ))
-                .forEach(mapping -> properties.put(mapping[0], mapping[1]));
+                .filter(parts -> ArrayUtils.getLength(parts) == 2)
+                .forEach(parts -> properties.put(parts[0].trim(), parts[1].trim()));
         return properties;
     }
 }
