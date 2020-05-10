@@ -30,27 +30,27 @@ import java.util.Map;
  */
 public final class CollectionUtil {
 
-    public static <T> int size(Collection<T> collection) {
+    public static int size(Collection<?> collection) {
         return collection == null ? 0 : collection.size();
     }
 
-    public static <T> boolean isEmpty(Collection<T> collection) {
+    public static boolean isEmpty(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
-    public static <T> boolean isNotEmpty(Collection<T> collection) {
+    public static boolean isNotEmpty(Collection<?> collection) {
         return !isEmpty(collection);
     }
 
-    public static <K, V> int size(Map<K, V> map) {
+    public static int size(Map<?, ?> map) {
         return map == null ? 0 : map.size();
     }
 
-    public static <K, V> boolean isEmpty(Map<K, V> map) {
+    public static boolean isEmpty(Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
 
-    public static <K, V> boolean isNotEmpty(Map<K, V> map) {
+    public static boolean isNotEmpty(Map<?, ?> map) {
         return !isEmpty(map);
     }
 }

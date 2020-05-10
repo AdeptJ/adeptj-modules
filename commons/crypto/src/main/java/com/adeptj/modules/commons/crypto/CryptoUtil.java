@@ -49,8 +49,8 @@ public class CryptoUtil {
      * }
      * </code></pre>
      *
-     * <p><code>nextBytes</code> is called to force the RNG to initialize itself if not already initialized.  The
-     * byte array is not used and discarded immediately for garbage collection.</p>
+     * <p><code>nextBytes</code> is called to force the RNG to initialize itself if not already initialized.
+     * The byte array is not used and discarded immediately for garbage collection.</p>
      */
     private static final SecureRandom DEFAULT_SECURE_RANDOM;
 
