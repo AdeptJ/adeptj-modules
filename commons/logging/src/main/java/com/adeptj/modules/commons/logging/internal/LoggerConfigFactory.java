@@ -22,7 +22,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = LoggerConfig.class, factory = true)
-@Component(service = LoggerConfigFactory.class, immediate = true, name = PID, configurationPolicy = REQUIRE)
+@Component(immediate = true, name = PID, configurationPolicy = REQUIRE)
 public class LoggerConfigFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -35,16 +35,16 @@ public class LoggerConfigFactory {
     public LoggerConfigFactory(@Reference LogbackManager logbackManager, @NotNull LoggerConfig config) {
         this.logbackManager = logbackManager;
         this.logbackManager.addLogger(LogbackConfig.builder()
-                .logger(config.name())
-                .level(config.level())
-                .additivity(config.additivity())
+                .logger(config.logger_name())
+                .level(config.logger_level())
+                .additivity(config.logger_additivity())
                 .build());
-        LOGGER.info("Added logger: {} with level: {}", config.name(), config.level());
+        LOGGER.info("Added logger: {} with level: {}", config.logger_name(), config.logger_level());
     }
 
     @Deactivate
     protected void stop(@NotNull LoggerConfig config) {
-        this.logbackManager.detachAppenders(config.name());
-        LOGGER.info("Removed logger: {} with level: {}", config.name(), config.level());
+        this.logbackManager.detachAppenders(config.logger_name());
+        LOGGER.info("Removed logger: {} with level: {}", config.logger_name(), config.logger_level());
     }
 }

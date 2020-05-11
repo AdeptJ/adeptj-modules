@@ -19,7 +19,7 @@ public @interface LoggerConfig {
             name = "Logger Name",
             description = "The logger name in java package naming convention form."
     )
-    String name();
+    String logger_name();
 
     @AttributeDefinition(
             name = "Logger Level",
@@ -31,11 +31,15 @@ public @interface LoggerConfig {
                     @Option(label = "DEBUG", value = "DEBUG"),
                     @Option(label = "TRACE", value = "TRACE")
             })
-    String level() default "INFO";
+    String logger_level() default "INFO";
 
     @AttributeDefinition(
             name = "Logger Additivity",
             description = "Whether to enable the logger additivity."
     )
-    boolean additivity();
+    boolean logger_additivity();
+
+    // name hint non editable property
+    String webconsole_configurationFactory_nameHint() default
+            "Logger [{" + "logger.name" + "}" + ": " + "{" + "logger.level" + "}]"; // NOSONAR
 }
