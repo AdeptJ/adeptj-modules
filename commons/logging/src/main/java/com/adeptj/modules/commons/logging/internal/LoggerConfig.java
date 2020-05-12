@@ -17,7 +17,7 @@ public @interface LoggerConfig {
 
     @AttributeDefinition(
             name = "Logger Name",
-            description = "The logger name in java package naming convention form."
+            description = "The logger name in Java package naming convention form."
     )
     String logger_name();
 

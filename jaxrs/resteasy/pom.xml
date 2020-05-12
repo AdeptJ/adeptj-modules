@@ -38,7 +38,12 @@
         <resteasy-tracing-api.version>1.0.0.Final</resteasy-tracing-api.version>
         <mime4j.version>0.8.3</mime4j.version>
         <microprofile-config-api.version>1.4</microprofile-config-api.version>
-        <smallrye-config.version>1.7.0</smallrye-config.version>
+        <smallrye-config.version>1.8.0</smallrye-config.version>
+        <smallrye-config-common.version>1.8.0</smallrye-config-common.version>
+        <smallrye-common-annotation.version>1.0.2</smallrye-common-annotation.version>
+        <smallrye-common-function.version>1.0.2</smallrye-common-function.version>
+        <smallrye-common-expression.version>1.0.2</smallrye-common-expression.version>
+        <smallrye-common-constraint.version>1.0.2</smallrye-common-constraint.version>
     </properties>
 
     <!-- Project Information -->
@@ -234,9 +239,33 @@
         <!-- Following dependencies to be embedded because these are not OSGi bundles-->
 
         <dependency>
+            <groupId>io.smallrye.common</groupId>
+            <artifactId>smallrye-common-annotation</artifactId>
+            <version>${smallrye-common-annotation.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.smallrye.common</groupId>
+            <artifactId>smallrye-common-function</artifactId>
+            <version>${smallrye-common-function.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.smallrye.common</groupId>
+            <artifactId>smallrye-common-expression</artifactId>
+            <version>${smallrye-common-expression.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.smallrye.common</groupId>
+            <artifactId>smallrye-common-constraint</artifactId>
+            <version>${smallrye-common-constraint.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.smallrye.config</groupId>
             <artifactId>smallrye-config-common</artifactId>
-            <version>${smallrye-config.version}</version>
+            <version>${smallrye-config-common.version}</version>
         </dependency>
 
         <dependency>
