@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.commons.cache;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -38,15 +40,21 @@ public final class CacheUtil {
     private static final String KEY_CACHE_SPEC = "cache.spec";
 
     public static String getCacheName(@NotNull Map<String, Object> properties) {
-        return (String) properties.get(KEY_CACHE_NAME);
+        String cacheName = (String) properties.get(KEY_CACHE_NAME);
+        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cache.name property can't be null!!");
+        return cacheName;
     }
 
     public static String getCacheSpec(@NotNull Map<String, Object> properties) {
-        return (String) properties.get(KEY_CACHE_SPEC);
+        String cacheSpec = (String) properties.get(KEY_CACHE_SPEC);
+        Validate.isTrue(StringUtils.isNotEmpty(cacheSpec), "cache.spec property can't be null!!");
+        return cacheSpec;
     }
 
     public static String getServicePid(@NotNull Map<String, Object> properties) {
-        return (String) properties.get(SERVICE_PID);
+        String servicePid = (String) properties.get(SERVICE_PID);
+        Validate.isTrue(StringUtils.isNotEmpty(servicePid), "service.pid property can't be null!!");
+        return servicePid;
     }
 
     public static void nullSafeEvict(Cache<?, ?> cache) {

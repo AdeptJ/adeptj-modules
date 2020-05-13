@@ -21,8 +21,6 @@
 package com.adeptj.modules.commons.cache.internal;
 
 import com.adeptj.modules.commons.cache.CacheUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
@@ -54,9 +52,6 @@ public class CaffeineCacheConfigFactory {
         this.cacheName = CacheUtil.getCacheName(properties);
         this.cacheSpec = CacheUtil.getCacheSpec(properties);
         this.servicePid = CacheUtil.getServicePid(properties);
-        Validate.isTrue(StringUtils.isNotEmpty(this.cacheName), "cacheName can't be null!!");
-        Validate.isTrue(StringUtils.isNotEmpty(this.cacheSpec), "cacheSpec can't be null!!");
-        Validate.isTrue(StringUtils.isNotEmpty(this.servicePid), "service.pid can't be null!!");
     }
 
     public String getCacheName() {
