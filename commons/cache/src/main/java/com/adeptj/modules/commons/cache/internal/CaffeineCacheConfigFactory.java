@@ -20,12 +20,14 @@
 
 package com.adeptj.modules.commons.cache.internal;
 
+import com.adeptj.modules.commons.cache.CacheUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
+
+import java.util.Map;
 
 import static com.adeptj.modules.commons.cache.internal.CaffeineCacheConfigFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -45,12 +47,16 @@ public class CaffeineCacheConfigFactory {
 
     private final String cacheSpec;
 
+    private final String servicePid;
+
     @Activate
-    public CaffeineCacheConfigFactory(@NotNull CaffeineCacheConfig cacheConfig) {
-        this.cacheName = cacheConfig.cache_name();
-        this.cacheSpec = cacheConfig.cache_spec();
+    public CaffeineCacheConfigFactory(Map<String, Object> properties) {
+        this.cacheName = CacheUtil.getCacheName(properties);
+        this.cacheSpec = CacheUtil.getCacheSpec(properties);
+        this.servicePid = CacheUtil.getServicePid(properties);
         Validate.isTrue(StringUtils.isNotEmpty(this.cacheName), "cacheName can't be null!!");
         Validate.isTrue(StringUtils.isNotEmpty(this.cacheSpec), "cacheSpec can't be null!!");
+        Validate.isTrue(StringUtils.isNotEmpty(this.servicePid), "service.pid can't be null!!");
     }
 
     public String getCacheName() {
@@ -59,5 +65,9 @@ public class CaffeineCacheConfigFactory {
 
     public String getCacheSpec() {
         return this.cacheSpec;
+    }
+
+    public String getServicePid() {
+        return this.servicePid;
     }
 }
