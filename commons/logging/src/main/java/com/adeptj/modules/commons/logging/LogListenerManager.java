@@ -27,15 +27,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
-import org.slf4j.Logger;
 
 /**
- * OSGi component registers a {@link LogListener} with {@link LogReaderService}.
+ * This OSGi component registers the {@link LogEntryConsumer} as a {@link LogListener} with {@link LogReaderService}.
  * <p>
- * The registered {@link LogListener} accepts the {@link LogEntry} which contains information
- * such as human readable message, exception etc.
- * <p>
- * This information is sent to the SLF4J {@link Logger} to log with ERROR, WARN or DEBUG log levels.
+ * The registered {@link LogListener} accepts the {@link LogEntry} which contains information such as human readable
+ * message, exception etc.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
