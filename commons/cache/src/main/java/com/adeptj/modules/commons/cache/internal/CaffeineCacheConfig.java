@@ -41,5 +41,6 @@ public @interface CaffeineCacheConfig {
     String cache_spec() default "maximumSize=16,expireAfterWrite=3600s";
 
     // name hint non editable property
-    String webconsole_configurationFactory_nameHint() default "Caffeine Cache: {" + "cache.name" + "}"; // NOSONAR
+    String webconsole_configurationFactory_nameHint() default
+            "Caffeine Cache ({" + "cache.name" + "}" + ": " + "{" + "cache.spec" + "})"; // NOSONAR
 }

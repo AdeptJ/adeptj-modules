@@ -49,8 +49,8 @@ public class CaffeineCacheConfigFactory {
     public CaffeineCacheConfigFactory(@NotNull CaffeineCacheConfig cacheConfig) {
         this.cacheName = cacheConfig.cache_name();
         this.cacheSpec = cacheConfig.cache_spec();
-        Validate.isTrue(StringUtils.isNotEmpty(this.cacheName), "cacheName can't be blank!!");
-        Validate.isTrue(StringUtils.isNotEmpty(this.cacheSpec), "cacheSpec can't be blank!!");
+        Validate.isTrue(StringUtils.isNotEmpty(this.cacheName), "cacheName can't be null!!");
+        Validate.isTrue(StringUtils.isNotEmpty(this.cacheSpec), "cacheSpec can't be null!!");
     }
 
     public String getCacheName() {
@@ -59,13 +59,5 @@ public class CaffeineCacheConfigFactory {
 
     public String getCacheSpec() {
         return this.cacheSpec;
-    }
-
-    @Override
-    public String toString() {
-        return "CaffeineCacheConfigFactory[" +
-                "cacheName='" + cacheName + '\'' +
-                ", cacheSpec='" + cacheSpec + '\'' +
-                ']';
     }
 }

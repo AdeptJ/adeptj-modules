@@ -24,7 +24,10 @@ import com.adeptj.modules.commons.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +41,8 @@ import java.util.function.Function;
  */
 public final class CaffeineCache<K, V> implements Cache<K, V> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private final String cacheName;
 
     private final com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache;
@@ -45,6 +50,7 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
     CaffeineCache(String cacheName, String cacheSpec) {
         this.cacheName = cacheName;
         this.caffeineCache = Caffeine.from(cacheSpec).build();
+        LOGGER.info("CaffeineCache ({}:{}) initialized!!", cacheName, cacheSpec);
     }
 
     @Override
@@ -89,7 +95,12 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
 
     @Override
     public void evict() {
-        this.caffeineCache.invalidateAll();
+        try {
+            this.caffeineCache.invalidateAll();
+            LOGGER.info("CaffeineCache:({}) evicted!!", this.getName());
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error(ex.getMessage(), ex);
+        }
     }
 
     @Override
