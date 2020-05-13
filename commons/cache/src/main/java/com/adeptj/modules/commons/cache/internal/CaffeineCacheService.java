@@ -18,10 +18,10 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine.internal;
+package com.adeptj.modules.commons.cache.internal;
 
-import com.adeptj.modules.cache.caffeine.Cache;
-import com.adeptj.modules.cache.caffeine.CacheService;
+import com.adeptj.modules.commons.cache.Cache;
+import com.adeptj.modules.commons.cache.CacheService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

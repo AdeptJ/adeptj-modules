@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#                                                                             #
+#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,23 +16,30 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-cache</artifactId>
-    <version>1.0.0.Final</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Cache :: Builder</name>
-    <description>AdeptJ Modules :: Cache :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.commons.cache.internal;
 
-        <module>caffeine</module>
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-    </modules>
+/**
+ * Configuration for Caffeine cache.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@ObjectClassDefinition(
+        name = "AdeptJ CaffeineCache Configuration Factory",
+        description = "Factory for creating AdeptJ CaffeineCache Configurations."
+)
+public @interface CaffeineCacheConfig {
 
-</project>
+    @AttributeDefinition(name = "Cache Name", description = "A meaningful name of the configured cache.")
+    String cache_name();
+
+    @AttributeDefinition(name = "Cache Spec", description = "The cache spec literal for configuring Caffeine cache.")
+    String cache_spec() default "maximumSize=16,expireAfterWrite=3600s";
+
+    // name hint non editable property
+    String webconsole_configurationFactory_nameHint() default "Caffeine Cache: {" + "cache.name" + "}"; // NOSONAR
+}

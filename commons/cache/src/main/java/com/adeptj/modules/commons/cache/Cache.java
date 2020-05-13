@@ -18,28 +18,46 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine.internal;
+package com.adeptj.modules.commons.cache;
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
- * Configuration for Caffeine cache.
+ * The {@link Cache}
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ CaffeineCache Configuration Factory",
-        description = "Factory for creating AdeptJ CaffeineCache Configurations."
-)
-public @interface CaffeineCacheConfig {
+public interface Cache<K, V> {
 
-    @AttributeDefinition(name = "Cache Name", description = "A meaningful name of the configured cache.")
-    String cache_name();
+    /**
+     * Each Cache instance has a name which this method returns to the caller.
+     *
+     * @return the unique cache name.
+     */
+    String getName();
 
-    @AttributeDefinition(name = "Cache Spec", description = "The cache spec literal for configuring Caffeine cache.")
-    String cache_spec() default "maximumSize=16,expireAfterWrite=3600s";
+    V get(K key, Function<? super K, ? extends V> mappingFunction);
 
-    // name hint non editable property
-    String webconsole_configurationFactory_nameHint() default "Caffeine Cache: {" + "cache.name" + "}"; // NOSONAR
+    V getIfPresent(K key);
+
+    Map<K, V> getAllPresent(Iterable<K> keys);
+
+    Map<K, V> getAll();
+
+    void put(K key, V value);
+
+    void remove(K key);
+
+    void remove(Iterable<K> keys);
+
+    void evict();
+
+    long size();
+
+    Set<K> keys();
+
+    Collection<V> values();
 }

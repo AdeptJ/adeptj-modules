@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.cache.caffeine;
+package com.adeptj.modules.commons.cache;
 
 import org.jetbrains.annotations.Nullable;
 import org.osgi.annotation.versioning.ProviderType;
