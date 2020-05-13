@@ -43,7 +43,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(immediate = true)
+@Component
 public class CaffeineCacheService implements CacheService {
 
     private final ConcurrentMap<String, Cache<?, ?>> caches;
