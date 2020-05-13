@@ -98,13 +98,6 @@
             <artifactId>annotations</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-runtime-extensions</artifactId>
-            <version>${adeptj-runtime-extensions.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
     </dependencies>
 
 </project>
