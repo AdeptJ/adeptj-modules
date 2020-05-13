@@ -11,15 +11,16 @@ import org.osgi.service.metatype.annotations.Option;
  */
 @ObjectClassDefinition(
         name = "AdeptJ Logger Configuration Factory",
-        description = "Factory for creating AdeptJ Logger Configurations."
+        description = "Factory for creating AdeptJ Logger Configurations.",
+        localization = "OSGI-INF/l10n/metatype"
 )
 public @interface LoggerConfig {
 
     @AttributeDefinition(
-            name = "Logger Name",
-            description = "The logger name in Java package naming convention form."
+            name = "Logger Names",
+            description = "%logger.names.desc"
     )
-    String logger_name();
+    String[] logger_names();
 
     @AttributeDefinition(
             name = "Logger Level",
@@ -35,11 +36,11 @@ public @interface LoggerConfig {
 
     @AttributeDefinition(
             name = "Logger Additivity",
-            description = "Whether to enable the logger additivity."
+            description = "%logger.additivity.desc"
     )
     boolean logger_additivity();
 
     // name hint non editable property
     String webconsole_configurationFactory_nameHint() default
-            "Logger [{" + "logger.name" + "}" + ": " + "{" + "logger.level" + "}]"; // NOSONAR
+            "Logger ({" + "logger.names" + "}" + ": " + "{" + "logger.level" + "})"; // NOSONAR
 }

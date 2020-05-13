@@ -23,16 +23,20 @@ package com.adeptj.modules.commons.cache.internal;
 import com.adeptj.modules.commons.cache.Cache;
 import com.adeptj.modules.commons.cache.CacheService;
 import com.adeptj.modules.commons.cache.CacheUtil;
+import com.adeptj.modules.commons.cache.CaffeineCacheConfigFactoryBindException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -48,11 +52,11 @@ public class CaffeineCacheService implements CacheService {
 
     private final ConcurrentMap<String, Cache<?, ?>> caches;
 
-    private final ConcurrentMap<String, String> pidCacheNameMapping;
+    private final List<String> configPids;
 
     public CaffeineCacheService() {
         this.caches = new ConcurrentHashMap<>();
-        this.pidCacheNameMapping = new ConcurrentHashMap<>();
+        this.configPids = new CopyOnWriteArrayList<>();
     }
 
     /**
@@ -61,6 +65,7 @@ public class CaffeineCacheService implements CacheService {
     @SuppressWarnings("unchecked")
     @Override
     public <K, V> @Nullable Cache<K, V> getCache(String cacheName) {
+        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cacheName can't be null!!");
         return (Cache<K, V>) this.caches.get(cacheName);
     }
 
@@ -77,7 +82,7 @@ public class CaffeineCacheService implements CacheService {
     // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
     /**
-     * First evict all the caches and then clears the {@link Cache} instance holding map.
+     * First evict all the caches and then clears the {@link #caches} map.
      */
     @Deactivate
     protected void stop() {
@@ -92,13 +97,12 @@ public class CaffeineCacheService implements CacheService {
             throw new CaffeineCacheConfigFactoryBindException(String.format("Cache:(%s) already exists!!", cacheName));
         }
         this.caches.put(cacheName, new CaffeineCache<>(cacheName, configFactory.getCacheSpec()));
-        this.pidCacheNameMapping.put(configFactory.getServicePid(), cacheName);
+        this.configPids.add(configFactory.getServicePid());
     }
 
     protected void unbindCaffeineCacheConfigFactory(@NotNull CaffeineCacheConfigFactory configFactory) {
-        String cacheName = configFactory.getCacheName();
-        if (StringUtils.equals(cacheName, this.pidCacheNameMapping.get(configFactory.getServicePid()))) {
-            CacheUtil.nullSafeEvict(this.caches.remove(cacheName));
+        if (this.configPids.remove(configFactory.getServicePid())) {
+            CacheUtil.nullSafeEvict(this.caches.remove(configFactory.getCacheName()));
         }
     }
 }

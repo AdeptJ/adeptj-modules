@@ -17,49 +17,16 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.cache;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
-
-import static org.osgi.framework.Constants.SERVICE_PID;
-
 /**
- * Utilities for cache module.
+ * Exception thrown when a cache already exists in CaffeineCacheConfigFactory bind method.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class CacheUtil {
+public class CaffeineCacheConfigFactoryBindException extends RuntimeException {
 
-    private static final String KEY_CACHE_NAME = "cache.name";
-
-    private static final String KEY_CACHE_SPEC = "cache.spec";
-
-    public static String getCacheName(@NotNull Map<String, Object> properties) {
-        String cacheName = StringUtils.trim((String) properties.get(KEY_CACHE_NAME));
-        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cache.name property can't be null!!");
-        return cacheName;
-    }
-
-    public static String getCacheSpec(@NotNull Map<String, Object> properties) {
-        String cacheSpec = StringUtils.trim((String) properties.get(KEY_CACHE_SPEC));
-        Validate.isTrue(StringUtils.isNotEmpty(cacheSpec), "cache.spec property can't be null!!");
-        return cacheSpec;
-    }
-
-    public static String getServicePid(@NotNull Map<String, Object> properties) {
-        String servicePid = (String) properties.get(SERVICE_PID);
-        Validate.isTrue(StringUtils.isNotEmpty(servicePid), "service.pid property can't be null!!");
-        return servicePid;
-    }
-
-    public static void nullSafeEvict(Cache<?, ?> cache) {
-        if (cache != null) {
-            cache.evict();
-        }
+    public CaffeineCacheConfigFactoryBindException(String message) {
+        super(message);
     }
 }

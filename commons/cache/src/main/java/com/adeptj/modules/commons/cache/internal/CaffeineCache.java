@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -97,7 +96,7 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
     public void evict() {
         try {
             this.caffeineCache.invalidateAll();
-            LOGGER.info("CaffeineCache:({}) evicted!!", this.getName());
+            LOGGER.info("CaffeineCache ({}) evicted!!", this.getName());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }
@@ -117,20 +116,5 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
     @Override
     public @NotNull Collection<V> values() {
         return this.caffeineCache.asMap().values();
-    }
-
-    // <<----------------------- Generated ----------------------->>
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CaffeineCache<?, ?> that = (CaffeineCache<?, ?>) o;
-        return Objects.equals(this.cacheName, that.cacheName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.cacheName);
     }
 }
