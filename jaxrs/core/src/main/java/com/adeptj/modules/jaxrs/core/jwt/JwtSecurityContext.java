@@ -22,9 +22,7 @@ package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.jaxrs.core.JwtPrincipal;
 import com.adeptj.modules.security.jwt.JwtClaims;
-import org.jetbrains.annotations.NotNull;
 
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.SecurityContext;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
