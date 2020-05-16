@@ -67,7 +67,7 @@ public @interface PasswordEncoderConfig {
             name = "Password Encoding Method",
             description = "Method to encode the password, only [BCrypt or PBKDF2WithHmacSHA*] supported at this moment.",
             options = {
-                    @Option(label = "BCrypt", value = BCRYPT),
+                    @Option(label = BCRYPT, value = BCRYPT),
                     @Option(label = "PBKDF2 HmacSHA256", value = "PBKDF2WithHmacSHA256"),
                     @Option(label = "PBKDF2 HmacSHA384", value = "PBKDF2WithHmacSHA384"),
                     @Option(label = "PBKDF2 HmacSHA512", value = "PBKDF2WithHmacSHA512")

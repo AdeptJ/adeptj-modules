@@ -22,6 +22,7 @@ package com.adeptj.modules.commons.utils;
 
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
@@ -32,40 +33,34 @@ import java.util.UUID;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class Randomizer {
+public class RandomUtil {
 
-    public static final SecureRandom DEFAULT_SECURE_RANDOM;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private static final RandomBasedGenerator RANDOM_BASED_GENERATOR;
+    private static final RandomBasedGenerator GENERATOR = Generators.randomBasedGenerator(SECURE_RANDOM);
 
-    static {
-        DEFAULT_SECURE_RANDOM = new SecureRandom();
-        DEFAULT_SECURE_RANDOM.nextBytes(new byte[64]);
-        RANDOM_BASED_GENERATOR = Generators.randomBasedGenerator(DEFAULT_SECURE_RANDOM);
+    private static final int DEFAULT_MAX_LENGTH = 64;
+
+    private RandomUtil() {
     }
 
-    private Randomizer() {
+    public static SecureRandom getSecureRandom() {
+        return SECURE_RANDOM;
     }
 
-    public static @NotNull byte[] random16Bytes() {
-        return randomBytes(16);
-    }
-
-    public static @NotNull byte[] random32Bytes() {
-        return randomBytes(32);
-    }
-
-    private static @NotNull byte[] randomBytes(int length) {
+    public static @NotNull byte[] randomBytes(int length) {
+        int maxLength = Integer.getInteger("adeptj.secure.random.max.bytes.length", DEFAULT_MAX_LENGTH);
+        Validate.isTrue((length <= maxLength), String.format("length can't be greater than %s", maxLength));
         byte[] bytes = new byte[length];
-        DEFAULT_SECURE_RANDOM.nextBytes(bytes);
+        SECURE_RANDOM.nextBytes(bytes);
         return bytes;
     }
 
-    public static UUID randomUUID() {
-        return RANDOM_BASED_GENERATOR.generate();
+    public static UUID uuid() {
+        return GENERATOR.generate();
     }
 
-    public static String randomUUIDString() {
-        return randomUUID().toString();
+    public static String uuidString() {
+        return uuid().toString();
     }
 }

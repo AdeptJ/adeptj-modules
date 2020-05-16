@@ -60,8 +60,8 @@ public final class Functions {
     }
 
     /**
-     * Executes the provided {@link VoidFunction} by setting the provided {@link ClassLoader}
-     * in current thread's context class loader.
+     * Executes the provided {@link VoidFunction} by setting the provided {@link ClassLoader} in current thread's
+     * context class loader.
      *
      * @param cl       the class loader to use as a context class loader for the execution
      * @param function the function to be executed under given class loader
@@ -78,8 +78,8 @@ public final class Functions {
     }
 
     /**
-     * Executes the provided {@link ValueFunction} by setting the provided {@link ClassLoader}
-     * in current thread's context class loader.
+     * Executes the provided {@link ValueFunction} by setting the provided {@link ClassLoader} in current thread's
+     * context class loader.
      *
      * @param cl       the class loader to use as a context class loader for the execution
      * @param function the function to be executed under given class loader

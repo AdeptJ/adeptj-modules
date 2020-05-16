@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.commons.utils.Randomizer;
+import com.adeptj.modules.commons.utils.RandomUtil;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
@@ -116,7 +116,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(subject)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
-                .setId(claims.containsKey(ID) ? claims.get(ID).toString() : Randomizer.randomUUIDString())
+                .setId(claims.containsKey(ID) ? claims.get(ID).toString() : RandomUtil.uuidString())
                 .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
                 .signWith(this.keyInfo.getPrivateKey(), this.keyInfo.getSignatureAlgorithm())
                 .serializeToJsonWith(this.serializer)

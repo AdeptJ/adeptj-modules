@@ -16,7 +16,7 @@
 #                                                                          #
 ############################################################################
 
-# Look for metatype and ds annotations in all packages by default.
+# Scan all packages for Metatype and DS annotations as of now.
 
 -metatypeannotations: *
 
@@ -26,12 +26,15 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Export-Package: com.adeptj.modules.commons.jdbc.service, \
-                com.adeptj.modules.commons.jdbc.exception, \
-                com.adeptj.modules.commons.jdbc.util
-
+Export-Package: com.adeptj.modules.security.oauth, \
+                com.adeptj.modules.security.oauth.common, \
+                com.adeptj.modules.security.oauth.http, \
+                com.adeptj.modules.security.oauth.provider.api
+  
 Bundle-Name: ${project.name}
 
-Bundle-Category: AdeptJ Commons
+Bundle-Category: AdeptJ Security
 
 Bundle-Vendor: AdeptJ
+
+Built-By: ${user.name}

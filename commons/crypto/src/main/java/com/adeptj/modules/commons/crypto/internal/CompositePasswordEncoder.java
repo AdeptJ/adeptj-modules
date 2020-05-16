@@ -24,6 +24,7 @@ import at.favre.lib.bytes.Bytes;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
+import com.adeptj.modules.commons.utils.RandomUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -69,13 +70,13 @@ public class CompositePasswordEncoder implements PasswordEncoder {
     public String encode(char[] rawPassword) {
         Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
         if (BCRYPT.equals(this.algorithm)) {
-            return BCrypt.withDefaults().hashToString(this.exponentialCost, rawPassword);
+            return BCrypt.with(RandomUtil.getSecureRandom()).hashToString(this.exponentialCost, rawPassword);
         }
         byte[] salt = null;
         byte[] digest = null;
         byte[] compositeDigest = null;
         try {
-            salt = CryptoUtil.randomBytes(SALT_LENGTH);
+            salt = RandomUtil.randomBytes(SALT_LENGTH);
             digest = CryptoUtil.newSecretKey(this.algorithm, rawPassword, salt, this.iterationCount, this.keyLength);
             compositeDigest = ByteBuffer.allocate(salt.length + digest.length)
                     .put(salt)

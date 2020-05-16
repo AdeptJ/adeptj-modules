@@ -21,7 +21,6 @@
 package com.adeptj.modules.commons.crypto;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -37,35 +36,7 @@ import java.util.Arrays;
  */
 public class CryptoUtil {
 
-    /**
-     * From : JJWT's SignatureProvider
-     * <p>
-     * Crypto module's default SecureRandom number generator. This RNG is initialized using the JVM default as follows:
-     *
-     * <pre><code>
-     * static {
-     *     DEFAULT_SECURE_RANDOM = new SecureRandom();
-     *     DEFAULT_SECURE_RANDOM.nextBytes(new byte[64]);
-     * }
-     * </code></pre>
-     *
-     * <p><code>nextBytes</code> is called to force the RNG to initialize itself if not already initialized.
-     * The byte array is not used and discarded immediately for garbage collection.</p>
-     */
-    private static final SecureRandom DEFAULT_SECURE_RANDOM;
-
-    static {
-        DEFAULT_SECURE_RANDOM = new SecureRandom();
-        DEFAULT_SECURE_RANDOM.nextBytes(new byte[64]);
-    }
-
     private CryptoUtil() {
-    }
-
-    public static byte @NotNull [] randomBytes(int length) {
-        byte[] randomBytes = new byte[length];
-        DEFAULT_SECURE_RANDOM.nextBytes(randomBytes);
-        return randomBytes;
     }
 
     public static void nullSafeWipe(byte[] data) {
@@ -74,7 +45,8 @@ public class CryptoUtil {
         }
     }
 
-    public static byte[] newSecretKey(String algorithm, char[] password, byte[] salt, int iterationCount, int keyLength) {
+    public static byte[] newSecretKey(String algorithm,
+                                      char[] password, byte[] salt, int iterationCount, int keyLength) {
         try {
             return SecretKeyFactory.getInstance(algorithm)
                     .generateSecret(new PBEKeySpec(password, salt, iterationCount, keyLength))

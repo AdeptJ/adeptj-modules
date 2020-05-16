@@ -23,6 +23,8 @@ package com.adeptj.modules.commons.crypto.internal;
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
+import com.adeptj.modules.commons.utils.RandomUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +53,7 @@ import static javax.crypto.Cipher.ENCRYPT_MODE;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = CryptoConfig.class)
-@Component(immediate = true, configurationPolicy = ConfigurationPolicy.REQUIRE)
+@Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class CryptoServiceImpl implements CryptoService {
 
     private static final int IV_LENGTH = 12;
@@ -77,6 +79,7 @@ public class CryptoServiceImpl implements CryptoService {
         this.iterationCount = config.pbe_key_spec_iteration_count();
         this.algorithm = config.pbe_key_spec_algorithm();
         this.cryptoKey = config.crypto_key().toCharArray();
+        Validate.isTrue(ArrayUtils.isNotEmpty(this.cryptoKey), "cryptoKey can't be null or empty!!");
     }
 
     @Override
@@ -88,8 +91,8 @@ public class CryptoServiceImpl implements CryptoService {
         byte[] cipherBytes = null;
         byte[] compositeCipherBytes = null;
         try {
-            iv = CryptoUtil.randomBytes(IV_LENGTH);
-            salt = CryptoUtil.randomBytes(SALT_LENGTH);
+            iv = RandomUtil.randomBytes(IV_LENGTH);
+            salt = RandomUtil.randomBytes(SALT_LENGTH);
             key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
             cipher.init(ENCRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.authTagLength, iv));
