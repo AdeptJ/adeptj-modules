@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
+import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
@@ -92,33 +93,31 @@ public class ResteasyLifecycle {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void start(ServletConfig servletConfig) {
-        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-            long startTime = System.nanoTime();
-            LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-            // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
-            ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
-            this.resteasyDispatcher = new ResteasyDispatcher(this.config.blacklistedProviders());
-            this.resteasyDispatcher.init(servletConfig);
-            Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
-            ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
-                    .register(ResteasyUtil.newCorsFilter(this.config))
-                    .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
-                    .register(new WebApplicationExceptionMapper())
-                    .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
-                    .register(new JsonbContextResolver())
-                    .register(new JsonReaderFactoryContextResolver())
-                    .register(new JsonWriterFactoryContextResolver());
-            this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, dispatcher.getRegistry());
-            this.serviceTracker.open();
-            LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
-            throw new ResteasyBootstrapException(ex.getMessage(), ex);
-        } finally {
-            Thread.currentThread().setContextClassLoader(contextClassLoader);
-        }
+        Functions.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
+            try {
+                long startTime = System.nanoTime();
+                LOGGER.info("Bootstrapping JAX-RS Runtime!!");
+                // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
+                ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
+                this.resteasyDispatcher = new ResteasyDispatcher(this.config.blacklistedProviders());
+                this.resteasyDispatcher.init(servletConfig);
+                Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
+                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
+                        .register(ResteasyUtil.newCorsFilter(this.config))
+                        .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
+                        .register(new WebApplicationExceptionMapper())
+                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
+                        .register(new JsonbContextResolver())
+                        .register(new JsonReaderFactoryContextResolver())
+                        .register(new JsonWriterFactoryContextResolver());
+                this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, dispatcher.getRegistry());
+                this.serviceTracker.open();
+                LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
+            } catch (Exception ex) { // NOSONAR
+                LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
+                throw new ResteasyBootstrapException(ex.getMessage(), ex);
+            }
+        });
     }
 
     /**

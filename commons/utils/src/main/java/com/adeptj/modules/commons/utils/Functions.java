@@ -63,7 +63,7 @@ public final class Functions {
      * Executes the provided {@link VoidFunction} by setting the provided {@link ClassLoader} in current thread's
      * context class loader.
      *
-     * @param cl       the class loader to use as a context class loader for the execution
+     * @param cl       the class loader to use as a context class loader for the function execution
      * @param function the function to be executed under given class loader
      */
     public static void executeUnderContextClassLoader(ClassLoader cl, @NotNull Functions.VoidFunction function) {
@@ -81,7 +81,7 @@ public final class Functions {
      * Executes the provided {@link ValueFunction} by setting the provided {@link ClassLoader} in current thread's
      * context class loader.
      *
-     * @param cl       the class loader to use as a context class loader for the execution
+     * @param cl       the class loader to use as a context class loader for the function execution
      * @param function the function to be executed under given class loader
      * @param <T>      Type that ReturningFunction returns.
      * @return the result of the execution
