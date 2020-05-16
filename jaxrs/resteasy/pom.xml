@@ -320,6 +320,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core-spi</artifactId>
+            <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.sun.activation</groupId>
@@ -564,6 +565,7 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
+            <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.sun.mail</groupId>
