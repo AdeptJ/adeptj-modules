@@ -29,7 +29,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-jdbc</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: JDBC DataSource (Hikari DataSource)</name>
     <description>JDBC DataSource based on Hikari</description>
@@ -97,8 +97,8 @@
 
     <build>
 
-        <!-- Below BND plugin is required to process the OSGi Annotations -->
         <plugins>
+
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
@@ -111,31 +111,6 @@
                 </executions>
             </plugin>
 
-            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <release>11</release>
-                </configuration>
-            </plugin>
-
-            <!-- AdeptJ maven plugin for bundle installation etc -->
-            <plugin>
-                <groupId>com.adeptj</groupId>
-                <artifactId>adeptj-maven-plugin</artifactId>
-            </plugin>
         </plugins>
 
     </build>

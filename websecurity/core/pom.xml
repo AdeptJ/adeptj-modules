@@ -28,28 +28,18 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-websecurity-core</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: WebSecurity :: Core</name>
     <description>AdeptJ Modules :: WebSecurity :: Core</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <felix.jaas.version>1.0.2</felix.jaas.version>
     </properties>
 
     <build>
 
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <release>11</release>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
@@ -61,23 +51,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <!-- AdeptJ maven plugin for bundle installation etc -->
-            <plugin>
-                <groupId>com.adeptj</groupId>
-                <artifactId>adeptj-maven-plugin</artifactId>
-                <version>${adeptj-maven-plugin.version}</version>
             </plugin>
 
         </plugins>

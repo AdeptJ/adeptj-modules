@@ -28,14 +28,14 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-data-sql2o</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Data :: Sql2o</name>
     <description>AdeptJ Modules :: Data :: Sql2o</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <adeptj-modules-commons-jdbc.version>1.0.0.Final</adeptj-modules-commons-jdbc.version>
+        <adeptj-modules-commons-jdbc.version>1.0.0</adeptj-modules-commons-jdbc.version>
     </properties>
 
     <!-- Project Information -->
@@ -95,7 +95,6 @@
 
     <build>
 
-        <!-- Below BND plugin is required to process the OSGi Annotation-->
         <plugins>
 
             <plugin>
@@ -108,26 +107,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <release>11</release>
-                </configuration>
             </plugin>
 
         </plugins>
@@ -200,7 +179,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-jaxrs-core</artifactId>
-            <version>2.0.0.Final</version>
+            <version>2.0.0</version>
             <scope>provided</scope>
         </dependency>
 

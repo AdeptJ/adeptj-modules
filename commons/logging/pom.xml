@@ -29,7 +29,7 @@
     </parent>
     <artifactId>adeptj-modules-commons-logging</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.3.Final</version>
+    <version>1.0.3</version>
     <name>AdeptJ Modules :: Commons :: OSGi Logging Bridge</name>
     <description>Logging Bridge for forwarding OSGi logs to SLF4J logging backend.</description>
 
@@ -42,15 +42,6 @@
         <plugins>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <release>11</release>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
                 <executions>
@@ -60,21 +51,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.adeptj</groupId>
-                <artifactId>adeptj-maven-plugin</artifactId>
             </plugin>
 
         </plugins>

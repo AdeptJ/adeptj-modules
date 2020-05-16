@@ -26,6 +26,8 @@ package com.adeptj.modules.commons.cache;
  */
 public class CaffeineCacheConfigFactoryBindException extends RuntimeException {
 
+    private static final long serialVersionUID = 1539582056947196713L;
+
     public CaffeineCacheConfigFactoryBindException(String message) {
         super(message);
     }

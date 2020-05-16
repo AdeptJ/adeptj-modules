@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adeptj</groupId>
     <artifactId>adeptj-modules-websecurity</artifactId>
-    <version>1.0.0.Final</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: WebSecurity :: Builder</name>
     <description>AdeptJ Modules :: WebSecurity :: Builder</description>

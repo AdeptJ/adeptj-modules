@@ -28,7 +28,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-jaxrs-core</artifactId>
-    <version>2.0.0.Final</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: JAX-RS :: Core</name>
     <description>AdeptJ Modules :: JAX-RS :: Core</description>
@@ -94,7 +94,6 @@
 
     <build>
 
-        <!-- Below BND plugin is required to process the OSGi Annotation-->
         <plugins>
 
             <plugin>
@@ -107,26 +106,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Below Maven Jar plugin is required to process MANIFEST.MF -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgument>-parameters</compilerArgument>
-                    <release>11</release>
-                </configuration>
             </plugin>
 
         </plugins>
@@ -192,7 +171,7 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-websecurity-jwt</artifactId>
-            <version>1.1.0.Final</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
 
