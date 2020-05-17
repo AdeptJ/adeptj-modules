@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The {@link ComponentPropertyType} for {@link org.osgi.service.cm.ConfigurationPlugin} properties.
+ * The {@link ComponentPropertyType} for org.osgi.service.cm.ConfigurationPlugin properties.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -47,7 +47,7 @@ public @interface ConfigurationPluginProperties {
     /**
      * A service property to specify the order in which plugins are invoked.
      *
-     * @return rank by order of which the {@link org.osgi.service.cm.ConfigurationPlugin} instances will be invoked.
+     * @return rank by order of which the org.osgi.service.cm.ConfigurationPlugin instances will be invoked.
      */
     int service_cmRanking(); // NOSONAR
 }

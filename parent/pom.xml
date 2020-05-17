@@ -187,6 +187,13 @@
 
             <dependency>
                 <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-modules-commons-jdbc</artifactId>
+                <version>${adeptj-modules-commons-jdbc.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adeptj</groupId>
                 <artifactId>adeptj-modules-data-jpa</artifactId>
                 <version>${adeptj-modules-data-jpa.version}</version>
                 <scope>provided</scope>
@@ -196,6 +203,13 @@
                 <groupId>com.adeptj</groupId>
                 <artifactId>adeptj-modules-data-mongodb</artifactId>
                 <version>${adeptj-modules-data-mongodb.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adeptj</groupId>
+                <artifactId>adeptj-modules-websecurity-jwt</artifactId>
+                <version>${adeptj-modules-websecurity-jwt.version}</version>
                 <scope>provided</scope>
             </dependency>
 
