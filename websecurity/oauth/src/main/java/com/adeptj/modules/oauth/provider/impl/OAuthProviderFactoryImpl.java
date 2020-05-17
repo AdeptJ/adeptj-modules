@@ -24,7 +24,6 @@ import com.adeptj.modules.oauth.common.OAuthProvider;
 import com.adeptj.modules.oauth.provider.api.OAuthProviderFactory;
 import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +67,7 @@ public class OAuthProviderFactoryImpl implements OAuthProviderFactory {
     /**
      * {@inheritDoc}
      */
-    public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
+    public void updated(String pid, Dictionary<String, ?> properties) {
         String providerName = (String) properties.get("");
         String apiKey = (String) properties.get("");
         String apiSecret = (String) properties.get("");
