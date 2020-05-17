@@ -40,8 +40,6 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_FOUND;
-import static org.osgi.service.http.HttpContext.AUTHORIZATION;
-import static org.osgi.service.http.HttpContext.REMOTE_USER;
 
 /**
  * Felix {@link WebConsoleSecurityProvider} implementation which matches the roles set in request with the configured ones.
@@ -79,10 +77,8 @@ public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         // Note: Semantics of this method states that Session invalidation should not happen here.
         // Not using response.sendRedirect due to exception handling we need to do, avoiding that.
-        // Set the status to [302] and location header to [/tools/logout] so that browser could redirect there.
+        // Set the status to [302] and location header to [/admin/logout] so that browser could redirect there.
         // AuthServlet will take care of Session invalidation later.
-        request.removeAttribute(REMOTE_USER);
-        request.removeAttribute(AUTHORIZATION);
         response.setStatus(SC_FOUND);
         response.setHeader(HEADER_LOC, this.logoutURI);
     }

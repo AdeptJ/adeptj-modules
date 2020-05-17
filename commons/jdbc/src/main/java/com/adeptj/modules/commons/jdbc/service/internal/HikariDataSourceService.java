@@ -20,9 +20,7 @@
 
 package com.adeptj.modules.commons.jdbc.service.internal;
 
-import com.adeptj.modules.commons.jdbc.exception.DataSourceConfigurationException;
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
-import com.adeptj.modules.commons.jdbc.util.DataSources;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;

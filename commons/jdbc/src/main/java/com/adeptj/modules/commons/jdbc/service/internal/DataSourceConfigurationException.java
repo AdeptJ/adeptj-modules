@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.exception;
+package com.adeptj.modules.commons.jdbc.service.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 
@@ -27,11 +27,11 @@ import com.adeptj.modules.commons.jdbc.service.DataSourceService;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class DataSourceConfigurationException extends RuntimeException {
+class DataSourceConfigurationException extends RuntimeException {
 
     private static final long serialVersionUID = -4649854107775357466L;
 
-    public DataSourceConfigurationException(Throwable ex) {
+    DataSourceConfigurationException(Throwable ex) {
         super(ex);
     }
 }
