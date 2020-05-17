@@ -31,7 +31,7 @@
     <artifactId>adeptj-modules-commons-jdbc</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Commons :: JDBC DataSource (Hikari DataSource)</name>
+    <name>AdeptJ Modules :: Commons :: JDBC DataSource</name>
     <description>JDBC DataSource based on Hikari</description>
 
     <properties>
