@@ -1,6 +1,8 @@
 package com.adeptj.modules.security.core.credential;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +19,7 @@ public class BearerTokenCredential implements Credential {
         this.token = token;
     }
 
-    public static Credential from(HttpServletRequest request) {
+    public static @Nullable Credential from(@NotNull HttpServletRequest request) {
         String token = request.getHeader(HEADER_AUTHORIZATION);
         if (StringUtils.isNotEmpty(token) && StringUtils.startsWith(token, AUTH_SCHEME_BEARER)) {
             return new BearerTokenCredential(StringUtils.substring(token, TOKEN_START_POS));

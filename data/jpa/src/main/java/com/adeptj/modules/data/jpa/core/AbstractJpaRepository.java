@@ -61,6 +61,7 @@ import javax.persistence.criteria.Selection;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.persistence.ParameterMode.OUT;
 
@@ -89,11 +90,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * <p>
      * Kept protected so that subclasses could access it directly.
      */
-    private EntityManagerFactory entityManagerFactory;
-
-    protected EntityManagerFactory getEntityManagerFactory() {
-        return this.entityManagerFactory;
-    }
+    protected EntityManagerFactory entityManagerFactory;
 
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
@@ -200,7 +197,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     public void delete(Class<T> entity, ID primaryKey) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            // This should happen in a single transaction so start the transaction right away.
+            // This should happen in a single transaction therefor start the transaction right away.
             em.getTransaction().begin();
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
@@ -331,10 +328,11 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<T> root = cq.from(criteria.getEntity());
-            return em.createQuery(cq.multiselect(criteria.getSelections()
+            List<Selection<?>> selections = criteria.getSelections()
                     .stream()
                     .map(root::get)
-                    .toArray(Selection[]::new))
+                    .collect(Collectors.toList());
+            return em.createQuery(cq.multiselect(selections)
                     .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
@@ -348,50 +346,10 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public List<T> findPaginatedRecordsByCriteria(ReadCriteria<T> criteria) {
+    public <E> List<E> findByNamedQuery(Class<E> resultClass, String name, QueryParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
-            Root<T> root = cq.from(criteria.getEntity());
-            return em.createQuery(cq
-                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
-                    .setFirstResult(criteria.getStartPos())
-                    .setMaxResults(criteria.getMaxResult())
-                    .getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <E> List<E> findByJpaNamedQuery(Class<E> resultClass, String namedQuery, QueryParam... params) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            TypedQuery<E> query = em.createNamedQuery(namedQuery, resultClass);
-            JpaUtil.bindQueryParams(query, params);
-            return query.getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <E> List<E> findByNamedQuery(String namedQuery, QueryParam... params) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            Query query = em.createNamedQuery(namedQuery);
+            TypedQuery<E> query = em.createNamedQuery(name, resultClass);
             JpaUtil.bindQueryParams(query, params);
             return query.getResultList();
         } catch (Exception ex) { // NOSONAR
@@ -421,7 +379,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public List<T> findPaginatedRecords(Class<T> entity, int startPos, int maxResult) {
+    public List<T> findWithPagination(Class<T> entity, int startPos, int maxResult) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
@@ -457,25 +415,6 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public List<T> findPaginatedRecordsByJpaQuery(CrudDTO<T> crudDTO) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            JpaUtil.bindQueryParams(query, crudDTO.getQueryParams());
-            return query.setFirstResult(crudDTO.getStartPos())
-                    .setMaxResults(crudDTO.getMaxResult())
-                    .getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
@@ -492,7 +431,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
 
     @SuppressWarnings("unchecked")
     @Override
-    public <E> List<E> findByQueryAndMapDefault(Class<E> resultClass, String nativeQuery, QueryParam... params) {
+    public List<T> findByNativeQuery(Class<T> resultClass, String nativeQuery, QueryParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNativeQuery(nativeQuery, resultClass);
@@ -510,7 +449,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <E> List<E> findByQueryAndMapResultSet(Class<E> resultClass, ResultSetMappingDTO mappingDTO) {
+    public List<T> findByNativeQuery(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
@@ -527,12 +466,12 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public <E> List<E> findByQueryAndMapConstructor(Class<E> resultClass, String jpaQuery, QueryParam... params) {
+    public <E> List<E> findByJpaQueryWithDTOProjection(Class<E> resultClass, String jpaQuery, QueryParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            TypedQuery<E> query = em.createQuery(jpaQuery, resultClass);
-            JpaUtil.bindQueryParams(query, params);
-            return query.getResultList();
+            TypedQuery<E> typedQuery = em.createQuery(jpaQuery, resultClass);
+            JpaUtil.bindQueryParams(typedQuery, params);
+            return typedQuery.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -544,7 +483,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public <C> List<C> findByCriteriaAndMapConstructor(ConstructorCriteria<T, C> criteria) {
+    public <C> List<C> findByCriteriaWithDTOProjection(ConstructorCriteria<T, C> criteria) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -567,21 +506,12 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public <E> E getScalarResultOfType(Class<E> resultClass, QueryType type, String query, QueryParam... params) {
+    public <E> E findSingleResultByJpaQuery(Class<E> resultClass, String query, QueryParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            switch (type) {
-                case JPA:
-                    TypedQuery<E> typedQuery = em.createQuery(query, resultClass);
-                    JpaUtil.bindQueryParams(typedQuery, params);
-                    return typedQuery.getSingleResult();
-                case NATIVE:
-                    Query nativeQuery = em.createNativeQuery(query, resultClass);
-                    JpaUtil.bindQueryParams(nativeQuery, params);
-                    return resultClass.cast(nativeQuery.getSingleResult());
-                default:
-                    throw new IllegalStateException("Invalid QueryType!!");
-            }
+            TypedQuery<E> typedQuery = em.createQuery(query, resultClass);
+            JpaUtil.bindQueryParams(typedQuery, params);
+            return typedQuery.getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -593,10 +523,10 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public <E> E getScalarResultOfType(Class<E> resultClass, String namedQuery, QueryParam... params) {
+    public <E> E findSingleResultByNamedQuery(Class<E> resultClass, String name, QueryParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            TypedQuery<E> query = em.createNamedQuery(namedQuery, resultClass);
+            TypedQuery<E> query = em.createNamedQuery(name, resultClass);
             JpaUtil.bindQueryParams(query, params);
             return query.getSingleResult();
         } catch (Exception ex) { // NOSONAR
@@ -610,24 +540,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public Object getScalarResult(String namedQuery, QueryParam... params) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            Query query = em.createNamedQuery(namedQuery);
-            JpaUtil.bindQueryParams(query, params);
-            return query.getSingleResult();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Long count(Class<T> entity) {
+    public Long countByCriteria(Class<T> entity) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -644,7 +557,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public Long count(String query, QueryType type) {
+    public Long countByQuery(String query, QueryType type) {
         Validate.isTrue(StringUtils.isNotEmpty(query), "Query string can't be null!");
         Validate.isTrue(type != null, "QueryType can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
@@ -654,6 +567,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
                     return (Long) em.createQuery(query).getSingleResult();
                 case NATIVE:
                     return (Long) em.createNativeQuery(query).getSingleResult();
+                default:
+                    LOGGER.warn("Unknown QueryType!!");
             }
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -667,11 +582,11 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public Long count(String namedQueryName) {
-        Validate.isTrue(StringUtils.isNotEmpty(namedQueryName), "NamedQuery string can't be null!");
+    public Long countByNamedQuery(String name) {
+        Validate.isTrue(StringUtils.isNotEmpty(name), "NamedQuery string can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            return (Long) em.createNamedQuery(namedQueryName).getSingleResult();
+            return (Long) em.createNamedQuery(name).getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {

@@ -50,11 +50,11 @@ public class DeleteCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
         private final Class<T> entity;
 
+        private Map<String, Object> criteriaAttributes;
+
         private Builder(Class<T> entity) {
             this.entity = entity;
         }
-
-        private Map<String, Object> criteriaAttributes;
 
         public Builder<T> addCriteriaAttribute(String attributeName, Object value) {
             if (this.criteriaAttributes == null) {

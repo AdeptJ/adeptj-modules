@@ -21,6 +21,8 @@
 package com.adeptj.modules.security.core.credential;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -49,11 +51,7 @@ public class UsernamePasswordCredential implements Credential {
         this.password = password;
     }
 
-    public static UsernamePasswordCredential from(String username, String password) {
-        return new UsernamePasswordCredential(username, password.toCharArray());
-    }
-
-    public static UsernamePasswordCredential from(HttpServletRequest request) {
+    public static @Nullable UsernamePasswordCredential from(@NotNull HttpServletRequest request) {
         String username = request.getParameter(PARAM_J_USERNAME);
         String password = request.getParameter(PARAM_J_PASSWORD);
         if (METHOD_POST.equals(request.getMethod()) && StringUtils.isNoneEmpty(username, password)
@@ -93,13 +91,6 @@ public class UsernamePasswordCredential implements Credential {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(this.username);
-        result = 31 * result + Arrays.hashCode(this.password);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("UsernamePasswordCredential for: [%s]", this.username);
+        return Objects.hash(this.username);
     }
 }

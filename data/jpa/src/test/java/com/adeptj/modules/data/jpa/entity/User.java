@@ -62,8 +62,10 @@ import static javax.persistence.FetchType.LAZY;
 @NamedQuery(name = "User.deleteUserByContact.JPA",
         query = "DELETE FROM User u WHERE u.contact = ?1")
 @NamedQuery(name = "Count.NamedJpaQuery", query = "SELECT count(u.id) FROM User u")
+@NamedNativeQuery(name = "User.ScalarResult.NamedNativeQuery", query = "SELECT u.EMAIL FROM Users u where u.ID= ?1")
+@NamedQuery(name = "User.ScalarResult.NamedJpaQuery", query = "SELECT u FROM User u where u.id= ?1")
 @NamedNativeQuery(name = "User.findUserByContact.NATIVE",
-        query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM  Users u WHERE MOBILE_NO = ?1")
+        query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM Users u WHERE MOBILE_NO = ?1")
 @NamedNativeQuery(name = "Count.NamedNativeQuery", query = "SELECT count(ID) FROM adeptj.USERS")
 @SqlResultSetMapping(
         name = "User.findUserByContact.EntityMapping",

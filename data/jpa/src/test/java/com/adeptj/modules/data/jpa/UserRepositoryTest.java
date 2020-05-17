@@ -39,9 +39,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.Persistence;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.adeptj.modules.data.jpa.query.QueryType.JPA;
+import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
 
 /**
  * JpaCrudRepositoryTest
@@ -53,7 +55,7 @@ public class UserRepositoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String UNIT_NAME = "AdeptJ_PU_PG";
+    private static final String UNIT_NAME = "AdeptJ_PU";
 
     private static UserRepository repository;
 
@@ -89,6 +91,20 @@ public class UserRepositoryTest {
         usr.setAddresses(List.of(address1, address2));
         User user = repository.insert(usr);
         LOGGER.info("User ID: {}", user.getId());
+    }
+
+    @Test
+    public void testBatchInsert() {
+        List<User> users = new ArrayList<>();
+        for (int i = 51; i < 101; i++) {
+            User usr = new User();
+            usr.setContact("1234567893" + (i + 50));
+            usr.setFirstName("John" + i);
+            usr.setLastName("Doe" + 1);
+            usr.setEmail(i + "john.doe@johndoe.com");
+            users.add(usr);
+        }
+        repository.batchInsert(users, 5);
     }
 
     @Test
@@ -167,7 +183,7 @@ public class UserRepositoryTest {
     public void testFindByTupleCriteria() {
         repository.findByTupleCriteria(TupleCriteria.builder(User.class)
                 .addSelections("firstName", "lastName")
-                .addCriteriaAttribute("contact", "1234567891")
+                .addCriteriaAttribute("contact", "1234567892")
                 .build())
                 .forEach(tuple -> {
                     LOGGER.info("FirstName: {}", tuple.get(0));
@@ -176,8 +192,8 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByJpaNamedQueryAsUser() {
-        repository.findByJpaNamedQuery(User.class, "User.findUserByContact.JPA.User",
+    public void testFindByNamedQueryAsUser() {
+        repository.findByNamedQuery(User.class, "User.findUserByContact.JPA.User",
                 new PositionalParam(1, "1234567895"))
                 .forEach(user -> {
                     LOGGER.info("FirstName: {}", user.getFirstName());
@@ -186,8 +202,8 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByJpaNamedQueryAsObjectArray() {
-        repository.findByJpaNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray",
+    public void testFindByNamedQueryAsObjectArray() {
+        repository.findByNamedQuery(Object[].class, "User.findUserByContact.NATIVE",
                 new PositionalParam(1, "1234567892"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);
@@ -196,40 +212,8 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByJPQLNamedQuery() {
-        repository.findByNamedQuery("User.findUserByContact.JPA.User",
-                new PositionalParam(1, "1234567892"))
-                .forEach(object -> {
-                    if (object instanceof User) {
-                        LOGGER.info("User!!");
-                        User user = (User) object;
-                        LOGGER.info("FirstName: {}", user.getFirstName());
-                        LOGGER.info("LastName: {}", user.getLastName());
-                    } else if (object instanceof Object[]) {
-                        LOGGER.info("Object[]!!");
-                        Object[] objectArray = (Object[]) object;
-                        LOGGER.info("FirstName: {}", objectArray[0]);
-                        LOGGER.info("LastName: {}", objectArray[1]);
-                    }
-                });
-    }
-
-    @Test
-    public void testFindByNativeNamedQuery() {
-        repository.findByNamedQuery("User.findUserByContact.NATIVE",
-                new PositionalParam(1, "1234567890"))
-                .forEach(object -> {
-                    if (object instanceof Object[]) {
-                        Object[] objectArray = (Object[]) object;
-                        LOGGER.info("FirstName: {}", objectArray[0]);
-                        LOGGER.info("LastName: {}", objectArray[1]);
-                    }
-                });
-    }
-
-    @Test
     public void testFindPaginatedRecords() {
-        Long count = repository.count(User.class);
+        Long count = repository.countByCriteria(User.class);
         LOGGER.info("Total no of users: {}", count);
         int pageSize = count.intValue() / 3;
         this.paginate(0, pageSize);
@@ -238,7 +222,7 @@ public class UserRepositoryTest {
     }
 
     private void paginate(int startPos, int pageSize) {
-        List<User> users = repository.findPaginatedRecords(User.class, startPos, pageSize);
+        List<User> users = repository.findWithPagination(User.class, startPos, pageSize);
         users.forEach(user -> {
             LOGGER.info("FirstName: {}", user.getFirstName());
             LOGGER.info("LastName: {}", user.getLastName());
@@ -269,28 +253,20 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testGetTypedScalarResultByNamedQueryAndPosParams() {
-        String firstName = repository
-                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
-                        new PositionalParam(1, "1234567892"));
-        if (firstName != null) {
-            LOGGER.info("FirstName: {}", firstName);
-        }
-    }
-
-    @Test
-    public void testGetScalarResultByNamedQueryAndPosParams() {
-        String firstName = repository
-                .getScalarResultOfType(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
-                        new PositionalParam(1, "1234567892"));
-        if (firstName != null) {
-            LOGGER.info("FirstName: {}", firstName);
-        }
+    public void testFindByNativeQuery() {
+        List<User> users = repository.findByNativeQuery(User.class,
+                "SELECT u.ID, u.FIRST_NAME, u.LAST_NAME FROM Users u WHERE MOBILE_NO = ?1",
+                new PositionalParam(1, "1234567892"));
+        users.forEach(user -> {
+            System.out.printf("User ID: %s", user.getId());
+            LOGGER.info("FirstName: {}", user.getFirstName());
+            LOGGER.info("LastName: {}", user.getLastName());
+        });
     }
 
     @Test
     public void testFindAndMapResultSet() {
-        List<User> users = repository.findByQueryAndMapResultSet(User.class, ResultSetMappingDTO.builder()
+        List<User> users = repository.findByNativeQuery(User.class, ResultSetMappingDTO.builder()
                 .nativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1")
                 .resultSetMapping("User.findUserByContact.EntityMapping")
                 .queryParam(new PositionalParam(1, "John"))
@@ -306,8 +282,8 @@ public class UserRepositoryTest {
     public void testFindAndMapConstructorByQuery() {
         String jpaQuery = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) " +
                 "FROM User u WHERE u.contact = ?1";
-        repository.findByQueryAndMapConstructor(UserDTO.class, jpaQuery,
-                new PositionalParam(1, "1234567890"))
+        repository.findByJpaQueryWithDTOProjection(UserDTO.class, jpaQuery,
+                new PositionalParam(1, "1234567892"))
                 .forEach(user -> {
                     LOGGER.info("User ID: {}", user.getId());
                     LOGGER.info("FirstName: {}", user.getFirstName());
@@ -317,7 +293,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindAndMapConstructorByCriteria() {
-        List<UserDTO> list = repository.findByCriteriaAndMapConstructor(ConstructorCriteria.builder(User.class, UserDTO.class)
+        List<UserDTO> list = repository.findByCriteriaWithDTOProjection(ConstructorCriteria.builder(User.class, UserDTO.class)
                 .addSelections("id", "firstName", "lastName", "email")
                 .addCriteriaAttribute("contact", "1234567892")
                 .build());
@@ -331,33 +307,47 @@ public class UserRepositoryTest {
 
     @Test
     public void testCountByNativeQuery() {
-        Long count = repository.count("SELECT count(ID) FROM adeptj.USERS", null);
+        Long count = repository.countByQuery("SELECT count(ID) FROM USERS", NATIVE);
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByJpaQuery() {
-        Long count = repository.count("SELECT count(u.id) FROM User u", JPA);
+        Long count = repository.countByQuery("SELECT count(u.id) FROM User u", JPA);
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByNamedJpaQuery() {
-        Long count = repository.count("Count.NamedJpaQuery");
+        Long count = repository.countByNamedQuery("Count.NamedJpaQuery");
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByNamedNativeQuery() {
-        Long count = repository.count("Count.NamedNativeQuery");
+        Long count = repository.countByNamedQuery("Count.NamedNativeQuery");
         LOGGER.info("Count: {}", count);
     }
 
     @Test
-    public void testScalarResultOfTypeJpaQuery() {
+    public void testFindSingleResultByJpaQuery() {
         String query = "SELECT u.email FROM User u where u.id= ?1";
-        String user = repository.getScalarResultOfType(String.class, JPA, query,
-                new PositionalParam(1, 7L));
+        String user = repository.findSingleResultByJpaQuery(String.class, query,
+                new PositionalParam(1, 8L));
+        LOGGER.info("User: {}", user);
+    }
+
+    @Test
+    public void testFindSingleResultByNamedJpaQuery() {
+        User user = repository.findSingleResultByNamedQuery(User.class, "User.ScalarResult.NamedJpaQuery",
+                new PositionalParam(1, 8L));
+        LOGGER.info("User: {}", user);
+    }
+
+    @Test
+    public void testFindSingleResultByNamedNativeQuery() {
+        String user = repository.findSingleResultByNamedQuery(String.class, "User.ScalarResult.NamedNativeQuery",
+                new PositionalParam(1, 8L));
         LOGGER.info("User: {}", user);
     }
 

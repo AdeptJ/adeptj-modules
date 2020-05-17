@@ -44,7 +44,7 @@ public class AuthenticatorImpl implements Authenticator {
     private final List<IdentityStore> identityStores;
 
     @Activate
-    public AuthenticatorImpl(@Reference CredentialResolver credentialResolver, AuthenticatorConfig config) {
+    public AuthenticatorImpl(@Reference CredentialResolver credentialResolver, @NotNull AuthenticatorConfig config) {
         this.credentialResolver = credentialResolver;
         this.securityDisabled = config.disable_security();
         this.securityDisabledPaths = new ArrayList<>(Arrays.asList(config.security_disabled_paths()));

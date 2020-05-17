@@ -12,11 +12,11 @@ public class CredentialValidationOutcome {
 
     public static final CredentialValidationOutcome NOT_VALIDATED_OUTCOME = new CredentialValidationOutcome(NOT_VALIDATED);
 
-    private Map<String, Object> data = new HashMap<>();
+    private final Map<String, Object> data = new HashMap<>();
 
-    private Outcome outcome;
+    private final Outcome outcome;
 
-    private String identityStoreName;
+    private final String identityStoreName;
 
     public enum Outcome {
 

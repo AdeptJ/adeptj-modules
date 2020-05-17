@@ -40,7 +40,7 @@ public final class SecurityConstants {
 
     public static final String PARAM_J_PASSWORD = "j_password";
 
-    public static final String LOGIN_URI_SUFFIX = "j_security_check_osgi";
+    public static final String LOGIN_URI_SUFFIX = "osgi_j_security_check";
 
     public static final String AUTH_SCHEME_BEARER = "Bearer";
 
