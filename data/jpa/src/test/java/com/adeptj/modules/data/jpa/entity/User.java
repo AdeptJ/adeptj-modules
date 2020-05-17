@@ -95,7 +95,11 @@ import static javax.persistence.FetchType.LAZY;
                         })
         }
 )
-@NamedStoredProcedureQuery(name = "allUsers", procedureName = "fetchAllUsers", resultClasses = User.class)
+@NamedStoredProcedureQuery(
+        name = "allUsers",
+        procedureName = "fetchAllUsers",
+        resultClasses = User.class
+)
 public class User implements BaseEntity {
 
     @Id

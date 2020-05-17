@@ -630,6 +630,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object executeNamedStoredProcedure(String name, List<InParam> params, String outParamName) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
@@ -645,6 +648,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object executeStoredProcedure(String procedureName, List<InParam> params, OutParam outParam) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
@@ -661,6 +667,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <E> List<E> findByNamedStoredProcedure(String name, InParam... params) {
@@ -676,6 +685,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <E> List<E> findByStoredProcedure(Class<E> resultClass, String procedureName, InParam... params) {

@@ -315,11 +315,46 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      */
     <E> E executeCallbackInTransaction(JpaCallback<E> action);
 
+    // <<------------------------ StoredProcedure Support ------------------------>>
+
+    /**
+     * Execute a named stored procedure defined in metadata or as an annotation on an entity.
+     *
+     * @param name         the name of the stored procedure defined in metadata or as an annotation on an entity
+     * @param params       the IN parameters
+     * @param outParamName the OUT parameter name
+     * @return result of the stored procedure execution.
+     */
     Object executeNamedStoredProcedure(String name, List<InParam> params, String outParamName);
 
+    /**
+     * Directly execute a stored procedure from DB.
+     *
+     * @param procedureName the name of the stored procedure in DB
+     * @param params        the IN parameters
+     * @param outParam      the {@link OutParam} object containing name and type info
+     * @return result of the stored procedure execution.
+     */
     Object executeStoredProcedure(String procedureName, List<InParam> params, OutParam outParam);
 
+    /**
+     * Find all the records of the type (resultClasses) declared in metadata or annotation on an entity
+     *
+     * @param name   the name of the stored procedure defined in metadata or as an annotation on an entity
+     * @param params the IN parameters
+     * @param <E>    the result type
+     * @return List of instances of type (resultClasses) declared in metadata or annotation on an entity
+     */
     <E> List<E> findByNamedStoredProcedure(String name, InParam... params);
 
+    /**
+     * Find all the records of the type specified by type parameter E
+     *
+     * @param resultClass   the type of result the procedure call returns.
+     * @param procedureName the name of the stored procedure in DB
+     * @param params        the IN parameters
+     * @param <E>           the result type
+     * @return List of instances of type resultClass
+     */
     <E> List<E> findByStoredProcedure(Class<E> resultClass, String procedureName, InParam... params);
 }

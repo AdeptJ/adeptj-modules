@@ -354,12 +354,12 @@ public class UserRepositoryTest {
     @Test
     public void testNamedStoredProcedure() {
         List<User> users = repository.findByNamedStoredProcedure("allUsers");
-        LOGGER.info("Users: {}", users);
+        users.forEach(user -> LOGGER.info("Users: {}", user.getEmail()));
     }
 
     @Test
     public void testStoredProcedure() {
         List<User> users = repository.findByStoredProcedure(User.class, "fetchAllUsers");
-        LOGGER.info("Users: {}", users);
+        users.forEach(user -> LOGGER.info("Users: {}", user.getEmail()));
     }
 }
