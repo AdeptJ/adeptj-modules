@@ -65,7 +65,7 @@ public final class JwtUtil {
      * @since 1.1.0.Final
      */
     public static void assertClaims(Map<String, Object> claims, String[] mandatoryClaims) {
-        assertClaims(claims);
+        JwtUtil.assertClaims(claims);
         Stream.of(mandatoryClaims)
                 .forEach(claim -> Assert.isTrue(claims.containsKey(claim), String.format(CLAIM_NOT_FOUND_MSG, claim)));
     }

@@ -14,6 +14,7 @@ import java.util.Map;
  */
 final class JwtDeserializer implements Deserializer<Map<String, ?>> {
 
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, ?> deserialize(byte[] bytes) {
         try {

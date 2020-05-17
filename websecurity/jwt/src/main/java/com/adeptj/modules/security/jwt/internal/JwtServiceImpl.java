@@ -75,7 +75,7 @@ public class JwtServiceImpl implements JwtService {
 
     private final JwtKeyInfo keyInfo;
 
-    private final JwsHandler jwsHandler;
+    private final ClaimsConsumer claimsConsumer;
 
     private final Serializer<Map<String, ?>> serializer;
 
@@ -83,7 +83,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Activate
     public JwtServiceImpl(@NotNull JwtConfig config) {
-        this.jwsHandler = new JwsHandler();
+        this.claimsConsumer = new ClaimsConsumer();
         this.serializer = new JwtSerializer();
         this.deserializer = new JwtDeserializer();
         this.logJwtVerificationExceptionTrace = config.logJwtVerificationExceptionTrace();
@@ -149,7 +149,7 @@ public class JwtServiceImpl implements JwtService {
                     .setSigningKey(this.keyInfo.getPublicKey())
                     .deserializeJsonWith(this.deserializer)
                     .build()
-                    .parse(jwt, this.jwsHandler);
+                    .parse(jwt, this.claimsConsumer);
         } catch (ExpiredJwtException ex) {
             if (this.logJwtVerificationExceptionTrace) {
                 LOGGER.error(ex.getMessage(), ex);

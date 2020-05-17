@@ -26,7 +26,6 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Type;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -63,11 +62,11 @@ public final class JsonUtil {
         return JsonUtil.serialize(object).getBytes(UTF_8);
     }
 
-    public static <T> T deserialize(byte[] data, Type type) {
+    public static <T> T deserialize(byte[] data, Class<T> type) {
         return JsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
     }
 
-    public static <T> T deserialize(String data, Type type) {
+    public static <T> T deserialize(String data, Class<T> type) {
         return JsonUtil.getJsonb().fromJson(data, type);
     }
 }

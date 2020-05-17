@@ -22,6 +22,7 @@ package com.adeptj.modules.security.jwt.internal;
 
 import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,7 @@ final class JwtKeys {
     private JwtKeys() {
     }
 
-    static PrivateKey createSigningKey(JwtConfig config, String algorithm) {
+    static PrivateKey createSigningKey(@NotNull JwtConfig config, String algorithm) {
         LOGGER.info("Creating RSA signing key!!");
         Assert.isTrue(StringUtils.startsWithAny(config.privateKey(), PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER),
                 INVALID_PRIVATE_KEY_MSG);
@@ -103,7 +104,7 @@ final class JwtKeys {
         }
     }
 
-    static PublicKey createVerificationKey(JwtConfig config, String algorithm) {
+    static PublicKey createVerificationKey(@NotNull JwtConfig config, String algorithm) {
         LOGGER.info("Creating RSA verification key!!");
         Assert.isTrue(StringUtils.startsWith(config.publicKey(), PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
         try {
@@ -122,7 +123,7 @@ final class JwtKeys {
         }
     }
 
-    private static byte[] decodePrivateKey(JwtConfig config, boolean encryptedKey) {
+    private static byte[] decodePrivateKey(@NotNull JwtConfig config, boolean encryptedKey) {
         return Base64.getDecoder().decode(config.privateKey()
                 .replace(encryptedKey ? PRIVATE_ENCRYPTED_KEY_HEADER : PRIVATE_KEY_HEADER, EMPTY)
                 .replace(encryptedKey ? PRIVATE_ENCRYPTED_KEY_FOOTER : PRIVATE_KEY_FOOTER, EMPTY)

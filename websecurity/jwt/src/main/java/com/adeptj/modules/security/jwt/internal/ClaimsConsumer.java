@@ -24,13 +24,15 @@ import com.adeptj.modules.security.jwt.JwtClaims;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Simple implementation of {@link JwtHandlerAdapter}.
+ * Simple implementation of {@link JwtHandlerAdapter} which extracts the {@link Claims} from passes {@link Jws}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class JwsHandler extends JwtHandlerAdapter<JwtClaims> {
+final class ClaimsConsumer extends JwtHandlerAdapter<JwtClaims> {
 
     /**
      * Simply returns the {@link JwtClaims} by composing the Jwt {@link Claims}.
@@ -38,8 +40,9 @@ final class JwsHandler extends JwtHandlerAdapter<JwtClaims> {
      * @param jws the Json web signature.
      * @return the {@link JwtClaims}.
      */
+    @Contract("_ -> new")
     @Override
-    public JwtClaims onClaimsJws(Jws<Claims> jws) {
+    public @NotNull JwtClaims onClaimsJws(@NotNull Jws<Claims> jws) {
         return new JwtClaims(jws.getBody());
     }
 }

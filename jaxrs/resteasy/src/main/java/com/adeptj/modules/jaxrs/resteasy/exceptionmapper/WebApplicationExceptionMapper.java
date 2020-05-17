@@ -62,7 +62,8 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
                 .type(APPLICATION_JSON)
                 .entity(Json.createObjectBuilder()
                         .add(JSON_KEY_CODE, currentResponse.getStatus())
-                        .add(JSON_KEY_MESSAGE, exception.getMessage()).build())
+                        .add(JSON_KEY_MESSAGE, exception.getMessage())
+                        .build())
                 .build();
     }
 }
