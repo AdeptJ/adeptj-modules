@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

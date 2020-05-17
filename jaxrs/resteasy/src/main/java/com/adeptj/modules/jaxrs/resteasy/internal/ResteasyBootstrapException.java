@@ -18,18 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.resteasy;
+package com.adeptj.modules.jaxrs.resteasy.internal;
 
 /**
  * Exception thrown on RESTEasy bootstrapping.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class ResteasyBootstrapException extends RuntimeException {
+class ResteasyBootstrapException extends RuntimeException {
 
 	private static final long serialVersionUID = 3361307228148474881L;
 
-	public ResteasyBootstrapException(String message, Throwable cause) {
+	ResteasyBootstrapException(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -24,7 +24,6 @@ import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
-import com.adeptj.modules.jaxrs.resteasy.ResteasyBootstrapException;
 import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonReaderFactoryContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonWriterFactoryContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver;
