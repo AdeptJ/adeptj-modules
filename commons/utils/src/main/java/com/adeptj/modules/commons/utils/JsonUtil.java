@@ -20,6 +20,7 @@
 package com.adeptj.modules.commons.utils;
 
 import javax.json.Json;
+import javax.json.JsonBuilderFactory;
 import javax.json.JsonReaderFactory;
 import javax.json.JsonWriterFactory;
 import javax.json.bind.Jsonb;
@@ -42,6 +43,8 @@ public final class JsonUtil {
 
     private static final JsonWriterFactory WRITER_FACTORY = Json.createWriterFactory(null);
 
+    private static final JsonBuilderFactory JSON_BUILDER_FACTORY = Json.createBuilderFactory(null);
+
     public static Jsonb getJsonb() {
         return JSONB;
     }
@@ -52,6 +55,10 @@ public final class JsonUtil {
 
     public static JsonWriterFactory getJsonWriterFactory() {
         return WRITER_FACTORY;
+    }
+
+    public static JsonBuilderFactory getJsonBuilderFactory() {
+        return JSON_BUILDER_FACTORY;
     }
 
     public static <T> String serialize(T object) {

@@ -6,14 +6,16 @@ import com.adeptj.modules.security.core.credential.Credential;
 
 public interface IdentityStore {
 
+    int DEFAULT_PRIORITY = 0;
+
     /**
      * Determines the order of invocation for multiple {@link IdentityStore}s.
      * Stores with a higher priority value are consulted first.
      *
      * @return The priority value. Higher values indicate higher priorities.
      */
-    default int priority() {
-        return 100;
+    default int getPriority() {
+        return DEFAULT_PRIORITY;
     }
 
     /**

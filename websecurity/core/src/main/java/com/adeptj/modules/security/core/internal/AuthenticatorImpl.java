@@ -76,7 +76,7 @@ public class AuthenticatorImpl implements Authenticator {
             return NOT_VALIDATED_OUTCOME;
         }
         CredentialValidationOutcome outcome = this.identityStores.stream()
-                .sorted(Comparator.comparingInt(IdentityStore::priority).reversed())
+                .sorted(Comparator.comparingInt(IdentityStore::getPriority).reversed())
                 .filter(store -> store.canValidate(credential))
                 .map(store -> store.validate(credential))
                 .findFirst()
