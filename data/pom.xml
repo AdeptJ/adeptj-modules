@@ -33,7 +33,6 @@
     <modules>
 
         <module>jpa</module>
-        <module>sql2o</module>
         <module>mongodb</module>
 
     </modules>
