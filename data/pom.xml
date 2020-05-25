@@ -33,6 +33,7 @@
     <modules>
 
         <module>jpa</module>
+        <module>mybatis</module>
         <module>mongodb</module>
 
     </modules>
