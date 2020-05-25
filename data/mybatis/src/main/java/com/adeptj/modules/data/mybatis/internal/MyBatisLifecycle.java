@@ -40,13 +40,13 @@ public class MyBatisLifecycle {
     @Activate
     public MyBatisLifecycle(@Reference @NotNull MyBatisInfoProvider provider,
                             @Reference DataSourceService dataSourceService, MyBatisConfig config) {
-        ClassLoader cl = provider.getClass().getClassLoader();
-        URL resource = cl.getResource(provider.getMyBatisConfig());
-        if (resource == null) {
+        ClassLoader providerClassLoader = provider.getClass().getClassLoader();
+        URL myBatisConfig = providerClassLoader.getResource(provider.getMyBatisConfig());
+        if (myBatisConfig == null) {
             throw new MyBatisBootstrapException("mybatis config not found!!");
         }
-        try (InputStream stream = resource.openStream()) {
-            Functions.executeUnderContextClassLoader(cl, () -> {
+        try (InputStream stream = myBatisConfig.openStream()) {
+            Functions.executeUnderContextClassLoader(providerClassLoader, () -> {
                 Configuration configuration = new XMLConfigBuilder(stream).parse();
                 configuration.setEnvironment(new Environment.Builder(provider.getEnvironmentId())
                         .dataSource(dataSourceService.getDataSource())
@@ -56,7 +56,7 @@ public class MyBatisLifecycle {
             });
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex);
+            throw new MyBatisBootstrapException(ex);
         }
     }
 
