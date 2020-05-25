@@ -49,6 +49,14 @@ public abstract class AbstractMyBatisRepository<T, ID> implements MyBatisReposit
     }
 
     @Override
+    public void update(String statement, T object) {
+        try (SqlSession session = this.sessionFactory.openSession()) {
+            session.update(statement, object);
+            session.commit();
+        }
+    }
+
+    @Override
     public T doInSession(@NotNull Function<SqlSession, T> function) {
         try (SqlSession session = this.sessionFactory.openSession()) {
             return function.apply(session);

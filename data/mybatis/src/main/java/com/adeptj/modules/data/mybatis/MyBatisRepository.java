@@ -18,6 +18,8 @@ public interface MyBatisRepository<T, ID> {
 
     void deleteById(String statement, ID id);
 
+    void update(String statement, T object);
+
     T doInSession(@NotNull Function<SqlSession, T> function);
 
     T doInSessionCommit(@NotNull Function<SqlSession, T> function);

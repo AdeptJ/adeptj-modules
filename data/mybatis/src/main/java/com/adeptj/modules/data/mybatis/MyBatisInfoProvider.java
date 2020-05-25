@@ -2,6 +2,8 @@ package com.adeptj.modules.data.mybatis;
 
 import org.osgi.annotation.versioning.ConsumerType;
 
+import java.util.List;
+
 @ConsumerType
 public interface MyBatisInfoProvider {
 
@@ -12,4 +14,6 @@ public interface MyBatisInfoProvider {
     }
 
     String getEnvironmentId();
+
+    List<Class<?>> getMappers();
 }

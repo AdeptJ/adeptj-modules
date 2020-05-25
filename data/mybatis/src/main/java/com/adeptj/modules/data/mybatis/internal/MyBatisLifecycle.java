@@ -1,11 +1,13 @@
 package com.adeptj.modules.data.mybatis.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import com.adeptj.modules.commons.utils.CollectionUtil;
 import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.data.mybatis.MyBatisInfoProvider;
 import com.adeptj.modules.data.mybatis.MyBatisRepository;
 import com.adeptj.modules.data.mybatis.core.AbstractMyBatisRepository;
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
+import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -23,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.net.URL;
+import java.util.List;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -35,29 +37,35 @@ public class MyBatisLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private SqlSessionFactory sessionFactory;
+    private final SqlSessionFactory sessionFactory;
 
     @Activate
-    public MyBatisLifecycle(@Reference @NotNull MyBatisInfoProvider provider,
-                            @Reference DataSourceService dataSourceService, MyBatisConfig config) {
+    public MyBatisLifecycle(@NotNull @Reference MyBatisInfoProvider provider,
+                            @NotNull @Reference DataSourceService dataSourceService, @NotNull MyBatisConfig config) {
         ClassLoader providerClassLoader = provider.getClass().getClassLoader();
-        URL myBatisConfig = providerClassLoader.getResource(provider.getMyBatisConfig());
-        if (myBatisConfig == null) {
-            throw new MyBatisBootstrapException("mybatis config not found!!");
+        Configuration configuration = Functions.executeUnderContextClassLoader(providerClassLoader, () -> {
+            try (InputStream stream = Resources.getResourceAsStream(provider.getMyBatisConfig())) {
+                return new XMLConfigBuilder(stream).parse();
+            } catch (IOException ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                throw new MyBatisBootstrapException(ex);
+            }
+        });
+        List<Class<?>> mappers = provider.getMappers();
+        if (CollectionUtil.isNotEmpty(mappers)) {
+            for (Class<?> mapper : mappers) {
+                if (configuration.hasMapper(mapper)) {
+                    LOGGER.error("Mapper {} is already known to the MapperRegistry!", mapper);
+                } else {
+                    configuration.addMapper(mapper);
+                }
+            }
         }
-        try (InputStream stream = myBatisConfig.openStream()) {
-            Functions.executeUnderContextClassLoader(providerClassLoader, () -> {
-                Configuration configuration = new XMLConfigBuilder(stream).parse();
-                configuration.setEnvironment(new Environment.Builder(provider.getEnvironmentId())
-                        .dataSource(dataSourceService.getDataSource())
-                        .transactionFactory(new JdbcTransactionFactory())
-                        .build());
-                this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
-            });
-        } catch (IOException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new MyBatisBootstrapException(ex);
-        }
+        configuration.setEnvironment(new Environment.Builder(provider.getEnvironmentId())
+                .dataSource(dataSourceService.getDataSource())
+                .transactionFactory(new JdbcTransactionFactory())
+                .build());
+        this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
     }
 
     @Reference(service = MyBatisRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
