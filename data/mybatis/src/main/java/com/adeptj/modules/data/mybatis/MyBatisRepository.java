@@ -20,5 +20,5 @@ public interface MyBatisRepository<T, ID> {
 
     void update(String statement, T object);
 
-    <E> E doInSession(@NotNull Function<SqlSession, E> function, boolean commit);
+    <E> E doInSession(@NotNull Function<SqlSession, E> function);
 }

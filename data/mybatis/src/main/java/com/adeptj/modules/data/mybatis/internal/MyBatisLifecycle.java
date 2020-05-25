@@ -51,21 +51,24 @@ public class MyBatisLifecycle {
                 throw new MyBatisBootstrapException(ex);
             }
         });
-        List<Class<?>> mappers = provider.getMappers();
-        if (CollectionUtil.isNotEmpty(mappers)) {
-            for (Class<?> mapper : mappers) {
-                if (configuration.hasMapper(mapper)) {
-                    LOGGER.error("Mapper {} is already known to the MapperRegistry!", mapper);
-                } else {
-                    configuration.addMapper(mapper);
-                }
-            }
-        }
+        this.addMappers(provider.getMappers(), configuration);
         configuration.setEnvironment(new Environment.Builder(provider.getEnvironmentId())
                 .dataSource(dataSourceService.getDataSource())
                 .transactionFactory(new JdbcTransactionFactory())
                 .build());
         this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+    }
+
+    private void addMappers(List<Class<?>> mappers, Configuration configuration) {
+        if (CollectionUtil.isNotEmpty(mappers)) {
+            for (Class<?> mapper : mappers) {
+                if (configuration.hasMapper(mapper)) {
+                    LOGGER.error("Mapper {} is already known to the MapperRegistry, skipping it!", mapper.getName());
+                } else {
+                    configuration.addMapper(mapper);
+                }
+            }
+        }
     }
 
     @Reference(service = MyBatisRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)

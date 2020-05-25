@@ -57,13 +57,9 @@ public abstract class AbstractMyBatisRepository<T, ID> implements MyBatisReposit
     }
 
     @Override
-    public <E> E doInSession(@NotNull Function<SqlSession, E> function, boolean commit) {
+    public <E> E doInSession(@NotNull Function<SqlSession, E> function) {
         try (SqlSession session = this.sessionFactory.openSession()) {
-            E result = function.apply(session);
-            if (commit) {
-                session.commit();
-            }
-            return result;
+            return function.apply(session);
         }
     }
 }
