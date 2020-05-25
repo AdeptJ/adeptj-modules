@@ -1,5 +1,6 @@
 package com.adeptj.modules.data.mongodb.internal;
 
+import com.adeptj.modules.commons.utils.Jackson;
 import com.adeptj.modules.data.mongodb.BaseDocument;
 import com.adeptj.modules.data.mongodb.MongoRepository;
 import com.adeptj.modules.data.mongodb.core.AbstractMongoRepository;
@@ -11,6 +12,7 @@ import com.mongodb.client.MongoClients;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.mongojack.JacksonMongoCollection;
+import org.mongojack.internal.MongoJackModule;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -38,6 +40,8 @@ public class MongoClientLifecycle {
 
     private final MongoClient mongoClient;
 
+    private final JacksonMongoCollection.JacksonMongoCollectionBuilder collectionBuilder;
+
     @Activate
     public MongoClientLifecycle(@NotNull MongoClientConfig config) {
         String username = config.auth_username();
@@ -55,6 +59,8 @@ public class MongoClientLifecycle {
                 .applyToClusterSettings(b -> b.hosts(serverAddresses).build())
                 .build();
         this.mongoClient = MongoClients.create(clientSettings);
+        this.collectionBuilder = JacksonMongoCollection.builder();
+        this.collectionBuilder.withObjectMapper(MongoJackModule.configure(Jackson.objectMapper()));
     }
 
     @Deactivate
@@ -78,7 +84,7 @@ public class MongoClientLifecycle {
         }
         AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
         Class<T> documentClass = mongoRepository.getDocumentClass();
-        JacksonMongoCollection<T> mongoCollection = JacksonMongoCollection.builder()
+        JacksonMongoCollection<T> mongoCollection = this.collectionBuilder
                 .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD);
         mongoRepository.setMongoCollection(mongoCollection);
     }
