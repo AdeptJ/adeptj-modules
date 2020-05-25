@@ -59,8 +59,8 @@ public class MongoClientLifecycle {
                 .applyToClusterSettings(b -> b.hosts(serverAddresses).build())
                 .build();
         this.mongoClient = MongoClients.create(clientSettings);
-        this.collectionBuilder = JacksonMongoCollection.builder();
-        this.collectionBuilder.withObjectMapper(MongoJackModule.configure(Jackson.objectMapper()));
+        this.collectionBuilder = JacksonMongoCollection.builder()
+                .withObjectMapper(MongoJackModule.configure(Jackson.objectMapper()));
     }
 
     @Deactivate
