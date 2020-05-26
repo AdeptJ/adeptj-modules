@@ -15,7 +15,7 @@ public interface BaseMapper<T, ID> {
 
     void insert(T object);
 
-    void updateById(T object);
+    void update(T object);
 
     void updateMany(Map<String, Object> attributes);
 

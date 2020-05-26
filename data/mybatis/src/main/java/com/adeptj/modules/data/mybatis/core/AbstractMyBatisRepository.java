@@ -80,9 +80,25 @@ public abstract class AbstractMyBatisRepository<T, ID> implements MyBatisReposit
     }
 
     @Override
+    public void deleteById(Class<? extends BaseMapper<T, ID>> mapper, ID id) {
+        try (SqlSession session = this.sessionFactory.openSession()) {
+            session.getMapper(mapper).deleteById(id);
+            session.commit();
+        }
+    }
+
+    @Override
     public void update(String statement, T object) {
         try (SqlSession session = this.sessionFactory.openSession()) {
             session.update(statement, object);
+            session.commit();
+        }
+    }
+
+    @Override
+    public void update(Class<? extends BaseMapper<T, ID>> mapper, T object) {
+        try (SqlSession session = this.sessionFactory.openSession()) {
+            session.getMapper(mapper).update(object);
             session.commit();
         }
     }

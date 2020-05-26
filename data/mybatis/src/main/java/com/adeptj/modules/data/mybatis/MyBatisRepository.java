@@ -27,7 +27,11 @@ public interface MyBatisRepository<T, ID> {
 
     void deleteById(String statement, ID id);
 
+    void deleteById(Class<? extends BaseMapper<T, ID>> mapper, ID id);
+
     void update(String statement, T object);
+
+    void update(Class<? extends BaseMapper<T, ID>> mapper, T object);
 
     <E> E doInSession(@NotNull Function<SqlSession, E> function);
 }
