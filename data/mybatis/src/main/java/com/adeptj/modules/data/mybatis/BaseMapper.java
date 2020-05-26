@@ -3,11 +3,11 @@ package com.adeptj.modules.data.mybatis;
 import java.util.List;
 import java.util.Map;
 
-public interface BaseMapper<T> {
+public interface BaseMapper<T, ID> {
 
-    T findById(Object id);
+    T findById(ID id);
 
-    T find(Map<String, Object> queryParams);
+    T findOne(Map<String, Object> queryParams);
 
     List<T> findMany(Map<String, Object> queryParams);
 
@@ -17,9 +17,11 @@ public interface BaseMapper<T> {
 
     void updateById(T object);
 
+    void updateMany(Map<String, Object> attributes);
+
     void updateMany(Map<String, Object> attributes, Map<String, Object> queryParams);
 
-    void deleteById(Object id);
+    void deleteById(ID id);
 
     void deleteMany(Map<String, Object> queryParams);
 }
