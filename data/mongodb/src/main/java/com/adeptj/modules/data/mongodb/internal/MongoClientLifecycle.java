@@ -12,7 +12,7 @@ import com.mongodb.client.MongoClients;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.mongojack.JacksonMongoCollection;
-import org.mongojack.internal.MongoJackModule;
+import org.mongojack.ObjectMapperConfigurer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -60,7 +60,7 @@ public class MongoClientLifecycle {
                 .build();
         this.mongoClient = MongoClients.create(clientSettings);
         this.collectionBuilder = JacksonMongoCollection.builder()
-                .withObjectMapper(MongoJackModule.configure(Jackson.objectMapper()));
+                .withObjectMapper(ObjectMapperConfigurer.configureObjectMapper(Jackson.objectMapper()));
     }
 
     @Deactivate

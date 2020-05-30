@@ -24,11 +24,8 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
--includeresource: mongojack-*.jar;lib:=true
-
--exportcontents: com.adeptj.modules.data.mongodb, \
-                com.adeptj.modules.data.mongodb.core, \
-                org.mongojack;version=4.0.0
+Export-Package: com.adeptj.modules.data.mongodb, \
+                com.adeptj.modules.data.mongodb.core
   
 Bundle-Name: ${project.name}
 
