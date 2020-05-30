@@ -2,18 +2,16 @@ package com.adeptj.modules.data.mybatis;
 
 import org.osgi.annotation.versioning.ConsumerType;
 
-import java.util.List;
+import java.util.Set;
 
 @ConsumerType
 public interface MyBatisInfoProvider {
 
     String DEFAULT_MYBATIS_CONFIG = "META-INF/mybatis-config.xml";
 
-    default String getMyBatisConfig() {
+    default String getConfigXmlLocation() {
         return DEFAULT_MYBATIS_CONFIG;
     }
 
-    String getEnvironmentId();
-
-    List<Class<?>> getMappers();
+    Set<Class<?>> getMappers();
 }

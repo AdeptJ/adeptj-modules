@@ -6,6 +6,7 @@ import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.data.mybatis.MyBatisInfoProvider;
 import com.adeptj.modules.data.mybatis.MyBatisRepository;
 import com.adeptj.modules.data.mybatis.core.AbstractMyBatisRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Environment;
@@ -25,14 +26,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
+import java.util.Collection;
 
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @ProviderType
 @Designate(ocd = MyBatisConfig.class)
-@Component(immediate = true)
+@Component(immediate = true, configurationPolicy = REQUIRE)
 public class MyBatisLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -42,24 +44,34 @@ public class MyBatisLifecycle {
     @Activate
     public MyBatisLifecycle(@NotNull @Reference MyBatisInfoProvider provider,
                             @NotNull @Reference DataSourceService dataSourceService, @NotNull MyBatisConfig config) {
-        ClassLoader providerClassLoader = provider.getClass().getClassLoader();
-        Configuration configuration = Functions.executeUnderContextClassLoader(providerClassLoader, () -> {
-            try (InputStream stream = Resources.getResourceAsStream(provider.getMyBatisConfig())) {
-                return new XMLConfigBuilder(stream).parse();
-            } catch (IOException ex) {
-                LOGGER.error(ex.getMessage(), ex);
-                throw new MyBatisBootstrapException(ex);
-            }
-        });
+        Configuration configuration = this.getConfiguration(provider, config);
         this.addMappers(provider.getMappers(), configuration);
-        configuration.setEnvironment(new Environment.Builder(provider.getEnvironmentId())
+        configuration.setEnvironment(new Environment.Builder(config.environmentId())
                 .dataSource(dataSourceService.getDataSource())
                 .transactionFactory(new JdbcTransactionFactory())
                 .build());
         this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
     }
 
-    private void addMappers(List<Class<?>> mappers, Configuration configuration) {
+    private Configuration getConfiguration(MyBatisInfoProvider provider, @NotNull MyBatisConfig config) {
+        if (config.disableXmlConfiguration()) {
+            return new Configuration();
+        }
+        return Functions.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
+            String configXmlLocation = provider.getConfigXmlLocation();
+            if (StringUtils.isEmpty(configXmlLocation) || config.overrideProviderXmlConfig()) {
+                configXmlLocation = config.configXmlLocation();
+            }
+            try (InputStream stream = Resources.getResourceAsStream(configXmlLocation)) {
+                return new XMLConfigBuilder(stream).parse();
+            } catch (IOException ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                throw new MyBatisBootstrapException(ex);
+            }
+        });
+    }
+
+    private void addMappers(Collection<Class<?>> mappers, Configuration configuration) {
         if (CollectionUtil.isNotEmpty(mappers)) {
             for (Class<?> mapper : mappers) {
                 if (configuration.hasMapper(mapper)) {
@@ -70,6 +82,8 @@ public class MyBatisLifecycle {
             }
         }
     }
+
+    // <<------------------------------------- OSGi Internal  -------------------------------------->>
 
     @Reference(service = MyBatisRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindMyBatisRepository(MyBatisRepository<?, ?> repository) {
