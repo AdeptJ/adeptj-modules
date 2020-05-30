@@ -1,7 +1,6 @@
 package com.adeptj.modules.data.mongodb.internal;
 
 import com.adeptj.modules.commons.utils.Jackson;
-import com.adeptj.modules.data.mongodb.BaseDocument;
 import com.adeptj.modules.data.mongodb.MongoRepository;
 import com.adeptj.modules.data.mongodb.core.AbstractMongoRepository;
 import com.mongodb.MongoClientSettings;
@@ -69,8 +68,7 @@ public class MongoClientLifecycle {
     }
 
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected <T extends BaseDocument> void bindMongoRepository(@NotNull MongoRepository<T> repository,
-                                                                @NotNull Map<String, Object> properties) {
+    protected <T> void bindMongoRepository(@NotNull MongoRepository<T> repository, @NotNull Map<String, Object> properties) {
         if (!(repository instanceof AbstractMongoRepository)) {
             throw new MongoRepositoryBindException("The repository instance must extend AbstractMongoRepository!");
         }
@@ -89,7 +87,7 @@ public class MongoClientLifecycle {
         mongoRepository.setMongoCollection(mongoCollection);
     }
 
-    protected <T extends BaseDocument> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
+    protected <T> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
         // Let's do an explicit type check to avoid a CCE.
         if (repository instanceof AbstractMongoRepository) {
             AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;

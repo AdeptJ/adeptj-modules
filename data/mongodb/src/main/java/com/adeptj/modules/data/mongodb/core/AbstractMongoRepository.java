@@ -1,6 +1,5 @@
 package com.adeptj.modules.data.mongodb.core;
 
-import com.adeptj.modules.data.mongodb.BaseDocument;
 import com.adeptj.modules.data.mongodb.MongoRepository;
 import org.apache.commons.lang3.Validate;
 import org.bson.conversions.Bson;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ConsumerType
-public abstract class AbstractMongoRepository<T extends BaseDocument> implements MongoRepository<T> {
+public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     /**
      * Kept protected so that subclasses could access it directly.

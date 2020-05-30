@@ -4,7 +4,7 @@ import org.bson.conversions.Bson;
 
 import java.util.List;
 
-public interface MongoRepository<T extends BaseDocument> {
+public interface MongoRepository<T> {
 
     void insert(T object);
 
