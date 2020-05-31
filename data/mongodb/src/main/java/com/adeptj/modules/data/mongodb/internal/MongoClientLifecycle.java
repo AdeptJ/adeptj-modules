@@ -17,7 +17,10 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +30,7 @@ import static com.adeptj.modules.data.mongodb.MongoConstants.DELIMITER_COLON;
 import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_COLLECTION_NAME;
 import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_DB_NAME;
 import static org.bson.UuidRepresentation.STANDARD;
+import static org.mongojack.JacksonMongoCollection.JacksonMongoCollectionBuilder;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -35,11 +39,13 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component(immediate = true, configurationPolicy = REQUIRE)
 public class MongoClientLifecycle {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private static final String SERVICE_FILTER = "(&(mongodb.database.name=*)(mongodb.collection.name=*))";
 
     private final MongoClient mongoClient;
 
-    private final JacksonMongoCollection.JacksonMongoCollectionBuilder collectionBuilder;
+    private final JacksonMongoCollectionBuilder mongoCollectionBuilder;
 
     @Activate
     public MongoClientLifecycle(@NotNull MongoClientConfig config) {
@@ -52,19 +58,21 @@ public class MongoClientLifecycle {
         }
         List<ServerAddress> serverAddresses = Stream.of(config.server_addresses())
                 .map(row -> row.split(DELIMITER_COLON))
-                .map(mapping -> new ServerAddress(mapping[0], Integer.parseInt(mapping[1])))
+                .map(parts -> new ServerAddress(parts[0], Integer.parseInt(parts[1])))
                 .collect(Collectors.toList());
         MongoClientSettings clientSettings = builder.applyToSslSettings(b -> b.enabled(config.tls_enabled()))
                 .applyToClusterSettings(b -> b.hosts(serverAddresses).build())
                 .build();
         this.mongoClient = MongoClients.create(clientSettings);
-        this.collectionBuilder = JacksonMongoCollection.builder()
+        this.mongoCollectionBuilder = JacksonMongoCollection.builder()
                 .withObjectMapper(ObjectMapperConfigurer.configureObjectMapper(Jackson.objectMapper()));
+        LOGGER.info("MongoClient initialized!");
     }
 
     @Deactivate
     protected void stop() {
         this.mongoClient.close();
+        LOGGER.info("MongoClient closed!");
     }
 
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
@@ -80,9 +88,10 @@ public class MongoClientLifecycle {
                     KEY_DB_NAME, KEY_COLLECTION_NAME);
             throw new MongoRepositoryBindException(message);
         }
+        LOGGER.info("Binding MongoRepository {}", repository);
         AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
         Class<T> documentClass = mongoRepository.getDocumentClass();
-        JacksonMongoCollection<T> mongoCollection = this.collectionBuilder
+        JacksonMongoCollection<T> mongoCollection = this.mongoCollectionBuilder
                 .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD);
         mongoRepository.setMongoCollection(mongoCollection);
     }
@@ -90,6 +99,7 @@ public class MongoClientLifecycle {
     protected <T> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
         // Let's do an explicit type check to avoid a CCE.
         if (repository instanceof AbstractMongoRepository) {
+            LOGGER.info("Unbinding MongoRepository {}", repository);
             AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
             mongoRepository.setMongoCollection(null);
         }

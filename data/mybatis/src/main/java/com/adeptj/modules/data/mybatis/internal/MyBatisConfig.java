@@ -17,23 +17,23 @@ public @interface MyBatisConfig {
             name = "MyBatis Config XML Location",
             description = "Location of the MyBatis config xml file"
     )
-    String configXmlLocation() default DEFAULT_MYBATIS_CONFIG;
+    String config_xml_location() default DEFAULT_MYBATIS_CONFIG;
 
     @AttributeDefinition(
             name = "Override Provider MyBatis XML Configuration",
             description = "Whether to override the MyBatis configuration provided by MyBatisInfoProvider impl"
     )
-    boolean overrideProviderXmlConfig();
+    boolean override_provider_xml_config();
 
     @AttributeDefinition(
             name = "Disable MyBatis XML Configuration",
             description = "Whether to disable XML based MyBatis configuration"
     )
-    boolean disableXmlConfiguration();
+    boolean disable_xml_configuration();
 
     @AttributeDefinition(
             name = "MyBatis Environment Identifier",
             description = "MyBatis symbolic environment identifier"
     )
-    String environmentId() default DEFAULT_ENV_ID;
+    String environment_id() default DEFAULT_ENV_ID;
 }

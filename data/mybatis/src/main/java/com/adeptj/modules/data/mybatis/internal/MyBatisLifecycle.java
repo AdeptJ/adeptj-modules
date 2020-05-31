@@ -46,24 +46,31 @@ public class MyBatisLifecycle {
                             @NotNull @Reference DataSourceService dataSourceService, @NotNull MyBatisConfig config) {
         Configuration configuration = this.getConfiguration(provider, config);
         this.addMappers(provider.getMappers(), configuration);
-        configuration.setEnvironment(new Environment.Builder(config.environmentId())
+        configuration.setEnvironment(new Environment.Builder(config.environment_id())
                 .dataSource(dataSourceService.getDataSource())
                 .transactionFactory(new JdbcTransactionFactory())
                 .build());
         this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+        LOGGER.info("MyBatis SqlSessionFactory initialized!");
     }
 
     private Configuration getConfiguration(MyBatisInfoProvider provider, @NotNull MyBatisConfig config) {
-        if (config.disableXmlConfiguration()) {
+        if (config.disable_xml_configuration()) {
+            LOGGER.info("MyBatis Xml based configuration disabled, creating Configuration via constructor!");
             return new Configuration();
         }
         return Functions.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
             String configXmlLocation = provider.getConfigXmlLocation();
-            if (StringUtils.isEmpty(configXmlLocation) || config.overrideProviderXmlConfig()) {
-                configXmlLocation = config.configXmlLocation();
+            if (StringUtils.isEmpty(configXmlLocation) || config.override_provider_xml_config()) {
+                configXmlLocation = config.config_xml_location();
             }
+            LOGGER.info("Loading MyBatis config Xml: {}", configXmlLocation);
             try (InputStream stream = Resources.getResourceAsStream(configXmlLocation)) {
-                return new XMLConfigBuilder(stream).parse();
+                XMLConfigBuilder configBuilder = new XMLConfigBuilder(stream, config.environment_id());
+                LOGGER.info("Parsing MyBatis config Xml!");
+                Configuration configuration = configBuilder.parse();
+                LOGGER.info("Created {} after parsing MyBatis config xml!", configuration);
+                return configuration;
             } catch (IOException ex) {
                 LOGGER.error(ex.getMessage(), ex);
                 throw new MyBatisBootstrapException(ex);
@@ -90,12 +97,14 @@ public class MyBatisLifecycle {
         if (!(repository instanceof AbstractMyBatisRepository)) {
             throw new MyBatisRepositoryBindException("The repository instance must extend AbstractMyBatisRepository!");
         }
+        LOGGER.info("Binding MyBatisRepository {}", repository);
         AbstractMyBatisRepository<?, ?> myBatisRepository = (AbstractMyBatisRepository<?, ?>) repository;
         myBatisRepository.setSessionFactory(this.sessionFactory);
     }
 
     protected void unbindMyBatisRepository(MyBatisRepository<?, ?> repository) {
         if (repository instanceof AbstractMyBatisRepository) {
+            LOGGER.info("Unbinding MyBatisRepository {}", repository);
             AbstractMyBatisRepository<?, ?> myBatisRepository = (AbstractMyBatisRepository<?, ?>) repository;
             myBatisRepository.setSessionFactory(null);
         }

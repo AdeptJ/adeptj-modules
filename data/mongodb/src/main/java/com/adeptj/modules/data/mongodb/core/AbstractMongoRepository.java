@@ -12,14 +12,9 @@ import java.util.List;
 @ConsumerType
 public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
-    /**
-     * Kept protected so that subclasses could access it directly.
-     */
-    protected JacksonMongoCollection<T> mongoCollection;
+    private JacksonMongoCollection<T> mongoCollection;
 
     private final Class<T> documentClass;
-
-    // << --------------------------- Internal --------------------------- >>
 
     /**
      * Initializes the {@link #documentClass} field with a non null document class object.
@@ -27,8 +22,13 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
      * @param documentClass the document class required by {@link JacksonMongoCollection}
      */
     protected AbstractMongoRepository(Class<T> documentClass) {
-        Validate.isTrue(documentClass != null, "DocumentClass must not be null!");
+        Validate.isTrue(documentClass != null, "documentClass must not be null!");
         this.documentClass = documentClass;
+    }
+
+    protected JacksonMongoCollection<T> getMongoCollection() {
+        Validate.validState(this.mongoCollection != null, "JacksonMongoCollection is null!");
+        return this.mongoCollection;
     }
 
     public void setMongoCollection(JacksonMongoCollection<T> mongoCollection) {
@@ -43,23 +43,23 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     @Override
     public void insert(T object) {
-        this.mongoCollection.insert(object);
+        this.getMongoCollection().insert(object);
     }
 
     @Override
     public T findOneById(Object id) {
-        return this.mongoCollection.findOneById(id);
+        return this.getMongoCollection().findOneById(id);
     }
 
     @Override
     public List<T> findAll(Class<T> type) {
         List<T> documents = new ArrayList<>();
-        this.mongoCollection.find(type).forEach(documents::add);
+        this.getMongoCollection().find(type).forEach(documents::add);
         return documents;
     }
 
     @Override
     public void updateById(Object id, Bson bson) {
-        this.mongoCollection.updateById(id, bson);
+        this.getMongoCollection().updateById(id, bson);
     }
 }
