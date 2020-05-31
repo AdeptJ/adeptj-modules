@@ -56,7 +56,7 @@ public class MyBatisLifecycle {
 
     private Configuration getConfiguration(MyBatisInfoProvider provider, @NotNull MyBatisConfig config) {
         if (config.disable_xml_configuration()) {
-            LOGGER.info("MyBatis Xml based configuration disabled, creating Configuration via constructor!");
+            LOGGER.info("MyBatis xml based configuration disabled, creating Configuration via constructor!");
             return new Configuration();
         }
         return Functions.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
@@ -64,12 +64,12 @@ public class MyBatisLifecycle {
             if (StringUtils.isEmpty(configXmlLocation) || config.override_provider_xml_config()) {
                 configXmlLocation = config.config_xml_location();
             }
-            LOGGER.info("Loading MyBatis config Xml: {}", configXmlLocation);
+            LOGGER.info("Loading [{}]", configXmlLocation);
             try (InputStream stream = Resources.getResourceAsStream(configXmlLocation)) {
                 XMLConfigBuilder configBuilder = new XMLConfigBuilder(stream, config.environment_id());
-                LOGGER.info("Parsing MyBatis config Xml!");
+                LOGGER.info("Parsing [{}]", configXmlLocation);
                 Configuration configuration = configBuilder.parse();
-                LOGGER.info("Created {} after parsing MyBatis config xml!", configuration);
+                LOGGER.info("Initialized [{}] after parsing [{}]", configuration, configXmlLocation);
                 return configuration;
             } catch (IOException ex) {
                 LOGGER.error(ex.getMessage(), ex);
