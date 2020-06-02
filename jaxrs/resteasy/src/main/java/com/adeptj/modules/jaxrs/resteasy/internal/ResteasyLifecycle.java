@@ -98,7 +98,7 @@ public class ResteasyLifecycle {
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
                 // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
                 ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
-                this.resteasyDispatcher = new ResteasyDispatcher(this.config.blacklistedProviders());
+                this.resteasyDispatcher = new ResteasyDispatcher(servletConfig, this.config.blacklistedProviders());
                 this.resteasyDispatcher.init(servletConfig);
                 Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
                 ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()

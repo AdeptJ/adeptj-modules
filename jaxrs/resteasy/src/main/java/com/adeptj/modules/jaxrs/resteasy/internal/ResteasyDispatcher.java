@@ -57,25 +57,22 @@ public class ResteasyDispatcher extends HttpServlet30Dispatcher {
 
     private static final String PROCESSING_REQUEST_MSG = "Processing [{}] request for [{}]";
 
-    private transient ResteasyDeployment deployment;
+    private final transient ResteasyDeployment deployment;
 
-    private final transient String[] blacklistedProviders;
-
-    ResteasyDispatcher(String[] blacklistedProviders) {
-        this.blacklistedProviders = blacklistedProviders;
-    }
-
-    @Override
-    public void init(@NotNull ServletConfig servletConfig) throws ServletException {
+    ResteasyDispatcher(@NotNull ServletConfig servletConfig, String[] blacklistedProviders) {
         // This is needed for resolving the ResteasyProxyServlet's init parameters by RESTEasy's ServletConfigSource.
         ResteasyContext.pushContext(ServletConfig.class, servletConfig);
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
         ConfigProviderResolver.setInstance(new SmallRyeConfigProviderResolver());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
-        this.deployment.setProviderFactory(new ExtendedResteasyProviderFactory(this.blacklistedProviders));
+        this.deployment.setProviderFactory(new ExtendedResteasyProviderFactory(blacklistedProviders));
         this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         ResteasyUtil.addResteasyDeployment(servletConfig.getServletContext(), this.deployment);
+    }
+
+    @Override
+    public void init(@NotNull ServletConfig servletConfig) throws ServletException {
         LOGGER.info("Initializing RESTEasy ServletContainerDispatcher!!");
         super.init(servletConfig);
         LOGGER.info("RESTEasy ServletContainerDispatcher Initialized!!");

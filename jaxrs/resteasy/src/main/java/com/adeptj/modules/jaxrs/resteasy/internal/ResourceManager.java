@@ -40,9 +40,9 @@ public class ResourceManager<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final Lock lock;
-
     private final Registry registry;
+
+    private final Lock lock;
 
     ResourceManager(Registry registry) {
         this.registry = registry;
