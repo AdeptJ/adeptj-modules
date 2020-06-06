@@ -33,6 +33,7 @@ import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-//@Disabled
+@Disabled
 public class UserRepositoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
