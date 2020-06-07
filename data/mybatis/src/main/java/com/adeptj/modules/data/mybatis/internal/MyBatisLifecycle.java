@@ -46,10 +46,11 @@ public class MyBatisLifecycle {
                             @NotNull @Reference DataSourceService dataSourceService, @NotNull MyBatisConfig config) {
         Configuration configuration = this.getConfiguration(provider, config);
         this.addMappers(provider.getMappers(), configuration);
-        configuration.setEnvironment(new Environment.Builder(config.environment_id())
+        Environment environment = new Environment.Builder(config.environment_id())
                 .dataSource(dataSourceService.getDataSource())
                 .transactionFactory(new JdbcTransactionFactory())
-                .build());
+                .build();
+        configuration.setEnvironment(environment);
         this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
         LOGGER.info("MyBatis SqlSessionFactory initialized!");
     }
@@ -61,7 +62,7 @@ public class MyBatisLifecycle {
         }
         return Functions.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
             String configXmlLocation = provider.getConfigXmlLocation();
-            if (StringUtils.isEmpty(configXmlLocation) || config.override_provider_xml_config()) {
+            if (StringUtils.isEmpty(configXmlLocation) || config.override_provider_config_xml_location()) {
                 configXmlLocation = config.config_xml_location();
             }
             LOGGER.info("Loading [{}]", configXmlLocation);

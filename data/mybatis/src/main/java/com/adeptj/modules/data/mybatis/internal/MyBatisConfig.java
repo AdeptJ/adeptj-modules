@@ -20,10 +20,10 @@ public @interface MyBatisConfig {
     String config_xml_location() default DEFAULT_MYBATIS_CONFIG;
 
     @AttributeDefinition(
-            name = "Override Provider MyBatis XML Configuration",
-            description = "Whether to override the MyBatis configuration provided by MyBatisInfoProvider impl"
+            name = "Override Provider MyBatis Config XML Location",
+            description = "Whether to override the MyBatis config xml location provided by MyBatisInfoProvider"
     )
-    boolean override_provider_xml_config();
+    boolean override_provider_config_xml_location();
 
     @AttributeDefinition(
             name = "Disable MyBatis XML Configuration",
