@@ -34,6 +34,7 @@ import java.io.IOException;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 /**
  * Provides Jackson's serializer {@link ObjectWriter} and deserializer {@link ObjectReader} objects.
@@ -47,6 +48,7 @@ public class Jackson {
 
     private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
             .enable(INDENT_OUTPUT)
+            .disable(WRITE_DATES_AS_TIMESTAMPS)
             .setSerializationInclusion(NON_NULL)
             .setDefaultPropertyInclusion(NON_DEFAULT);
 
