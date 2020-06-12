@@ -3,6 +3,7 @@ package com.adeptj.modules.data.mongodb.internal;
 import com.adeptj.modules.commons.utils.Jackson;
 import com.adeptj.modules.data.mongodb.MongoRepository;
 import com.adeptj.modules.data.mongodb.core.AbstractMongoRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
@@ -64,8 +65,9 @@ public class MongoClientLifecycle {
                 .applyToClusterSettings(b -> b.hosts(serverAddresses).build())
                 .build();
         this.mongoClient = MongoClients.create(clientSettings);
-        this.mongoCollectionBuilder = JacksonMongoCollection.builder()
-                .withObjectMapper(ObjectMapperConfigurer.configureObjectMapper(Jackson.objectMapper()));
+        // see - https://github.com/mongojack/mongojack/issues/202
+        ObjectMapper mapper = ObjectMapperConfigurer.configureObjectMapper(Jackson.objectMapper());
+        this.mongoCollectionBuilder = JacksonMongoCollection.builder().withObjectMapper(mapper);
         LOGGER.info("MongoClient initialized!");
     }
 
@@ -91,6 +93,7 @@ public class MongoClientLifecycle {
         LOGGER.info("Binding MongoRepository {}", repository);
         AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
         Class<T> documentClass = mongoRepository.getDocumentClass();
+        LOGGER.info("Initializing JacksonMongoCollection for type {}", documentClass.getName());
         JacksonMongoCollection<T> mongoCollection = this.mongoCollectionBuilder
                 .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD);
         mongoRepository.setMongoCollection(mongoCollection);
