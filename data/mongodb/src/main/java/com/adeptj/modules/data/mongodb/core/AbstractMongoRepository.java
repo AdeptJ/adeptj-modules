@@ -1,6 +1,8 @@
 package com.adeptj.modules.data.mongodb.core;
 
 import com.adeptj.modules.data.mongodb.MongoRepository;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.apache.commons.lang3.Validate;
 import org.bson.conversions.Bson;
 import org.mongojack.JacksonMongoCollection;
@@ -42,8 +44,18 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     // << --------------------------- Public --------------------------- >>
 
     @Override
-    public void insert(T object) {
-        this.getMongoCollection().insert(object);
+    public void insert(T document) {
+        this.getMongoCollection().insert(document);
+    }
+
+    @Override
+    public void insertMany(List<T> documents) {
+        this.getMongoCollection().insert(documents);
+    }
+
+    @Override
+    public UpdateResult insertOrUpdate(T document) {
+        return this.getMongoCollection().save(document);
     }
 
     @Override
@@ -52,14 +64,27 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     }
 
     @Override
-    public List<T> findAll(Class<T> type) {
-        List<T> documents = new ArrayList<>();
-        this.getMongoCollection().find(type).forEach(documents::add);
-        return documents;
+    public List<T> findMany() {
+        return this.getMongoCollection().find().into(new ArrayList<>());
     }
 
     @Override
-    public void updateById(Object id, Bson bson) {
-        this.getMongoCollection().updateById(id, bson);
+    public List<T> findMany(Bson filter) {
+        return this.getMongoCollection().find(filter).into(new ArrayList<>());
+    }
+
+    @Override
+    public UpdateResult updateById(Object id, Bson bson) {
+        return this.getMongoCollection().updateById(id, bson);
+    }
+
+    @Override
+    public UpdateResult replaceOneById(Object id, T document) {
+        return this.getMongoCollection().replaceOneById(id, document);
+    }
+
+    @Override
+    public DeleteResult removeById(Object id) {
+        return this.getMongoCollection().removeById(id);
     }
 }

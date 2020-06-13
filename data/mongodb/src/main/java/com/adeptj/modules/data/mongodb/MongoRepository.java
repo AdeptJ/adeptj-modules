@@ -1,16 +1,28 @@
 package com.adeptj.modules.data.mongodb;
 
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.conversions.Bson;
 
 import java.util.List;
 
 public interface MongoRepository<T> {
 
-    void insert(T object);
+    void insert(T document);
+
+    void insertMany(List<T> documents);
+
+    UpdateResult insertOrUpdate(T document);
 
     T findOneById(Object id);
 
-    List<T> findAll(Class<T> type);
+    List<T> findMany();
 
-    void updateById(Object id, Bson bson);
+    List<T> findMany(Bson filter);
+
+    UpdateResult updateById(Object id, Bson bson);
+
+    UpdateResult replaceOneById(Object id, T document);
+
+    DeleteResult removeById(Object id);
 }
