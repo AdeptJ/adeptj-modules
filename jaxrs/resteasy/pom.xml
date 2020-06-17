@@ -38,8 +38,8 @@
         <resteasy-tracing-api.version>1.0.0.Final</resteasy-tracing-api.version>
         <mime4j.version>0.8.3</mime4j.version>
         <microprofile-config-api.version>1.4</microprofile-config-api.version>
-        <smallrye-config.version>1.8.0</smallrye-config.version>
-        <smallrye-config-common.version>1.8.0</smallrye-config-common.version>
+        <smallrye-config.version>1.8.1</smallrye-config.version>
+        <smallrye-config-common.version>1.8.1</smallrye-config-common.version>
         <smallrye-common-annotation.version>1.0.2</smallrye-common-annotation.version>
         <smallrye-common-function.version>1.0.2</smallrye-common-function.version>
         <smallrye-common-expression.version>1.0.2</smallrye-common-expression.version>
