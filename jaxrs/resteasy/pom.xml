@@ -39,12 +39,12 @@
         <mime4j.version>0.8.3</mime4j.version>
         <asyncutil.version>0.1.0</asyncutil.version>
         <microprofile-config-api.version>1.4</microprofile-config-api.version>
-        <smallrye-config.version>1.8.5</smallrye-config.version>
-        <smallrye-config-common.version>1.8.5</smallrye-config-common.version>
-        <smallrye-common-annotation.version>1.3.0</smallrye-common-annotation.version>
-        <smallrye-common-function.version>1.3.0</smallrye-common-function.version>
-        <smallrye-common-expression.version>1.3.0</smallrye-common-expression.version>
-        <smallrye-common-constraint.version>1.3.0</smallrye-common-constraint.version>
+        <smallrye-config.version>1.8.6</smallrye-config.version>
+        <smallrye-config-common.version>1.8.6</smallrye-config-common.version>
+        <smallrye-common-annotation.version>1.4.0</smallrye-common-annotation.version>
+        <smallrye-common-function.version>1.4.0</smallrye-common-function.version>
+        <smallrye-common-expression.version>1.4.0</smallrye-common-expression.version>
+        <smallrye-common-constraint.version>1.4.0</smallrye-common-constraint.version>
     </properties>
 
     <!-- Project Information -->
