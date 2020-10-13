@@ -54,8 +54,6 @@ Import-Package: \
   !com.github.fge.jsonpatch, \
   !com.github.fge.jsonpatch.mergepatch, \
   !org.jboss.weld.proxy, \
-  !org.hibernate.validator.internal.engine.path, \
-  !org.hibernate.validator.internal.metadata.descriptor, \
   *
   
 Bundle-Name: ${project.name}
