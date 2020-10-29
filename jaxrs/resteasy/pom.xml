@@ -39,8 +39,9 @@
         <mime4j.version>0.8.3</mime4j.version>
         <asyncutil.version>0.1.0</asyncutil.version>
         <microprofile-config-api.version>1.4</microprofile-config-api.version>
-        <smallrye-config.version>1.9.2</smallrye-config.version>
-        <smallrye-config-common.version>1.9.2</smallrye-config-common.version>
+        <asm.version>8.0.1</asm.version>
+        <smallrye-config.version>1.9.3</smallrye-config.version>
+        <smallrye-config-common.version>1.9.3</smallrye-config-common.version>
         <smallrye-common-annotation.version>1.4.1</smallrye-common-annotation.version>
         <smallrye-common-constraint.version>1.4.1</smallrye-common-constraint.version>
         <smallrye-common-expression.version>1.4.1</smallrye-common-expression.version>
@@ -265,6 +266,13 @@
             <groupId>io.smallrye.config</groupId>
             <artifactId>smallrye-config</artifactId>
             <version>${smallrye-config.version}</version>
+        </dependency>
+
+        <!-- Required by smallrye-config -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
         </dependency>
 
         <dependency>

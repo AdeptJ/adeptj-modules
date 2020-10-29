@@ -27,11 +27,14 @@
 -dsannotations-options: version;minimum=1.4.0
 
 # Copy RESTEasy dependencies to the root folder of the target JAR and add them to the bundle classpath
--includeresource: resteasy-*.jar;smallrye-*.jar;asyncutil*.jar;lib:=true
+-includeresource: resteasy-*.jar;smallrye-*.jar;asyncutil*.jar;asm*.jar;lib:=true
 
 -exportcontents: com.adeptj.modules.jaxrs.resteasy, \
                  !com.adeptj.modules.jaxrs.resteasy.internal, \
                  *
+# Strange error started appearing with smallrye common dependency update to v1.9.0.
+# Please see GH issue - https://github.com/bndtools/bnd/issues/4322
+-fixupmessages: "Classes found in the wrong directory:";is:=ignore
 
 Import-Package: \
   javax.annotation;\

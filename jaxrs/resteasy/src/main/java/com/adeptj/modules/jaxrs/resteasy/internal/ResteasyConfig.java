@@ -44,8 +44,9 @@ import static javax.ws.rs.core.HttpHeaders.LAST_MODIFIED;
  * @author Rakesh.Kumar, AdeptJ.
  */
 @ObjectClassDefinition(
-        name = "AdeptJ RESTEasy Configuration",
-        description = "Configuration for RESTEasy Framework"
+        name = "%restesy.ocd.name",
+        description = "%restesy.ocd.desc",
+        localization = "OSGI-INF/l10n/metatype"
 )
 public @interface ResteasyConfig {
 
