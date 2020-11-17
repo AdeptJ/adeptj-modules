@@ -42,10 +42,10 @@
         <asm.version>8.0.1</asm.version>
         <smallrye-config.version>1.9.3</smallrye-config.version>
         <smallrye-config-common.version>1.9.3</smallrye-config-common.version>
-        <smallrye-common-annotation.version>1.4.1</smallrye-common-annotation.version>
-        <smallrye-common-constraint.version>1.4.1</smallrye-common-constraint.version>
-        <smallrye-common-expression.version>1.4.1</smallrye-common-expression.version>
-        <smallrye-common-function.version>1.4.1</smallrye-common-function.version>
+        <smallrye-common-annotation.version>1.5.0</smallrye-common-annotation.version>
+        <smallrye-common-constraint.version>1.5.0</smallrye-common-constraint.version>
+        <smallrye-common-expression.version>1.5.0</smallrye-common-expression.version>
+        <smallrye-common-function.version>1.5.0</smallrye-common-function.version>
     </properties>
 
     <!-- Project Information -->
