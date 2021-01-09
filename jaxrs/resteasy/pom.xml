@@ -462,10 +462,6 @@
                     <artifactId>jakarta.enterprise.cdi-api</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.hibernate.validator</groupId>
-                    <artifactId>hibernate-validator</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
                 </exclusion>
@@ -491,7 +487,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.glassfish</groupId>
-                    <artifactId>jakarta-json</artifactId>
+                    <artifactId>jakarta.json</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.logging</groupId>
@@ -527,7 +523,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.glassfish</groupId>
-                    <artifactId>jakarta-json</artifactId>
+                    <artifactId>jakarta.json</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.logging</groupId>
@@ -553,10 +549,6 @@
             <artifactId>resteasy-jaxb-provider</artifactId>
             <version>${resteasy.version}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.glassfish.jaxb</groupId>
                     <artifactId>jaxb-runtime</artifactId>
@@ -592,10 +584,6 @@
                 <exclusion>
                     <groupId>com.sun.mail</groupId>
                     <artifactId>jakarta.mail</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.james</groupId>
-                    <artifactId>apache-mime4j-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.james</groupId>
