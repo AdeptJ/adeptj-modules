@@ -1,6 +1,5 @@
 package com.adeptj.modules.data.mongodb.internal;
 
-import com.adeptj.modules.commons.utils.Jackson;
 import com.adeptj.modules.data.mongodb.MongoRepository;
 import com.adeptj.modules.data.mongodb.core.AbstractMongoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +29,8 @@ import java.util.stream.Stream;
 import static com.adeptj.modules.data.mongodb.MongoConstants.DELIMITER_COLON;
 import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_COLLECTION_NAME;
 import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_DB_NAME;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static org.bson.UuidRepresentation.STANDARD;
 import static org.mongojack.JacksonMongoCollection.JacksonMongoCollectionBuilder;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -66,8 +67,10 @@ public class MongoClientLifecycle {
                 .build();
         this.mongoClient = MongoClients.create(clientSettings);
         // see - https://github.com/mongojack/mongojack/issues/202
-        ObjectMapper mapper = ObjectMapperConfigurer.configureObjectMapper(Jackson.objectMapper());
-        this.mongoCollectionBuilder = JacksonMongoCollection.builder().withObjectMapper(mapper);
+        this.mongoCollectionBuilder = JacksonMongoCollection.builder()
+                .withObjectMapper(ObjectMapperConfigurer.configureObjectMapper(new ObjectMapper()
+                        .enable(INDENT_OUTPUT)
+                        .setDefaultPropertyInclusion(NON_DEFAULT)));
         LOGGER.info("MongoClient initialized!");
     }
 
@@ -79,6 +82,7 @@ public class MongoClientLifecycle {
 
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
     protected <T> void bindMongoRepository(@NotNull MongoRepository<T> repository, @NotNull Map<String, Object> properties) {
+        // We are not interested in any of the MongoRepository impl which is not a subclass of AbstractMongoRepository.
         if (!(repository instanceof AbstractMongoRepository)) {
             throw new MongoRepositoryBindException("The repository instance must extend AbstractMongoRepository!");
         }
