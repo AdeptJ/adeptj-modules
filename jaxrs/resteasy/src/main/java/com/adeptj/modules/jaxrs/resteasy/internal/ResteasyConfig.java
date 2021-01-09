@@ -123,10 +123,10 @@ public @interface ResteasyConfig {
     String[] allowedOrigins() default {"*"};
 
     @AttributeDefinition(
-            name = "RESTEasy Provider Blacklist",
+            name = "RESTEasy Provider Deny List",
             description = "RESTEasy providers which are omitted from deployment."
     )
-    String[] blacklistedProviders() default {
+    String[] providerDenyList() default {
             "org.jboss.resteasy.plugins.validation.ValidatorContextResolver",
             "org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI",
     };

@@ -59,13 +59,13 @@ public class ResteasyDispatcher extends HttpServlet30Dispatcher {
 
     private final transient ResteasyDeployment deployment;
 
-    ResteasyDispatcher(@NotNull ServletConfig servletConfig, String[] blacklistedProviders) {
+    ResteasyDispatcher(@NotNull ServletConfig servletConfig, String[] providerDenyList) {
         // This is needed for resolving the ResteasyProxyServlet's init parameters by RESTEasy's ServletConfigSource.
         ResteasyContext.pushContext(ServletConfig.class, servletConfig);
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
         ConfigProviderResolver.setInstance(new SmallRyeConfigProviderResolver());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
-        this.deployment.setProviderFactory(new ExtendedResteasyProviderFactory(blacklistedProviders));
+        this.deployment.setProviderFactory(new ExtendedResteasyProviderFactory(providerDenyList));
         this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         ResteasyUtil.addResteasyDeployment(servletConfig.getServletContext(), this.deployment);

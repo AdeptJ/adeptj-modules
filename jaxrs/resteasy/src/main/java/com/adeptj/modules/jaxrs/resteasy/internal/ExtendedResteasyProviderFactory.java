@@ -33,7 +33,7 @@ import java.util.Set;
 
 /**
  * The {@link ResteasyProviderFactory} extension which adds the support of skipping the registration of desired
- * provider instances as per the {@link #blacklistedProviders} array.
+ * provider instances as per the {@link #providerDenyList} array.
  * <p>
  * It also overrides the {@link #getProviderInstances} to expose the {@link #providerInstances} Set which helps in
  * removing the provider instances through {@link ProviderManager#removeProvider}, this is needed because the super
@@ -45,16 +45,16 @@ public class ExtendedResteasyProviderFactory extends ResteasyProviderFactoryImpl
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final String[] blacklistedProviders;
+    private final String[] providerDenyList;
 
-    ExtendedResteasyProviderFactory(String[] blacklistedProviders) {
-        this.blacklistedProviders = blacklistedProviders;
+    ExtendedResteasyProviderFactory(String[] providerDenyList) {
+        this.providerDenyList = providerDenyList;
     }
 
     @Override
     public void registerProvider(@NotNull Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
-        if (ArrayUtils.contains(this.blacklistedProviders, provider.getName())) {
-            LOGGER.info("Provider [{}] is blacklisted!!", provider.getName());
+        if (ArrayUtils.contains(this.providerDenyList, provider.getName())) {
+            LOGGER.info("Provider [{}] is skipped from deployment!!", provider.getName());
         } else {
             super.registerProvider(provider, priorityOverride, isBuiltin, contracts);
         }
