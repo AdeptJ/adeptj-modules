@@ -35,6 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <osgi.service.log.version>1.4.0</osgi.service.log.version>
     </properties>
 
     <!-- Project Information -->
