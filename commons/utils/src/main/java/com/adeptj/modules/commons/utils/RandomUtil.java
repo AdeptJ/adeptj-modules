@@ -48,7 +48,7 @@ public class RandomUtil {
         return SECURE_RANDOM;
     }
 
-    public static @NotNull byte[] randomBytes(int length) {
+    public static byte[] randomBytes(int length) {
         int maxLength = Integer.getInteger("adeptj.secure.random.max.bytes.length", DEFAULT_MAX_LENGTH);
         Validate.isTrue((length <= maxLength), String.format("length can't be greater than %s", maxLength));
         byte[] bytes = new byte[length];
