@@ -41,13 +41,13 @@ import java.util.Set;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ExtendedResteasyProviderFactory extends ResteasyProviderFactoryImpl {
+public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final String[] providerDenyList;
 
-    ExtendedResteasyProviderFactory(String[] providerDenyList) {
+    ResteasyProviderFactoryAdapter(String[] providerDenyList) {
         this.providerDenyList = providerDenyList;
     }
 
