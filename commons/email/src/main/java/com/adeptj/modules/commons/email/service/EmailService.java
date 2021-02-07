@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
+#                                                                             #
 #    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
@@ -17,29 +16,20 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-commons</artifactId>
-    <version>1.0.0</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Commons :: Builder</name>
-    <description>AdeptJ Modules :: Commons :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
 
-    <modules>
+package com.adeptj.modules.commons.email.service;
 
-        <module>utils</module>
-        <module>cache</module>
-        <module>crypto</module>
-        <module>validator</module>
-        <module>jdbc</module>
-        <module>logging</module>
-        <module>email</module>
+import org.apache.commons.mail.EmailException;
+import org.osgi.annotation.versioning.ProviderType;
 
-    </modules>
+/**
+ * Service interface for sending emails using Java mails/Apache commons email APIs.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@ProviderType
+public interface EmailService {
 
-</project>
+    void sendEmail() throws EmailException;
+}

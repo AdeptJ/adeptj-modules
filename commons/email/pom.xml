@@ -27,11 +27,11 @@
         <version>1</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    <artifactId>adeptj-modules-commons-crypto</artifactId>
-    <version>1.0.0</version>
+    <artifactId>adeptj-modules-commons-email</artifactId>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Commons :: Crypto</name>
-    <description>AdeptJ Modules :: Commons :: Crypto Utilities</description>
+    <name>AdeptJ Modules :: Commons :: Email</name>
+    <description>AdeptJ Modules :: Commons :: Email Service Provider</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -65,7 +65,9 @@
             </roles>
             <timezone>+5:30</timezone>
             <properties>
-                <picUrl>https://secure.gravatar.com/avatar/be26830472769171a96543880c651dcd</picUrl>
+                <picUrl>
+                    https://secure.gravatar.com/avatar/be26830472769171a96543880c651dcd
+                </picUrl>
             </properties>
         </developer>
     </developers>
@@ -116,16 +118,6 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.framework</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.cm</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.component.annotations</artifactId>
         </dependency>
 
@@ -140,48 +132,30 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bytes</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bcrypt</artifactId>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-commons-utils</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-        </dependency>
-
-        <!-- Test dependencies -->
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>javax.mail</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
-
-
 </project>
