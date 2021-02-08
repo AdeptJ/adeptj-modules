@@ -65,12 +65,10 @@ public class MyBatisLifecycle {
             if (StringUtils.isEmpty(configXmlLocation) || config.override_provider_config_xml_location()) {
                 configXmlLocation = config.config_xml_location();
             }
-            LOGGER.info("Loading [{}]", configXmlLocation);
+            LOGGER.info("Parsing mybatis config xml from location [{}]", configXmlLocation);
             try (InputStream stream = Resources.getResourceAsStream(configXmlLocation)) {
-                XMLConfigBuilder configBuilder = new XMLConfigBuilder(stream, config.environment_id());
-                LOGGER.info("Parsing [{}]", configXmlLocation);
-                Configuration configuration = configBuilder.parse();
-                LOGGER.info("Initialized [{}] after parsing [{}]", configuration, configXmlLocation);
+                Configuration configuration = new XMLConfigBuilder(stream, config.environment_id()).parse();
+                LOGGER.info("Initialized mybatis Configuration [{}]", configuration);
                 return configuration;
             } catch (IOException ex) {
                 LOGGER.error(ex.getMessage(), ex);
