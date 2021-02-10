@@ -94,10 +94,10 @@ public class MongoClientLifecycle {
                     KEY_DB_NAME, KEY_COLLECTION_NAME);
             throw new MongoRepositoryBindException(message);
         }
-        LOGGER.info("Binding MongoRepository {}", repository);
+        LOGGER.info("Binding MongoRepository [{}]", repository);
         AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
         Class<T> documentClass = mongoRepository.getDocumentClass();
-        LOGGER.info("Initializing JacksonMongoCollection for type {}", documentClass.getName());
+        LOGGER.info("Initializing JacksonMongoCollection for type [{}]", documentClass.getName());
         JacksonMongoCollection<T> mongoCollection = this.mongoCollectionBuilder
                 .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD);
         mongoRepository.setMongoCollection(mongoCollection);
@@ -106,7 +106,7 @@ public class MongoClientLifecycle {
     protected <T> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
         // Let's do an explicit type check to avoid a CCE.
         if (repository instanceof AbstractMongoRepository) {
-            LOGGER.info("Unbinding MongoRepository {}", repository);
+            LOGGER.info("Unbinding MongoRepository [{}]", repository);
             AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
             mongoRepository.setMongoCollection(null);
         }
