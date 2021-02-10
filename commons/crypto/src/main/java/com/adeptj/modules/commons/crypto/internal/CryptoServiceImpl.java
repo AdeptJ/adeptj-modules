@@ -91,17 +91,23 @@ public class CryptoServiceImpl implements CryptoService {
         byte[] cipherBytes = null;
         byte[] compositeCipherBytes = null;
         try {
+            // 1. get iv
             iv = RandomUtil.randomBytes(IV_LENGTH);
+            // 2. get salt
             salt = RandomUtil.randomBytes(SALT_LENGTH);
+            // 3. generate secret key
             key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
             cipher.init(ENCRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.authTagLength, iv));
+            // 4. generate cipher bytes
             cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
+            // 5. put everything in a ByteBuffer
             compositeCipherBytes = ByteBuffer.allocate(iv.length + salt.length + cipherBytes.length)
                     .put(iv)
                     .put(salt)
                     .put(cipherBytes)
                     .array();
+            // 6. create an UTF-8 String after Base64 encoding the iv+salt+cipherBytes
             return new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);
@@ -117,23 +123,30 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public String decrypt(String cipherText) {
         Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
-        ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
         byte[] iv = null;
         byte[] salt = null;
         byte[] key = null;
         byte[] cipherBytes = null;
         byte[] decryptedBytes = null;
+        // 1. Base64 decode the passed string.
+        ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
         try {
             iv = new byte[IV_LENGTH];
+            // 2. extract iv
             buffer.get(iv);
             salt = new byte[SALT_LENGTH];
+            // 3. extract salt
             buffer.get(salt);
+            // 4. generate secret key
             key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
             cipher.init(DECRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.authTagLength, iv));
             cipherBytes = new byte[buffer.remaining()];
+            // 5. extract cipherBytes
             buffer.get(cipherBytes);
+            // 6. decrypt cipherBytes
             decryptedBytes = cipher.doFinal(cipherBytes);
+            // 7. create a UTF-8 String from decryptedBytes
             return new String(decryptedBytes, UTF_8);
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);
