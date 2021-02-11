@@ -23,6 +23,7 @@ package com.adeptj.modules.commons.crypto.internal;
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
+import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.utils.RandomUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
@@ -96,9 +98,18 @@ public class CryptoServiceImpl implements CryptoService {
             // 2. get salt
             salt = RandomUtil.randomBytes(SALT_LENGTH);
             // 3. generate secret key
-            key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
+            SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
+                    .algorithm(this.algorithm)
+                    .password(this.cryptoKey)
+                    .salt(salt)
+                    .iterationCount(this.iterationCount)
+                    .keyLength(this.keyLength)
+                    .build());
+            key = secretKey.getEncoded();
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, ALGO_AES);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(this.authTagLength, iv);
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
-            cipher.init(ENCRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.authTagLength, iv));
+            cipher.init(ENCRYPT_MODE, secretKeySpec, parameterSpec);
             // 4. generate cipher bytes
             cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
             // 5. put everything in a ByteBuffer
@@ -138,9 +149,18 @@ public class CryptoServiceImpl implements CryptoService {
             // 3. extract salt
             buffer.get(salt);
             // 4. generate secret key
-            key = CryptoUtil.newSecretKey(this.algorithm, this.cryptoKey, salt, this.iterationCount, this.keyLength);
+            SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
+                    .algorithm(this.algorithm)
+                    .password(this.cryptoKey)
+                    .salt(salt)
+                    .iterationCount(this.iterationCount)
+                    .keyLength(this.keyLength)
+                    .build());
+            key = secretKey.getEncoded();
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, ALGO_AES);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(this.authTagLength, iv);
             Cipher cipher = Cipher.getInstance(ALGO_GCM);
-            cipher.init(DECRYPT_MODE, new SecretKeySpec(key, ALGO_AES), new GCMParameterSpec(this.authTagLength, iv));
+            cipher.init(DECRYPT_MODE, secretKeySpec, parameterSpec);
             cipherBytes = new byte[buffer.remaining()];
             // 5. extract cipherBytes
             buffer.get(cipherBytes);

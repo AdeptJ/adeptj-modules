@@ -23,6 +23,7 @@ package com.adeptj.modules.commons.crypto.internal;
 import at.favre.lib.bytes.Bytes;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
+import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
 import com.adeptj.modules.commons.utils.RandomUtil;
 import org.apache.commons.lang3.ArrayUtils;
@@ -77,7 +78,13 @@ public class CompositePasswordEncoder implements PasswordEncoder {
         byte[] compositeDigest = null;
         try {
             salt = RandomUtil.randomBytes(SALT_LENGTH);
-            digest = CryptoUtil.newSecretKey(this.algorithm, rawPassword, salt, this.iterationCount, this.keyLength);
+            digest = CryptoUtil.newSecretKeyBytes(KeyInitData.builder()
+                    .algorithm(this.algorithm)
+                    .password(rawPassword)
+                    .salt(salt)
+                    .iterationCount(this.iterationCount)
+                    .keyLength(this.keyLength)
+                    .build());
             compositeDigest = ByteBuffer.allocate(salt.length + digest.length)
                     .put(salt)
                     .put(digest)
@@ -106,7 +113,13 @@ public class CompositePasswordEncoder implements PasswordEncoder {
             buffer.get(salt);
             oldDigest = new byte[buffer.remaining()];
             buffer.get(oldDigest);
-            newDigest = CryptoUtil.newSecretKey(this.algorithm, rawPassword, salt, this.iterationCount, this.keyLength);
+            newDigest = CryptoUtil.newSecretKeyBytes(KeyInitData.builder()
+                    .algorithm(this.algorithm)
+                    .password(rawPassword)
+                    .salt(salt)
+                    .iterationCount(this.iterationCount)
+                    .keyLength(this.keyLength)
+                    .build());
             return MessageDigest.isEqual(oldDigest, newDigest);
         } finally {
             CryptoUtil.nullSafeWipe(salt);

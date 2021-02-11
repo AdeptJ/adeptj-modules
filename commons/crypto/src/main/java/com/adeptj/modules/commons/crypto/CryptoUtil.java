@@ -22,15 +22,15 @@ package com.adeptj.modules.commons.crypto;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
 /**
- * Provides random bytes using {@link SecureRandom}.
+ * Utility methods for creating {@link SecretKey}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -45,14 +45,17 @@ public class CryptoUtil {
         }
     }
 
-    public static byte[] newSecretKey(String algorithm,
-                                      char[] password, byte[] salt, int iterationCount, int keyLength) {
+    public static SecretKey newSecretKey(KeyInitData data) {
         try {
-            return SecretKeyFactory.getInstance(algorithm)
-                    .generateSecret(new PBEKeySpec(password, salt, iterationCount, keyLength))
-                    .getEncoded();
+            return SecretKeyFactory.getInstance(data.getAlgorithm())
+                    .generateSecret(new PBEKeySpec(data.getPassword(), data.getSalt(), data.getIterationCount(),
+                            data.getKeyLength()));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             throw new CryptoException(ex);
         }
+    }
+
+    public static byte[] newSecretKeyBytes(KeyInitData data) {
+        return newSecretKey(data).getEncoded();
     }
 }
