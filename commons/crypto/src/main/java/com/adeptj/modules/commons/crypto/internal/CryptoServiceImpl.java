@@ -123,11 +123,7 @@ public class CryptoServiceImpl implements CryptoService {
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);
         } finally {
-            CryptoUtil.nullSafeWipe(iv);
-            CryptoUtil.nullSafeWipe(salt);
-            CryptoUtil.nullSafeWipe(key);
-            CryptoUtil.nullSafeWipe(cipherBytes);
-            CryptoUtil.nullSafeWipe(compositeCipherBytes);
+            CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, compositeCipherBytes);
         }
     }
 
@@ -171,11 +167,7 @@ public class CryptoServiceImpl implements CryptoService {
         } catch (GeneralSecurityException ex) {
             throw new CryptoException(ex);
         } finally {
-            CryptoUtil.nullSafeWipe(iv);
-            CryptoUtil.nullSafeWipe(salt);
-            CryptoUtil.nullSafeWipe(key);
-            CryptoUtil.nullSafeWipe(cipherBytes);
-            CryptoUtil.nullSafeWipe(decryptedBytes);
+            CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, decryptedBytes);
         }
     }
 

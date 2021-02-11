@@ -45,6 +45,15 @@ public class CryptoUtil {
         }
     }
 
+    public static void nullSafeWipeAll(byte[]... arrays) {
+        if (arrays == null) {
+            return;
+        }
+        for (byte[] array : arrays) {
+            nullSafeWipe(array);
+        }
+    }
+
     public static SecretKey newSecretKey(KeyInitData data) {
         try {
             return SecretKeyFactory.getInstance(data.getAlgorithm())

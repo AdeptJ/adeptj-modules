@@ -91,9 +91,7 @@ public class CompositePasswordEncoder implements PasswordEncoder {
                     .array();
             return new String(Base64.getEncoder().encode(compositeDigest), UTF_8);
         } finally {
-            CryptoUtil.nullSafeWipe(salt);
-            CryptoUtil.nullSafeWipe(digest);
-            CryptoUtil.nullSafeWipe(compositeDigest);
+            CryptoUtil.nullSafeWipeAll(salt, digest, compositeDigest);
         }
     }
 
@@ -122,9 +120,7 @@ public class CompositePasswordEncoder implements PasswordEncoder {
                     .build());
             return MessageDigest.isEqual(oldDigest, newDigest);
         } finally {
-            CryptoUtil.nullSafeWipe(salt);
-            CryptoUtil.nullSafeWipe(oldDigest);
-            CryptoUtil.nullSafeWipe(newDigest);
+            CryptoUtil.nullSafeWipeAll(salt, oldDigest, newDigest);
         }
     }
 }
