@@ -1,20 +1,20 @@
-<p class="statline ui-state-highlight">Protect the sensitive data (like passwords and API keys etc.) to be provided in OSGi configurations.</p>
-<form method="POST">
+<p class="statline ui-state-highlight">${crypto.highlight.note}</p>
+<form method="post" action="${pluginRoot}">
     <table class="nicetable ui-widget">
         <tbody>
         <tr>
-            <th colspan="3" class="ui-widget-header">Provide the Plain Text below and click on Protect button</th>
+            <th colspan="3" class="ui-widget-header">${crypto.provide.plain.text}</th>
         </tr>
         <tr>
-            <td>Plain&nbsp;Text</td>
+            <td>${crypto.plain.text}</td>
             <td style="width:100%;">
                 <input style="width:100%;" type="password" name="plainText" value="${plainText}"
                        class="ui-state-default ui-corner-all inputText">
             </td>
-            <td><input type="submit" value="Protect" class="ui-state-default ui-corner-all"></td>
+            <td><input type="submit" value="${crypto.submit.button}" class="ui-state-default ui-corner-all"></td>
         </tr>
         <tr>
-            <td>Protected&nbsp;Text</td>
+            <td>${crypto.protected.text}</td>
             <td style="width:100%;" colspan="2">
                 <input style="width:100%;" type="text" value="${cipherText}" readonly=""
                        class="ui-state-default ui-corner-all inputText">

@@ -22,7 +22,6 @@ package com.adeptj.modules.commons.crypto;
 import com.adeptj.modules.commons.utils.RandomUtil;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.felix.webconsole.AbstractWebConsolePlugin;
@@ -45,7 +44,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -106,18 +104,13 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     private static final String REQ_METHOD_GET = "GET";
 
-    private static final String CRYPTO_HTML_LOCATION = "/crypto.html";
+    private static final String CRYPTO_HTML_LOCATION = "/templates/crypto.html";
 
     private final char[] cryptoKey;
 
     @Activate
     public CryptoPlugin(BundleContext context) {
         this.cryptoKey = context.getProperty(CRYPTO_KEY_PROPERTY).toCharArray();
-    }
-
-    // For Testing.
-    CryptoPlugin(char[] cryptoKey) {
-        this.cryptoKey = cryptoKey;
     }
 
     // << ---------------------------------- From CryptoPlugin ---------------------------------->>
@@ -265,11 +258,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     @Override
     protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws IOException {
         this.populateVariableResolverWithDefaultValues(req);
-        try (InputStream stream = this.getClass().getResourceAsStream(CRYPTO_HTML_LOCATION)) {
-            if (stream != null) {
-                res.getWriter().print(IOUtils.toString(stream, UTF_8));
-            }
-        }
+        res.getWriter().print(super.readTemplateFile(CRYPTO_HTML_LOCATION));
     }
 
     @Override
