@@ -1,35 +1,322 @@
+/*
+###############################################################################
+#                                                                             #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#                                                                             #
+#    Licensed under the Apache License, Version 2.0 (the "License");          #
+#    you may not use this file except in compliance with the License.         #
+#    You may obtain a copy of the License at                                  #
+#                                                                             #
+#        http://www.apache.org/licenses/LICENSE-2.0                           #
+#                                                                             #
+#    Unless required by applicable law or agreed to in writing, software      #
+#    distributed under the License is distributed on an "AS IS" BASIS,        #
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. #
+#    See the License for the specific language governing permissions and      #
+#    limitations under the License.                                           #
+#                                                                             #
+###############################################################################
+*/
 package com.adeptj.modules.commons.crypto;
 
+import com.adeptj.modules.commons.utils.RandomUtil;
+import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
+import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.felix.webconsole.AbstractWebConsolePlugin;
+import org.apache.felix.webconsole.DefaultVariableResolver;
+import org.apache.felix.webconsole.VariableResolver;
+import org.apache.felix.webconsole.WebConsoleUtil;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationPlugin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.Deactivate;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Dictionary;
 import java.util.Iterator;
 
-//@Component
-public class CryptoPlugin implements ConfigurationPlugin {
+import static at.favre.lib.crypto.bcrypt.BCrypt.SALT_LENGTH;
+import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_LABEL_VALUE;
+import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_TITLE_VALUE;
+import static com.adeptj.modules.commons.crypto.CryptoPlugin.SERVICE_RANKING;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.crypto.Cipher.DECRYPT_MODE;
+import static javax.crypto.Cipher.ENCRYPT_MODE;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 
-    private final CryptoService cryptoService;
+/**
+ * The CryptoPlugin.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@ConfigurationPluginProperties(service_cmRanking = SERVICE_RANKING)
+@WebConsolePlugin(label = PLUGIN_LABEL_VALUE, title = PLUGIN_TITLE_VALUE)
+@Component(
+        service = {CryptoPlugin.class, Servlet.class, ConfigurationPlugin.class},
+        immediate = true,
+        property = "config.plugin.id=adeptj-crypto-plugin"
+)
+public class CryptoPlugin extends AbstractWebConsolePlugin implements ConfigurationPlugin {
+
+    static final String PLUGIN_LABEL_VALUE = "crypto";
+
+    static final String PLUGIN_TITLE_VALUE = "Crypto";
+
+    static final int SERVICE_RANKING = 400;
+
+    private static final int IV_LENGTH = 12;
+
+    private static final String ALGO_GCM = "AES/GCM/NoPadding";
+
+    private static final String ALGO_AES = "AES";
+
+    private static final String CRYPTO_KEY_PROPERTY = "crypto.key";
+
+    private static final int KEY_LENGTH = 128;
+
+    private static final int AUTH_TAG_LENGTH = 128;
+
+    private static final int ITERATION_COUNT = 150000;
+
+    private static final String ALGO_PBKDF2_HMAC_SHA256 = "PBKDF2WithHmacSHA256";
+
+    private static final String PREFIX_AJP = "{ajp}";
+
+    private static final String KEY_PLAIN_TEXT = "plainText";
+
+    private static final String KEY_CIPHER_TEXT = "cipherText";
+
+    private static final String REQ_METHOD_GET = "GET";
+
+    private static final String CRYPTO_HTML_LOCATION = "/crypto.html";
+
+    private final char[] cryptoKey;
 
     @Activate
-    public CryptoPlugin(@Reference CryptoService cryptoService) {
-        this.cryptoService = cryptoService;
+    public CryptoPlugin(BundleContext context) {
+        this.cryptoKey = context.getProperty(CRYPTO_KEY_PROPERTY).toCharArray();
     }
 
+    // For Testing.
+    CryptoPlugin(char[] cryptoKey) {
+        this.cryptoKey = cryptoKey;
+    }
+
+    // << ---------------------------------- From CryptoPlugin ---------------------------------->>
+
+    public boolean isProtected(String text) {
+        return StringUtils.startsWith(text, PREFIX_AJP);
+    }
+
+    public String protect(String plainText) {
+        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
+        byte[] iv = null;
+        byte[] salt = null;
+        byte[] key = null;
+        byte[] cipherBytes = null;
+        byte[] compositeCipherBytes = null;
+        try {
+            // 1. get iv
+            iv = RandomUtil.randomBytes(IV_LENGTH);
+            // 2. get salt
+            salt = RandomUtil.randomBytes(SALT_LENGTH);
+            // 3. generate secret key
+            SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
+                    .algorithm(ALGO_PBKDF2_HMAC_SHA256)
+                    .password(this.cryptoKey)
+                    .salt(salt)
+                    .iterationCount(ITERATION_COUNT)
+                    .keyLength(KEY_LENGTH)
+                    .build());
+            key = secretKey.getEncoded();
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, ALGO_AES);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(AUTH_TAG_LENGTH, iv);
+            Cipher cipher = Cipher.getInstance(ALGO_GCM);
+            cipher.init(ENCRYPT_MODE, secretKeySpec, parameterSpec);
+            // 4. generate cipher bytes
+            cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
+            // 5. put everything in a ByteBuffer
+            compositeCipherBytes = ByteBuffer.allocate(iv.length + salt.length + cipherBytes.length)
+                    .put(iv)
+                    .put(salt)
+                    .put(cipherBytes)
+                    .array();
+            // 6. create an UTF-8 String after Base64 encoding the iv+salt+cipherBytes
+            return PREFIX_AJP + new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
+        } catch (GeneralSecurityException ex) {
+            throw new CryptoException(ex);
+        } finally {
+            CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, compositeCipherBytes);
+        }
+    }
+
+    public String unprotect(String cipherText) {
+        Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
+        if (!this.isProtected(cipherText)) {
+            return cipherText;
+        }
+        cipherText = StringUtils.substringAfter(cipherText, PREFIX_AJP);
+        byte[] iv = null;
+        byte[] salt = null;
+        byte[] key = null;
+        byte[] cipherBytes = null;
+        byte[] decryptedBytes = null;
+        // 1. Base64 decode the passed string.
+        ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
+        try {
+            iv = new byte[IV_LENGTH];
+            // 2. extract iv
+            buffer.get(iv);
+            salt = new byte[SALT_LENGTH];
+            // 3. extract salt
+            buffer.get(salt);
+            // 4. generate secret key
+            SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
+                    .algorithm(ALGO_PBKDF2_HMAC_SHA256)
+                    .password(this.cryptoKey)
+                    .salt(salt)
+                    .iterationCount(ITERATION_COUNT)
+                    .keyLength(KEY_LENGTH)
+                    .build());
+            key = secretKey.getEncoded();
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, ALGO_AES);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(AUTH_TAG_LENGTH, iv);
+            Cipher cipher = Cipher.getInstance(ALGO_GCM);
+            cipher.init(DECRYPT_MODE, secretKeySpec, parameterSpec);
+            cipherBytes = new byte[buffer.remaining()];
+            // 5. extract cipherBytes
+            buffer.get(cipherBytes);
+            // 6. decrypt cipherBytes
+            decryptedBytes = cipher.doFinal(cipherBytes);
+            // 7. create a UTF-8 String from decryptedBytes
+            return new String(decryptedBytes, UTF_8);
+        } catch (GeneralSecurityException ex) {
+            throw new CryptoException(ex);
+        } finally {
+            CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, decryptedBytes);
+        }
+    }
+
+    // << ---------------------------------- From ConfigurationPlugin ---------------------------------->>
+
     @Override
-    public void modifyConfiguration(ServiceReference<?> serviceReference, Dictionary<String, Object> dictionary) {
-        for (Iterator<String> iterator = dictionary.keys().asIterator(); iterator.hasNext(); ) {
+    public void modifyConfiguration(ServiceReference<?> serviceReference, Dictionary<String, Object> properties) {
+        for (Iterator<String> iterator = properties.keys().asIterator(); iterator.hasNext(); ) {
             String key = iterator.next();
-            Object val = dictionary.get(key);
+            Object val = properties.get(key);
             if (val instanceof String) {
                 String value = (String) val;
-                if (value.startsWith("{sha256}")) {
-                    dictionary.put(key, this.cryptoService.decrypt(value));
+                if (value.startsWith(PREFIX_AJP)) {
+                    String plainText = this.unprotect(value);
+                    if (!StringUtils.equals(value, plainText)) {
+                        properties.put(key, plainText);
+                    }
+                }
+            } else if (val instanceof String[]) {
+                String[] oldValues = (String[]) val;
+                String[] newValues = null;
+                for (int i = 0; i < oldValues.length; i++) {
+                    String value = oldValues[i];
+                    String plainText = this.unprotect(value);
+                    if (!StringUtils.equals(plainText, value)) {
+                        if (newValues == null) {
+                            newValues = Arrays.copyOf(oldValues, oldValues.length);
+                        }
+                        newValues[i] = plainText;
+                    }
+                }
+                if (newValues != null) {
+                    properties.put(key, newValues);
                 }
             }
         }
+    }
+
+    // << ---------------------------------- From AbstractWebConsolePlugin ---------------------------------->>
+
+    @Override
+    public String getLabel() {
+        return PLUGIN_LABEL_VALUE;
+    }
+
+    @Override
+    public String getTitle() {
+        return PLUGIN_TITLE_VALUE;
+    }
+
+    @Override
+    protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        this.populateVariableResolverWithDefaultValues(req);
+        try (InputStream stream = this.getClass().getResourceAsStream(CRYPTO_HTML_LOCATION)) {
+            if (stream != null) {
+                res.getWriter().print(IOUtils.toString(stream, UTF_8));
+            }
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String plainText = req.getParameter(KEY_PLAIN_TEXT);
+        String cipherText = EMPTY;
+        if (StringUtils.isNotEmpty(plainText)) {
+            try {
+                cipherText = this.protect(plainText);
+            } catch (CryptoException ce) {
+                cipherText = "Couldn't protect plain text: " + ce;
+            }
+        }
+        this.populateVariableResolverAfterPost(req, plainText, cipherText);
+        // re-render the form again with populated data in DefaultVariableResolver.
+        super.doGet(req, resp);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void populateVariableResolverWithDefaultValues(HttpServletRequest req) {
+        // Put the default values in DefaultVariableResolver while rendering the form.
+        // That will be a GET request but when this method is called via a doGet after the form submission
+        // then the request method is still POST so below logic will not be executed.
+        if (REQ_METHOD_GET.equals(req.getMethod())) {
+            VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
+            if (vr instanceof DefaultVariableResolver) {
+                DefaultVariableResolver dvr = (DefaultVariableResolver) vr;
+                dvr.put(KEY_PLAIN_TEXT, EMPTY);
+                dvr.put(KEY_CIPHER_TEXT, EMPTY);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void populateVariableResolverAfterPost(HttpServletRequest req, String plainText, String cipherText) {
+        VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
+        if (vr instanceof DefaultVariableResolver) {
+            DefaultVariableResolver dvr = (DefaultVariableResolver) vr;
+            dvr.put(KEY_PLAIN_TEXT, plainText);
+            dvr.put(KEY_CIPHER_TEXT, cipherText);
+        }
+    }
+
+    // << ------------------------------------------ OSGi Internal ------------------------------------------>>
+
+    @Deactivate
+    protected void stop() {
+        Arrays.fill(this.cryptoKey, '\u0000');
     }
 }

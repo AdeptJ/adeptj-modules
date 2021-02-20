@@ -1,0 +1,26 @@
+<p class="statline ui-state-highlight">Protect the sensitive data (like passwords and API keys etc.) to be provided in OSGi configurations .</p>
+<form method="POST">
+    <table class="nicetable ui-widget">
+        <tbody>
+        <tr>
+            <th colspan="3" class="ui-widget-header">Protect Plain Text Strings
+            </th>
+        </tr>
+        <tr>
+            <td>Plain&nbsp;Text</td>
+            <td style="width:100%;">
+                <input style="width:100%;" type="password" name="plainText" value="${plainText}"
+                       class="ui-state-default ui-corner-all inputText">
+            </td>
+            <td><input type="submit" value="Protect" class="ui-state-default ui-corner-all"></td>
+        </tr>
+        <tr>
+            <td>Protected&nbsp;Text</td>
+            <td style="width:100%;" colspan="2">
+                <input style="width:100%;" type="text" value="${cipherText}" readonly=""
+                       class="ui-state-default ui-corner-all inputText">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
