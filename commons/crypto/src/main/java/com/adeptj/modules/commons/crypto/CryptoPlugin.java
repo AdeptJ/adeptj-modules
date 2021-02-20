@@ -221,26 +221,26 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     public void modifyConfiguration(ServiceReference<?> serviceReference, Dictionary<String, Object> properties) {
         for (Iterator<String> iterator = properties.keys().asIterator(); iterator.hasNext(); ) {
             String key = iterator.next();
-            Object val = properties.get(key);
-            if (val instanceof String) {
-                String value = (String) val;
-                if (value.startsWith(PREFIX_AJP)) {
-                    String plainText = this.unprotect(value);
-                    if (!StringUtils.equals(value, plainText)) {
-                        properties.put(key, plainText);
+            Object value = properties.get(key);
+            if (value instanceof String) {
+                String oldValue = (String) value;
+                if (StringUtils.startsWith(oldValue, PREFIX_AJP)) {
+                    String newValue = this.unprotect(oldValue);
+                    if (!StringUtils.equals(oldValue, newValue)) {
+                        properties.put(key, newValue);
                     }
                 }
-            } else if (val instanceof String[]) {
-                String[] oldValues = (String[]) val;
+            } else if (value instanceof String[]) {
+                String[] oldValues = (String[]) value;
                 String[] newValues = null;
                 for (int i = 0; i < oldValues.length; i++) {
-                    String value = oldValues[i];
-                    String plainText = this.unprotect(value);
-                    if (!StringUtils.equals(plainText, value)) {
+                    String oldValue = oldValues[i];
+                    String newValue = this.unprotect(oldValue);
+                    if (!StringUtils.equals(newValue, oldValue)) {
                         if (newValues == null) {
                             newValues = Arrays.copyOf(oldValues, oldValues.length);
                         }
-                        newValues[i] = plainText;
+                        newValues[i] = newValue;
                     }
                 }
                 if (newValues != null) {
