@@ -316,6 +316,6 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     @Deactivate
     protected void stop() {
-        Arrays.fill(this.cryptoKey, '\u0000');
+        Arrays.fill(this.cryptoKey, Character.MIN_VALUE);
     }
 }
