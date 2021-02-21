@@ -56,11 +56,9 @@ public class CryptoUtil {
 
     public static SecretKey newSecretKey(KeyInitData data) {
         try {
-            PBEKeySpec keySpec = new PBEKeySpec(data.getPassword(), data.getSalt(), data.getIterationCount(),
-                    data.getKeyLength());
-            SecretKey secretKey = SecretKeyFactory.getInstance(data.getAlgorithm()).generateSecret(keySpec);
-            keySpec.clearPassword();
-            return secretKey;
+            return SecretKeyFactory.getInstance(data.getAlgorithm())
+                    .generateSecret(new PBEKeySpec(data.getPassword(), data.getSalt(), data.getIterationCount(),
+                            data.getKeyLength()));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             throw new CryptoException(ex);
         }
