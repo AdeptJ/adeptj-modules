@@ -20,6 +20,7 @@
 package com.adeptj.modules.commons.crypto;
 
 import com.adeptj.modules.commons.utils.RandomUtil;
+import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,8 @@ import org.osgi.service.cm.ConfigurationPlugin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -44,6 +47,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -73,6 +77,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
         property = "config.plugin.id=adeptj-crypto-plugin"
 )
 public class CryptoPlugin extends AbstractWebConsolePlugin implements ConfigurationPlugin {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final String PLUGIN_LABEL_VALUE = "crypto";
 
@@ -218,7 +224,9 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             if (value instanceof String) {
                 String oldValue = (String) value;
                 if (StringUtils.startsWith(oldValue, PREFIX_AJP)) {
+                    long start = System.nanoTime();
                     String newValue = this.unprotect(oldValue);
+                    LOGGER.debug("Decryption took: {} ms!", TimeUtil.elapsedMillis(start));
                     if (!StringUtils.equals(oldValue, newValue)) {
                         properties.put(key, newValue);
                     }
@@ -266,11 +274,13 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         String plainText = req.getParameter(KEY_PLAIN_TEXT);
         String cipherText = EMPTY;
         if (StringUtils.isNotEmpty(plainText)) {
+            long start = System.nanoTime();
             try {
                 cipherText = this.protect(plainText);
             } catch (CryptoException ce) {
                 cipherText = "Couldn't protect plain text: " + ce;
             }
+            LOGGER.debug("Encryption took: {} ms!", TimeUtil.elapsedMillis(start));
         }
         this.populateVariableResolverAfterPost(req, plainText, cipherText);
         // re-render the form again with populated data in DefaultVariableResolver.
