@@ -21,6 +21,7 @@ package com.adeptj.modules.commons.crypto;
 
 import com.adeptj.modules.commons.utils.RandomUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
+import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +57,7 @@ import java.util.Dictionary;
 import java.util.Iterator;
 
 import static at.favre.lib.crypto.bcrypt.BCrypt.SALT_LENGTH;
+import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_ID;
 import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_LABEL_VALUE;
 import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_TITLE_VALUE;
 import static com.adeptj.modules.commons.crypto.CryptoPlugin.SERVICE_RANKING;
@@ -71,10 +73,10 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  */
 @ConfigurationPluginProperties(service_cmRanking = SERVICE_RANKING)
 @WebConsolePlugin(label = PLUGIN_LABEL_VALUE, title = PLUGIN_TITLE_VALUE)
+@ConfigPluginId(PLUGIN_ID)
 @Component(
-        service = {CryptoPlugin.class, Servlet.class, ConfigurationPlugin.class},
         immediate = true,
-        property = "config.plugin.id=adeptj-crypto-plugin"
+        service = {CryptoPlugin.class, Servlet.class, ConfigurationPlugin.class}
 )
 public class CryptoPlugin extends AbstractWebConsolePlugin implements ConfigurationPlugin {
 
@@ -83,6 +85,8 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     static final String PLUGIN_LABEL_VALUE = "crypto";
 
     static final String PLUGIN_TITLE_VALUE = "Crypto";
+
+    static final String PLUGIN_ID = "adeptj-crypto-plugin";
 
     static final int SERVICE_RANKING = 400;
 

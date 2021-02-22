@@ -28,26 +28,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The {@link ComponentPropertyType} for org.osgi.service.cm.ConfigurationPlugin properties.
+ * {@link ComponentPropertyType} for Felix WebConsole plugin id property - config.plugin.id.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 @ComponentPropertyType
-public @interface ConfigurationPluginProperties {
+public @interface ConfigPluginId {
 
-    /**
-     * Service PID of the targeted service.
-     *
-     * @return Service PID of the targeted service.
-     */
-    String[] cm_target() default {""};// NOSONAR
-
-    /**
-     * A service property to specify the order in which plugins are invoked.
-     *
-     * @return rank by order of which the org.osgi.service.cm.ConfigurationPlugin instances will be invoked.
-     */
-    int service_cmRanking() default 500; // NOSONAR
+    String value();
 }
