@@ -94,11 +94,11 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     private static final String CRYPTO_KEY_PROPERTY = "crypto.key";
 
+    private static final String CRYPTO_ITERATIONS_PROPERTY = "crypto.iterations";
+
     private static final int KEY_LENGTH = 128;
 
     private static final int AUTH_TAG_LENGTH = 128;
-
-    private static final int ITERATION_COUNT = 150000;
 
     private static final String ALGO_PBKDF2_HMAC_SHA256 = "PBKDF2WithHmacSHA256";
 
@@ -114,9 +114,12 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     private final char[] cryptoKey;
 
+    private final int iterations;
+
     @Activate
     public CryptoPlugin(BundleContext context) {
         this.cryptoKey = context.getProperty(CRYPTO_KEY_PROPERTY).toCharArray();
+        this.iterations = Integer.parseInt(context.getProperty(CRYPTO_ITERATIONS_PROPERTY));
     }
 
     // << ---------------------------------- From CryptoPlugin ---------------------------------->>
@@ -142,7 +145,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                     .algorithm(ALGO_PBKDF2_HMAC_SHA256)
                     .password(this.cryptoKey)
                     .salt(salt)
-                    .iterationCount(ITERATION_COUNT)
+                    .iterationCount(this.iterations)
                     .keyLength(KEY_LENGTH)
                     .build());
             key = secretKey.getEncoded();
@@ -192,7 +195,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                     .algorithm(ALGO_PBKDF2_HMAC_SHA256)
                     .password(this.cryptoKey)
                     .salt(salt)
-                    .iterationCount(ITERATION_COUNT)
+                    .iterationCount(this.iterations)
                     .keyLength(KEY_LENGTH)
                     .build());
             key = secretKey.getEncoded();
