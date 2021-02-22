@@ -88,19 +88,19 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     private static final int IV_LENGTH = 12;
 
-    private static final String ALGO_GCM = "AES/GCM/NoPadding";
+    private static final String CIPHER_ALGO = "AES/GCM/NoPadding";
 
-    private static final String ALGO_AES = "AES";
+    private static final String SECRET_KEY_SPEC_ALGO = "AES";
 
     private static final String CRYPTO_KEY_PROPERTY = "crypto.key";
 
     private static final String CRYPTO_ITERATIONS_PROPERTY = "crypto.iterations";
 
-    private static final int KEY_LENGTH = 128;
+    private static final int PBE_KEY_LENGTH = 128;
 
-    private static final int AUTH_TAG_LENGTH = 128;
+    private static final int GCM_AUTH_TAG_LENGTH = PBE_KEY_LENGTH;
 
-    private static final String ALGO_PBKDF2_HMAC_SHA256 = "PBKDF2WithHmacSHA256";
+    private static final String PBE_ALGO = "PBKDF2WithHmacSHA256";
 
     private static final String PREFIX_AJP = "{ajp}";
 
@@ -142,16 +142,16 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             salt = RandomUtil.randomBytes(SALT_LENGTH);
             // 3. generate secret key
             SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
-                    .algorithm(ALGO_PBKDF2_HMAC_SHA256)
+                    .algorithm(PBE_ALGO)
                     .password(this.cryptoKey)
                     .salt(salt)
                     .iterationCount(this.iterations)
-                    .keyLength(KEY_LENGTH)
+                    .keyLength(PBE_KEY_LENGTH)
                     .build());
             key = secretKey.getEncoded();
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, ALGO_AES);
-            GCMParameterSpec parameterSpec = new GCMParameterSpec(AUTH_TAG_LENGTH, iv);
-            Cipher cipher = Cipher.getInstance(ALGO_GCM);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
+            Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
             cipher.init(ENCRYPT_MODE, secretKeySpec, parameterSpec);
             // 4. generate cipher bytes
             cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
@@ -192,16 +192,16 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             buffer.get(salt);
             // 4. generate secret key
             SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
-                    .algorithm(ALGO_PBKDF2_HMAC_SHA256)
+                    .algorithm(PBE_ALGO)
                     .password(this.cryptoKey)
                     .salt(salt)
                     .iterationCount(this.iterations)
-                    .keyLength(KEY_LENGTH)
+                    .keyLength(PBE_KEY_LENGTH)
                     .build());
             key = secretKey.getEncoded();
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, ALGO_AES);
-            GCMParameterSpec parameterSpec = new GCMParameterSpec(AUTH_TAG_LENGTH, iv);
-            Cipher cipher = Cipher.getInstance(ALGO_GCM);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
+            Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
             cipher.init(DECRYPT_MODE, secretKeySpec, parameterSpec);
             cipherBytes = new byte[buffer.remaining()];
             // 5. extract cipherBytes
