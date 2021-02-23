@@ -75,7 +75,7 @@ public @interface CryptoConfig {
             name = "PBEKeySpec Iteration Count",
             description = "The number of times that the given text is hashed during the derivation of the symmetric key."
     )
-    int pbe_key_spec_iteration_count() default 150000;
+    int pbe_key_spec_iteration_count() default 10000;
 
     @AttributeDefinition(
             name = "Crypto Key",

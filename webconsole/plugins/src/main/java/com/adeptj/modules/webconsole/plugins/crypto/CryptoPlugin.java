@@ -23,7 +23,6 @@ import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
 import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.utils.RandomUtil;
-import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
@@ -53,7 +52,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
-import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Dictionary;
@@ -166,7 +164,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                     .array();
             // 6. create an UTF-8 String after Base64 encoding the iv+salt+cipherBytes
             return PREFIX_AJP + new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
-        } catch (GeneralSecurityException ex) {
+        } catch (Exception ex) {
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, compositeCipherBytes);
@@ -184,9 +182,9 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         byte[] key = null;
         byte[] cipherBytes = null;
         byte[] decryptedBytes = null;
-        // 1. Base64 decode the passed string.
-        ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
         try {
+            // 1. Base64 decode the passed string.
+            ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
             iv = new byte[IV_LENGTH];
             // 2. extract iv
             buffer.get(iv);
@@ -213,7 +211,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             decryptedBytes = cipher.doFinal(cipherBytes);
             // 7. create a UTF-8 String from decryptedBytes
             return new String(decryptedBytes, UTF_8);
-        } catch (GeneralSecurityException ex) {
+        } catch (Exception ex) {
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, decryptedBytes);
@@ -229,10 +227,8 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             Object value = properties.get(key);
             if (value instanceof String) {
                 String oldValue = (String) value;
-                if (StringUtils.startsWith(oldValue, PREFIX_AJP)) {
-                    long start = System.nanoTime();
-                    String newValue = this.unprotect(oldValue);
-                    LOGGER.debug("Decryption took: {} ms!", TimeUtil.elapsedMillis(start));
+                if (StringUtils.isNotEmpty(oldValue)) {
+                    String newValue = this.getPlainText(oldValue);
                     if (!StringUtils.equals(oldValue, newValue)) {
                         properties.put(key, newValue);
                     }
@@ -242,12 +238,14 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                 String[] newValues = null;
                 for (int i = 0; i < oldValues.length; i++) {
                     String oldValue = oldValues[i];
-                    String newValue = this.unprotect(oldValue);
-                    if (!StringUtils.equals(newValue, oldValue)) {
-                        if (newValues == null) {
-                            newValues = Arrays.copyOf(oldValues, oldValues.length);
+                    if (StringUtils.isNotEmpty(oldValue)) {
+                        String newValue = this.getPlainText(oldValue);
+                        if (!StringUtils.equals(newValue, oldValue)) {
+                            if (newValues == null) {
+                                newValues = Arrays.copyOf(oldValues, oldValues.length);
+                            }
+                            newValues[i] = newValue;
                         }
-                        newValues[i] = newValue;
                     }
                 }
                 if (newValues != null) {
@@ -280,13 +278,11 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         String plainText = req.getParameter(KEY_PLAIN_TEXT);
         String cipherText = EMPTY;
         if (StringUtils.isNotEmpty(plainText)) {
-            long start = System.nanoTime();
             try {
                 cipherText = this.protect(plainText);
             } catch (CryptoException ce) {
-                cipherText = "Couldn't protect plain text: " + ce;
+                cipherText = "Couldn't protect Plain Text: " + ce;
             }
-            LOGGER.debug("Encryption took: {} ms!", TimeUtil.elapsedMillis(start));
         }
         this.populateVariableResolverAfterPost(req, plainText, cipherText);
         // re-render the form again with populated data in DefaultVariableResolver.
@@ -316,6 +312,17 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             dvr.put(KEY_PLAIN_TEXT, plainText);
             dvr.put(KEY_CIPHER_TEXT, cipherText);
         }
+    }
+
+    private String getPlainText(String cipherText) {
+        String newValue;
+        try {
+            newValue = this.unprotect(cipherText);
+        } catch (CryptoException ex) {
+            newValue = cipherText;
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        return newValue;
     }
 
     // << ------------------------------------------ OSGi Internal ------------------------------------------>>
