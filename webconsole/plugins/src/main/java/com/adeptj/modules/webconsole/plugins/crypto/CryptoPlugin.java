@@ -281,7 +281,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             try {
                 cipherText = this.protect(plainText);
             } catch (CryptoException ce) {
-                cipherText = "Couldn't protect Plain Text: " + ce;
+                cipherText = "Exception while protecting Plain Text: " + ce;
             }
         }
         this.populateVariableResolverAfterPost(req, plainText, cipherText);
