@@ -17,8 +17,11 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.commons.crypto;
+package com.adeptj.modules.webconsole.plugins.crypto;
 
+import com.adeptj.modules.commons.crypto.CryptoException;
+import com.adeptj.modules.commons.crypto.CryptoUtil;
+import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.utils.RandomUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
@@ -57,10 +60,6 @@ import java.util.Dictionary;
 import java.util.Iterator;
 
 import static at.favre.lib.crypto.bcrypt.BCrypt.SALT_LENGTH;
-import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_ID;
-import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_LABEL_VALUE;
-import static com.adeptj.modules.commons.crypto.CryptoPlugin.PLUGIN_TITLE_VALUE;
-import static com.adeptj.modules.commons.crypto.CryptoPlugin.SERVICE_RANKING;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
@@ -71,9 +70,9 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ConfigurationPluginProperties(service_cmRanking = SERVICE_RANKING)
-@WebConsolePlugin(label = PLUGIN_LABEL_VALUE, title = PLUGIN_TITLE_VALUE)
-@ConfigPluginId(PLUGIN_ID)
+@ConfigurationPluginProperties(service_cmRanking = CryptoPlugin.SERVICE_RANKING)
+@WebConsolePlugin(label = CryptoPlugin.PLUGIN_LABEL_VALUE, title = CryptoPlugin.PLUGIN_TITLE_VALUE)
+@ConfigPluginId(CryptoPlugin.PLUGIN_ID)
 @Component(
         immediate = true,
         service = {CryptoPlugin.class, Servlet.class, ConfigurationPlugin.class}
