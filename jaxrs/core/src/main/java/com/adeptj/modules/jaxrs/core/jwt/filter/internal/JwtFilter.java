@@ -18,7 +18,6 @@ import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.JwtFilter.FILTER
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
-import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * This filter will kick in for all JaxRS resource classes and methods.
@@ -68,7 +67,7 @@ public class JwtFilter implements ContainerRequestFilter {
 
     // <<------------------------------------- OSGi Internal  -------------------------------------->>
 
-    @Reference(service = JwtService.class, cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
+    @Reference(service = JwtService.class, cardinality = OPTIONAL, policy = DYNAMIC)
     protected void bindJwtService(JwtService jwtService) {
         this.jwtService = jwtService;
     }

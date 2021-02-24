@@ -33,7 +33,6 @@ import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtClaimsI
 import static javax.ws.rs.Priorities.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
-import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * This filter will kick in for any resource class/method that is annotated with {@link RequiresAuthentication}.
@@ -55,7 +54,7 @@ public class StaticJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntrosp
 
     // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
-    @Reference(service = JwtClaimsIntrospector.class, cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
+    @Reference(service = JwtClaimsIntrospector.class, cardinality = OPTIONAL, policy = DYNAMIC)
     protected void bindJwtClaimsIntrospector(JwtClaimsIntrospector claimsIntrospector) {
         this.claimsIntrospector = claimsIntrospector;
     }

@@ -65,6 +65,6 @@ public interface JwtClaimsIntrospector {
      */
     default boolean isJwtExpired(@NotNull ContainerRequestContext requestContext) {
         JwtPrincipal principal = SecurityContextUtil.getJwtPrincipal(requestContext.getSecurityContext());
-        return principal != null && principal.isHoldingExpiredJwt();
+        return principal == null || principal.isHoldingExpiredJwt();
     }
 }

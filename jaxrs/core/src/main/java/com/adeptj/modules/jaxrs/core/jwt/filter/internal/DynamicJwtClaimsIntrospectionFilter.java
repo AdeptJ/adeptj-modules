@@ -28,7 +28,6 @@ import org.osgi.service.component.annotations.Reference;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter.FILTER_NAME;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
-import static org.osgi.service.component.annotations.ReferencePolicyOption.GREEDY;
 
 /**
  * This filter will kick in for resource classes and methods configured by JwtDynamicFeature.
@@ -46,7 +45,7 @@ public class DynamicJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntros
 
     // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
-    @Reference(service = JwtClaimsIntrospector.class, cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
+    @Reference(service = JwtClaimsIntrospector.class, cardinality = OPTIONAL, policy = DYNAMIC)
     protected void bindJwtClaimsIntrospector(JwtClaimsIntrospector claimsIntrospector) {
         this.claimsIntrospector = claimsIntrospector;
     }
