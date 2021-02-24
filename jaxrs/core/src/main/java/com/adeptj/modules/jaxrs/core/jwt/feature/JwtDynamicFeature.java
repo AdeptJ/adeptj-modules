@@ -40,7 +40,7 @@ import javax.ws.rs.ext.Provider;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Stream;
 
-import static javax.ws.rs.Priorities.AUTHENTICATION;
+import static javax.ws.rs.Priorities.AUTHORIZATION;
 import static javax.ws.rs.RuntimeType.SERVER;
 import static org.apache.commons.lang3.StringUtils.containsAny;
 
@@ -101,7 +101,7 @@ public class JwtDynamicFeature implements DynamicFeature {
                 .map(row -> row.split(EQ))
                 .filter(mapping -> resource.equals(mapping[0]) && containsAny(mapping[1], method, ASTERISK))
                 .forEach(mapping -> {
-                    context.register(this.claimsIntrospectionFilter, AUTHENTICATION);
+                    context.register(this.claimsIntrospectionFilter, AUTHORIZATION);
                     LOGGER.info(FILTER_REG_MSG, resource, method);
                 });
     }

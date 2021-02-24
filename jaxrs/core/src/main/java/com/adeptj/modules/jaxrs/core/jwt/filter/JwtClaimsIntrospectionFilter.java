@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter;
 import com.adeptj.modules.jaxrs.core.jwt.filter.internal.StaticJwtClaimsIntrospectionFilter;
 
@@ -41,6 +40,4 @@ import javax.ws.rs.container.ContainerRequestFilter;
  * @author Rakesh.Kumar, AdeptJ
  */
 public interface JwtClaimsIntrospectionFilter extends ContainerRequestFilter {
-
-    JwtClaimsIntrospector getClaimsIntrospector();
 }

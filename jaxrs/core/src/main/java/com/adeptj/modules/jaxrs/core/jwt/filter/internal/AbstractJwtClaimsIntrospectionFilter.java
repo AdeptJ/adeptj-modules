@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
+import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 
@@ -35,6 +36,12 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  */
 public abstract class AbstractJwtClaimsIntrospectionFilter implements JwtClaimsIntrospectionFilter {
 
+    protected JwtClaimsIntrospector claimsIntrospector;
+
+    public AbstractJwtClaimsIntrospectionFilter(JwtClaimsIntrospector claimsIntrospector) {
+        this.claimsIntrospector = claimsIntrospector;
+    }
+
     /**
      * This method Checks if the SecurityContext is an instance of {@link JwtSecurityContext}, if yes, then introspect
      * the JwtClaims using either the default implementation of JwtClaimsIntrospector or with the one provided by consumer.
@@ -46,7 +53,9 @@ public abstract class AbstractJwtClaimsIntrospectionFilter implements JwtClaimsI
     @Override
     public void filter(ContainerRequestContext requestContext) {
         if (requestContext.getSecurityContext() instanceof JwtSecurityContext) {
-            this.getClaimsIntrospector().introspect(requestContext);
+            // Since JwtClaimsIntrospector is a dynamic service so assign this to a local variable.
+            JwtClaimsIntrospector introspector = this.claimsIntrospector;
+            introspector.introspect(requestContext);
         } else {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         }

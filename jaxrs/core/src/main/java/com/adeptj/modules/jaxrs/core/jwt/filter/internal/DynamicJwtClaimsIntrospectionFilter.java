@@ -22,7 +22,6 @@ package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -41,20 +40,20 @@ public class DynamicJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntros
 
     static final String FILTER_NAME = "jwt.filter.type=dynamic";
 
-    @Reference(cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
-    private volatile JwtClaimsIntrospector claimsIntrospector;
-
-    @Override
-    public JwtClaimsIntrospector getClaimsIntrospector() {
-        return this.claimsIntrospector;
+    public DynamicJwtClaimsIntrospectionFilter() {
+        super(DefaultJwtClaimsIntrospector.INSTANCE);
     }
 
     // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
 
-    @Activate
-    protected void start() {
-        if (this.claimsIntrospector == null) {
-            this.claimsIntrospector = DefaultJwtClaimsIntrospector.INSTANCE;
+    @Reference(service = JwtClaimsIntrospector.class, cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
+    protected void bindJwtClaimsIntrospector(JwtClaimsIntrospector claimsIntrospector) {
+        this.claimsIntrospector = claimsIntrospector;
+    }
+
+    protected void unbindJwtClaimsIntrospector(JwtClaimsIntrospector claimsIntrospector) {
+        if (this.claimsIntrospector == claimsIntrospector) {
+            this.claimsIntrospector = null;
         }
     }
 }

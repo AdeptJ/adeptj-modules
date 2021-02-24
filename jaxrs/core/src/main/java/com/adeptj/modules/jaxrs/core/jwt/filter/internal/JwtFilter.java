@@ -39,11 +39,7 @@ public class JwtFilter implements ContainerRequestFilter {
 
     static final String FILTER_NAME = "JaxRS.Security.JwtFilter";
 
-    /**
-     * The optionally referenced {@link JwtService}.
-     */
-    @Reference(cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
-    private volatile JwtService jwtService;
+    private JwtService jwtService;
 
     /**
      * Following steps are executed inside this method.
@@ -68,5 +64,18 @@ public class JwtFilter implements ContainerRequestFilter {
             return;
         }
         requestContext.setSecurityContext(new JwtSecurityContext(claims, requestContext.getSecurityContext().isSecure()));
+    }
+
+    // <<------------------------------------- OSGi Internal  -------------------------------------->>
+
+    @Reference(service = JwtService.class, cardinality = OPTIONAL, policy = DYNAMIC, policyOption = GREEDY)
+    protected void bindJwtService(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
+
+    protected void unbindJwtService(JwtService jwtService) {
+        if (this.jwtService == jwtService) {
+            this.jwtService = null;
+        }
     }
 }
