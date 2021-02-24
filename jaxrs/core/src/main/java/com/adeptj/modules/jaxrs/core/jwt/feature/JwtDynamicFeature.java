@@ -20,13 +20,12 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.feature;
 
-import com.adeptj.modules.jaxrs.core.JaxRSProvider;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
@@ -38,11 +37,10 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 import java.lang.invoke.MethodHandles;
-import java.util.stream.Stream;
 
+import static com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature.FEATURE_NAME;
 import static javax.ws.rs.Priorities.AUTHORIZATION;
 import static javax.ws.rs.RuntimeType.SERVER;
-import static org.apache.commons.lang3.StringUtils.containsAny;
 
 /**
  * A {@link DynamicFeature} that enables the {@link JwtClaimsIntrospectionFilter} for the configured JAX-RS filterMapping.
@@ -55,33 +53,39 @@ import static org.apache.commons.lang3.StringUtils.containsAny;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxRSProvider(name = "JwtDynamicFeature")
 @Provider
 @ConstrainedTo(SERVER)
 @Designate(ocd = JwtDynamicFeatureConfig.class)
-@Component(immediate = true)
+@Component(immediate = true, property = FEATURE_NAME)
 public class JwtDynamicFeature implements DynamicFeature {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    static final String FEATURE_NAME = "feature.name=JwtDynamicFeature";
 
     private static final String EQ = "=";
 
     private static final String ASTERISK = "*";
 
-    private static final String FILTER_REG_MSG = "Registered DynamicJwtFilter for mapping [{}#{}]";
+    private static final String FILTER_REG_MSG = "Registered DynamicJwtClaimsIntrospectionFilter for mapping [{}#{}]";
+
+    private static final String SERVICE_FILTER = "(jwt.filter.type=dynamic)";
 
     /**
-     * Each element may be in the form - FQCN=resourceMethod1,resourceMethod1,...n if JwtFilter
-     * has to be applied on given methods, otherwise just provide the resource class's
-     * fully qualified name equals to [*] itself will apply the filter on all the resource methods.
+     * Each element should be in the form - Resource's FQCN=resourceMethod1,resourceMethod1,...resourceMethodN.
+     * If JwtClaimsIntrospectionFilter has to be applied on given methods, otherwise just provide
+     * the Resource's FQCN equals to [*] then the filter will be applied on all the resource methods.
      */
-    private String[] filterMapping;
+    private final String[] filterMapping;
 
-    /**
-     * Inject {@link DynamicJwtClaimsIntrospectionFilter}
-     */
-    @Reference(target = "(jwt.filter.type=dynamic)")
-    private JwtClaimsIntrospectionFilter claimsIntrospectionFilter;
+    private final JwtClaimsIntrospectionFilter claimsIntrospectionFilter;
+
+    @Activate
+    public JwtDynamicFeature(@Reference(target = SERVICE_FILTER)
+                                     JwtClaimsIntrospectionFilter filter, JwtDynamicFeatureConfig config) {
+        this.claimsIntrospectionFilter = filter;
+        this.filterMapping = config.filterMapping();
+    }
 
     /**
      * Registers the {@link DynamicJwtClaimsIntrospectionFilter} for interception
@@ -94,23 +98,18 @@ public class JwtDynamicFeature implements DynamicFeature {
      */
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {
-        String resource = resourceInfo.getResourceClass().getName();
-        String method = resourceInfo.getResourceMethod().getName();
-        Stream.of(this.filterMapping)
-                .filter(row -> ArrayUtils.getLength(row.split(EQ)) == 2)
-                .map(row -> row.split(EQ))
-                .filter(mapping -> resource.equals(mapping[0]) && containsAny(mapping[1], method, ASTERISK))
-                .forEach(mapping -> {
-                    context.register(this.claimsIntrospectionFilter, AUTHORIZATION);
-                    LOGGER.info(FILTER_REG_MSG, resource, method);
-                });
-    }
-
-    // <---------------------------------------- OSGi INTERNAL ---------------------------------------->
-
-    @Modified
-    @Activate
-    protected void start(JwtDynamicFeatureConfig config) {
-        this.filterMapping = config.filterMapping();
+        if (ArrayUtils.isNotEmpty(this.filterMapping)) {
+            String resource = resourceInfo.getResourceClass().getName();
+            String method = resourceInfo.getResourceMethod().getName();
+            for (String row : this.filterMapping) {
+                String[] mapping = row.split(EQ);
+                if (ArrayUtils.getLength(mapping) == 2) {
+                    if (resource.equals(mapping[0]) && StringUtils.containsAny(mapping[1], method, ASTERISK)) {
+                        context.register(this.claimsIntrospectionFilter, AUTHORIZATION);
+                        LOGGER.info(FILTER_REG_MSG, resource, method);
+                    }
+                }
+            }
+        }
     }
 }

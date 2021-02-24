@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
+import javax.ws.rs.container.DynamicFeature;
 import java.lang.invoke.MethodHandles;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -61,6 +62,8 @@ public class ResteasyLifecycle {
 
     private static final String JAX_RS_RUNTIME_BOOTSTRAP_MSG = "JAX-RS Runtime bootstrapped in [{}] ms!!";
 
+    private static final String SERVICE_FILTER = "(feature.name=JwtDynamicFeature)";
+
     // Activation objects start.
 
     private final ResteasyConfig config;
@@ -78,9 +81,14 @@ public class ResteasyLifecycle {
      */
     private final ValidatorService validatorService;
 
+    private final DynamicFeature dynamicFeature;
+
     @Activate
-    public ResteasyLifecycle(@Reference ValidatorService vs, BundleContext context, ResteasyConfig config) {
+    public ResteasyLifecycle(@Reference ValidatorService vs,
+                             @Reference(target = SERVICE_FILTER) DynamicFeature dynamicFeature,
+                             BundleContext context, ResteasyConfig config) {
         this.validatorService = vs;
+        this.dynamicFeature = dynamicFeature;
         this.context = context;
         this.config = config;
     }
@@ -109,7 +117,8 @@ public class ResteasyLifecycle {
                         .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
                         .register(new JsonbContextResolver())
                         .register(new JsonReaderFactoryContextResolver())
-                        .register(new JsonWriterFactoryContextResolver());
+                        .register(new JsonWriterFactoryContextResolver())
+                        .register(this.dynamicFeature);
                 this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, dispatcher.getRegistry());
                 this.serviceTracker.open();
                 LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
