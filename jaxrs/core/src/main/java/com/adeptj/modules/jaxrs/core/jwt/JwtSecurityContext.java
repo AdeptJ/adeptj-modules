@@ -24,13 +24,10 @@ import com.adeptj.modules.jaxrs.core.JwtPrincipal;
 import com.adeptj.modules.security.jwt.JwtClaims;
 
 import javax.ws.rs.core.SecurityContext;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collection;
 
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
 import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES_DELIMITER;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
  * Jwt based JAX-RS {@link SecurityContext}.
@@ -53,11 +50,14 @@ public class JwtSecurityContext implements SecurityContext {
         return this.principal;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean isUserInRole(String role) {
-        return Stream.of(((String) this.principal.getClaims().getOrDefault(ROLES, EMPTY)).split(ROLES_DELIMITER))
-                .collect(Collectors.toSet())
-                .contains(role);
+        Object roles = this.principal.getClaims().get(ROLES);
+        if (roles instanceof Collection) {
+            return ((Collection<String>) roles).contains(role);
+        }
+        return false;
     }
 
     @Override

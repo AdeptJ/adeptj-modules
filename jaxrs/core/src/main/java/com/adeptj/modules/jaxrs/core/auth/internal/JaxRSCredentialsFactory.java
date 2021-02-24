@@ -52,6 +52,7 @@ public class JaxRSCredentialsFactory {
         Validate.isTrue(StringUtils.isNotEmpty(config.username()), "Username can't be blank!!");
         Validate.isTrue(StringUtils.isNotEmpty(config.password()), "Password can't be blank!!");
         this.credentials = new SimpleCredentials(config.username(), config.password());
+        this.credentials.addRoles(config.roles());
     }
 
     SimpleCredentials getCredentials() {

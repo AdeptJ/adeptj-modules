@@ -32,6 +32,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
@@ -47,7 +48,11 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<SimpleCredentials> credentials = new CopyOnWriteArrayList<>();
+    private final List<SimpleCredentials> credentials;
+
+    public DefaultJaxRSAuthenticationRealm() {
+        this.credentials = new CopyOnWriteArrayList<>();
+    }
 
     /**
      * {@inheritDoc}
@@ -72,8 +77,13 @@ public class DefaultJaxRSAuthenticationRealm implements JaxRSAuthenticationRealm
     public JaxRSAuthenticationOutcome authenticate(SimpleCredentials credentials) {
         return this.credentials.stream()
                 .filter(credentials::equals)
-                .map(sc -> new JaxRSAuthenticationOutcome()
-                        .addAttribute("roles", String.join(",", credentials.getUsername(), "OSGiAdmin")))
+                .map(sc -> {
+                    JaxRSAuthenticationOutcome authenticationOutcome = new JaxRSAuthenticationOutcome();
+                    if (sc.getRoles() != null) {
+                        authenticationOutcome.addAttribute(ROLES, sc.getRoles());
+                    }
+                    return authenticationOutcome;
+                })
                 .findFirst()
                 .orElse(null);
     }

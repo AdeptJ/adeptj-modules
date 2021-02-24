@@ -30,6 +30,7 @@ import org.osgi.service.component.annotations.Reference;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -42,11 +43,11 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component
 public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
 
-    /**
-     * As per Felix SCR, dynamic references should be declared as volatile.
-     */
-    @Reference(service = JaxRSAuthenticationRealm.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    private volatile List<JaxRSAuthenticationRealm> authenticationRealms;
+    private final List<JaxRSAuthenticationRealm> authenticationRealms;
+
+    public DefaultJaxRSAuthenticator() {
+        this.authenticationRealms = new CopyOnWriteArrayList<>();
+    }
 
     /**
      * {@inheritDoc}
@@ -59,5 +60,16 @@ public class DefaultJaxRSAuthenticator implements JaxRSAuthenticator {
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
+    }
+
+    // <<------------------------------------- OSGi Internal  -------------------------------------->>
+
+    @Reference(service = JaxRSAuthenticationRealm.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindJaxRSAuthenticationRealm(JaxRSAuthenticationRealm realm) {
+        this.authenticationRealms.add(realm);
+    }
+
+    protected void unbindJaxRSAuthenticationRealm(JaxRSAuthenticationRealm realm) {
+        this.authenticationRealms.remove(realm);
     }
 }

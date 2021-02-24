@@ -41,6 +41,9 @@ public @interface JaxRSCredentialsConfig {
     @AttributeDefinition(name = "Password", description = "Password of username provided.", type = PASSWORD)
     String password();
 
+    @AttributeDefinition(name = "Roles", description = "Roles of the user.")
+    String[] roles();
+
     // name hint non editable property
     String webconsole_configurationFactory_nameHint() default "Credential For: {" + "username" + "}"; // NOSONAR
 }

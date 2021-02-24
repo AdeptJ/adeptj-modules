@@ -20,10 +20,13 @@
 
 package com.adeptj.modules.jaxrs.core.auth;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents simple username/password credentials.
@@ -37,6 +40,8 @@ public final class SimpleCredentials {
     private final String username;
 
     private char[] password;
+
+    private Set<String> roles;
 
     public SimpleCredentials(@NotNull String username, @NotNull String password) {
         this.username = username;
@@ -60,6 +65,20 @@ public final class SimpleCredentials {
         Arrays.fill(temp, (char) 0x00);
     }
 
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void addRoles(String... roles) {
+        if (ArrayUtils.isNotEmpty(roles)) {
+            this.roles = new HashSet<>(Arrays.asList(roles));
+        }
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
     // <---------------- Generated ----------------->
 
     @Override
@@ -67,14 +86,12 @@ public final class SimpleCredentials {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SimpleCredentials that = (SimpleCredentials) o;
-        return Objects.equals(this.username, that.username) && Arrays.equals(this.password, that.password);
+        return username.equals(that.username);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(this.username);
-        result = 31 * result + Arrays.hashCode(this.password);
-        return result;
+        return Objects.hash(username);
     }
 
     @Override
