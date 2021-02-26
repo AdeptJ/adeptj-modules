@@ -21,7 +21,7 @@
 package com.adeptj.modules.jaxrs.core.jwt.feature;
 
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
-import com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter;
+import com.adeptj.modules.jaxrs.core.jwt.filter.DynamicJwtClaimsIntrospectionFilter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;

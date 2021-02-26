@@ -18,11 +18,10 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
+package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
+import com.adeptj.modules.jaxrs.api.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
-import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;

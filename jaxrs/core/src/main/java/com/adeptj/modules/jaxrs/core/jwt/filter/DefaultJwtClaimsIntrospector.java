@@ -18,9 +18,10 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
+package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
+import com.adeptj.modules.jaxrs.core.SecurityContextUtil;
+import com.adeptj.modules.jaxrs.api.JwtClaimsIntrospector;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
@@ -37,14 +38,14 @@ public class DefaultJwtClaimsIntrospector implements JwtClaimsIntrospector {
     static final JwtClaimsIntrospector INSTANCE = new DefaultJwtClaimsIntrospector();
 
     /**
-     * This method checks if the jwt is expired by calling {@link #isJwtExpired}, if jwt is expired then abort
-     * the request processing by setting an Unauthorized(401).
+     * This method checks if the jwt is expired by calling {@link SecurityContextUtil#isJwtExpired},
+     * if jwt is expired then abort the request processing by setting an Unauthorized(401).
      *
      * @param requestContext the JaxRS request context
      */
     @Override
     public void introspect(ContainerRequestContext requestContext) {
-        if (this.isJwtExpired(requestContext)) {
+        if (SecurityContextUtil.isJwtExpired(requestContext)) {
             requestContext.abortWith(Response.status(UNAUTHORIZED).build());
         }
     }

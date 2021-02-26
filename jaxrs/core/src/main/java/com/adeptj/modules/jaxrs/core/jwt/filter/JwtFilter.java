@@ -1,4 +1,4 @@
-package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
+package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.api.JaxRSProvider;
 import com.adeptj.modules.jaxrs.core.jwt.JwtExtractor;
@@ -14,7 +14,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
-import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.JwtFilter.FILTER_NAME;
+import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.FILTER_NAME;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;

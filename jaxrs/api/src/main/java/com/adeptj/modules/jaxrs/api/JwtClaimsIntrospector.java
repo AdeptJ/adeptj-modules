@@ -18,12 +18,8 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.api;
 
-import com.adeptj.modules.jaxrs.core.JwtPrincipal;
-import com.adeptj.modules.jaxrs.core.SecurityContextUtil;
-import com.adeptj.modules.security.jwt.JwtService;
-import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ConsumerType;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -31,11 +27,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 /**
  * Service interface for introspecting the JWT claims(Registered as well as public).
  * <p>
- * This is injected as an optional service in {@link JwtService}, therefore the claims are only
- * validated if an implementation of {@link JwtClaimsIntrospector} is available in OSGi service registry.
- * <p>
- * Callers should inspect the claims passed and validate claims values as per their need,
- * if everything is fine then must return true otherwise false.
+ * Implementation should inspect the claims passed and validate claims values as per their need.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -45,26 +37,15 @@ public interface JwtClaimsIntrospector {
     /**
      * Introspect the JWT claims passed.
      * <p>
-     * Registered Claims such as iss, sub, exp are already validated by {@link JwtService} while parsing the JWT,
+     * Registered Claims such as iss, sub, exp are already validated by JwtService while parsing the JWT,
      * therefore should not be validated again.
      * <p>
      * Any public claims like username, roles and other important information can be introspected as per the need.
      * <p>
-     * Implementation must check if the jwt is expired by calling {@link #isJwtExpired}, if jwt is expired then take
-     * the appropriate action such as abort the request processing by setting a 401.
+     * Implementation must check if the jwt is expired, if so then take the appropriate action such as abort
+     * the request processing by setting a 401.
      *
-     * @param requestContext the JaxRS request context
+     * @param requestContext the JaxRS {@link ContainerRequestContext}
      */
     void introspect(ContainerRequestContext requestContext);
-
-    /**
-     * Checks whether the jwt is expired using the resolved Jwt claims hold by the JwtPrincipal.
-     *
-     * @param requestContext the JaxRS request context
-     * @return a boolean to indicate whether the jwt is expired or not.
-     */
-    default boolean isJwtExpired(@NotNull ContainerRequestContext requestContext) {
-        JwtPrincipal principal = SecurityContextUtil.getJwtPrincipal(requestContext.getSecurityContext());
-        return principal == null || principal.isHoldingExpiredJwt();
-    }
 }

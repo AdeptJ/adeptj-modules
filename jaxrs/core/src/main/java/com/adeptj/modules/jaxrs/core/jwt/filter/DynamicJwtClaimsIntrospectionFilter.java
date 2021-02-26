@@ -18,14 +18,13 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
+package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
-import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
+import com.adeptj.modules.jaxrs.api.JwtClaimsIntrospector;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import static com.adeptj.modules.jaxrs.core.jwt.filter.internal.DynamicJwtClaimsIntrospectionFilter.FILTER_NAME;
+import static com.adeptj.modules.jaxrs.core.jwt.filter.DynamicJwtClaimsIntrospectionFilter.FILTER_NAME;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
