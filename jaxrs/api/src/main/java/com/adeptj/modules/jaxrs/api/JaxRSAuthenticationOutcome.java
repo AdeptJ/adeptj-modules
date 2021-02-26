@@ -18,29 +18,21 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.auth.api;
+package com.adeptj.modules.jaxrs.api;
 
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
-import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
-import org.osgi.annotation.versioning.ProviderType;
+import java.util.HashMap;
 
 /**
- * Provides {@link JaxRSAuthenticationOutcome} by querying all the registered JaxRSAuthenticationRealm.
+ * JaxRSAuthenticationOutcome holding arbitrary data for JWT based JAX-RS resource authorization.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ProviderType
-public interface JaxRSAuthenticator {
+public class JaxRSAuthenticationOutcome extends HashMap<String, Object> {
 
-    /**
-     * Validates the provided credentials by querying all the registered JaxRSAuthenticationRealm.
-     * If any of the realm return a non null JaxRSAuthenticationInfo then no further realms are queried.
-     * <p>
-     * Note: Just the presence of non null JaxRSAuthenticationOutcome will be treated a valid auth info by {@link JaxRSAuthenticator}
-     * as it has no further way to validate the information returned by the implementations.
-     *
-     * @param credentials object containing the username and password submitted for authentication
-     * @return JaxRSAuthenticationOutcome instance after credentials validation.
-     */
-    JaxRSAuthenticationOutcome handleSecurity(SimpleCredentials credentials);
+    private static final long serialVersionUID = 7103662084651804227L;
+
+    public JaxRSAuthenticationOutcome addAttribute(String name, Object value) {
+        super.put(name, value);
+        return this;
+    }
 }

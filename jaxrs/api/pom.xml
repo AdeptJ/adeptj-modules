@@ -27,11 +27,11 @@
         <version>1</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    <artifactId>adeptj-modules-jaxrs-core</artifactId>
-    <version>2.0.0</version>
+    <artifactId>adeptj-modules-jaxrs-api</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: JAX-RS :: Core</name>
-    <description>AdeptJ Modules :: JAX-RS :: Core</description>
+    <name>AdeptJ Modules :: JAX-RS :: API</name>
+    <description>AdeptJ Modules :: JAX-RS :: API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -121,52 +121,12 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.metatype.annotations</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.annotation.versioning</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-jaxrs-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-websecurity-jwt</artifactId>
         </dependency>
 
         <dependency>

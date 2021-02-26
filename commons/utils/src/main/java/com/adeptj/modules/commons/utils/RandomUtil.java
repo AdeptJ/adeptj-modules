@@ -22,6 +22,7 @@ package com.adeptj.modules.commons.utils;
 
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
+import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import org.apache.commons.lang3.Validate;
 
 import java.security.SecureRandom;
@@ -36,7 +37,9 @@ public class RandomUtil {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private static final RandomBasedGenerator GENERATOR = Generators.randomBasedGenerator(SECURE_RANDOM);
+    private static final RandomBasedGenerator RANDOM_BASED_GENERATOR = Generators.randomBasedGenerator(SECURE_RANDOM);
+
+    private static final TimeBasedGenerator TIME_BASED_GENERATOR = Generators.timeBasedGenerator();
 
     private static final int DEFAULT_MAX_LENGTH = 64;
 
@@ -56,10 +59,18 @@ public class RandomUtil {
     }
 
     public static UUID uuid() {
-        return GENERATOR.generate();
+        return RANDOM_BASED_GENERATOR.generate();
     }
 
     public static String uuidString() {
         return uuid().toString();
+    }
+
+    public static UUID timeBasedUuid() {
+        return TIME_BASED_GENERATOR.generate();
+    }
+
+    public static String timeBasedUuidString() {
+        return timeBasedUuid().toString();
     }
 }

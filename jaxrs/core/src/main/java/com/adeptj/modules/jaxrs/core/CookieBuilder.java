@@ -33,7 +33,7 @@ import static javax.ws.rs.core.Cookie.DEFAULT_VERSION;
  */
 public class CookieBuilder {
 
-    private NewCookie cookie;
+    private final NewCookie cookie;
 
     private CookieBuilder(NewCookie cookie) {
         this.cookie = cookie;

@@ -18,9 +18,8 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.auth;
+package com.adeptj.modules.jaxrs.api;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -33,7 +32,7 @@ import java.util.Set;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class SimpleCredentials {
+public final class UsernamePasswordCredential {
 
     private static final char[] EMPTY_CHAR_ARRAY = new char[0];
 
@@ -43,7 +42,7 @@ public final class SimpleCredentials {
 
     private Set<String> roles;
 
-    public SimpleCredentials(@NotNull String username, @NotNull String password) {
+    public UsernamePasswordCredential(@NotNull String username, @NotNull String password) {
         this.username = username;
         this.password = password.toCharArray();
     }
@@ -70,7 +69,7 @@ public final class SimpleCredentials {
     }
 
     public void addRoles(String... roles) {
-        if (ArrayUtils.isNotEmpty(roles)) {
+        if (roles != null && roles.length > 0) {
             this.roles = new HashSet<>(Arrays.asList(roles));
         }
     }
@@ -85,17 +84,12 @@ public final class SimpleCredentials {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleCredentials that = (SimpleCredentials) o;
+        UsernamePasswordCredential that = (UsernamePasswordCredential) o;
         return username.equals(that.username);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(username);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("SimpleCredentials for: [%s]", this.username);
     }
 }

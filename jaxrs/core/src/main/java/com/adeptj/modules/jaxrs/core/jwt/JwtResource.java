@@ -20,10 +20,10 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.JaxRSResource;
-import com.adeptj.modules.jaxrs.core.auth.JaxRSAuthenticationOutcome;
-import com.adeptj.modules.jaxrs.core.auth.SimpleCredentials;
-import com.adeptj.modules.jaxrs.core.auth.api.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.api.JaxRSAuthenticationOutcome;
+import com.adeptj.modules.jaxrs.api.JaxRSAuthenticator;
+import com.adeptj.modules.jaxrs.api.JaxRSResource;
+import com.adeptj.modules.jaxrs.api.UsernamePasswordCredential;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -47,10 +47,14 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  * @author Rakesh.Kumar, AdeptJ
  */
 @JaxRSResource(name = "jwt")
-@Path("/auth/osgi_j_security_check")
+@Path("/token-auth/_j_security_check")
 @Designate(ocd = JwtCookieConfig.class)
 @Component(service = JwtResource.class)
 public class JwtResource {
+
+    private static final String J_USERNAME = "j_username";
+
+    private static final String J_PASSWORD = "j_password";
 
     private final JwtService jwtService;
 
@@ -71,12 +75,17 @@ public class JwtResource {
      */
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Response createJwt(@NotEmpty @FormParam("j_username") String username,
-                              @NotEmpty @FormParam("j_password") String password) {
-        JaxRSAuthenticationOutcome outcome = this.authenticator.handleSecurity(new SimpleCredentials(username, password));
-        return outcome == null || outcome.isEmpty()
-                ? Response.status(UNAUTHORIZED).build()
-                : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
+    public Response createJwt(@NotEmpty @FormParam(J_USERNAME) String username,
+                              @NotEmpty @FormParam(J_PASSWORD) String password) {
+        UsernamePasswordCredential credential = new UsernamePasswordCredential(username, password);
+        try {
+            JaxRSAuthenticationOutcome outcome = this.authenticator.authenticate(credential);
+            return outcome == null || outcome.isEmpty()
+                    ? Response.status(UNAUTHORIZED).build()
+                    : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome));
+        } finally {
+            credential.clear();
+        }
     }
 
     // <<---------------------------------------- OSGi INTERNAL ------------------------------------------>>

@@ -17,33 +17,24 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.jaxrs.core.auth;
 
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+package com.adeptj.modules.jaxrs.api;
 
-import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
+import javax.ws.rs.NameBinding;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * AdeptJ JAX-RS Credentials Configurations.
+ * Annotation to be used by JAX-RS resources which require to be protected.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ JAX-RS Credentials Configurations",
-        description = "AdeptJ JAX-RS Credentials Configurations"
-)
-public @interface JaxRSCredentialsConfig {
-
-    @AttributeDefinition(name = "Username", description = "Username to be authenticated.")
-    String username();
-
-    @AttributeDefinition(name = "Password", description = "Password of username provided.", type = PASSWORD)
-    String password();
-
-    @AttributeDefinition(name = "Roles", description = "Roles of the user.")
-    String[] roles();
-
-    // name hint non editable property
-    String webconsole_configurationFactory_nameHint() default "Credential For: {" + "username" + "}"; // NOSONAR
+@NameBinding
+@Retention(RUNTIME)
+@Target({TYPE, METHOD})
+public @interface RequiresAuthentication {
 }

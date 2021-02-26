@@ -18,23 +18,31 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.api;
 
-import javax.ws.rs.NameBinding;
+import org.osgi.service.component.annotations.ComponentPropertyType;
+
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 /**
- * Annotation to be used by JAX-RS resources which require to be protected.
+ * {@link ComponentPropertyType} for denoting a JAX-RS provider.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@NameBinding
-@Retention(RUNTIME)
-@Target({TYPE, METHOD})
-public @interface RequiresAuthentication {
+@ComponentPropertyType
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+public @interface JaxRSProvider {
+
+    /**
+     * Prefix for the property name. This value is prepended to each property name.
+     */
+    String PREFIX_ = "osgi.jaxrs.provider.";
+
+    // This is a marker annotation.
+
+    String name();
 }

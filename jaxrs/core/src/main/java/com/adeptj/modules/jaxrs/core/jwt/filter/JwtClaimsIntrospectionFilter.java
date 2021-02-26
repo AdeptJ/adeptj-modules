@@ -32,7 +32,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
  * It is implemented in two variants as described below.
  * <p>
  * 1. {@link StaticJwtClaimsIntrospectionFilter} deals with
- * {@link com.adeptj.modules.jaxrs.core.RequiresAuthentication} annotated resource classes and methods.
+ * {@link com.adeptj.modules.jaxrs.api.RequiresAuthentication} annotated resource classes and methods.
  * <p>
  * 2. {@link DynamicJwtClaimsIntrospectionFilter} deals with
  * resource classes and methods configured via {@link com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature}

@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.api;
 
 import org.osgi.service.component.annotations.ComponentPropertyType;
 
@@ -28,19 +28,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * {@link ComponentPropertyType} for denoting a JAX-RS provider.
+ * {@link ComponentPropertyType} for denoting a JAX-RS resource.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ComponentPropertyType
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-public @interface JaxRSProvider {
+public @interface JaxRSResource {
 
     /**
      * Prefix for the property name. This value is prepended to each property name.
      */
-    String PREFIX_ = "osgi.jaxrs.provider.";
+    String PREFIX_ = "osgi.jaxrs.resource."; // NOSONAR
 
     // This is a marker annotation.
 

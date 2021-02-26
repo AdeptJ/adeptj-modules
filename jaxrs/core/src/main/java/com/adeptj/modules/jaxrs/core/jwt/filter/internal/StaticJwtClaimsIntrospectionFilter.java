@@ -19,8 +19,8 @@
 */
 package com.adeptj.modules.jaxrs.core.jwt.filter.internal;
 
-import com.adeptj.modules.jaxrs.core.JaxRSProvider;
-import com.adeptj.modules.jaxrs.core.RequiresAuthentication;
+import com.adeptj.modules.jaxrs.api.JaxRSProvider;
+import com.adeptj.modules.jaxrs.api.RequiresAuthentication;
 import com.adeptj.modules.jaxrs.core.jwt.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import org.osgi.service.component.annotations.Component;
