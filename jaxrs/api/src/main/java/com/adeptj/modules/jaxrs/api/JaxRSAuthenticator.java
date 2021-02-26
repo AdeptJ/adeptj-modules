@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ConsumerType;
 
 /**
- * Provides {@link JaxRSAuthenticationOutcome} by querying all the registered JaxRSAuthenticationRealm.
+ * Provides {@link JaxRSAuthenticationOutcome} after validating the credential from a user store such as DB.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -32,14 +32,12 @@ import org.osgi.annotation.versioning.ConsumerType;
 public interface JaxRSAuthenticator {
 
     /**
-     * Validates the provided credential by querying all the registered JaxRSAuthenticationRealm.
-     * If any of the realm return a non null JaxRSAuthenticationInfo then no further realms are queried.
-     * <p>
-     * Note: Just the presence of non null JaxRSAuthenticationOutcome will be treated a valid auth info by {@link JaxRSAuthenticator}
-     * as it has no further way to validate the information returned by the implementations.
+     * Implementations should validate the supplied credential and return the {@link JaxRSAuthenticationOutcome}
+     * populated with useful information as a key value pair if needed.
+     * This information is later used by JwtService for putting this information in JWT claims.
      *
      * @param credential object containing the username and password submitted for authentication
-     * @return JaxRSAuthenticationOutcome instance after credential validation.
+     * @return JaxRSAuthenticationOutcome.
      */
     JaxRSAuthenticationOutcome authenticate(@NotNull UsernamePasswordCredential credential);
 }
