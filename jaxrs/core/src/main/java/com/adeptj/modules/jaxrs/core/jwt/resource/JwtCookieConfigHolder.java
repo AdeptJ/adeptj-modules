@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.core.jwt.resource;
 
 /**
  * Provides the {@link JwtCookieConfig} configured by {@link JwtResource} component.

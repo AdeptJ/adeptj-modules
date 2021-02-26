@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.core.jwt.resource;
 
 import com.adeptj.modules.jaxrs.api.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.api.JaxRSAuthenticator;

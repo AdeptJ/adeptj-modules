@@ -1,7 +1,7 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.api.JaxRSProvider;
-import com.adeptj.modules.jaxrs.core.jwt.JwtExtractor;
+import com.adeptj.modules.jaxrs.core.jwt.resource.JwtExtractor;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;

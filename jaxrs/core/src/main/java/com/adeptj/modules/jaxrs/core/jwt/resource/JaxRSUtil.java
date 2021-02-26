@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt;
+package com.adeptj.modules.jaxrs.core.jwt.resource;
 
 import com.adeptj.modules.jaxrs.core.CookieBuilder;
 import org.jetbrains.annotations.NotNull;

@@ -25,11 +25,10 @@
 -dsannotations-options: version;minimum=1.4.0
 
 Export-Package: com.adeptj.modules.jaxrs.core,\
-                com.adeptj.modules.jaxrs.core.auth,\
-                com.adeptj.modules.jaxrs.core.auth.api,\
                 com.adeptj.modules.jaxrs.core.jwt,\
                 !com.adeptj.modules.jaxrs.core.jwt.feature,\
-                !com.adeptj.modules.jaxrs.core.jwt.filter
+                !com.adeptj.modules.jaxrs.core.jwt.filter, \
+                !com.adeptj.modules.jaxrs.core.jwt.resource, \
 
 Import-Package: \
   javax.annotation;\
