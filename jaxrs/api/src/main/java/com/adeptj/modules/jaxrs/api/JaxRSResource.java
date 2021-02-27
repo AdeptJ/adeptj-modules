@@ -42,7 +42,5 @@ public @interface JaxRSResource {
      */
     String PREFIX_ = "osgi.jaxrs.resource."; // NOSONAR
 
-    // This is a marker annotation.
-
     String name();
 }

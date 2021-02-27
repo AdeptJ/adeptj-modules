@@ -41,7 +41,7 @@ public class DefaultJwtClaimsIntrospector implements JwtClaimsIntrospector {
      * This method checks if the jwt is expired by calling {@link SecurityContextUtil#isJwtExpired},
      * if jwt is expired then abort the request processing by setting an Unauthorized(401).
      *
-     * @param requestContext the JaxRS request context
+     * @param requestContext the JaxRS {@link ContainerRequestContext}
      */
     @Override
     public void introspect(ContainerRequestContext requestContext) {

@@ -42,7 +42,5 @@ public @interface JaxRSProvider {
      */
     String PREFIX_ = "osgi.jaxrs.provider.";
 
-    // This is a marker annotation.
-
     String name();
 }

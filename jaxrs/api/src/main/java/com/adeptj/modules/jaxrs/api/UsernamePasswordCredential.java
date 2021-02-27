@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.lang.Character.MIN_VALUE;
+
 /**
  * Represents simple username/password credentials.
  *
@@ -61,7 +63,7 @@ public final class UsernamePasswordCredential {
         }
         char[] temp = this.password;
         this.password = EMPTY_CHAR_ARRAY;
-        Arrays.fill(temp, (char) 0x00);
+        Arrays.fill(temp, MIN_VALUE);
     }
 
     public Set<String> getRoles() {
