@@ -25,7 +25,6 @@ import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.utils.RandomUtil;
 import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
-import com.adeptj.modules.commons.utils.annotation.OSGiHttpWhiteboardContextSelect;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -71,7 +70,7 @@ import static org.osgi.framework.Constants.SERVICE_PID;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@HttpWhiteboardResource(pattern = {"/crypto-res/*"}, prefix = "res")
+@HttpWhiteboardResource(pattern = "/crypto-plugin/*", prefix = "static")
 @ConfigurationPluginProperties(service_cmRanking = CryptoPlugin.SERVICE_RANKING)
 @WebConsolePlugin(label = CryptoPlugin.PLUGIN_LABEL_VALUE, title = CryptoPlugin.PLUGIN_TITLE_VALUE)
 @ConfigPluginId(CryptoPlugin.PLUGIN_ID)
