@@ -1,3 +1,5 @@
+<script type="text/javascript" src="/crypto-res/lib/clipboard.min.js"></script>
+<script type="text/javascript" src="/crypto-res/ui/crypto.js"></script>
 <p class="statline ui-state-highlight">${crypto.highlight.note}</p>
 <form method="post" action="${pluginRoot}">
     <table class="nicetable ui-widget">
@@ -15,9 +17,12 @@
         </tr>
         <tr>
             <td>${crypto.protected.text}</td>
-            <td style="width:100%;" colspan="2">
-                <input style="width:100%;" type="text" value="${cipherText}" readonly=""
+            <td style="width:100%;">
+                <input id="cipher" style="width:100%;" type="text" value="${cipherText}" readonly=""
                        class="ui-state-default ui-corner-all inputText">
+            </td>
+            <td>
+                <input type="button" value="Copy" class="copy-button" data-clipboard-action="copy" data-clipboard-target="#cipher">
             </td>
         </tr>
         </tbody>

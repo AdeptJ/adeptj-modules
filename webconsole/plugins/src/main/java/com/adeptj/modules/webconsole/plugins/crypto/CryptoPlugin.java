@@ -25,6 +25,7 @@ import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.utils.RandomUtil;
 import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
+import com.adeptj.modules.commons.utils.annotation.OSGiHttpWhiteboardContextSelect;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -38,6 +39,7 @@ import org.osgi.service.cm.ConfigurationPlugin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,12 +64,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.osgi.framework.Constants.SERVICE_PID;
 
 /**
  * The CryptoPlugin.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@HttpWhiteboardResource(pattern = {"/crypto-res/*"}, prefix = "res")
 @ConfigurationPluginProperties(service_cmRanking = CryptoPlugin.SERVICE_RANKING)
 @WebConsolePlugin(label = CryptoPlugin.PLUGIN_LABEL_VALUE, title = CryptoPlugin.PLUGIN_TITLE_VALUE)
 @ConfigPluginId(CryptoPlugin.PLUGIN_ID)
@@ -222,6 +226,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     @Override
     public void modifyConfiguration(ServiceReference<?> serviceReference, Dictionary<String, Object> properties) {
+        Object pid = properties.get(SERVICE_PID);
         for (Iterator<String> iterator = properties.keys().asIterator(); iterator.hasNext(); ) {
             String key = iterator.next();
             Object value = properties.get(key);
@@ -231,6 +236,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                     String newValue = this.getPlainText(oldValue);
                     if (!StringUtils.equals(oldValue, newValue)) {
                         properties.put(key, newValue);
+                        LOGGER.info("Replaced value of configuration property '{}' for PID {}", key, pid);
                     }
                 }
             } else if (value instanceof String[]) {
@@ -250,6 +256,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                 }
                 if (newValues != null) {
                     properties.put(key, newValues);
+                    LOGGER.info("Replaced value of configuration property '{}' for PID {}", key, pid);
                 }
             }
         }
