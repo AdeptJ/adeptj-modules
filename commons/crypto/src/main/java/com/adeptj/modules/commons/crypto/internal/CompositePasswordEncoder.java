@@ -22,6 +22,7 @@ package com.adeptj.modules.commons.crypto.internal;
 
 import at.favre.lib.bytes.Bytes;
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
 import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
@@ -90,6 +91,8 @@ public class CompositePasswordEncoder implements PasswordEncoder {
                     .put(digest)
                     .array();
             return new String(Base64.getEncoder().encode(compositeDigest), UTF_8);
+        } catch (Exception ex) {
+            throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(salt, digest, compositeDigest);
         }
@@ -119,6 +122,8 @@ public class CompositePasswordEncoder implements PasswordEncoder {
                     .keyLength(this.keyLength)
                     .build());
             return MessageDigest.isEqual(oldDigest, newDigest);
+        } catch (Exception ex) {
+            throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(salt, oldDigest, newDigest);
         }
