@@ -106,7 +106,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     private static final String PBE_ALGO = "PBKDF2WithHmacSHA256";
 
-    private static final String PREFIX_AJP = "{ajp}";
+    private static final String ENCRYPTION_PREFIX = "{aje}";
 
     private static final String KEY_PLAIN_TEXT = "plainText";
 
@@ -128,11 +128,11 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     // << ---------------------------------- From CryptoPlugin ---------------------------------->>
 
-    public boolean isProtected(String text) {
-        return StringUtils.startsWith(text, PREFIX_AJP);
+    public boolean isEncrypted(String text) {
+        return StringUtils.startsWith(text, ENCRYPTION_PREFIX);
     }
 
-    public String protect(String plainText) {
+    public String encrypt(String plainText) {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
         byte[] iv = null;
         byte[] salt = null;
@@ -166,7 +166,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                     .put(cipherBytes)
                     .array();
             // 6. create an UTF-8 String after Base64 encoding the iv+salt+cipherBytes
-            return PREFIX_AJP + new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
+            return ENCRYPTION_PREFIX + new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
         } catch (Exception ex) {
             throw new CryptoException(ex);
         } finally {
@@ -174,12 +174,12 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         }
     }
 
-    public String unprotect(String cipherText) {
+    public String decrypt(String cipherText) {
         Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
-        if (!this.isProtected(cipherText)) {
+        if (!this.isEncrypted(cipherText)) {
             return cipherText;
         }
-        cipherText = StringUtils.substringAfter(cipherText, PREFIX_AJP);
+        cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX);
         byte[] iv = null;
         byte[] salt = null;
         byte[] key = null;
@@ -235,7 +235,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                     String newValue = this.getPlainText(oldValue);
                     if (!StringUtils.equals(oldValue, newValue)) {
                         properties.put(key, newValue);
-                        LOGGER.info("Replaced value of configuration property '{}' for PID {}", key, pid);
+                        LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
                     }
                 }
             } else if (value instanceof String[]) {
@@ -255,7 +255,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                 }
                 if (newValues != null) {
                     properties.put(key, newValues);
-                    LOGGER.info("Replaced value of configuration property '{}' for PID {}", key, pid);
+                    LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
                 }
             }
         }
@@ -285,7 +285,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         String cipherText = EMPTY;
         if (StringUtils.isNotEmpty(plainText)) {
             try {
-                cipherText = this.protect(plainText);
+                cipherText = this.encrypt(plainText);
             } catch (CryptoException ce) {
                 cipherText = "Exception while protecting Plain Text: " + ce;
             }
@@ -323,7 +323,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     private String getPlainText(String cipherText) {
         String newValue;
         try {
-            newValue = this.unprotect(cipherText);
+            newValue = this.decrypt(cipherText);
         } catch (CryptoException ex) {
             newValue = cipherText;
             LOGGER.error(ex.getMessage(), ex);
