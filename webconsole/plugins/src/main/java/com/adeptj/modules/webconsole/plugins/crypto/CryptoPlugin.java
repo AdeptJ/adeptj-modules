@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.Servlet;
@@ -53,6 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Dictionary;
@@ -106,7 +106,10 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     private static final String PBE_ALGO = "PBKDF2WithHmacSHA256";
 
-    private static final String ENCRYPTION_PREFIX = "{aje}";
+    /**
+     * cpe = crypto plugin encrypted
+     */
+    private static final String ENCRYPTION_PREFIX = "{cpe}";
 
     private static final String KEY_PLAIN_TEXT = "plainText";
 
@@ -136,7 +139,6 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
         byte[] iv = null;
         byte[] salt = null;
-        byte[] key = null;
         byte[] cipherBytes = null;
         byte[] compositeCipherBytes = null;
         try {
@@ -144,19 +146,8 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             iv = RandomUtil.randomBytes(IV_LENGTH);
             // 2. get salt
             salt = RandomUtil.randomBytes(SALT_LENGTH);
-            // 3. generate secret key
-            SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
-                    .algorithm(PBE_ALGO)
-                    .password(this.cryptoKey)
-                    .salt(salt)
-                    .iterationCount(this.iterations)
-                    .keyLength(PBE_KEY_LENGTH)
-                    .build());
-            key = secretKey.getEncoded();
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
-            GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
-            Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
-            cipher.init(ENCRYPT_MODE, secretKeySpec, parameterSpec);
+            // 3. init encrypt mode cipher
+            Cipher cipher = this.initCipher(salt, iv, ENCRYPT_MODE);
             // 4. generate cipher bytes
             cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
             // 5. put everything in a ByteBuffer
@@ -170,7 +161,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         } catch (Exception ex) {
             throw new CryptoException(ex);
         } finally {
-            CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, compositeCipherBytes);
+            CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, compositeCipherBytes);
         }
     }
 
@@ -182,7 +173,6 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX);
         byte[] iv = null;
         byte[] salt = null;
-        byte[] key = null;
         byte[] cipherBytes = null;
         byte[] decryptedBytes = null;
         try {
@@ -194,19 +184,8 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             salt = new byte[SALT_LENGTH];
             // 3. extract salt
             buffer.get(salt);
-            // 4. generate secret key
-            SecretKey secretKey = CryptoUtil.newSecretKey(KeyInitData.builder()
-                    .algorithm(PBE_ALGO)
-                    .password(this.cryptoKey)
-                    .salt(salt)
-                    .iterationCount(this.iterations)
-                    .keyLength(PBE_KEY_LENGTH)
-                    .build());
-            key = secretKey.getEncoded();
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
-            GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
-            Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
-            cipher.init(DECRYPT_MODE, secretKeySpec, parameterSpec);
+            // 4. init decrypt mode cipher
+            Cipher cipher = this.initCipher(salt, iv, DECRYPT_MODE);
             cipherBytes = new byte[buffer.remaining()];
             // 5. extract cipherBytes
             buffer.get(cipherBytes);
@@ -217,7 +196,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         } catch (Exception ex) {
             throw new CryptoException(ex);
         } finally {
-            CryptoUtil.nullSafeWipeAll(iv, salt, key, cipherBytes, decryptedBytes);
+            CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, decryptedBytes);
         }
     }
 
@@ -231,31 +210,27 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             Object value = properties.get(key);
             if (value instanceof String) {
                 String oldValue = (String) value;
-                if (StringUtils.isNotEmpty(oldValue)) {
-                    String newValue = this.getPlainText(oldValue);
-                    if (!StringUtils.equals(oldValue, newValue)) {
-                        properties.put(key, newValue);
-                        LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
-                    }
+                String newValue = this.getPlainText(oldValue);
+                if (!StringUtils.equals(oldValue, newValue)) {
+                    properties.put(key, newValue);
+                    LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
                 }
             } else if (value instanceof String[]) {
                 String[] oldValues = (String[]) value;
                 String[] newValues = null;
                 for (int i = 0; i < oldValues.length; i++) {
                     String oldValue = oldValues[i];
-                    if (StringUtils.isNotEmpty(oldValue)) {
-                        String newValue = this.getPlainText(oldValue);
-                        if (!StringUtils.equals(newValue, oldValue)) {
-                            if (newValues == null) {
-                                newValues = Arrays.copyOf(oldValues, oldValues.length);
-                            }
-                            newValues[i] = newValue;
+                    String newValue = this.getPlainText(oldValue);
+                    if (!StringUtils.equals(newValue, oldValue)) {
+                        if (newValues == null) {
+                            newValues = Arrays.copyOf(oldValues, oldValues.length);
                         }
+                        newValues[i] = newValue;
                     }
                 }
                 if (newValues != null) {
                     properties.put(key, newValues);
-                    LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
+                    LOGGER.info("Replaced value(s) of array type configuration property '{}' for PID [{}]", key, pid);
                 }
             }
         }
@@ -320,7 +295,30 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         }
     }
 
+    private Cipher initCipher(byte[] salt, byte[] iv, int mode) throws GeneralSecurityException {
+        byte[] key = null;
+        try {
+            key = CryptoUtil.newSecretKeyBytes(KeyInitData.builder()
+                    .algorithm(PBE_ALGO)
+                    .password(this.cryptoKey)
+                    .salt(salt)
+                    .iterationCount(this.iterations)
+                    .keyLength(PBE_KEY_LENGTH)
+                    .build());
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
+            Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
+            cipher.init(mode, secretKeySpec, parameterSpec);
+            return cipher;
+        } finally {
+            CryptoUtil.nullSafeWipe(key);
+        }
+    }
+
     private String getPlainText(String cipherText) {
+        if (StringUtils.isEmpty(cipherText)) {
+            return cipherText;
+        }
         String newValue;
         try {
             newValue = this.decrypt(cipherText);
