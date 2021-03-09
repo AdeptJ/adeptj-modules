@@ -27,7 +27,7 @@ package com.adeptj.modules.oauth.common;
  */
 public final class Constants {
 	
-	public static final String OAUTH_PROVIDER_FACTORY = "com.adeptj.modularweb.oauth.provider.api.OAuthProviderFactory";
+	public static final String OAUTH_PROVIDER_FACTORY = "com.adeptj.modules.oauth.provider.api.OAuthProviderFactory";
 	
 	public static final String MANAGED_SERVICE_FACTORY = "org.osgi.service.cm.ManagedServiceFactory";
 }
