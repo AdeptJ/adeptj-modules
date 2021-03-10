@@ -47,7 +47,6 @@ import javax.ws.rs.container.DynamicFeature;
 import java.lang.invoke.MethodHandles;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
-import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 
 /**
  * ResteasyLifecycle: Bootstraps RESTEasy Framework, open/close ServiceTracker for JAX-RS providers and resources.
@@ -55,7 +54,7 @@ import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = ResteasyConfig.class)
-@Component(service = ResteasyLifecycle.class, scope = PROTOTYPE, configurationPolicy = REQUIRE)
+@Component(service = ResteasyLifecycle.class, configurationPolicy = REQUIRE)
 public class ResteasyLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

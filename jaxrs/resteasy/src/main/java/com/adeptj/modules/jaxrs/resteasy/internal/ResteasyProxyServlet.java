@@ -36,7 +36,6 @@ import java.io.IOException;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DISPATCHER_SERVLET_PATH;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_PROXY_SERVLET_NAME;
-import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 
 
 /**
@@ -51,7 +50,7 @@ import static org.osgi.service.component.annotations.ServiceScope.PROTOTYPE;
 @HttpWhiteboardServletAsyncSupported
 @HttpWhiteboardServletName(RESTEASY_PROXY_SERVLET_NAME)
 @HttpWhiteboardServletPattern(RESTEASY_DISPATCHER_SERVLET_PATH)
-@Component(service = Servlet.class, scope = PROTOTYPE)
+@Component(service = Servlet.class)
 public class ResteasyProxyServlet extends HttpServlet {
 
     private static final long serialVersionUID = -4415966373465265279L;
