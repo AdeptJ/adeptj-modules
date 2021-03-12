@@ -103,22 +103,26 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             Object value = properties.get(key);
             if (value instanceof String) {
                 String oldValue = (String) value;
-                String newValue = this.getPlainText(oldValue);
-                if (!StringUtils.equals(oldValue, newValue)) {
-                    properties.put(key, newValue);
-                    LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
+                if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
+                    String newValue = this.getPlainText(oldValue);
+                    if (!StringUtils.equals(oldValue, newValue)) {
+                        properties.put(key, newValue);
+                        LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
+                    }
                 }
             } else if (value instanceof String[]) {
                 String[] oldValues = (String[]) value;
                 String[] newValues = null;
                 for (int i = 0; i < oldValues.length; i++) {
                     String oldValue = oldValues[i];
-                    String newValue = this.getPlainText(oldValue);
-                    if (!StringUtils.equals(newValue, oldValue)) {
-                        if (newValues == null) {
-                            newValues = Arrays.copyOf(oldValues, oldValues.length);
+                    if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
+                        String newValue = this.getPlainText(oldValue);
+                        if (!StringUtils.equals(newValue, oldValue)) {
+                            if (newValues == null) {
+                                newValues = Arrays.copyOf(oldValues, oldValues.length);
+                            }
+                            newValues[i] = newValue;
                         }
-                        newValues[i] = newValue;
                     }
                 }
                 if (newValues != null) {
@@ -189,9 +193,6 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     }
 
     private String getPlainText(String cipherText) {
-        if (StringUtils.isEmpty(cipherText) || !StringUtils.startsWith(cipherText, ENCRYPTION_PREFIX)) {
-            return cipherText;
-        }
         String plainText;
         try {
             cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX).trim();
