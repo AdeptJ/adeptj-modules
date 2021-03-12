@@ -134,7 +134,7 @@ public class EntityManagerFactoryLifecycle {
     // <<------------------------------------- OSGi Internal  -------------------------------------->>
 
     @Deactivate
-    protected void stop(@NotNull EntityManagerFactoryConfig config) {
+    protected void stop() {
         long startTime = System.nanoTime();
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
         LOGGER.info(EMF_CLOSED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));

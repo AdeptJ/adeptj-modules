@@ -32,10 +32,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -53,17 +56,21 @@ import static javax.crypto.Cipher.ENCRYPT_MODE;
 @Component
 public class AesGcmCryptoService implements CryptoService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private static final int IV_LENGTH = 12;
 
     private static final int SALT_LENGTH = 16;
+
+    private static final int MIN_ITERATIONS = 1000;
 
     private static final String CIPHER_ALGO = "AES/GCM/NoPadding";
 
     private static final String SECRET_KEY_SPEC_ALGO = "AES";
 
-    private static final String CRYPTO_KEY_PROPERTY = "crypto.key";
+    private static final String PROPERTY_CRYPTO_KEY = "crypto.key";
 
-    private static final String CRYPTO_ITERATIONS_PROPERTY = "crypto.iterations";
+    private static final String PROPERTY_CRYPTO_ITERATIONS = "crypto.iterations";
 
     private static final int PBE_KEY_LENGTH = 128;
 
@@ -71,16 +78,23 @@ public class AesGcmCryptoService implements CryptoService {
 
     private static final String PBE_ALGO = "PBKDF2WithHmacSHA256";
 
-    private final int iterations;
+    private char[] cryptoKey;
 
-    private final char[] cryptoKey;
+    private int iterations;
 
     @Activate
     public AesGcmCryptoService(BundleContext context) {
-        this.cryptoKey = context.getProperty(CRYPTO_KEY_PROPERTY).toCharArray();
-        this.iterations = Integer.parseInt(context.getProperty(CRYPTO_ITERATIONS_PROPERTY));
-        Validate.isTrue(ArrayUtils.isNotEmpty(this.cryptoKey), "cryptoKey can't be null or empty!!");
-        Validate.isTrue(this.iterations >= 1000, "iterations should be at least 1000!!");
+        try {
+            this.cryptoKey = context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
+            this.iterations = Integer.parseInt(context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
+            Validate.isTrue(ArrayUtils.isNotEmpty(this.cryptoKey), "cryptoKey can't be null or empty!!");
+            Validate.isTrue((this.iterations >= MIN_ITERATIONS), String.format("iterations should be at least %d!!",
+                    MIN_ITERATIONS));
+        } catch (Exception ex) {
+            // This will make sure this service is activated successfully and CryptoPlugin initialization will also
+            // be successful which is a required plugin by ConfigAdmin.
+            LOGGER.error(ex.getMessage(), ex);
+        }
     }
 
     @Override
@@ -108,6 +122,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 6. create an UTF-8 String after Base64 encoding the iv+salt+cipherBytes
             return new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
         } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, compositeCipherBytes);
@@ -140,6 +155,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 7. create a UTF-8 String from decryptedBytes
             return new String(decryptedBytes, UTF_8);
         } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, decryptedBytes);
