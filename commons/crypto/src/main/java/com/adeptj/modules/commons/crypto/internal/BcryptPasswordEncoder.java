@@ -20,24 +20,42 @@
 
 package com.adeptj.modules.commons.crypto.internal;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import com.adeptj.modules.commons.utils.RandomUtil;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.Designate;
 
 /**
- * OSGi Configuration for {@link PasswordEncoder}
+ * Service implementation for encoding/matching passwords using BCrypt.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ PasswordEncoder Configuration",
-        description = "Configuration for the AdeptJ PasswordEncoder"
-)
-public @interface PasswordEncoderConfig {
+@Designate(ocd = PasswordEncoderConfig.class)
+@Component
+public class BcryptPasswordEncoder implements PasswordEncoder {
 
-    @AttributeDefinition(
-            name = "BCrypt Exponential Cost",
-            description = "The exponential cost (log2 factor) between 4 and 31 e.g. 12 will be 2^12 = 4096 iterations"
-    )
-    int bcrypt_exponential_cost() default 12;
+    private final int exponentialCost;
+
+    @Activate
+    public BcryptPasswordEncoder(@NotNull PasswordEncoderConfig config) {
+        this.exponentialCost = config.bcrypt_exponential_cost();
+    }
+
+    @Override
+    public String encode(char[] rawPassword) {
+        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        return BCrypt.with(RandomUtil.getSecureRandom()).hashToString(this.exponentialCost, rawPassword);
+    }
+
+    @Override
+    public boolean matches(char[] rawPassword, char[] encodedPassword) {
+        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        Validate.isTrue(ArrayUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
+        return BCrypt.verifyer().verify(rawPassword, encodedPassword).verified;
+    }
 }

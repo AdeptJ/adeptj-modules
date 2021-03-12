@@ -23,7 +23,7 @@ package com.adeptj.modules.commons.crypto;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * Service for encoding passwords using BCrypt or PBKDF2WithHmacSHA* algo.
+ * Service for encoding/matching passwords using BCrypt.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
