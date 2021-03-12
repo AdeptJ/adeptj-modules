@@ -58,7 +58,6 @@ import java.util.Base64;
 import java.util.Dictionary;
 import java.util.Iterator;
 
-import static at.favre.lib.crypto.bcrypt.BCrypt.SALT_LENGTH;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.crypto.Cipher.DECRYPT_MODE;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
@@ -91,6 +90,8 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     static final int SERVICE_RANKING = 400;
 
     private static final int IV_LENGTH = 12;
+
+    private static final int SALT_LENGTH = 16;
 
     private static final String CIPHER_ALGO = "AES/GCM/NoPadding";
 
