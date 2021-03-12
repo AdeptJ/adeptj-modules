@@ -55,7 +55,7 @@ public class CryptoUtil {
 
     public static byte[] newSecretKeyBytes(KeyInitData data) throws GeneralSecurityException {
         return SecretKeyFactory.getInstance(data.getAlgorithm())
-                .generateSecret(new PBEKeySpec(data.getPassword(), data.getSalt(), data.getIterationCount(),
+                .generateSecret(new PBEKeySpec(data.getPassword(), data.getSalt(), data.getIterations(),
                         data.getKeyLength()))
                 .getEncoded();
     }

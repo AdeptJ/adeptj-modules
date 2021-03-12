@@ -19,6 +19,9 @@
 */
 package com.adeptj.modules.commons.crypto;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.Validate;
+
 /**
  * KeyInitData holds the information to create crypto keys.
  *
@@ -26,21 +29,26 @@ package com.adeptj.modules.commons.crypto;
  */
 public class KeyInitData {
 
+    private static final int MIN_ITERATIONS = 1000;
+
     private final String algorithm;
 
     private final char[] password;
 
     private final byte[] salt;
 
-    private final int iterationCount;
+    private final int iterations;
 
     private final int keyLength;
 
-    private KeyInitData(String algorithm, char[] password, byte[] salt, int iterationCount, int keyLength) {
+    private KeyInitData(String algorithm, char[] password, byte[] salt, int iterations, int keyLength) {
+        Validate.isTrue(ArrayUtils.isNotEmpty(password), "password can't be null or empty!!");
+        Validate.isTrue((iterations >= MIN_ITERATIONS), String.format("iterations should be at least %d!!",
+                MIN_ITERATIONS));
         this.algorithm = algorithm;
         this.password = password;
         this.salt = salt;
-        this.iterationCount = iterationCount;
+        this.iterations = iterations;
         this.keyLength = keyLength;
     }
 
@@ -56,8 +64,8 @@ public class KeyInitData {
         return salt;
     }
 
-    public int getIterationCount() {
-        return iterationCount;
+    public int getIterations() {
+        return iterations;
     }
 
     public int getKeyLength() {
@@ -76,7 +84,7 @@ public class KeyInitData {
 
         private byte[] salt;
 
-        private int iterationCount;
+        private int iterations;
 
         private int keyLength;
 
@@ -95,8 +103,8 @@ public class KeyInitData {
             return this;
         }
 
-        public Builder iterationCount(int iterationCount) {
-            this.iterationCount = iterationCount;
+        public Builder iterations(int iterations) {
+            this.iterations = iterations;
             return this;
         }
 
@@ -106,7 +114,7 @@ public class KeyInitData {
         }
 
         public KeyInitData build() {
-            return new KeyInitData(this.algorithm, this.password, this.salt, this.iterationCount, this.keyLength);
+            return new KeyInitData(this.algorithm, this.password, this.salt, this.iterations, this.keyLength);
         }
     }
 }

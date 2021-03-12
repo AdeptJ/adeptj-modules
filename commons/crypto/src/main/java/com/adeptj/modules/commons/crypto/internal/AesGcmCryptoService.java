@@ -25,7 +25,6 @@ import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
 import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.utils.RandomUtil;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.framework.BundleContext;
@@ -62,8 +61,6 @@ public class AesGcmCryptoService implements CryptoService {
 
     private static final int SALT_LENGTH = 16;
 
-    private static final int MIN_ITERATIONS = 1000;
-
     private static final String CIPHER_ALGO = "AES/GCM/NoPadding";
 
     private static final String SECRET_KEY_SPEC_ALGO = "AES";
@@ -87,9 +84,6 @@ public class AesGcmCryptoService implements CryptoService {
         try {
             this.cryptoKey = context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
             this.iterations = Integer.parseInt(context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
-            Validate.isTrue(ArrayUtils.isNotEmpty(this.cryptoKey), "cryptoKey can't be null or empty!!");
-            Validate.isTrue((this.iterations >= MIN_ITERATIONS), String.format("iterations should be at least %d!!",
-                    MIN_ITERATIONS));
         } catch (Exception ex) {
             // This will make sure this service is activated successfully and CryptoPlugin initialization will also
             // be successful which is a required plugin by ConfigAdmin.
@@ -169,7 +163,7 @@ public class AesGcmCryptoService implements CryptoService {
                     .algorithm(PBE_ALGO)
                     .password(this.cryptoKey)
                     .salt(salt)
-                    .iterationCount(this.iterations)
+                    .iterations(this.iterations)
                     .keyLength(PBE_KEY_LENGTH)
                     .build());
             SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
