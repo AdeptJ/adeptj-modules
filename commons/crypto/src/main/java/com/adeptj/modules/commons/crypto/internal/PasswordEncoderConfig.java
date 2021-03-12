@@ -36,8 +36,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public @interface PasswordEncoderConfig {
 
     @AttributeDefinition(
-            name = "BCrypt Exponential Cost",
+            name = "Exponential Cost",
             description = "The exponential cost (log2 factor) between 4 and 31 e.g. 12 will be 2^12 = 4096 iterations"
     )
-    int bcrypt_exponential_cost() default 12;
+    int exponential_cost() default 12;
 }

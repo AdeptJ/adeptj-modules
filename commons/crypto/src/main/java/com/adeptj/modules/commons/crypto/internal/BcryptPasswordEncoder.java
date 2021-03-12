@@ -43,7 +43,7 @@ public class BcryptPasswordEncoder implements PasswordEncoder {
 
     @Activate
     public BcryptPasswordEncoder(@NotNull PasswordEncoderConfig config) {
-        this.exponentialCost = config.bcrypt_exponential_cost();
+        this.exponentialCost = config.exponential_cost();
     }
 
     @Override

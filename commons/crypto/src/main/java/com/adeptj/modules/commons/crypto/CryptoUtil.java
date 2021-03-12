@@ -53,14 +53,10 @@ public class CryptoUtil {
         }
     }
 
-    public static SecretKey newSecretKey(KeyInitData data) throws GeneralSecurityException {
+    public static byte[] newSecretKeyBytes(KeyInitData data) throws GeneralSecurityException {
         return SecretKeyFactory.getInstance(data.getAlgorithm())
                 .generateSecret(new PBEKeySpec(data.getPassword(), data.getSalt(), data.getIterationCount(),
-                        data.getKeyLength()));
-
-    }
-
-    public static byte[] newSecretKeyBytes(KeyInitData data) throws GeneralSecurityException {
-        return newSecretKey(data).getEncoded();
+                        data.getKeyLength()))
+                .getEncoded();
     }
 }
