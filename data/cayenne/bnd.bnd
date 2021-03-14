@@ -24,6 +24,9 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
+Import-Package: org.apache.cayenne.dba.mysql, \
+                *
+
 Export-Package: com.adeptj.modules.data.cayenne
   
 Bundle-Name: ${project.name}

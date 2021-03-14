@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="com.adeptj.modules.data.cayenne.model"/>
+	<property name="quoteSqlIdentifiers" value="true"/>
+	<db-entity name="ADDRESS" catalog="AdeptJ">
+		<db-attribute name="CITY" type="VARCHAR" length="255"/>
+		<db-attribute name="COUNTRY" type="VARCHAR" length="255"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="PIN" type="VARCHAR" length="255"/>
+		<db-attribute name="STATE" type="VARCHAR" length="255"/>
+		<db-attribute name="USER_ID" type="BIGINT" length="19"/>
+	</db-entity>
+	<db-entity name="USERS" catalog="AdeptJ">
+		<db-attribute name="EMAIL" type="VARCHAR" length="25"/>
+		<db-attribute name="FIRST_NAME" type="VARCHAR" length="25"/>
+		<db-attribute name="GOVT_ID" type="VARCHAR" length="25"/>
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
+		<db-attribute name="LAST_NAME" type="VARCHAR" length="25"/>
+		<db-attribute name="MOBILE_NO" type="VARCHAR" length="25"/>
+		<db-attribute name="SECONDARY_MOBILE_NO" type="VARCHAR" length="25"/>
+	</db-entity>
+	<obj-entity name="Address" className="com.adeptj.modules.data.cayenne.model.Address" dbEntityName="ADDRESS">
+		<obj-attribute name="city" type="java.lang.String" db-attribute-path="CITY"/>
+		<obj-attribute name="country" type="java.lang.String" db-attribute-path="COUNTRY"/>
+		<obj-attribute name="pin" type="java.lang.String" db-attribute-path="PIN"/>
+		<obj-attribute name="state" type="java.lang.String" db-attribute-path="STATE"/>
+	</obj-entity>
+	<obj-entity name="Users" className="com.adeptj.modules.data.cayenne.model.Users" dbEntityName="USERS">
+		<obj-attribute name="email" type="java.lang.String" db-attribute-path="EMAIL"/>
+		<obj-attribute name="firstName" type="java.lang.String" db-attribute-path="FIRST_NAME"/>
+		<obj-attribute name="govtId" type="java.lang.String" db-attribute-path="GOVT_ID"/>
+		<obj-attribute name="lastName" type="java.lang.String" db-attribute-path="LAST_NAME"/>
+		<obj-attribute name="mobileNo" type="java.lang.String" db-attribute-path="MOBILE_NO"/>
+		<obj-attribute name="secondaryMobileNo" type="java.lang.String" db-attribute-path="SECONDARY_MOBILE_NO"/>
+	</obj-entity>
+	<db-relationship name="user" source="ADDRESS" target="USERS">
+		<db-attribute-pair source="USER_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="addresses" source="USERS" target="ADDRESS" toMany="true">
+		<db-attribute-pair source="ID" target="USER_ID"/>
+	</db-relationship>
+	<obj-relationship name="user" source="Address" target="Users" deleteRule="Nullify" db-relationship-path="user"/>
+	<obj-relationship name="addresses" source="Users" target="Address" deleteRule="Deny" db-relationship-path="addresses"/>
+	<dbImport xmlns="http://cayenne.apache.org/schema/10/dbimport">
+		<tableTypes>
+			<tableType>TABLE</tableType>
+			<tableType>VIEW</tableType>
+		</tableTypes>
+		<forceDataMapCatalog>false</forceDataMapCatalog>
+		<forceDataMapSchema>false</forceDataMapSchema>
+		<namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
+		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
+		<skipRelationshipsLoading>false</skipRelationshipsLoading>
+		<useJava7Types>false</useJava7Types>
+		<usePrimitives>true</usePrimitives>
+	</dbImport>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<excludeEntities>Address,Users</excludeEntities>
+		<destDir>../../../../../../../..</destDir>
+		<mode>entity</mode>
+		<template>templates/v4_1/subclass.vm</template>
+		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>false</createPKProperties>
+		<client>false</client>
+	</cgen>
+</data-map>
