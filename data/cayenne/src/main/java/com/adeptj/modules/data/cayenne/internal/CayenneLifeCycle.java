@@ -21,17 +21,17 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component
 public class CayenneLifeCycle {
 
-    private ServerRuntime runtime;
+    private ServerRuntime cayenne;
 
     @Activate
     public CayenneLifeCycle(@Reference DataSourceService dataSourceService) {
         Functions.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
-            this.runtime = ServerRuntime.builder()
+            this.cayenne = ServerRuntime.builder()
                     .dataSource(dataSourceService.getDataSource())
                     .disableModulesAutoLoading()
                     .addConfig("cayenne-adeptj.xml")
                     .build();
-            ObjectContext context = this.runtime.newContext();
+            ObjectContext context = this.cayenne.newContext();
             List<Users> users = ObjectSelect.query(Users.class).select(context);
             System.out.println(users);
         });
@@ -41,7 +41,7 @@ public class CayenneLifeCycle {
 
     @Deactivate
     protected void stop() {
-        this.runtime.shutdown();
+        this.cayenne.shutdown();
     }
 
     // <<----------------------------------- JpaRepository Bind ------------------------------------>>
@@ -50,7 +50,7 @@ public class CayenneLifeCycle {
     protected void bindCayenneRepository(CayenneRepository repository) {
         if (repository instanceof AbstractCayenneRepository) {
             AbstractCayenneRepository cayenneRepository = (AbstractCayenneRepository) repository;
-            cayenneRepository.setCayenne(this.runtime);
+            cayenneRepository.setCayenne(this.cayenne);
         }
     }
 
