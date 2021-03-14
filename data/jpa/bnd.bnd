@@ -29,12 +29,13 @@ Export-Package: com.adeptj.modules.data.jpa, \
                 com.adeptj.modules.data.jpa.query, \
                 com.adeptj.modules.data.jpa.criteria, \
                 com.adeptj.modules.data.jpa.dto, \
+                com.adeptj.modules.data.jpa.util, \
                 com.adeptj.modules.data.jpa.exception
 
 Import-Package: org.eclipse.persistence.indirection, \
                 *
 
-Bundle-Name: AdeptJ Modules :: Data :: JPA
+Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ Data
 
