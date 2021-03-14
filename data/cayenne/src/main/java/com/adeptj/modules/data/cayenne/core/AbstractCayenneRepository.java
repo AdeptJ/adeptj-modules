@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @ConsumerType
-public class AbstractCayenneRepository<T> implements CayenneRepository<T> {
+public abstract class AbstractCayenneRepository<T> implements CayenneRepository<T> {
 
     private volatile ServerRuntime cayenne;
 
