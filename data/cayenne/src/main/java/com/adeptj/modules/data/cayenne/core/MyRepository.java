@@ -25,6 +25,14 @@ public class MyRepository extends AbstractCayenneRepository<Users> implements Ca
         return this.findManyByExpression(Users.class, Users.FIRST_NAME.like("John%"));
     }
 
+    public Users createNewUser() {
+        Users users = new Users();
+        users.setEmail("John.Rees33@johnreese.com");
+        users.setFirstName("John33");
+        users.setLastName("Reese33");
+        return this.insert(users);
+    }
+
     public Users createUser() {
         return this.insert(Users.class, users -> {
             users.setEmail("John.Rees33@johnreese.com");

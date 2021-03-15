@@ -60,7 +60,7 @@ public class CayenneLifeCycle {
                 usersByExpression.forEach(System.out::println);
             }
             try {
-                final Users user = myRepository.createUser();
+                final Users user = myRepository.createNewUser();
                 if (user != null) {
                     System.out.println(user);
                 }
