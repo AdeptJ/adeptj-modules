@@ -18,7 +18,7 @@ public class MyRepository extends AbstractCayenneRepository<Users> implements Ca
     }
 
     public Users getUsersByExpression() {
-        return this.findOneByExpression(Users.class, Users.EMAIL.eq("John.Rees33@johnreese.com"));
+        return this.findOneByExpression(Users.class, Users.EMAIL.eq("john.doe4@johndoe.com"));
     }
 
     public List<Users> getAllUsersByExpression() {

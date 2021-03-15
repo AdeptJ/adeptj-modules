@@ -55,16 +55,20 @@ public class CayenneLifeCycle {
             MyRepository myRepository = (MyRepository) cayenneRepository;
             List<Users> all = myRepository.getAllUsers();
             all.forEach(System.out::println);
-            final List<Users> usersByExpression = myRepository.getAllUsersByExpression();
+            List<Users> usersByExpression = myRepository.getAllUsersByExpression();
             if (usersByExpression != null) {
                 usersByExpression.forEach(System.out::println);
             }
             try {
-                final Users user = myRepository.createNewUser();
+                Users user = myRepository.createNewUser();
                 if (user != null) {
                     System.out.println(user);
                 }
-                final Users usersByExpression1 = myRepository.getUsersByExpression();
+                user = myRepository.createUser();
+                if (user != null) {
+                    System.out.println(user);
+                }
+                Users usersByExpression1 = myRepository.getUsersByExpression();
                 if (usersByExpression1 != null) {
                     System.out.println(usersByExpression1);
                 }
