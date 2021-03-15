@@ -18,16 +18,16 @@ public class MyRepository extends AbstractCayenneRepository<Users> implements Ca
     }
 
     public Users getUsersByExpression() {
-        return this.findOneByExpression(Users.class, Users.EMAIL.eq("John33.Reese33@johnreese.com"));
+        return this.findOneByExpression(Users.class, Users.EMAIL.eq("John.Rees33@johnreese.com"));
     }
 
     public List<Users> getAllUsersByExpression() {
-        return this.findManyByExpression(Users.class, Users.FIRST_NAME.like("John"));
+        return this.findManyByExpression(Users.class, Users.FIRST_NAME.like("John%"));
     }
 
     public Users createUser() {
         return this.insert(Users.class, users -> {
-            users.setEmail("John33.Reese33@johnreese.com");
+            users.setEmail("John.Rees33@johnreese.com");
             users.setFirstName("John33");
             users.setLastName("Reese33");
         });

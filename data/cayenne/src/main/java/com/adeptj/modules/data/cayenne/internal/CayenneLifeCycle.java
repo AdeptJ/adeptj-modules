@@ -4,6 +4,7 @@ import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 import com.adeptj.modules.commons.utils.Functions;
 import com.adeptj.modules.data.cayenne.CayenneRepository;
 import com.adeptj.modules.data.cayenne.core.AbstractCayenneRepository;
+import com.adeptj.modules.data.cayenne.core.MyRepository;
 import com.adeptj.modules.data.cayenne.model.Users;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -44,13 +45,32 @@ public class CayenneLifeCycle {
         this.cayenne.shutdown();
     }
 
-    // <<----------------------------------- JpaRepository Bind ------------------------------------>>
+    // <<----------------------------------- CayenneRepository Bind ------------------------------------>>
 
     @Reference(service = CayenneRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindCayenneRepository(CayenneRepository<?> repository) {
         if (repository instanceof AbstractCayenneRepository) {
             AbstractCayenneRepository<?> cayenneRepository = (AbstractCayenneRepository<?>) repository;
             cayenneRepository.setCayenne(this.cayenne);
+            MyRepository myRepository = (MyRepository) cayenneRepository;
+            List<Users> all = myRepository.getAllUsers();
+            all.forEach(System.out::println);
+            final List<Users> usersByExpression = myRepository.getAllUsersByExpression();
+            if (usersByExpression != null) {
+                usersByExpression.forEach(System.out::println);
+            }
+            try {
+                final Users user = myRepository.createUser();
+                if (user != null) {
+                    System.out.println(user);
+                }
+                final Users usersByExpression1 = myRepository.getUsersByExpression();
+                if (usersByExpression1 != null) {
+                    System.out.println(usersByExpression1);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
