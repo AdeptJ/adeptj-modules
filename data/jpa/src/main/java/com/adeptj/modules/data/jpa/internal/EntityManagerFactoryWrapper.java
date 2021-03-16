@@ -59,7 +59,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
      * {@inheritDoc}
      */
     @Override
-    public EntityManager createEntityManager(Map map) {
+    public EntityManager createEntityManager(@SuppressWarnings("rawtypes") Map map) {
         return this.entityManagerFactory.createEntityManager(map);
     }
 
@@ -72,7 +72,7 @@ public class EntityManagerFactoryWrapper implements EntityManagerFactory {
     }
 
     @Override
-    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, @SuppressWarnings("rawtypes") Map map) {
         return this.entityManagerFactory.createEntityManager(synchronizationType, map);
     }
 

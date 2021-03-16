@@ -52,7 +52,7 @@ public class ResteasyProviderFactoryAdapter extends ResteasyProviderFactoryImpl 
     }
 
     @Override
-    public void registerProvider(@NotNull Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
+    public void registerProvider(@SuppressWarnings("rawtypes") @NotNull Class provider, Integer priorityOverride, boolean isBuiltin, Map<Class<?>, Integer> contracts) {
         if (ArrayUtils.contains(this.providerDenyList, provider.getName())) {
             LOGGER.info("Provider [{}] is skipped from deployment!!", provider.getName());
         } else {

@@ -54,6 +54,7 @@ public class AuthenticatorImpl implements Authenticator {
     @Override
     public boolean handleSecurity(HttpServletRequest request) {
         if (this.securityDisabled || this.securityDisabledPaths.contains(request.getRequestURI())) {
+        	LOGGER.info("Security disabled for path: {}", request.getRequestURI());
             return true;
         }
         Credential credential = this.credentialResolver.resolve(request);
