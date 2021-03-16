@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.COMPOSITE_TRACKER_FILTER;
 
@@ -29,10 +31,13 @@ public class CompositeServiceTracker<T> extends ServiceTracker<T, T> {
 
     private final ResourceManager<T> resourceManager;
 
+    private final Lock lock;
+
     CompositeServiceTracker(BundleContext context, ResteasyProviderFactory providerFactory, Registry registry) {
         super(context, OSGiUtil.anyServiceFilter(context, COMPOSITE_TRACKER_FILTER), null);
         this.providerManager = new ProviderManager<>(providerFactory);
         this.resourceManager = new ResourceManager<>(registry);
+        this.lock = new ReentrantLock();
     }
 
     /**
@@ -44,10 +49,19 @@ public class CompositeServiceTracker<T> extends ServiceTracker<T, T> {
     @Override
     public T addingService(ServiceReference<T> reference) {
         T service = super.addingService(reference);
-        if (ResteasyUtil.isProvider(reference)) {
-            service = this.providerManager.addProvider(reference, service);
-        } else if (ResteasyUtil.isResource(reference)) {
-            service = this.resourceManager.addResource(reference, service);
+        this.lock.lock();
+        try {
+            if (ResteasyUtil.isProvider(reference)) {
+                service = this.providerManager.addProvider(reference, service);
+            } else if (ResteasyUtil.isResource(reference)) {
+                service = this.resourceManager.addResource(reference, service);
+            }
+        } catch (Exception ex) { // NOSONAR
+            // Let's not track if resource/provider addition failed.
+            service = null;
+            LOGGER.error(ex.getMessage(), ex);
+        } finally {
+            this.lock.unlock();
         }
         return service;
     }
@@ -60,6 +74,7 @@ public class CompositeServiceTracker<T> extends ServiceTracker<T, T> {
      */
     @Override
     public void removedService(ServiceReference<T> reference, T service) {
+        this.lock.lock();
         try {
             if (ResteasyUtil.isProvider(reference)) {
                 this.providerManager.removeProvider(reference, service);
@@ -68,6 +83,8 @@ public class CompositeServiceTracker<T> extends ServiceTracker<T, T> {
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
+        } finally {
+            this.lock.unlock();
         }
         super.removedService(reference, service);
     }

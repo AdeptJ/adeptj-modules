@@ -25,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * ProviderManager adds the JAX-RS provider to the RESTEasy {@link ResteasyProviderFactory}.
@@ -39,11 +37,8 @@ public class ProviderManager<T> {
 
     private final ResteasyProviderFactory providerFactory;
 
-    private final Lock lock;
-
     ProviderManager(ResteasyProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.lock = new ReentrantLock();
     }
 
     /**
@@ -58,17 +53,9 @@ public class ProviderManager<T> {
             LOGGER.warn("JAX-RS Provider is null for ServiceReference: {}", ResteasyUtil.getProviderName(reference));
             return null;
         }
-        this.lock.lock();
-        try {
-            this.providerFactory.registerProviderInstance(provider);
-            LOGGER.info("Registered JAX-RS Provider: [{}]", ResteasyUtil.getProviderName(reference));
-            return provider;
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-        } finally {
-            this.lock.unlock();
-        }
-        return null;
+        this.providerFactory.registerProviderInstance(provider);
+        LOGGER.info("Registered JAX-RS Provider: [{}]", ResteasyUtil.getProviderName(reference));
+        return provider;
     }
 
     /**
@@ -77,13 +64,8 @@ public class ProviderManager<T> {
      * @param provider The service object for the removed service.
      */
     public void removeProvider(ServiceReference<T> reference, T provider) {
-        this.lock.lock();
-        try {
-            if (this.providerFactory.getProviderInstances().remove(provider)) {
-                LOGGER.info("Removed JAX-RS Provider: [{}]", ResteasyUtil.getProviderName(reference));
-            }
-        } finally {
-            this.lock.unlock();
+        if (this.providerFactory.getProviderInstances().remove(provider)) {
+            LOGGER.info("Removed JAX-RS Provider: [{}]", ResteasyUtil.getProviderName(reference));
         }
     }
 }

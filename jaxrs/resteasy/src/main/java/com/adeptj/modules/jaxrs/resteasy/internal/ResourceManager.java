@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * ResourceManager adds the JAX-RS resource to the RESTEasy {@link Registry}
@@ -42,11 +40,8 @@ public class ResourceManager<T> {
 
     private final Registry registry;
 
-    private final Lock lock;
-
     ResourceManager(Registry registry) {
         this.registry = registry;
-        this.lock = new ReentrantLock();
     }
 
     /**
@@ -61,17 +56,9 @@ public class ResourceManager<T> {
             LOGGER.warn("JAX-RS Resource is null for ServiceReference: {}", ResteasyUtil.getResourceName(reference));
             return null;
         }
-        this.lock.lock();
-        try {
-            this.registry.addSingletonResource(resource);
-            LOGGER.info("Added JAX-RS Resource: [{}]", ResteasyUtil.getResourceName(reference));
-            return resource;
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-        } finally {
-            this.lock.unlock();
-        }
-        return null;
+        this.registry.addSingletonResource(resource);
+        LOGGER.info("Added JAX-RS Resource: [{}]", ResteasyUtil.getResourceName(reference));
+        return resource;
     }
 
     /**
@@ -80,12 +67,7 @@ public class ResourceManager<T> {
      * @param resource The service object for the removed service.
      */
     public void removeResource(ServiceReference<T> reference, @NotNull Object resource) {
-        this.lock.lock();
-        try {
-            this.registry.removeRegistrations(resource.getClass());
-            LOGGER.info("Removed JAX-RS Resource: [{}]", ResteasyUtil.getResourceName(reference));
-        } finally {
-            this.lock.unlock();
-        }
+        this.registry.removeRegistrations(resource.getClass());
+        LOGGER.info("Removed JAX-RS Resource: [{}]", ResteasyUtil.getResourceName(reference));
     }
 }
