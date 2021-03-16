@@ -23,7 +23,6 @@ package com.adeptj.modules.commons.crypto.internal;
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
-import com.adeptj.modules.commons.crypto.KeyInitData;
 import com.adeptj.modules.commons.utils.RandomUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -104,7 +103,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 2. get salt
             salt = RandomUtil.randomBytes(SALT_LENGTH);
             // 3. init encrypt mode cipher
-            Cipher cipher = this.initCipher(salt, iv, ENCRYPT_MODE);
+            Cipher cipher = this.initCipher(ENCRYPT_MODE, salt, iv);
             // 4. generate cipher bytes
             cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
             // 5. put everything in a ByteBuffer
@@ -140,7 +139,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 3. extract salt
             buffer.get(salt);
             // 4. init decrypt mode cipher
-            Cipher cipher = this.initCipher(salt, iv, DECRYPT_MODE);
+            Cipher cipher = this.initCipher(DECRYPT_MODE, salt, iv);
             cipherBytes = new byte[buffer.remaining()];
             // 5. extract cipherBytes
             buffer.get(cipherBytes);
@@ -156,16 +155,10 @@ public class AesGcmCryptoService implements CryptoService {
         }
     }
 
-    private Cipher initCipher(byte[] salt, byte[] iv, int mode) throws GeneralSecurityException {
+    private Cipher initCipher(int mode, byte[] salt, byte[] iv) throws GeneralSecurityException {
         byte[] key = null;
         try {
-            key = CryptoUtil.newSecretKeyBytes(KeyInitData.builder()
-                    .algorithm(PBE_ALGO)
-                    .password(this.cryptoKey)
-                    .salt(salt)
-                    .iterations(this.iterations)
-                    .keyLength(PBE_KEY_LENGTH)
-                    .build());
+            key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, this.cryptoKey, salt, this.iterations, PBE_KEY_LENGTH);
             SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
             Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
