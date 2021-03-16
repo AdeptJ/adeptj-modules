@@ -197,9 +197,9 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         try {
             cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX).trim();
             plainText = this.cryptoService.decrypt(cipherText);
-        } catch (CryptoException ce) {
+        } catch (CryptoException | IllegalArgumentException ex) {
             plainText = cipherText;
-            LOGGER.error(ce.getMessage(), ce);
+            LOGGER.error(ex.getMessage(), ex);
         }
         return plainText;
     }
