@@ -60,6 +60,9 @@ public class CompositeServiceTracker<T> extends ServiceTracker<T, T> {
             // Let's not track if resource/provider addition failed.
             service = null;
             LOGGER.error(ex.getMessage(), ex);
+            if (this.context.ungetService(reference)) {
+                LOGGER.error("Releasing the service for ServiceReference: {}", reference);
+            }
         } finally {
             this.lock.unlock();
         }
