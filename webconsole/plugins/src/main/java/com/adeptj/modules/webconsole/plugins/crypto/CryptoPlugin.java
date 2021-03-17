@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Iterator;
 
@@ -63,7 +62,9 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 @Component(service = {Servlet.class, ConfigurationPlugin.class})
 public class CryptoPlugin extends AbstractWebConsolePlugin implements ConfigurationPlugin {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private static final long serialVersionUID = 282533706713570062L;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final String PLUGIN_LABEL_VALUE = "crypto";
 
@@ -102,32 +103,32 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             String key = iterator.next();
             Object value = properties.get(key);
             if (value instanceof String) {
-                String oldValue = (String) value;
-                if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
-                    String newValue = this.getPlainText(oldValue);
-                    if (!StringUtils.equals(oldValue, newValue)) {
-                        properties.put(key, newValue);
-                        LOGGER.info("Replaced value of configuration property '{}' for PID [{}]", key, pid);
-                    }
-                }
+                this.handleProperty(properties, pid, key, (String) value);
             } else if (value instanceof String[]) {
-                String[] oldValues = (String[]) value;
-                String[] newValues = null;
-                for (int i = 0; i < oldValues.length; i++) {
-                    String oldValue = oldValues[i];
-                    if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
-                        String newValue = this.getPlainText(oldValue);
-                        if (!StringUtils.equals(newValue, oldValue)) {
-                            if (newValues == null) {
-                                newValues = Arrays.copyOf(oldValues, oldValues.length);
-                            }
-                            newValues[i] = newValue;
-                        }
-                    }
-                }
-                if (newValues != null) {
-                    properties.put(key, newValues);
-                    LOGGER.info("Replaced value(s) of array type configuration property '{}' for PID [{}]", key, pid);
+                this.handleMultiValueProperty(pid, key, (String[]) value);
+            }
+        }
+    }
+
+    private void handleProperty(Dictionary<String, Object> properties, Object pid, String key, String oldValue) {
+        if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
+            String newValue = this.decrypt(oldValue);
+            if (!StringUtils.equals(oldValue, newValue)) {
+                properties.put(key, newValue);
+                LOGGER.info("Decrypted value of configuration property '{}' for PID [{}]", key, pid);
+            }
+        }
+    }
+
+    private void handleMultiValueProperty(Object pid, String key, String[] oldValues) {
+        for (int i = 0; i < oldValues.length; i++) {
+            String oldValue = oldValues[i];
+            if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
+                String newValue = this.decrypt(oldValue);
+                if (!StringUtils.equals(newValue, oldValue)) {
+                    oldValues[i] = newValue;
+                    LOGGER.info("Decrypted value at index [{}] of multi value configuration property '{}' for PID '{}'",
+                            i, key, pid);
                 }
             }
         }
@@ -192,7 +193,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         }
     }
 
-    private String getPlainText(String cipherText) {
+    private String decrypt(String cipherText) {
         String plainText;
         try {
             cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX).trim();
