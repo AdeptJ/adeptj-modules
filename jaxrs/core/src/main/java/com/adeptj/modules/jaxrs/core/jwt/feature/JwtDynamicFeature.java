@@ -20,8 +20,8 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.feature;
 
-import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import com.adeptj.modules.jaxrs.core.jwt.filter.DynamicJwtClaimsIntrospectionFilter;
+import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Activate;
@@ -56,7 +56,7 @@ import static javax.ws.rs.RuntimeType.SERVER;
 @Provider
 @ConstrainedTo(SERVER)
 @Designate(ocd = JwtDynamicFeatureConfig.class)
-@Component(immediate = true, property = FEATURE_NAME)
+@Component(property = FEATURE_NAME)
 public class JwtDynamicFeature implements DynamicFeature {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
