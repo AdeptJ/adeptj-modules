@@ -43,11 +43,11 @@
         <smallrye-config.version>2.1.0</smallrye-config.version>
         <smallrye-config-core.version>2.1.0</smallrye-config-core.version>
         <smallrye-config-common.version>2.1.0</smallrye-config-common.version>
-        <smallrye-common-annotation.version>1.5.0</smallrye-common-annotation.version>
-        <smallrye-common-expression.version>1.5.0</smallrye-common-expression.version>
-        <smallrye-common-constraint.version>1.5.0</smallrye-common-constraint.version>
-        <smallrye-common-classloader.version>1.5.0</smallrye-common-classloader.version>
-        <smallrye-common-function.version>1.5.0</smallrye-common-function.version>
+        <smallrye-common-annotation.version>1.6.0</smallrye-common-annotation.version>
+        <smallrye-common-expression.version>1.6.0</smallrye-common-expression.version>
+        <smallrye-common-constraint.version>1.6.0</smallrye-common-constraint.version>
+        <smallrye-common-classloader.version>1.6.0</smallrye-common-classloader.version>
+        <smallrye-common-function.version>1.6.0</smallrye-common-function.version>
     </properties>
 
     <!-- Project Information -->

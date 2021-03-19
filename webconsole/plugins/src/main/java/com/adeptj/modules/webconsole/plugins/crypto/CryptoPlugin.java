@@ -62,9 +62,9 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 @Component(service = {Servlet.class, ConfigurationPlugin.class})
 public class CryptoPlugin extends AbstractWebConsolePlugin implements ConfigurationPlugin {
 
-	private static final long serialVersionUID = 282533706713570062L;
+    private static final long serialVersionUID = 282533706713570062L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final String PLUGIN_LABEL_VALUE = "crypto";
 
@@ -92,6 +92,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     @Activate
     public CryptoPlugin(@Reference CryptoService cryptoService) {
         this.cryptoService = cryptoService;
+        LOGGER.info("CryptoPlugin initialized!!");
     }
 
     // << ---------------------------------- From ConfigurationPlugin ---------------------------------->>
@@ -174,9 +175,8 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         // That will be a GET request but when this method is called via a doGet after the form submission
         // then the request method is still POST so below logic will not be executed.
         if (REQ_METHOD_GET.equals(req.getMethod())) {
-            VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
-            if (vr instanceof DefaultVariableResolver) {
-                DefaultVariableResolver dvr = (DefaultVariableResolver) vr;
+            DefaultVariableResolver dvr = this.getDefaultVariableResolver(req);
+            if (dvr != null) {
                 dvr.put(KEY_PLAIN_TEXT, EMPTY);
                 dvr.put(KEY_CIPHER_TEXT, EMPTY);
             }
@@ -185,12 +185,16 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     @SuppressWarnings("unchecked")
     private void populateVariableResolverAfterPost(HttpServletRequest req, String plainText, String cipherText) {
-        VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
-        if (vr instanceof DefaultVariableResolver) {
-            DefaultVariableResolver dvr = (DefaultVariableResolver) vr;
+        DefaultVariableResolver dvr = this.getDefaultVariableResolver(req);
+        if (dvr != null) {
             dvr.put(KEY_PLAIN_TEXT, plainText);
             dvr.put(KEY_CIPHER_TEXT, cipherText);
         }
+    }
+
+    private DefaultVariableResolver getDefaultVariableResolver(HttpServletRequest req) {
+        VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
+        return (vr instanceof DefaultVariableResolver) ? ((DefaultVariableResolver) vr) : null;
     }
 
     private String decrypt(String cipherText) {
