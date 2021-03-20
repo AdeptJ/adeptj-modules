@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.lang.invoke.MethodHandles;
+import java.util.stream.Stream;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -82,31 +83,30 @@ public class HikariDataSourceService implements DataSourceService {
         return new DataSourceWrapper(this.dataSource);
     }
 
-    @NotNull
-    private HikariDataSource createHikariDataSource(DataSourceConfig config) {
-        Validate.isTrue(StringUtils.isNotEmpty(config.poolName()), "JDBC Pool Name can't be null!!");
-        HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setPoolName(config.poolName());
-        hikariConfig.setJdbcUrl(config.jdbcUrl());
-        hikariConfig.setDriverClassName(config.driverClassName());
-        hikariConfig.setUsername(config.username());
-        hikariConfig.setPassword(config.password());
-        hikariConfig.setAutoCommit(config.autoCommit());
-        hikariConfig.setConnectionTimeout(config.connectionTimeout());
-        hikariConfig.setIdleTimeout(config.idleTimeout());
-        hikariConfig.setMaxLifetime(config.maxLifetime());
-        hikariConfig.setMinimumIdle(config.minimumIdle());
-        hikariConfig.setMaximumPoolSize(config.maximumPoolSize());
-        for (String row : config.dataSourceProperties()) {
-            String[] mapping = StringUtils.split(row, EQ);
-            if (ArrayUtils.getLength(mapping) == 2) {
-                hikariConfig.addDataSourceProperty(mapping[0].trim(), mapping[1].trim());
-            }
-        }
-        return new HikariDataSource(hikariConfig);
+    private @NotNull HikariDataSource createHikariDataSource(DataSourceConfig dsc) {
+        Validate.isTrue(StringUtils.isNotEmpty(dsc.poolName()), "JDBC Pool Name can't be null!!");
+        HikariConfig config = new HikariConfig();
+        config.setPoolName(dsc.poolName());
+        config.setJdbcUrl(dsc.jdbcUrl());
+        config.setDriverClassName(dsc.driverClassName());
+        config.setUsername(dsc.username());
+        config.setPassword(dsc.password());
+        config.setAutoCommit(dsc.autoCommit());
+        config.setConnectionTimeout(dsc.connectionTimeout());
+        config.setIdleTimeout(dsc.idleTimeout());
+        config.setMaxLifetime(dsc.maxLifetime());
+        config.setMinimumIdle(dsc.minimumIdle());
+        config.setMaximumPoolSize(dsc.maximumPoolSize());
+        // Extra DataSource properties are in [key=value] format.
+        Stream.of(dsc.dataSourceProperties())
+                .filter(StringUtils::isNotEmpty)
+                .map(row -> StringUtils.split(row, EQ))
+                .filter(parts -> ArrayUtils.getLength(parts) == 2)
+                .forEach(parts -> config.addDataSourceProperty(parts[0].trim(), parts[1].trim()));
+        return new HikariDataSource(config);
     }
 
-    // <<------------------------------------- OSGi Internal  -------------------------------------->>
+    // <<----------------------------------------- OSGi Internal  ------------------------------------------>>
 
     /**
      * Close the {@link HikariDataSource}.
