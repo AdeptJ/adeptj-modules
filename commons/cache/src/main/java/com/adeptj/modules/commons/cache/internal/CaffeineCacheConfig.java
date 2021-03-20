@@ -37,7 +37,11 @@ public @interface CaffeineCacheConfig {
     @AttributeDefinition(name = "Cache Name", description = "A meaningful name of the configured cache.")
     String cache_name();
 
-    @AttributeDefinition(name = "Cache Spec", description = "The cache spec literal for configuring Caffeine cache.")
+    @AttributeDefinition(
+            name = "Cache Spec",
+            description = "The cache spec literal for configuring Caffeine cache. " +
+                    "Please see - https://github.com/ben-manes/caffeine/wiki/Specification"
+    )
     String cache_spec() default "maximumSize=16,expireAfterWrite=3600s";
 
     // name hint non editable property

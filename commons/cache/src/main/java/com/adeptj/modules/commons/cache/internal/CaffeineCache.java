@@ -44,7 +44,7 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
 
     private final String cacheName;
 
-    private final com.github.benmanes.caffeine.cache.Cache<K, V> caffeineCache;
+    private final com.github.benmanes.caffeine.cache.Cache<@NotNull K, @NotNull V> caffeineCache;
 
     CaffeineCache(String cacheName, String cacheSpec) {
         this.cacheName = cacheName;
