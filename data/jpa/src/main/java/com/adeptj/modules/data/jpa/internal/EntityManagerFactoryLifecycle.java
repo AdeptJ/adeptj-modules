@@ -21,7 +21,7 @@
 package com.adeptj.modules.data.jpa.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
-import com.adeptj.modules.commons.utils.CollectionUtil;
+import com.adeptj.modules.commons.utils.MapUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
@@ -112,7 +112,7 @@ public class EntityManagerFactoryLifecycle {
         try {
             Map<String, Object> properties = JpaProperties.create(config);
             Map<String, Object> providerProperties = provider.getPersistenceUnitProperties();
-            if (CollectionUtil.isNotEmpty(providerProperties)) {
+            if (MapUtil.isNotEmpty(providerProperties)) {
                 properties.putAll(providerProperties);
             }
             properties.put(NON_JTA_DATASOURCE, dataSourceService.getDataSource());

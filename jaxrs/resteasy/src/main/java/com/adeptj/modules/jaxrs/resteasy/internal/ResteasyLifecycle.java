@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
-import com.adeptj.modules.commons.utils.Functions;
+import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.commons.utils.OSGiUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
 import com.adeptj.modules.commons.validator.service.ValidatorService;
@@ -100,7 +100,7 @@ public class ResteasyLifecycle {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void start(ServletConfig servletConfig) {
-        Functions.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
+        ClassLoaders.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
             try {
                 long startTime = System.nanoTime();
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");

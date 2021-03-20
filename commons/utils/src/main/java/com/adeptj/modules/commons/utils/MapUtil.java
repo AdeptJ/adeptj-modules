@@ -20,24 +20,24 @@
 
 package com.adeptj.modules.commons.utils;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
- * Utilities for Java collections.
+ * Utilities for Java {@link Map} types.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class CollectionUtil {
+public final class MapUtil {
 
-    public static int size(Collection<?> collection) {
-        return collection == null ? 0 : collection.size();
+    public static int size(Map<?, ?> map) {
+        return map == null ? 0 : map.size();
     }
 
-    public static boolean isEmpty(Collection<?> collection) {
-        return collection == null || collection.isEmpty();
+    public static boolean isEmpty(Map<?, ?> map) {
+        return map == null || map.isEmpty();
     }
 
-    public static boolean isNotEmpty(Collection<?> collection) {
-        return !isEmpty(collection);
+    public static boolean isNotEmpty(Map<?, ?> map) {
+        return !isEmpty(map);
     }
 }

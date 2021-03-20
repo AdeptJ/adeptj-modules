@@ -21,7 +21,7 @@
 package com.adeptj.modules.commons.utils;
 
 /**
- * Exception thrown by {@link Jackson} methods.
+ * Exception thrown by {@link JacksonJsonUtil} methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

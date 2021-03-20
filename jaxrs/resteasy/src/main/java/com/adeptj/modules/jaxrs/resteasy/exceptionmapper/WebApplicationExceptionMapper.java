@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import com.adeptj.modules.commons.utils.JsonUtil;
+import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Priority;
@@ -60,7 +60,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         Response currentResponse = exception.getResponse();
         return Response.status(currentResponse.getStatus())
                 .type(APPLICATION_JSON)
-                .entity(JsonUtil.getJsonBuilderFactory().createObjectBuilder()
+                .entity(JakartaJsonUtil.getJsonBuilderFactory().createObjectBuilder()
                         .add(JSON_KEY_CODE, currentResponse.getStatus())
                         .add(JSON_KEY_MESSAGE, exception.getMessage())
                         .build())

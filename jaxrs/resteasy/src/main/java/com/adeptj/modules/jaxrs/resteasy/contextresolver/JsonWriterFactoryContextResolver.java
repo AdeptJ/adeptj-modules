@@ -1,6 +1,6 @@
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
-import com.adeptj.modules.commons.utils.JsonUtil;
+import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 
 import javax.annotation.Priority;
 import javax.json.JsonWriterFactory;
@@ -24,6 +24,6 @@ public class JsonWriterFactoryContextResolver implements ContextResolver<JsonWri
 
     @Override
     public JsonWriterFactory getContext(Class<?> type) {
-        return type == JsonWriterFactory.class ? JsonUtil.getJsonWriterFactory() : null;
+        return type == JsonWriterFactory.class ? JakartaJsonUtil.getJsonWriterFactory() : null;
     }
 }

@@ -28,6 +28,7 @@ import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import java.io.ByteArrayInputStream;
 
+import static com.adeptj.modules.commons.utils.Constants.UTF8;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -35,15 +36,25 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JsonUtil {
+public final class JakartaJsonUtil {
+    
+    private JakartaJsonUtil() {
+    }
 
-    private static final Jsonb JSONB = JsonbBuilder.create(new JsonbConfig());
+    private static final Jsonb JSONB;
 
-    private static final JsonReaderFactory READER_FACTORY = Json.createReaderFactory(null);
+    private static final JsonReaderFactory READER_FACTORY;
 
-    private static final JsonWriterFactory WRITER_FACTORY = Json.createWriterFactory(null);
+    private static final JsonWriterFactory WRITER_FACTORY;
 
-    private static final JsonBuilderFactory JSON_BUILDER_FACTORY = Json.createBuilderFactory(null);
+    private static final JsonBuilderFactory JSON_BUILDER_FACTORY;
+
+    static {
+        JSONB = JsonbBuilder.create(new JsonbConfig().withEncoding(UTF8));
+        READER_FACTORY = Json.createReaderFactory(null);
+        WRITER_FACTORY = Json.createWriterFactory(null);
+        JSON_BUILDER_FACTORY = Json.createBuilderFactory(null);
+    }
 
     public static Jsonb getJsonb() {
         return JSONB;
@@ -62,18 +73,18 @@ public final class JsonUtil {
     }
 
     public static <T> String serialize(T object) {
-        return JsonUtil.getJsonb().toJson(object);
+        return JakartaJsonUtil.getJsonb().toJson(object);
     }
 
     public static <T> byte[] serializeToBytes(T object) {
-        return JsonUtil.serialize(object).getBytes(UTF_8);
+        return JakartaJsonUtil.serialize(object).getBytes(UTF_8);
     }
 
     public static <T> T deserialize(byte[] data, Class<T> type) {
-        return JsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
+        return JakartaJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
     }
 
     public static <T> T deserialize(String data, Class<T> type) {
-        return JsonUtil.getJsonb().fromJson(data, type);
+        return JakartaJsonUtil.getJsonb().fromJson(data, type);
     }
 }

@@ -2,7 +2,7 @@ package com.adeptj.modules.data.mybatis.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 import com.adeptj.modules.commons.utils.CollectionUtil;
-import com.adeptj.modules.commons.utils.Functions;
+import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.data.mybatis.MyBatisInfoProvider;
 import com.adeptj.modules.data.mybatis.MyBatisRepository;
 import com.adeptj.modules.data.mybatis.core.AbstractMyBatisRepository;
@@ -60,7 +60,7 @@ public class MyBatisLifecycle {
             LOGGER.info("MyBatis xml based configuration disabled, creating Configuration via constructor!");
             return new Configuration();
         }
-        return Functions.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
+        return ClassLoaders.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
             String configXmlLocation = provider.getConfigXmlLocation();
             if (StringUtils.isEmpty(configXmlLocation) || config.override_provider_config_xml_location()) {
                 configXmlLocation = config.config_xml_location();

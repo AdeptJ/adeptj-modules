@@ -28,12 +28,12 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class Functions {
+public final class ClassLoaders {
 
     /**
      * Only static access.
      */
-    private Functions() {
+    private ClassLoaders() {
     }
 
     /**
@@ -66,7 +66,7 @@ public final class Functions {
      * @param cl       the class loader to use as a context class loader for the function execution
      * @param function the function to be executed under given class loader
      */
-    public static void executeUnderContextClassLoader(ClassLoader cl, @NotNull Functions.VoidFunction function) {
+    public static void executeUnderContextClassLoader(ClassLoader cl, @NotNull ClassLoaders.VoidFunction function) {
         Validate.isTrue(cl != null, "ClassLoader can't be null!!");
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -86,7 +86,7 @@ public final class Functions {
      * @param <T>      Type that ReturningFunction returns.
      * @return the result of the execution
      */
-    public static <T> T executeUnderContextClassLoader(ClassLoader cl, @NotNull Functions.ValueFunction<T> function) {
+    public static <T> T executeUnderContextClassLoader(ClassLoader cl, @NotNull ClassLoaders.ValueFunction<T> function) {
         Validate.isTrue(cl != null, "ClassLoader can't be null!!");
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {

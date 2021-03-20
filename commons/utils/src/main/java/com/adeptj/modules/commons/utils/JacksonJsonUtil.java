@@ -41,9 +41,9 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class Jackson {
+public class JacksonJsonUtil {
 
-    private Jackson() {
+    private JacksonJsonUtil() {
     }
 
     private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
@@ -57,20 +57,20 @@ public class Jackson {
     }
 
     public static ObjectNode objectNode() {
-        return (ObjectNode) Jackson.objectReader().createObjectNode();
+        return (ObjectNode) JacksonJsonUtil.objectReader().createObjectNode();
     }
 
     public static ObjectReader objectReader() {
-        return Jackson.objectMapper().reader();
+        return JacksonJsonUtil.objectMapper().reader();
     }
 
     public static ObjectWriter objectWriter() {
-        return Jackson.objectMapper().writer();
+        return JacksonJsonUtil.objectMapper().writer();
     }
 
     public static JsonNode parse(String json) {
         try {
-            return Jackson.objectReader().readTree(json);
+            return JacksonJsonUtil.objectReader().readTree(json);
         } catch (IOException ex) {
             throw new JacksonException(ex);
         }
@@ -78,7 +78,7 @@ public class Jackson {
 
     public static JsonNode parse(byte[] json) {
         try {
-            return Jackson.objectReader().readTree(json);
+            return JacksonJsonUtil.objectReader().readTree(json);
         } catch (IOException ex) {
             throw new JacksonException(ex);
         }
@@ -86,7 +86,7 @@ public class Jackson {
 
     public static <T> byte[] serializeToBytes(T object) {
         try {
-            return Jackson.objectWriter().writeValueAsBytes(object);
+            return JacksonJsonUtil.objectWriter().writeValueAsBytes(object);
         } catch (JsonProcessingException ex) {
             throw new JacksonException(ex);
         }
@@ -94,7 +94,7 @@ public class Jackson {
 
     public static <T> String serialize(T object) {
         try {
-            return Jackson.objectWriter().writeValueAsString(object);
+            return JacksonJsonUtil.objectWriter().writeValueAsString(object);
         } catch (JsonProcessingException ex) {
             throw new JacksonException(ex);
         }
@@ -102,7 +102,7 @@ public class Jackson {
 
     public static <T> T deserialize(byte[] bytes, Class<T> valueType) {
         try {
-            return Jackson.objectReader().forType(valueType).readValue(bytes);
+            return JacksonJsonUtil.objectReader().forType(valueType).readValue(bytes);
         } catch (IOException ex) {
             throw new JacksonException(ex);
         }
@@ -110,29 +110,29 @@ public class Jackson {
 
     public static <T> T deserialize(String data, Class<T> valueType) {
         try {
-            return Jackson.objectReader().forType(valueType).readValue(data);
+            return JacksonJsonUtil.objectReader().forType(valueType).readValue(data);
         } catch (IOException ex) {
             throw new JacksonException(ex);
         }
     }
 
     public static @Nullable String asString(JsonNode node, String property) {
-        JsonNode jn = Jackson.resolveProperty(node, property);
+        JsonNode jn = JacksonJsonUtil.resolveProperty(node, property);
         return jn == null ? null : jn.asText();
     }
 
     public static int asInt(JsonNode node, String property, int defaultValue) {
-        JsonNode jn = Jackson.resolveProperty(node, property);
+        JsonNode jn = JacksonJsonUtil.resolveProperty(node, property);
         return jn == null ? defaultValue : jn.asInt();
     }
 
     public static long asLong(JsonNode node, String property, long defaultValue) {
-        JsonNode jn = Jackson.resolveProperty(node, property);
+        JsonNode jn = JacksonJsonUtil.resolveProperty(node, property);
         return jn == null ? defaultValue : jn.asLong();
     }
 
     public static boolean asBoolean(JsonNode node, String property) {
-        JsonNode jn = Jackson.resolveProperty(node, property);
+        JsonNode jn = JacksonJsonUtil.resolveProperty(node, property);
         return jn != null && jn.asBoolean();
     }
 

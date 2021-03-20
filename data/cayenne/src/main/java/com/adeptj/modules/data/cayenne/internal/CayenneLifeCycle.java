@@ -1,7 +1,7 @@
 package com.adeptj.modules.data.cayenne.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
-import com.adeptj.modules.commons.utils.Functions;
+import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.data.cayenne.CayenneRepository;
 import com.adeptj.modules.data.cayenne.core.AbstractCayenneRepository;
 import com.adeptj.modules.data.cayenne.core.MyRepository;
@@ -26,7 +26,7 @@ public class CayenneLifeCycle {
 
     @Activate
     public CayenneLifeCycle(@Reference DataSourceService dataSourceService) {
-        Functions.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
+        ClassLoaders.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
             this.cayenne = ServerRuntime.builder()
                     .dataSource(dataSourceService.getDataSource())
                     .disableModulesAutoLoading()
