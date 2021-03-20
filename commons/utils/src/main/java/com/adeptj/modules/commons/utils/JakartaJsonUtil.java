@@ -27,6 +27,7 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
 
 import static com.adeptj.modules.commons.utils.Constants.UTF8;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -37,7 +38,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @author Rakesh.Kumar, AdeptJ
  */
 public final class JakartaJsonUtil {
-    
+
     private JakartaJsonUtil() {
     }
 
@@ -84,7 +85,15 @@ public final class JakartaJsonUtil {
         return JakartaJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
     }
 
+    public static <T> T deserialize(byte[] data, Type type) {
+        return JakartaJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
+    }
+
     public static <T> T deserialize(String data, Class<T> type) {
+        return JakartaJsonUtil.getJsonb().fromJson(data, type);
+    }
+
+    public static <T> T deserialize(String data, Type type) {
         return JakartaJsonUtil.getJsonb().fromJson(data, type);
     }
 }
