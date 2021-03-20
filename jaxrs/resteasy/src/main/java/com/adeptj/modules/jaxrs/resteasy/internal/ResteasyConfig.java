@@ -44,8 +44,8 @@ import static javax.ws.rs.core.HttpHeaders.LAST_MODIFIED;
  * @author Rakesh.Kumar, AdeptJ.
  */
 @ObjectClassDefinition(
-        name = "%restesy.ocd.name",
-        description = "%restesy.ocd.desc",
+        name = "%resteasy.ocd.name",
+        description = "%resteasy.ocd.desc",
         localization = "OSGI-INF/l10n/metatype"
 )
 public @interface ResteasyConfig {
@@ -56,8 +56,7 @@ public @interface ResteasyConfig {
 
     @AttributeDefinition(
             name = "CORS Preflight Max Age",
-            description = "Max age of preflight CORS response(1 day by default)."
-                    + "[Access-Control-Max-Age] header indicates how long the results of a preflight request can be cached."
+            description = "%resteasy.desc"
     )
     int corsMaxAge() default 86400; // Indicates that preflight response is good for 86400 seconds or 1 day
 

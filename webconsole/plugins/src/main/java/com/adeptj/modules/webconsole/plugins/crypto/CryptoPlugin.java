@@ -83,7 +83,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     private static final String KEY_CIPHER_TEXT = "cipherText";
 
-    private static final String REQ_METHOD_GET = "GET";
+    private static final String GET = "GET";
 
     private static final String CRYPTO_HTML_LOCATION = "/templates/crypto.html";
 
@@ -149,7 +149,12 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
 
     @Override
     protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        this.populateVariableResolverWithDefaultValues(req);
+        // Put the default values in DefaultVariableResolver while rendering the form (a GET request).
+        // But when this method is called via a doGet call after the form submission (a POST request)
+        // then the request method is still POST, so population with empty values will not happen.
+        if (GET.equals(req.getMethod())) {
+            this.populateVariableResolver(req, EMPTY, EMPTY);
+        }
         res.getWriter().print(super.readTemplateFile(CRYPTO_HTML_LOCATION));
     }
 
@@ -164,37 +169,19 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
                 cipherText = "Exception while encrypting Plain Text: " + ce;
             }
         }
-        this.populateVariableResolverAfterPost(req, plainText, cipherText);
+        this.populateVariableResolver(req, plainText, cipherText);
         // re-render the form again with populated data in DefaultVariableResolver.
         super.doGet(req, resp);
     }
 
     @SuppressWarnings("unchecked")
-    private void populateVariableResolverWithDefaultValues(HttpServletRequest req) {
-        // Put the default values in DefaultVariableResolver while rendering the form.
-        // That will be a GET request but when this method is called via a doGet after the form submission
-        // then the request method is still POST so below logic will not be executed.
-        if (REQ_METHOD_GET.equals(req.getMethod())) {
-            DefaultVariableResolver dvr = this.getDefaultVariableResolver(req);
-            if (dvr != null) {
-                dvr.put(KEY_PLAIN_TEXT, EMPTY);
-                dvr.put(KEY_CIPHER_TEXT, EMPTY);
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void populateVariableResolverAfterPost(HttpServletRequest req, String plainText, String cipherText) {
-        DefaultVariableResolver dvr = this.getDefaultVariableResolver(req);
-        if (dvr != null) {
+    private void populateVariableResolver(HttpServletRequest req, String plainText, String cipherText) {
+        VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
+        if (vr instanceof DefaultVariableResolver) {
+            DefaultVariableResolver dvr = (DefaultVariableResolver) vr;
             dvr.put(KEY_PLAIN_TEXT, plainText);
             dvr.put(KEY_CIPHER_TEXT, cipherText);
         }
-    }
-
-    private DefaultVariableResolver getDefaultVariableResolver(HttpServletRequest req) {
-        VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
-        return (vr instanceof DefaultVariableResolver) ? ((DefaultVariableResolver) vr) : null;
     }
 
     private String decrypt(String cipherText) {
