@@ -114,7 +114,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     private void handleProperty(Dictionary<String, Object> properties, Object pid, String key, String oldValue) {
         if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
             String newValue = this.decrypt(oldValue);
-            if (!StringUtils.equals(oldValue, newValue)) {
+            if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(oldValue, newValue)) {
                 properties.put(key, newValue);
                 LOGGER.info("Decrypted value of configuration property '{}' for PID [{}]", key, pid);
             }
@@ -126,7 +126,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             String oldValue = oldValues[i];
             if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
                 String newValue = this.decrypt(oldValue);
-                if (!StringUtils.equals(newValue, oldValue)) {
+                if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(newValue, oldValue)) {
                     oldValues[i] = newValue;
                     LOGGER.info("Decrypted value at index [{}] of multi value configuration property '{}' for PID '{}'",
                             i, key, pid);
