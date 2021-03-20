@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.cache;
 
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -40,21 +41,25 @@ public final class CacheUtil {
     private static final String KEY_CACHE_SPEC = "cache.spec";
 
     public static String getCacheName(@NotNull Map<String, Object> properties) {
-        String cacheName = StringUtils.trim((String) properties.get(KEY_CACHE_NAME));
-        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cache.name property can't be null!!");
-        return cacheName;
+        return StringUtils.trim((String) properties.get(KEY_CACHE_NAME));
     }
 
     public static String getCacheSpec(@NotNull Map<String, Object> properties) {
-        String cacheSpec = StringUtils.trim((String) properties.get(KEY_CACHE_SPEC));
+        return StringUtils.trim((String) properties.get(KEY_CACHE_SPEC));
+    }
+
+    public static void validateCacheName(String cacheName) {
+        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cache.name property can't be null!!");
+    }
+
+    public static void validateCacheSpec(String cacheSpec) {
         Validate.isTrue(StringUtils.isNotEmpty(cacheSpec), "cache.spec property can't be null!!");
-        return cacheSpec;
+        // parse early and fail fast if spec is malformed.
+        CaffeineSpec.parse(cacheSpec);
     }
 
     public static String getServicePid(@NotNull Map<String, Object> properties) {
-        String servicePid = (String) properties.get(SERVICE_PID);
-        Validate.isTrue(StringUtils.isNotEmpty(servicePid), "service.pid property can't be null!!");
-        return servicePid;
+        return (String) properties.get(SERVICE_PID);
     }
 
     public static void nullSafeEvict(Cache<?, ?> cache) {

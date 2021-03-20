@@ -25,8 +25,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
-import java.util.Map;
-
 import static com.adeptj.modules.commons.cache.internal.CaffeineCacheConfigFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -41,28 +39,10 @@ public class CaffeineCacheConfigFactory {
 
     static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCacheConfig.factory";
 
-    private final String cacheName;
-
-    private final String cacheSpec;
-
-    private final String servicePid;
-
     @Activate
-    public CaffeineCacheConfigFactory(Map<String, Object> properties) {
-        this.cacheName = CacheUtil.getCacheName(properties);
-        this.cacheSpec = CacheUtil.getCacheSpec(properties);
-        this.servicePid = CacheUtil.getServicePid(properties);
-    }
-
-    public String getCacheName() {
-        return this.cacheName;
-    }
-
-    public String getCacheSpec() {
-        return this.cacheSpec;
-    }
-
-    public String getServicePid() {
-        return this.servicePid;
+    public CaffeineCacheConfigFactory(CaffeineCacheConfig config) {
+        // Just validates the configs, if validation fails then the instance will not be created by SCR.
+        CacheUtil.validateCacheName(config.cache_name());
+        CacheUtil.validateCacheSpec(config.cache_spec());
     }
 }

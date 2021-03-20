@@ -27,13 +27,13 @@ import com.adeptj.modules.commons.cache.CaffeineCacheConfigFactoryBindException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -79,7 +79,7 @@ public class CaffeineCacheService implements CacheService {
         }
     }
 
-    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
+    // <<------------------------------------------- OSGi Internal ------------------------------------------->>
 
     /**
      * First evict all the caches and then clears the {@link #caches} map.
@@ -91,18 +91,18 @@ public class CaffeineCacheService implements CacheService {
     }
 
     @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindCaffeineCacheConfigFactory(@NotNull CaffeineCacheConfigFactory configFactory) {
-        String cacheName = configFactory.getCacheName();
+    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory factory, Map<String, Object> properties) {
+        String cacheName = CacheUtil.getCacheName(properties);
         if (this.caches.containsKey(cacheName)) {
             throw new CaffeineCacheConfigFactoryBindException(String.format("Cache:(%s) already exists!!", cacheName));
         }
-        this.caches.put(cacheName, new CaffeineCache<>(cacheName, configFactory.getCacheSpec()));
-        this.configPids.add(configFactory.getServicePid());
+        this.caches.put(cacheName, new CaffeineCache<>(cacheName, CacheUtil.getCacheSpec(properties)));
+        this.configPids.add(CacheUtil.getServicePid(properties));
     }
 
-    protected void unbindCaffeineCacheConfigFactory(@NotNull CaffeineCacheConfigFactory configFactory) {
-        if (this.configPids.remove(configFactory.getServicePid())) {
-            CacheUtil.nullSafeEvict(this.caches.remove(configFactory.getCacheName()));
+    protected void unbindCaffeineCacheConfigFactory(Map<String, Object> properties) {
+        if (this.configPids.remove(CacheUtil.getServicePid(properties))) {
+            CacheUtil.nullSafeEvict(this.caches.remove(CacheUtil.getCacheName(properties)));
         }
     }
 }
