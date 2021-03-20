@@ -104,12 +104,12 @@ final class JwtKeys {
         }
     }
 
-    static PublicKey createVerificationKey(@NotNull JwtConfig config, String algorithm) {
+    static PublicKey createVerificationKey(String publicKey, String algorithm) {
         LOGGER.info("Creating RSA verification key!!");
-        Assert.isTrue(StringUtils.startsWith(config.publicKey(), PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
+        Assert.isTrue(StringUtils.startsWith(publicKey, PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
         try {
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
-            byte[] publicKeyData = Base64.getDecoder().decode(config.publicKey()
+            byte[] publicKeyData = Base64.getDecoder().decode(publicKey
                     .replace(PUB_KEY_HEADER, EMPTY)
                     .replace(PUB_KEY_FOOTER, EMPTY)
                     .replaceAll(REGEX_SPACE, EMPTY)

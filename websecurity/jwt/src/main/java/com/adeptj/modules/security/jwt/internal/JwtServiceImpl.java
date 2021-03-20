@@ -28,8 +28,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Deserializer;
-import io.jsonwebtoken.io.Serializer;
 import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.security.SignatureException;
 import org.jetbrains.annotations.NotNull;
@@ -75,17 +73,8 @@ public class JwtServiceImpl implements JwtService {
 
     private final JwtKeyInfo keyInfo;
 
-    private final ClaimsConsumer claimsConsumer;
-
-    private final Serializer<Map<String, ?>> serializer;
-
-    private final Deserializer<Map<String, ?>> deserializer;
-
     @Activate
     public JwtServiceImpl(@NotNull JwtConfig config) {
-        this.claimsConsumer = new ClaimsConsumer();
-        this.serializer = new JwtSerializer();
-        this.deserializer = new JwtDeserializer();
         this.logJwtVerificationExceptionTrace = config.logJwtVerificationExceptionTrace();
         this.defaultIssuer = config.defaultIssuer();
         this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
@@ -94,7 +83,7 @@ public class JwtServiceImpl implements JwtService {
             SignatureAlgorithm algorithm = SignatureAlgorithm.forName(config.signatureAlgorithm());
             LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm.getJcaName());
             PrivateKey signingKey = JwtKeys.createSigningKey(config, algorithm.getFamilyName());
-            PublicKey verificationKey = JwtKeys.createVerificationKey(config, algorithm.getFamilyName());
+            PublicKey verificationKey = JwtKeys.createVerificationKey(config.publicKey(), algorithm.getFamilyName());
             this.keyInfo = new JwtKeyInfo(algorithm, signingKey, verificationKey);
         } catch (SignatureException | JwtKeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -119,7 +108,7 @@ public class JwtServiceImpl implements JwtService {
                 .setId(claims.containsKey(ID) ? claims.get(ID).toString() : RandomUtil.uuidString())
                 .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
                 .signWith(this.keyInfo.getPrivateKey(), this.keyInfo.getSignatureAlgorithm())
-                .serializeToJsonWith(this.serializer)
+                .serializeToJsonWith(new JwtSerializer())
                 .compact();
     }
 
@@ -133,7 +122,7 @@ public class JwtServiceImpl implements JwtService {
                 .setHeaderParam(TYPE, JWT_TYPE)
                 .setClaims(claims)
                 .signWith(this.keyInfo.getPrivateKey(), this.keyInfo.getSignatureAlgorithm())
-                .serializeToJsonWith(this.serializer)
+                .serializeToJsonWith(new JwtSerializer())
                 .compact();
     }
 
@@ -147,9 +136,9 @@ public class JwtServiceImpl implements JwtService {
             Assert.hasText(jwt, "JWT can't be blank!!");
             claims = Jwts.parserBuilder()
                     .setSigningKey(this.keyInfo.getPublicKey())
-                    .deserializeJsonWith(this.deserializer)
+                    .deserializeJsonWith(new JwtDeserializer())
                     .build()
-                    .parse(jwt, this.claimsConsumer);
+                    .parse(jwt, new ClaimsConsumer());
         } catch (ExpiredJwtException ex) {
             if (this.logJwtVerificationExceptionTrace) {
                 LOGGER.error(ex.getMessage(), ex);

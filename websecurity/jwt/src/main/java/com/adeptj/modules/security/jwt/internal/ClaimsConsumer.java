@@ -24,7 +24,6 @@ import com.adeptj.modules.security.jwt.JwtClaims;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -40,7 +39,6 @@ final class ClaimsConsumer extends JwtHandlerAdapter<JwtClaims> {
      * @param jws the Json web signature.
      * @return the {@link JwtClaims}.
      */
-    @Contract("_ -> new")
     @Override
     public @NotNull JwtClaims onClaimsJws(@NotNull Jws<Claims> jws) {
         return new JwtClaims(jws.getBody());

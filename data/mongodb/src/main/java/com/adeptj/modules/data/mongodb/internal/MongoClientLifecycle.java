@@ -1,5 +1,6 @@
 package com.adeptj.modules.data.mongodb.internal;
 
+import com.adeptj.modules.data.mongodb.MongoClientProvider;
 import com.adeptj.modules.data.mongodb.MongoRepository;
 import com.adeptj.modules.data.mongodb.core.AbstractMongoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.mongojack.JacksonMongoCollection;
 import org.mongojack.ObjectMapperConfigurer;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -21,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,8 +53,10 @@ public class MongoClientLifecycle {
 
     private final JacksonMongoCollectionBuilder mongoCollectionBuilder;
 
+    private final ServiceRegistration<MongoClientProvider> mcpRegistration;
+
     @Activate
-    public MongoClientLifecycle(@NotNull MongoClientConfig config) {
+    public MongoClientLifecycle(BundleContext context, @NotNull MongoClientConfig config) {
         String username = config.auth_username();
         String database = config.auth_database();
         String password = config.auth_password();
@@ -72,12 +78,15 @@ public class MongoClientLifecycle {
                         .enable(INDENT_OUTPUT)
                         .setDefaultPropertyInclusion(NON_DEFAULT)));
         LOGGER.info("MongoClient initialized!");
+        MongoClientProvider mcp = new MongoClientProviderImpl(new MongoClientWrapper(this.mongoClient));
+        this.mcpRegistration = context.registerService(MongoClientProvider.class, mcp, new Hashtable<>());
     }
 
     @Deactivate
     protected void stop() {
         this.mongoClient.close();
         LOGGER.info("MongoClient closed!");
+        this.mcpRegistration.unregister();
     }
 
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
@@ -90,7 +99,7 @@ public class MongoClientLifecycle {
         String collectionName = (String) properties.get(KEY_COLLECTION_NAME);
         if (StringUtils.isAnyEmpty(databaseName, collectionName)) {
             String message = String.format("MongoRepository service properties [%s] and [%s] can't be empty, " +
-                            "please provide the mandatory non empty attributes of DocumentInfo annotation!",
+                            "please provide the mandatory non empty attributes of @DocumentInfo annotation!",
                     KEY_DB_NAME, KEY_COLLECTION_NAME);
             throw new MongoRepositoryBindException(message);
         }
