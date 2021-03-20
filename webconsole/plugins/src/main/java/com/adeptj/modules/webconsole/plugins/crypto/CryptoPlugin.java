@@ -185,11 +185,13 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     }
 
     private String decrypt(String cipherText) {
-        String plainText;
+        String plainText = null;
         try {
             cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX).trim();
-            plainText = this.cryptoService.decrypt(cipherText);
-        } catch (CryptoException | IllegalArgumentException ex) {
+            if (StringUtils.isNotEmpty(cipherText)) {
+                plainText = this.cryptoService.decrypt(cipherText);
+            }
+        } catch (CryptoException ex) {
             plainText = cipherText;
             LOGGER.error(ex.getMessage(), ex);
         }
