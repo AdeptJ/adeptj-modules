@@ -23,15 +23,18 @@ package com.adeptj.modules.commons.cache.internal;
 import com.adeptj.modules.commons.cache.Cache;
 import com.adeptj.modules.commons.cache.CacheService;
 import com.adeptj.modules.commons.cache.CacheUtil;
-import com.adeptj.modules.commons.cache.CaffeineCacheConfigFactoryBindException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,6 +52,8 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  */
 @Component
 public class CaffeineCacheService implements CacheService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final ConcurrentMap<String, Cache<?, ?>> caches;
 
@@ -91,17 +96,21 @@ public class CaffeineCacheService implements CacheService {
     }
 
     @Reference(service = CaffeineCacheConfigFactory.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindCaffeineCacheConfigFactory(CaffeineCacheConfigFactory factory, Map<String, Object> properties) {
+    protected void bindCaffeineCacheConfigFactory(@NotNull Map<String, Object> properties) {
+        String pid = CacheUtil.getServicePid(properties);
+        LOGGER.info("Binding CaffeineCacheConfigFactory with pid - {}", pid);
         String cacheName = CacheUtil.getCacheName(properties);
         if (this.caches.containsKey(cacheName)) {
             throw new CaffeineCacheConfigFactoryBindException(String.format("Cache:(%s) already exists!!", cacheName));
         }
         this.caches.put(cacheName, new CaffeineCache<>(cacheName, CacheUtil.getCacheSpec(properties)));
-        this.configPids.add(CacheUtil.getServicePid(properties));
+        this.configPids.add(pid);
     }
 
-    protected void unbindCaffeineCacheConfigFactory(Map<String, Object> properties) {
-        if (this.configPids.remove(CacheUtil.getServicePid(properties))) {
+    protected void unbindCaffeineCacheConfigFactory(@NotNull Map<String, Object> properties) {
+        String pid = CacheUtil.getServicePid(properties);
+        LOGGER.info("Unbinding CaffeineCacheConfigFactory with pid - {}", pid);
+        if (this.configPids.remove(pid)) {
             CacheUtil.nullSafeEvict(this.caches.remove(CacheUtil.getCacheName(properties)));
         }
     }

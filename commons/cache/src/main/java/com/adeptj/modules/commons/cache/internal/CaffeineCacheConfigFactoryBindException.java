@@ -17,18 +17,18 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.commons.cache;
+package com.adeptj.modules.commons.cache.internal;
 
 /**
  * Exception thrown when a cache already exists in CaffeineCacheConfigFactory bind method.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class CaffeineCacheConfigFactoryBindException extends RuntimeException {
+class CaffeineCacheConfigFactoryBindException extends RuntimeException {
 
     private static final long serialVersionUID = 1539582056947196713L;
 
-    public CaffeineCacheConfigFactoryBindException(String message) {
+    CaffeineCacheConfigFactoryBindException(String message) {
         super(message);
     }
 }

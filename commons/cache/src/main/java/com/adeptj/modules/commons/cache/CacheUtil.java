@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.commons.cache;
 
-import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -41,21 +40,15 @@ public final class CacheUtil {
     private static final String KEY_CACHE_SPEC = "cache.spec";
 
     public static String getCacheName(@NotNull Map<String, Object> properties) {
-        return StringUtils.trim((String) properties.get(KEY_CACHE_NAME));
+        String cacheName = StringUtils.trim((String) properties.get(KEY_CACHE_NAME));
+        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cache.name property can't be null!!");
+        return cacheName;
     }
 
     public static String getCacheSpec(@NotNull Map<String, Object> properties) {
-        return StringUtils.trim((String) properties.get(KEY_CACHE_SPEC));
-    }
-
-    public static void validateCacheName(String cacheName) {
-        Validate.isTrue(StringUtils.isNotEmpty(cacheName), "cache.name property can't be null!!");
-    }
-
-    public static void validateCacheSpec(String cacheSpec) {
+        final String cacheSpec = StringUtils.trim((String) properties.get(KEY_CACHE_SPEC));
         Validate.isTrue(StringUtils.isNotEmpty(cacheSpec), "cache.spec property can't be null!!");
-        // parse early and fail fast if spec is malformed.
-        CaffeineSpec.parse(cacheSpec);
+        return cacheSpec;
     }
 
     public static String getServicePid(@NotNull Map<String, Object> properties) {
