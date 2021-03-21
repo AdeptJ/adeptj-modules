@@ -1,4 +1,4 @@
-package com.adeptj.modules.data.mybatis;
+package com.adeptj.modules.data.mybatis.api;
 
 import org.osgi.annotation.versioning.ConsumerType;
 

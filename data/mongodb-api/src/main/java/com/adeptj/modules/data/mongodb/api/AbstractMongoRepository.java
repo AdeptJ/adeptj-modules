@@ -1,6 +1,5 @@
-package com.adeptj.modules.data.mongodb.core;
+package com.adeptj.modules.data.mongodb.api;
 
-import com.adeptj.modules.data.mongodb.MongoRepository;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.apache.commons.lang3.Validate;
@@ -14,7 +13,7 @@ import java.util.List;
 @ConsumerType
 public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
-    private JacksonMongoCollection<T> mongoCollection;
+    private volatile JacksonMongoCollection<T> mongoCollection;
 
     private final Class<T> documentClass;
 
@@ -24,12 +23,12 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
      * @param documentClass the document class required by {@link JacksonMongoCollection}
      */
     protected AbstractMongoRepository(Class<T> documentClass) {
-        Validate.isTrue(documentClass != null, "documentClass must not be null!");
+        Validate.isTrue((documentClass != null), "documentClass must not be null!");
         this.documentClass = documentClass;
     }
 
     protected JacksonMongoCollection<T> getMongoCollection() {
-        Validate.validState(this.mongoCollection != null, "JacksonMongoCollection is null!");
+        Validate.validState((this.mongoCollection != null), "JacksonMongoCollection is null!");
         return this.mongoCollection;
     }
 

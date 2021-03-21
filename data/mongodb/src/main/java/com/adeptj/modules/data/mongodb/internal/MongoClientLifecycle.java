@@ -1,8 +1,8 @@
 package com.adeptj.modules.data.mongodb.internal;
 
-import com.adeptj.modules.data.mongodb.MongoClientProvider;
-import com.adeptj.modules.data.mongodb.MongoRepository;
-import com.adeptj.modules.data.mongodb.core.AbstractMongoRepository;
+import com.adeptj.modules.data.mongodb.api.AbstractMongoRepository;
+import com.adeptj.modules.data.mongodb.api.MongoClientProvider;
+import com.adeptj.modules.data.mongodb.api.MongoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.adeptj.modules.data.mongodb.MongoConstants.DELIMITER_COLON;
-import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_COLLECTION_NAME;
-import static com.adeptj.modules.data.mongodb.MongoConstants.KEY_DB_NAME;
+import static com.adeptj.modules.data.mongodb.internal.MongoConstants.DELIMITER_COLON;
+import static com.adeptj.modules.data.mongodb.internal.MongoConstants.KEY_COLLECTION_NAME;
+import static com.adeptj.modules.data.mongodb.internal.MongoConstants.KEY_DB_NAME;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static org.bson.UuidRepresentation.STANDARD;

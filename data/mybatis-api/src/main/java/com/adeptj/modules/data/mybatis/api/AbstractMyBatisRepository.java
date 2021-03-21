@@ -1,8 +1,5 @@
-package com.adeptj.modules.data.mybatis.core;
+package com.adeptj.modules.data.mybatis.api;
 
-import com.adeptj.modules.data.mybatis.BaseMapper;
-import com.adeptj.modules.data.mybatis.MyBatisRepository;
-import org.apache.commons.lang3.Validate;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +15,9 @@ public abstract class AbstractMyBatisRepository<T, ID> implements MyBatisReposit
     private SqlSessionFactory sessionFactory;
 
     protected SqlSessionFactory getSessionFactory() {
-        Validate.validState(this.sessionFactory != null, "SqlSessionFactory is null!");
+        if (this.sessionFactory == null) {
+            throw new IllegalStateException("SqlSessionFactory is null!");
+        }
         return this.sessionFactory;
     }
 

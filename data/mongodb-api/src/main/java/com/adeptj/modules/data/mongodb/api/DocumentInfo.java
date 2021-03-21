@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.mongodb;
+package com.adeptj.modules.data.mongodb.api;
 
 import org.osgi.service.component.annotations.ComponentPropertyType;
 

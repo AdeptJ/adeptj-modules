@@ -27,11 +27,11 @@
         <version>1</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    <artifactId>adeptj-modules-data-mongodb</artifactId>
+    <artifactId>adeptj-modules-data-mongodb-api</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Data :: MongoDB</name>
-    <description>AdeptJ Modules :: Data :: MongoDB</description>
+    <name>AdeptJ Modules :: Data :: MongoDB API</name>
+    <description>AdeptJ Modules :: Data :: MongoDB API</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -147,13 +147,6 @@
         <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.adeptj</groupId>
-            <artifactId>adeptj-modules-data-mongodb-api</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

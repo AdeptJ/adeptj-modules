@@ -1,6 +1,6 @@
 package com.adeptj.modules.data.mongodb.internal;
 
-public class MongoRepositoryBindException extends RuntimeException {
+class MongoRepositoryBindException extends RuntimeException {
 
 	private static final long serialVersionUID = 3779590349492477453L;
 

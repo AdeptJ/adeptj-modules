@@ -1,6 +1,6 @@
 package com.adeptj.modules.data.mongodb.internal;
 
-import com.adeptj.modules.data.mongodb.MongoClientProvider;
+import com.adeptj.modules.data.mongodb.api.MongoClientProvider;
 import com.mongodb.client.MongoClient;
 
 public class MongoClientProviderImpl implements MongoClientProvider {

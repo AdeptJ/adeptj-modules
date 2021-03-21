@@ -1,11 +1,11 @@
 package com.adeptj.modules.data.mybatis.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
-import com.adeptj.modules.commons.utils.CollectionUtil;
 import com.adeptj.modules.commons.utils.ClassLoaders;
-import com.adeptj.modules.data.mybatis.MyBatisInfoProvider;
-import com.adeptj.modules.data.mybatis.MyBatisRepository;
-import com.adeptj.modules.data.mybatis.core.AbstractMyBatisRepository;
+import com.adeptj.modules.commons.utils.CollectionUtil;
+import com.adeptj.modules.data.mybatis.api.AbstractMyBatisRepository;
+import com.adeptj.modules.data.mybatis.api.MyBatisInfoProvider;
+import com.adeptj.modules.data.mybatis.api.MyBatisRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.io.Resources;

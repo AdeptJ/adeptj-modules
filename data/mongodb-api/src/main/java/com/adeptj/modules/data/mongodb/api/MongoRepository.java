@@ -1,4 +1,4 @@
-package com.adeptj.modules.data.mongodb;
+package com.adeptj.modules.data.mongodb.api;
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;

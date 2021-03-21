@@ -150,6 +150,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-data-mybatis-api</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
         </dependency>

@@ -1,4 +1,4 @@
-package com.adeptj.modules.data.mybatis;
+package com.adeptj.modules.data.mybatis.api;
 
 import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
