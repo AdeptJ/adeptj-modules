@@ -18,30 +18,22 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.util;
-
-import org.jetbrains.annotations.NotNull;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.Map;
+package com.adeptj.modules.data.jpa.internal;
 
 /**
- * Utilities for Jpa {@link Predicate}.
+ * Exception thrown when there is failure bootstrapping {@link javax.persistence.EntityManagerFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class Predicates {
+class JpaBootstrapException extends RuntimeException {
 
-    private Predicates() {
+    private static final long serialVersionUID = 4572809035305367737L;
+
+    JpaBootstrapException(String message) {
+        super(message);
     }
 
-    public static <T> Predicate[] using(CriteriaBuilder cb, Root<T> root,
-                                        @NotNull Map<String, Object> criteriaAttributes) {
-        return criteriaAttributes.entrySet()
-                .stream()
-                .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
-                .toArray(Predicate[]::new);
+    JpaBootstrapException(Throwable throwable) {
+        super(throwable);
     }
 }

@@ -17,23 +17,46 @@
 #                                                                             #
 ###############################################################################
 */
+package com.adeptj.modules.data.jpa.internal;
 
-package com.adeptj.modules.data.jpa.exception;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.osgi.annotation.bundle.Header;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
+
+import static org.osgi.framework.Constants.BUNDLE_ACTIVATOR;
 
 /**
- * Exception thrown when there is failure bootstrapping {@link javax.persistence.EntityManagerFactory}.
+ * JPA Module {@link BundleActivator}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JpaBootstrapException extends RuntimeException {
+@Header(name = BUNDLE_ACTIVATOR, value = "${@class}")
+public class Activator implements BundleActivator {
 
-    private static final long serialVersionUID = 4572809035305367737L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public JpaBootstrapException(String message) {
-        super(message);
+    private static final String DEFAULT_LOG = "defaultLog";
+
+    @Override
+    public void start(BundleContext context) {
+        // Nothing to do here!!
     }
 
-    public JpaBootstrapException(Throwable throwable) {
-        super(throwable);
+    @Override
+    public void stop(BundleContext context) {
+        // We have no other way to set the defaultLog field to null, this will prevent a memory leak because
+        // AbstractSessionLog is still holding the SLF4JLogger instance as a static field
+        // and we are about to dispose the bundle.
+        try {
+            FieldUtils.writeDeclaredStaticField(AbstractSessionLog.class, DEFAULT_LOG, null, true);
+        } catch (IllegalAccessException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
     }
 }

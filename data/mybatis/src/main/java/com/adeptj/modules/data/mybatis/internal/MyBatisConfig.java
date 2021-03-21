@@ -3,7 +3,7 @@ package com.adeptj.modules.data.mybatis.internal;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import static com.adeptj.modules.data.mybatis.MyBatisInfoProvider.DEFAULT_MYBATIS_CONFIG;
+import static com.adeptj.modules.data.mybatis.api.MyBatisInfoProvider.DEFAULT_MYBATIS_CONFIG;
 
 @ObjectClassDefinition(
         name = "AdeptJ MyBatis Configuration",

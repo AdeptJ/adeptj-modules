@@ -27,8 +27,6 @@ import com.adeptj.modules.commons.validator.service.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.PersistenceInfoProvider;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
-import com.adeptj.modules.data.jpa.exception.JpaBootstrapException;
-import com.adeptj.modules.data.jpa.exception.JpaRepositoryBindException;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -131,7 +129,7 @@ public class EntityManagerFactoryLifecycle {
         }
     }
 
-    // <<------------------------------------- OSGi Internal  -------------------------------------->>
+    // <<------------------------------------------ OSGi Internal  ------------------------------------------->>
 
     @Deactivate
     protected void stop() {
