@@ -26,5 +26,4 @@ package com.adeptj.modules.data.jpa;
  * @author Rakesh.Kumar, AdeptJ
  */
 public interface BaseEntity {
-
 }

@@ -22,7 +22,6 @@ package com.adeptj.modules.data.jpa.dto;
 
 import com.adeptj.modules.data.jpa.query.QueryParam;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -57,7 +56,6 @@ public class ResultSetMappingDTO {
         return queryParams;
     }
 
-    @Contract(value = " -> new", pure = true)
     public static @NotNull Builder builder() {
         return new Builder();
     }

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.adeptj.modules.commons.utils.Constants.EQ;
-import static com.adeptj.modules.data.jpa.JpaConstants.SHARED_CACHE_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON_STARTUP;
@@ -41,6 +40,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_L
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LOGGER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_PARAMETERS;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SESSION_CUSTOMIZER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SHARED_CACHE_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
 

@@ -21,7 +21,6 @@
 package com.adeptj.modules.data.jpa.criteria;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -54,7 +53,6 @@ public class ConstructorCriteria<T extends BaseEntity, C> extends BaseCriteria<T
         return selections;
     }
 
-    @Contract(value = "_, _ -> new", pure = true)
     public static <T extends BaseEntity, C> @NotNull Builder<T, C> builder(Class<T> entity, Class<C> constructorClass) {
         return new Builder<>(entity, constructorClass);
     }
