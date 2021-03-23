@@ -40,9 +40,9 @@
         <asyncutil.version>0.1.0</asyncutil.version>
         <microprofile-config-api.version>2.0</microprofile-config-api.version>
         <asm.version>9.1</asm.version>
-        <smallrye-config.version>2.1.0</smallrye-config.version>
-        <smallrye-config-core.version>2.1.0</smallrye-config-core.version>
-        <smallrye-config-common.version>2.1.0</smallrye-config-common.version>
+        <smallrye-config.version>2.2.0</smallrye-config.version>
+        <smallrye-config-core.version>2.2.0</smallrye-config-core.version>
+        <smallrye-config-common.version>2.2.0</smallrye-config-common.version>
         <smallrye-common-annotation.version>1.6.0</smallrye-common-annotation.version>
         <smallrye-common-expression.version>1.6.0</smallrye-common-expression.version>
         <smallrye-common-constraint.version>1.6.0</smallrye-common-constraint.version>
