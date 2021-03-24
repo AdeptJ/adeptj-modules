@@ -22,23 +22,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-builder</artifactId>
+    <artifactId>adeptj-modules-incubating</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Builder</name>
-    <description>Pseudo project to build complete AdeptJ Modules</description>
+    <name>AdeptJ Modules :: Incubating :: Builder</name>
+    <description>AdeptJ Modules :: Incubating :: Builder</description>
     <url>http://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
 
-        <module>parent</module>
-        <module>commons</module>
-        <module>webconsole</module>
-        <module>websecurity</module>
-        <module>jaxrs</module>
-        <module>data</module>
-        <module>incubating</module>
+        <module>cayenne</module>
 
     </modules>
 

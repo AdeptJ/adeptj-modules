@@ -36,7 +36,6 @@
         <module>mongodb-api</module>
         <module>jpa</module>
         <module>mybatis</module>
-        <module>cayenne</module>
         <module>mongodb</module>
 
     </modules>
