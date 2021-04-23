@@ -36,7 +36,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <resteasy-tracing-api.version>1.0.0.Final</resteasy-tracing-api.version>
-        <mime4j.version>0.8.3</mime4j.version>
+        <mime4j.version>0.8.4</mime4j.version>
         <asyncutil.version>0.1.0</asyncutil.version>
         <microprofile-config-api.version>2.0</microprofile-config-api.version>
         <smallrye-config.version>2.2.0</smallrye-config.version>
