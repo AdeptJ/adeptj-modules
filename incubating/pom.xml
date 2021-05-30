@@ -27,12 +27,13 @@
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Incubating :: Builder</name>
     <description>AdeptJ Modules :: Incubating :: Builder</description>
-    <url>http://www.adeptj.com</url>
+    <url>https://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
 
         <module>cayenne</module>
+        <module>http-client</module>
 
     </modules>
 
