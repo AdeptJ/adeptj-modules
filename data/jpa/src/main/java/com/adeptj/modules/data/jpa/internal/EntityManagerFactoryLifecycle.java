@@ -97,8 +97,8 @@ public class EntityManagerFactoryLifecycle {
      * @param config            for providing the EntityManagerFactory configurations.
      */
     @Activate
-    public EntityManagerFactoryLifecycle(@Reference DataSourceService dataSourceService,
-                                         @Reference ValidatorService validatorService,
+    public EntityManagerFactoryLifecycle(@NotNull @Reference DataSourceService dataSourceService,
+                                         @NotNull @Reference ValidatorService validatorService,
                                          @NotNull @Reference PersistenceInfoProvider provider,
                                          @NotNull EntityManagerFactoryConfig config) {
         long startTime = System.nanoTime();
@@ -135,6 +135,7 @@ public class EntityManagerFactoryLifecycle {
     protected void stop() {
         long startTime = System.nanoTime();
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
+        Activator.disposeDefaultLog();
         LOGGER.info(EMF_CLOSED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));
     }
 

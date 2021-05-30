@@ -50,6 +50,10 @@ public class Activator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) {
+        disposeDefaultLog();
+    }
+
+    static void disposeDefaultLog() {
         // We have no other way to set the defaultLog field to null, this will prevent a memory leak because
         // AbstractSessionLog is still holding the SLF4JLogger instance as a static field
         // and we are about to dispose the bundle.
