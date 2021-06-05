@@ -37,12 +37,12 @@ import org.osgi.service.metatype.annotations.Designate;
  */
 @Designate(ocd = PasswordEncoderConfig.class)
 @Component
-public class BcryptPasswordEncoder implements PasswordEncoder {
+public class BCryptPasswordEncoder implements PasswordEncoder {
 
     private final int exponentialCost;
 
     @Activate
-    public BcryptPasswordEncoder(@NotNull PasswordEncoderConfig config) {
+    public BCryptPasswordEncoder(@NotNull PasswordEncoderConfig config) {
         this.exponentialCost = config.exponential_cost();
     }
 
