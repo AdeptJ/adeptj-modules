@@ -24,6 +24,7 @@ import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
 import com.adeptj.modules.commons.utils.RandomUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.osgi.framework.BundleContext;
@@ -74,10 +75,18 @@ public class AesGcmCryptoService implements CryptoService {
 
     private static final String PBE_ALGO = "PBKDF2WithHmacSHA256";
 
+    private static final int MIN_ITERATIONS = 1000;
+
     private char[] cryptoKey;
 
     private int iterations;
 
+    /**
+     * Obtain the crypto.key and crypto.iterations properties from OSGi framework properties and initialize the
+     * cryptoKey and iterations variables.
+     *
+     * @param context the {@link BundleContext} of crypto module.
+     */
     @Activate
     public AesGcmCryptoService(BundleContext context) {
         try {
@@ -92,6 +101,7 @@ public class AesGcmCryptoService implements CryptoService {
 
     @Override
     public String encrypt(String plainText) {
+        this.validateKeyMaterials();
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
         byte[] iv = null;
         byte[] salt = null;
@@ -124,6 +134,7 @@ public class AesGcmCryptoService implements CryptoService {
 
     @Override
     public String decrypt(String cipherText) {
+        this.validateKeyMaterials();
         Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
         byte[] iv = null;
         byte[] salt = null;
@@ -167,6 +178,12 @@ public class AesGcmCryptoService implements CryptoService {
         } finally {
             CryptoUtil.nullSafeWipe(key);
         }
+    }
+
+    private void validateKeyMaterials() {
+        Validate.isTrue(ArrayUtils.isNotEmpty(this.cryptoKey), "crypto.key can't be null or empty!!");
+        Validate.isTrue((this.iterations >= MIN_ITERATIONS),
+                String.format("crypto.iterations should be greater than or equal to [%d]!!", MIN_ITERATIONS));
     }
 
     // << ------------------------------------------ OSGi Internal ------------------------------------------>>

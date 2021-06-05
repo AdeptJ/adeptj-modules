@@ -21,7 +21,6 @@
 package com.adeptj.modules.commons.crypto;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.Validate;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -35,8 +34,6 @@ import java.util.Arrays;
  * @author Rakesh.Kumar, AdeptJ
  */
 public class CryptoUtil {
-
-    private static final int MIN_ITERATIONS = 1000;
 
     private CryptoUtil() {
     }
@@ -61,9 +58,6 @@ public class CryptoUtil {
                                            byte[] salt,
                                            int iterations,
                                            int keyLength) throws GeneralSecurityException {
-        Validate.isTrue(ArrayUtils.isNotEmpty(password), "password can't be null or empty!!");
-        Validate.isTrue((iterations >= MIN_ITERATIONS), String.format("iterations should be at least %d!!",
-                MIN_ITERATIONS));
         return SecretKeyFactory.getInstance(algorithm)
                 .generateSecret(new PBEKeySpec(password, salt, iterations, keyLength))
                 .getEncoded();
