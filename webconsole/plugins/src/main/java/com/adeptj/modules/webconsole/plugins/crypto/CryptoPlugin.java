@@ -111,23 +111,23 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         }
     }
 
-    private void handleProperty(Dictionary<String, Object> properties, Object pid, String key, String oldValue) {
-        if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
-            String newValue = this.decrypt(oldValue);
-            if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(oldValue, newValue)) {
+    private void handleProperty(Dictionary<String, Object> properties, Object pid, String key, String currentValue) {
+        if (StringUtils.startsWith(currentValue, ENCRYPTION_PREFIX)) {
+            String newValue = this.decrypt(currentValue);
+            if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(currentValue, newValue)) {
                 properties.put(key, newValue);
                 LOGGER.info("Decrypted value of configuration property '{}' for PID [{}]", key, pid);
             }
         }
     }
 
-    private void handleMultiValueProperty(Object pid, String key, String[] oldValues) {
-        for (int i = 0; i < oldValues.length; i++) {
-            String oldValue = oldValues[i];
-            if (StringUtils.startsWith(oldValue, ENCRYPTION_PREFIX)) {
-                String newValue = this.decrypt(oldValue);
-                if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(newValue, oldValue)) {
-                    oldValues[i] = newValue;
+    private void handleMultiValueProperty(Object pid, String key, String[] currentValues) {
+        for (int i = 0; i < currentValues.length; i++) {
+            String currentValue = currentValues[i];
+            if (StringUtils.startsWith(currentValue, ENCRYPTION_PREFIX)) {
+                String newValue = this.decrypt(currentValue);
+                if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(newValue, currentValue)) {
+                    currentValues[i] = newValue;
                     LOGGER.info("Decrypted value at index [{}] of multi value configuration property '{}' for PID '{}'",
                             i, key, pid);
                 }
