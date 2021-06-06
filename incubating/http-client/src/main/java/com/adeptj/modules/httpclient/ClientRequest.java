@@ -3,7 +3,7 @@ package com.adeptj.modules.httpclient;
 import java.net.URI;
 import java.util.Map;
 
-public class ClientRequest {
+public class ClientRequest<T, R> {
 
     private final URI uri;
 
@@ -15,10 +15,13 @@ public class ClientRequest {
 
     private Map<String, String> formParams;
 
-    private String body;
+    private T body;
 
-    public ClientRequest(URI uri) {
+    private final Class<R> responseType;
+
+    public ClientRequest(URI uri, Class<R> responseType) {
         this.uri = uri;
+        this.responseType = responseType;
     }
 
     public URI getUri() {
@@ -57,11 +60,15 @@ public class ClientRequest {
         this.formParams = formParams;
     }
 
-    public String getBody() {
+    public T getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(T body) {
         this.body = body;
+    }
+
+    public Class<R> getResponseType() {
+        return responseType;
     }
 }

@@ -9,17 +9,17 @@ import java.util.function.Function;
 @ProviderType
 public interface RestClient {
 
-    <T> ClientResponse<T> GET(ClientRequest request, Class<T> responseType);
+    <T, R> ClientResponse<R> GET(ClientRequest<T, R> request);
 
-    <T> ClientResponse<T> POST(ClientRequest request, Class<T> responseType);
+    <T, R> ClientResponse<R> POST(ClientRequest<T, R> request);
 
-    <T> ClientResponse<T> PUT(ClientRequest request, Class<T> responseType);
+    <T, R> ClientResponse<R> PUT(ClientRequest<T, R> request);
 
-    <T> ClientResponse<T> DELETE(ClientRequest request, Class<T> responseType);
+    <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request);
 
-    <T> ClientResponse<T> executeRequest(ClientRequest request, Class<T> responseType);
+    <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request);
 
-    <T> T doWithHttpClient(Function<HttpClient, T> function);
+    <R> R doWithHttpClient(Function<HttpClient, R> function);
 
     void doWithHttpClient(Consumer<HttpClient> consumer);
 }

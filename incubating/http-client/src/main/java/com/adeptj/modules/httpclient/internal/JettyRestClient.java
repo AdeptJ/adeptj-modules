@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -68,33 +67,33 @@ public class JettyRestClient implements RestClient {
     }
 
     @Override
-    public <T> ClientResponse<T> GET(ClientRequest request, Class<T> responseType) {
+    public <T, R> ClientResponse<R> GET(ClientRequest<T, R> request) {
         request.setHttpMethod(GET);
-        return this.executeRequest(request, responseType);
+        return this.executeRequest(request);
     }
 
     @Override
-    public <T> ClientResponse<T> POST(ClientRequest request, Class<T> responseType) {
+    public <T, R> ClientResponse<R> POST(ClientRequest<T, R> request) {
         request.setHttpMethod(POST);
-        return this.executeRequest(request, responseType);
+        return this.executeRequest(request);
     }
 
     @Override
-    public <T> ClientResponse<T> PUT(ClientRequest request, Class<T> responseType) {
+    public <T, R> ClientResponse<R> PUT(ClientRequest<T, R> request) {
         request.setHttpMethod(PUT);
-        return this.executeRequest(request, responseType);
+        return this.executeRequest(request);
     }
 
     @Override
-    public <T> ClientResponse<T> DELETE(ClientRequest request, Class<T> responseType) {
+    public <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request) {
         request.setHttpMethod(DELETE);
-        return this.executeRequest(request, responseType);
+        return this.executeRequest(request);
     }
 
     @Override
-    public <T> ClientResponse<T> executeRequest(ClientRequest request, Class<T> responseType) {
+    public <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request) {
         Validate.isTrue((request.getHttpMethod() != null), "HttpMethod can't be null");
-        return this.doExecuteRequest(request.getHttpMethod(), request, responseType);
+        return this.doExecuteRequest(request.getHttpMethod(), request);
     }
 
     @Override
@@ -107,11 +106,11 @@ public class JettyRestClient implements RestClient {
         consumer.accept(this.jettyClient);
     }
 
-    private <T> ClientResponse<T> doExecuteRequest(HttpMethod httpMethod, ClientRequest cr, Class<T> responseType) {
-        Request request = JettyRequestFactory.newRequest(this.jettyClient, cr, httpMethod);
+    private <T, R> ClientResponse<R> doExecuteRequest(HttpMethod httpMethod, ClientRequest<T, R> cr) {
         try {
-            ContentResponse response = request.send();
-            return ClientResponseFactory.newClientResponse(response, responseType, MAPPER);
+            ContentResponse response = JettyRequestFactory.newRequest(this.jettyClient, cr, httpMethod, MAPPER)
+                    .send();
+            return ClientResponseFactory.newClientResponse(response, cr.getResponseType(), MAPPER);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
