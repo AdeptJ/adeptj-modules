@@ -2,7 +2,7 @@ package com.adeptj.modules.httpclient;
 
 import java.util.Map;
 
-public class Response<T> {
+public class ClientResponse<T> {
 
     private int status;
 
