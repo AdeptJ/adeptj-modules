@@ -4,7 +4,7 @@ import com.adeptj.modules.httpclient.HttpClientCallback;
 import com.adeptj.modules.httpclient.HttpClientProvider;
 import com.adeptj.modules.httpclient.Response;
 import com.adeptj.modules.httpclient.RestClientException;
-import com.adeptj.modules.httpclient.RestTemplate;
+import com.adeptj.modules.httpclient.RestClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -28,7 +28,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.eclipse.jetty.http.HttpMethod.GET;
 
 @Component
-public class RestTemplateImpl implements RestTemplate {
+public class JettyRestClient implements RestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -41,7 +41,7 @@ public class RestTemplateImpl implements RestTemplate {
     private final HttpClientProvider hcp;
 
     @Activate
-    public RestTemplateImpl(@Reference HttpClientProvider hcp) {
+    public JettyRestClient(@Reference HttpClientProvider hcp) {
         this.hcp = hcp;
     }
 
