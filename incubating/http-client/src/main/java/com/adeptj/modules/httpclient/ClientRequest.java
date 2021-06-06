@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ClientRequest {
 
-    private URI uri;
+    private final URI uri;
 
     private HttpMethod httpMethod;
 
@@ -15,7 +15,7 @@ public class ClientRequest {
 
     private Map<String, String> formParams;
 
-    private String payload;
+    private String body;
 
     public ClientRequest(URI uri) {
         this.uri = uri;
@@ -23,10 +23,6 @@ public class ClientRequest {
 
     public URI getUri() {
         return uri;
-    }
-
-    public void setUri(URI uri) {
-        this.uri = uri;
     }
 
     public HttpMethod getHttpMethod() {
@@ -61,11 +57,11 @@ public class ClientRequest {
         this.formParams = formParams;
     }
 
-    public String getPayload() {
-        return payload;
+    public String getBody() {
+        return body;
     }
 
-    public void setPayload(String payload) {
-        this.payload = payload;
+    public void setBody(String body) {
+        this.body = body;
     }
 }
