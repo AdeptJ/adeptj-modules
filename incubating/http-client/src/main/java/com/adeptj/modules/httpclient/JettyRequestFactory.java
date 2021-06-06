@@ -10,6 +10,7 @@ import org.eclipse.jetty.util.Fields;
 
 import java.util.Map;
 
+import static com.adeptj.modules.httpclient.HttpMethod.GET;
 import static com.adeptj.modules.httpclient.RestClientConstants.CONTENT_TYPE_JSON;
 
 public class JettyRequestFactory {
@@ -19,28 +20,36 @@ public class JettyRequestFactory {
                                             HttpMethod httpMethod,
                                             ObjectMapper mapper) throws JsonProcessingException {
         Request request = jettyClient.newRequest(cr.getUri()).method(httpMethod.toString());
+        // Handle headers
         Map<String, String> headers = cr.getHeaders();
         if (headers != null && !headers.isEmpty()) {
             request.headers(m -> headers.forEach(m::add));
         }
+        // Handle query params
         Map<String, String> queryParams = cr.getQueryParams();
         if (queryParams != null && !queryParams.isEmpty()) {
             queryParams.forEach(request::param);
         }
+        // No body for http GET, return right away.
+        if (httpMethod == GET) {
+            return request;
+        }
         T body = cr.getBody();
         if (body == null) {
+            // check if a form post
             Map<String, String> formParams = cr.getFormParams();
             if (formParams != null && !formParams.isEmpty()) {
                 Fields fields = new Fields();
                 formParams.forEach(fields::put);
                 request.body(new FormRequestContent(fields));
             }
+            return request;
+        }
+        // check if a body is provided (either a direct String or an Object, if Object then serialize it).
+        if (body instanceof String) {
+            request.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
         } else {
-            if (body instanceof String) {
-                request.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
-            } else {
-                request.body(new StringRequestContent(CONTENT_TYPE_JSON, mapper.writer().writeValueAsString(body)));
-            }
+            request.body(new StringRequestContent(CONTENT_TYPE_JSON, mapper.writer().writeValueAsString(body)));
         }
         return request;
     }
