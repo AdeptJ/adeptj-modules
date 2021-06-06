@@ -23,7 +23,6 @@ package com.adeptj.modules.commons.crypto.internal;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
-import org.osgi.service.metatype.annotations.Option;
 
 /**
  * OSGi Configuration for {@link PasswordEncoder}
@@ -38,19 +37,9 @@ public @interface PasswordEncoderConfig {
 
     @AttributeDefinition(
             name = "Exponential Cost",
-            description = "The exponential cost (log2 factor) between 4 and 12 e.g. 12 will be 2^12 = 4096 rounds, " +
-                    "keeping the exponential cost reasonable for working easily on commodity hardware.",
-            options = {
-                    @Option(label = "4", value = "4"),
-                    @Option(label = "5", value = "5"),
-                    @Option(label = "6", value = "6"),
-                    @Option(label = "7", value = "7"),
-                    @Option(label = "8", value = "8"),
-                    @Option(label = "9", value = "9"),
-                    @Option(label = "10", value = "10"),
-                    @Option(label = "11", value = "11"),
-                    @Option(label = "12", value = "12")
-            }
+            description = "The exponential cost (log2 factor) between 4 and 31 e.g. 12 will be 2^12 = 4096 rounds, " +
+                    "keep the cost factor reasonable as with each increment it would take twice the amount of time to compute. " +
+                    "Default value is 10, which should be sufficient for most of the use cases."
     )
     int exponential_cost() default 10;
 }
