@@ -1,4 +1,4 @@
-package com.adeptj.modules.httpclient;
+package com.adeptj.modules.restclient;
 
 public class RestClientConstants {
 

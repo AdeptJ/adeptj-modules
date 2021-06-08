@@ -1,4 +1,4 @@
-package com.adeptj.modules.httpclient;
+package com.adeptj.modules.restclient;
 
 import java.util.Map;
 

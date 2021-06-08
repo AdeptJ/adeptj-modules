@@ -1,4 +1,4 @@
-package com.adeptj.modules.httpclient;
+package com.adeptj.modules.restclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.client.api.ContentResponse;

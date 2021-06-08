@@ -1,14 +1,12 @@
-package com.adeptj.modules.httpclient.internal;
+package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.httpclient.ClientRequest;
-import com.adeptj.modules.httpclient.ClientResponse;
-import com.adeptj.modules.httpclient.ClientResponseFactory;
-import com.adeptj.modules.httpclient.HttpMethod;
-import com.adeptj.modules.httpclient.JettyRequestFactory;
-import com.adeptj.modules.httpclient.RestClient;
-import com.adeptj.modules.httpclient.RestClientException;
+import com.adeptj.modules.restclient.ClientRequest;
+import com.adeptj.modules.restclient.ClientResponse;
+import com.adeptj.modules.restclient.ClientResponseFactory;
+import com.adeptj.modules.restclient.JettyRequestFactory;
+import com.adeptj.modules.restclient.RestClient;
+import com.adeptj.modules.restclient.RestClientException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.Validate;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.osgi.service.component.annotations.Activate;
@@ -22,10 +20,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.adeptj.modules.httpclient.HttpMethod.DELETE;
-import static com.adeptj.modules.httpclient.HttpMethod.GET;
-import static com.adeptj.modules.httpclient.HttpMethod.POST;
-import static com.adeptj.modules.httpclient.HttpMethod.PUT;
+import static com.adeptj.modules.restclient.HttpMethod.DELETE;
+import static com.adeptj.modules.restclient.HttpMethod.GET;
+import static com.adeptj.modules.restclient.HttpMethod.POST;
+import static com.adeptj.modules.restclient.HttpMethod.PUT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
@@ -49,15 +47,15 @@ public class JettyRestClient implements RestClient {
     public JettyRestClient(JettyHttpClientConfig config) {
         this.jettyClient = new HttpClient();
         this.jettyClient.setName(config.name());
-        this.jettyClient.setConnectTimeout(config.connectTimeout());
-        this.jettyClient.setIdleTimeout(config.idleTimeout());
-        this.jettyClient.setMaxConnectionsPerDestination(config.maxConnectionsPerDestination());
-        this.jettyClient.setMaxRequestsQueuedPerDestination(config.maxRequestsQueuedPerDestination());
-        this.jettyClient.setAddressResolutionTimeout(config.addressResolutionTimeout());
-        this.jettyClient.setMaxRedirects(config.maxRedirects());
-        this.jettyClient.setRequestBufferSize(config.requestBufferSize());
-        this.jettyClient.setResponseBufferSize(config.responseBufferSize());
-        this.jettyClient.setTCPNoDelay(config.tcpNoDelay());
+        this.jettyClient.setConnectTimeout(config.connect_timeout());
+        this.jettyClient.setIdleTimeout(config.idle_timeout());
+        this.jettyClient.setMaxConnectionsPerDestination(config.max_connections_per_destination());
+        this.jettyClient.setMaxRequestsQueuedPerDestination(config.max_requests_queued_per_destination());
+        this.jettyClient.setAddressResolutionTimeout(config.address_resolution_timeout());
+        this.jettyClient.setMaxRedirects(config.max_redirects());
+        this.jettyClient.setRequestBufferSize(config.request_buffer_size());
+        this.jettyClient.setResponseBufferSize(config.response_buffer_size());
+        this.jettyClient.setTCPNoDelay(config.tcp_no_delay());
         LOGGER.info("Starting Jetty HttpClient!");
         try {
             this.jettyClient.start();
@@ -92,8 +90,14 @@ public class JettyRestClient implements RestClient {
 
     @Override
     public <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request) {
-        Validate.isTrue((request.getHttpMethod() != null), "HttpMethod can't be null");
-        return this.doExecuteRequest(request.getHttpMethod(), request);
+        try {
+            ContentResponse response = JettyRequestFactory.newRequest(this.jettyClient, request, MAPPER)
+                    .send();
+            return ClientResponseFactory.newClientResponse(response, request.getResponseType(), MAPPER);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new RestClientException(ex);
+        }
     }
 
     @Override
@@ -104,17 +108,6 @@ public class JettyRestClient implements RestClient {
     @Override
     public void doWithHttpClient(Consumer<HttpClient> consumer) {
         consumer.accept(this.jettyClient);
-    }
-
-    private <T, R> ClientResponse<R> doExecuteRequest(HttpMethod httpMethod, ClientRequest<T, R> cr) {
-        try {
-            ContentResponse response = JettyRequestFactory.newRequest(this.jettyClient, cr, httpMethod, MAPPER)
-                    .send();
-            return ClientResponseFactory.newClientResponse(response, cr.getResponseType(), MAPPER);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new RestClientException(ex);
-        }
     }
 
     // <<----------------------------------------- OSGi Internal  ------------------------------------------>>

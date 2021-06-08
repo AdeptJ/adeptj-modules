@@ -27,11 +27,11 @@
         <version>1</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
-    <artifactId>adeptj-modules-incubating-http-client</artifactId>
+    <artifactId>adeptj-modules-incubating-restclient</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: Incubating :: HttpClient</name>
-    <description>AdeptJ Modules :: Incubating :: Jetty HttpClient</description>
+    <name>AdeptJ Modules :: Incubating :: RestClient</name>
+    <description>AdeptJ Modules :: Incubating :: Jetty HttpClient based RestClient</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

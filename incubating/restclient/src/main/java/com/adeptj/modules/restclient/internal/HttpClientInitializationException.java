@@ -1,4 +1,4 @@
-package com.adeptj.modules.httpclient.internal;
+package com.adeptj.modules.restclient.internal;
 
 public class HttpClientInitializationException extends RuntimeException {
 

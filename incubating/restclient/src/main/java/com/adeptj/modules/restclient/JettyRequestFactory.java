@@ -1,7 +1,8 @@
-package com.adeptj.modules.httpclient;
+package com.adeptj.modules.restclient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.Validate;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormRequestContent;
@@ -10,15 +11,16 @@ import org.eclipse.jetty.util.Fields;
 
 import java.util.Map;
 
-import static com.adeptj.modules.httpclient.HttpMethod.GET;
-import static com.adeptj.modules.httpclient.RestClientConstants.CONTENT_TYPE_JSON;
+import static com.adeptj.modules.restclient.HttpMethod.GET;
+import static com.adeptj.modules.restclient.RestClientConstants.CONTENT_TYPE_JSON;
 
 public class JettyRequestFactory {
 
     public static <T, R> Request newRequest(HttpClient jettyClient,
                                             ClientRequest<T, R> cr,
-                                            HttpMethod httpMethod,
                                             ObjectMapper mapper) throws JsonProcessingException {
+        HttpMethod httpMethod = cr.getHttpMethod();
+        Validate.isTrue((httpMethod != null), "HttpMethod can't be null");
         Request request = jettyClient.newRequest(cr.getUri()).method(httpMethod.toString());
         // Handle headers
         Map<String, String> headers = cr.getHeaders();

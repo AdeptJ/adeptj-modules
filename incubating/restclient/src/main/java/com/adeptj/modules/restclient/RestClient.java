@@ -1,4 +1,4 @@
-package com.adeptj.modules.httpclient;
+package com.adeptj.modules.restclient;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.osgi.annotation.versioning.ProviderType;

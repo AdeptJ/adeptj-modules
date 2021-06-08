@@ -33,7 +33,7 @@
     <modules>
 
         <module>cayenne</module>
-        <module>http-client</module>
+        <module>restclient</module>
 
     </modules>
 
