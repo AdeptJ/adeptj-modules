@@ -30,7 +30,6 @@ import org.apache.commons.lang3.Validate;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,9 +76,7 @@ public class AesGcmCryptoService implements CryptoService {
 
     private static final int MIN_ITERATIONS = 1000;
 
-    private char[] cryptoKey;
-
-    private int iterations;
+    private final BundleContext context;
 
     /**
      * Obtain the crypto.key and crypto.iterations properties from OSGi framework properties and initialize the
@@ -89,20 +86,15 @@ public class AesGcmCryptoService implements CryptoService {
      */
     @Activate
     public AesGcmCryptoService(BundleContext context) {
-        try {
-            this.cryptoKey = context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
-            this.iterations = Integer.parseInt(context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
-        } catch (Exception ex) {
-            // This will make sure this service is activated successfully and CryptoPlugin initialization will also
-            // be successful which is a required plugin by ConfigAdmin.
-            LOGGER.error(ex.getMessage(), ex);
-        }
+        this.context = context;
     }
 
     @Override
     public String encrypt(String plainText) {
-        this.validateKeyMaterials();
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
+        char[] cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
+        int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
+        this.validateKeyMaterials(cryptoKey, iterations);
         byte[] iv = null;
         byte[] salt = null;
         byte[] cipherBytes = null;
@@ -113,7 +105,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 2. get salt
             salt = RandomUtil.randomBytes(SALT_LENGTH);
             // 3. init encrypt mode cipher
-            Cipher cipher = this.initCipher(ENCRYPT_MODE, salt, iv);
+            Cipher cipher = this.initCipher(ENCRYPT_MODE, salt, iv, cryptoKey, iterations);
             // 4. generate cipher bytes
             cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
             // 5. put everything in a ByteBuffer
@@ -129,13 +121,16 @@ public class AesGcmCryptoService implements CryptoService {
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, compositeCipherBytes);
+            Arrays.fill(cryptoKey, Character.MIN_VALUE);
         }
     }
 
     @Override
     public String decrypt(String cipherText) {
-        this.validateKeyMaterials();
         Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
+        char[] cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
+        int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
+        this.validateKeyMaterials(cryptoKey, iterations);
         byte[] iv = null;
         byte[] salt = null;
         byte[] cipherBytes = null;
@@ -150,7 +145,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 3. extract salt
             buffer.get(salt);
             // 4. init decrypt mode cipher
-            Cipher cipher = this.initCipher(DECRYPT_MODE, salt, iv);
+            Cipher cipher = this.initCipher(DECRYPT_MODE, salt, iv, cryptoKey, iterations);
             cipherBytes = new byte[buffer.remaining()];
             // 5. extract cipherBytes
             buffer.get(cipherBytes);
@@ -163,13 +158,16 @@ public class AesGcmCryptoService implements CryptoService {
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, decryptedBytes);
+            Arrays.fill(cryptoKey, Character.MIN_VALUE);
         }
     }
 
-    private Cipher initCipher(int mode, byte[] salt, byte[] iv) throws GeneralSecurityException {
+    private Cipher initCipher(int mode,
+                              byte[] salt,
+                              byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
         byte[] key = null;
         try {
-            key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, this.cryptoKey, salt, this.iterations, PBE_KEY_LENGTH);
+            key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, cryptoKey, salt, iterations, PBE_KEY_LENGTH);
             SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
             Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
@@ -180,16 +178,14 @@ public class AesGcmCryptoService implements CryptoService {
         }
     }
 
-    private void validateKeyMaterials() {
-        Validate.isTrue(ArrayUtils.isNotEmpty(this.cryptoKey), "crypto.key can't be null or empty!!");
-        Validate.isTrue((this.iterations >= MIN_ITERATIONS),
-                String.format("crypto.iterations should be greater than or equal to [%d]!!", MIN_ITERATIONS));
-    }
-
-    // << ------------------------------------------ OSGi Internal ------------------------------------------>>
-
-    @Deactivate
-    protected void stop() {
-        Arrays.fill(this.cryptoKey, Character.MIN_VALUE);
+    private void validateKeyMaterials(char[] cryptoKey, int iterations) {
+        Validate.isTrue(ArrayUtils.isNotEmpty(cryptoKey), "crypto.key can't be null or empty!!");
+        try {
+            Validate.isTrue((iterations >= MIN_ITERATIONS),
+                    String.format("crypto.iterations should be greater than or equal to [%d]!!", MIN_ITERATIONS));
+        } catch (IllegalArgumentException ex) {
+            Arrays.fill(cryptoKey, Character.MIN_VALUE);
+            throw ex;
+        }
     }
 }

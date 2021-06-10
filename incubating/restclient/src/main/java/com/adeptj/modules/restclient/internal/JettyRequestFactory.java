@@ -1,7 +1,10 @@
-package com.adeptj.modules.restclient;
+package com.adeptj.modules.restclient.internal;
 
+import com.adeptj.modules.restclient.ClientRequest;
+import com.adeptj.modules.restclient.HttpMethod;
+import com.adeptj.modules.restclient.ObjectMappers;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
@@ -14,14 +17,12 @@ import java.util.Map;
 import static com.adeptj.modules.restclient.HttpMethod.GET;
 import static com.adeptj.modules.restclient.RestClientConstants.CONTENT_TYPE_JSON;
 
-public class JettyRequestFactory {
+class JettyRequestFactory {
 
-    public static <T, R> Request newRequest(HttpClient jettyClient,
-                                            ClientRequest<T, R> cr,
-                                            ObjectMapper mapper) throws JsonProcessingException {
-        HttpMethod httpMethod = cr.getHttpMethod();
-        Validate.isTrue((httpMethod != null), "HttpMethod can't be null");
-        Request request = jettyClient.newRequest(cr.getUri()).method(httpMethod.toString());
+    static <T, R> Request newRequest(HttpClient jettyClient, ClientRequest<T, R> cr) throws JsonProcessingException {
+        HttpMethod method = cr.getMethod();
+        Validate.isTrue(method != null, "HttpMethod can't be null");
+        Request request = jettyClient.newRequest(cr.getUri()).method(method.toString());
         // Handle headers
         Map<String, String> headers = cr.getHeaders();
         if (headers != null && !headers.isEmpty()) {
@@ -33,12 +34,12 @@ public class JettyRequestFactory {
             queryParams.forEach(request::param);
         }
         // No body for http GET, return right away.
-        if (httpMethod == GET) {
+        if (method == GET) {
             return request;
         }
         T body = cr.getBody();
         if (body == null) {
-            // check if a form post
+            // check if it is a form post
             Map<String, String> formParams = cr.getFormParams();
             if (formParams != null && !formParams.isEmpty()) {
                 Fields fields = new Fields();
@@ -47,11 +48,12 @@ public class JettyRequestFactory {
             }
             return request;
         }
-        // check if a body is provided (either a direct String or an Object, if Object then serialize it).
+        // check if a body is provided (either a direct String or an Object, if Object then serialize it JSON).
         if (body instanceof String) {
             request.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
         } else {
-            request.body(new StringRequestContent(CONTENT_TYPE_JSON, mapper.writer().writeValueAsString(body)));
+            ObjectWriter writer = ObjectMappers.getMapper().writer();
+            request.body(new StringRequestContent(CONTENT_TYPE_JSON, writer.writeValueAsString(body)));
         }
         return request;
     }

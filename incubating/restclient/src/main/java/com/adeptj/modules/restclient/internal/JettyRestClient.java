@@ -2,11 +2,8 @@ package com.adeptj.modules.restclient.internal;
 
 import com.adeptj.modules.restclient.ClientRequest;
 import com.adeptj.modules.restclient.ClientResponse;
-import com.adeptj.modules.restclient.ClientResponseFactory;
-import com.adeptj.modules.restclient.JettyRequestFactory;
 import com.adeptj.modules.restclient.RestClient;
 import com.adeptj.modules.restclient.RestClientException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.osgi.service.component.annotations.Activate;
@@ -24,22 +21,12 @@ import static com.adeptj.modules.restclient.HttpMethod.DELETE;
 import static com.adeptj.modules.restclient.HttpMethod.GET;
 import static com.adeptj.modules.restclient.HttpMethod.POST;
 import static com.adeptj.modules.restclient.HttpMethod.PUT;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
-import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 @Designate(ocd = JettyHttpClientConfig.class)
 @Component
 public class JettyRestClient implements RestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final ObjectMapper MAPPER = new ObjectMapper()
-            .enable(INDENT_OUTPUT)
-            .disable(WRITE_DATES_AS_TIMESTAMPS)
-            .setSerializationInclusion(NON_NULL)
-            .setDefaultPropertyInclusion(NON_DEFAULT);
 
     private final HttpClient jettyClient;
 
@@ -66,34 +53,30 @@ public class JettyRestClient implements RestClient {
 
     @Override
     public <T, R> ClientResponse<R> GET(ClientRequest<T, R> request) {
-        request.setHttpMethod(GET);
-        return this.executeRequest(request);
+        return this.executeRequest(request.withMethod(GET));
     }
 
     @Override
     public <T, R> ClientResponse<R> POST(ClientRequest<T, R> request) {
-        request.setHttpMethod(POST);
-        return this.executeRequest(request);
+        return this.executeRequest(request.withMethod(POST));
     }
 
     @Override
     public <T, R> ClientResponse<R> PUT(ClientRequest<T, R> request) {
-        request.setHttpMethod(PUT);
-        return this.executeRequest(request);
+        return this.executeRequest(request.withMethod(PUT));
     }
 
     @Override
     public <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request) {
-        request.setHttpMethod(DELETE);
-        return this.executeRequest(request);
+        return this.executeRequest(request.withMethod(DELETE));
     }
 
     @Override
     public <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request) {
         try {
-            ContentResponse response = JettyRequestFactory.newRequest(this.jettyClient, request, MAPPER)
+            ContentResponse response = JettyRequestFactory.newRequest(this.jettyClient, request)
                     .send();
-            return ClientResponseFactory.newClientResponse(response, request.getResponseType(), MAPPER);
+            return ClientResponseFactory.newClientResponse(response, request.getResponseType());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
