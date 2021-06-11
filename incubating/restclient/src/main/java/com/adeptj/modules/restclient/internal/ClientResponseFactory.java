@@ -2,10 +2,8 @@ package com.adeptj.modules.restclient.internal;
 
 import com.adeptj.modules.restclient.ClientResponse;
 import com.adeptj.modules.restclient.ObjectMappers;
-import com.fasterxml.jackson.databind.ObjectReader;
 import org.eclipse.jetty.client.api.ContentResponse;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +11,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 class ClientResponseFactory {
 
-    static <R> ClientResponse<R> newClientResponse(ContentResponse cr, Class<R> responseType) throws IOException {
+    static <R> ClientResponse<R> newClientResponse(ContentResponse cr, Class<R> responseType) {
         ClientResponse<R> response = new ClientResponse<>();
         response.setStatus(cr.getStatus());
         response.setReason(cr.getReason());
@@ -30,8 +28,7 @@ class ClientResponseFactory {
         } else if (responseType.equals(String.class)) {
             response.setContent(responseType.cast(new String(cr.getContent(), UTF_8)));
         } else {
-            ObjectReader reader = ObjectMappers.getMapper().reader().forType(responseType);
-            response.setContent(reader.readValue(cr.getContent()));
+            response.setContent(ObjectMappers.deserialize(cr.getContent(), responseType));
         }
         return response;
     }

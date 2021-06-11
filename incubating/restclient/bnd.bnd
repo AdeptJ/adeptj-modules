@@ -24,8 +24,11 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Export-Package: com.adeptj.modules.restclient
-  
+-includeresource: ant-style-*.jar;lib:=true
+
+-exportcontents: com.adeptj.modules.restclient, \
+                 !com.adeptj.modules.restclient.internal
+
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ Data

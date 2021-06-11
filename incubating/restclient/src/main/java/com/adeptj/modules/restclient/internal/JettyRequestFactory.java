@@ -3,8 +3,6 @@ package com.adeptj.modules.restclient.internal;
 import com.adeptj.modules.restclient.ClientRequest;
 import com.adeptj.modules.restclient.HttpMethod;
 import com.adeptj.modules.restclient.ObjectMappers;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
@@ -19,7 +17,7 @@ import static com.adeptj.modules.restclient.RestClientConstants.CONTENT_TYPE_JSO
 
 class JettyRequestFactory {
 
-    static <T, R> Request newRequest(HttpClient jettyClient, ClientRequest<T, R> cr) throws JsonProcessingException {
+    static <T, R> Request newRequest(HttpClient jettyClient, ClientRequest<T, R> cr) {
         HttpMethod method = cr.getMethod();
         Validate.isTrue(method != null, "HttpMethod can't be null");
         Request request = jettyClient.newRequest(cr.getUri()).method(method.toString());
@@ -48,12 +46,11 @@ class JettyRequestFactory {
             }
             return request;
         }
-        // check if a body is provided (either a direct String or an Object, if Object then serialize it JSON).
+        // check if a body is provided (either a direct String or an Object, if Object then serialize it to JSON).
         if (body instanceof String) {
             request.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
         } else {
-            ObjectWriter writer = ObjectMappers.getMapper().writer();
-            request.body(new StringRequestContent(CONTENT_TYPE_JSON, writer.writeValueAsString(body)));
+            request.body(new StringRequestContent(CONTENT_TYPE_JSON, ObjectMappers.serialize(body)));
         }
         return request;
     }
