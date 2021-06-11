@@ -23,10 +23,10 @@ class RestClientLogger {
     private static final String RESPONSE_START = "<<==================== Response ====================>>\n";
 
     private static final String REQ_FMT
-            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers: {}\n Request Body: {}";
+            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers:\n [\n\n{}]\n Request Body: {}";
 
     private static final String RESP_FMT
-            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers: {}\n Response Body: {}\n Total Time: {} ms\n\n{}";
+            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n [\n\n{}]\n Response Body: {}\n Total Time: {} ms\n\n{}";
 
     static void logRequest(Request request) {
         LOGGER.info(REQ_FMT, REQUEST_START, MDC.get(REST_CLIENT_REQ_ID), request.getMethod(),
