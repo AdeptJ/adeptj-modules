@@ -86,5 +86,5 @@ public @interface JettyHttpClientConfig {
             name = "Debug Request",
             description = "Debug for detecting any issues with the request execution. Please keep it disabled on production systems."
     )
-    boolean debug_request();
+    boolean debug_request() default true;
 }

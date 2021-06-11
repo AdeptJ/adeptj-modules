@@ -25,7 +25,6 @@ import static com.adeptj.modules.restclient.HttpMethod.DELETE;
 import static com.adeptj.modules.restclient.HttpMethod.GET;
 import static com.adeptj.modules.restclient.HttpMethod.POST;
 import static com.adeptj.modules.restclient.HttpMethod.PUT;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static org.eclipse.jetty.http.HttpHeader.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -38,9 +37,9 @@ public class JettyRestClient implements RestClient {
 
     private final HttpClient jettyClient;
 
-    private AuthorizationHeaderPlugin plugin;
-
     private final boolean debugRequest;
+
+    private AuthorizationHeaderPlugin plugin;
 
     @Activate
     public JettyRestClient(JettyHttpClientConfig config) {
@@ -103,18 +102,22 @@ public class JettyRestClient implements RestClient {
     }
 
     private <T, R> ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
+        RestClientLogger.initReqId();
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.handleAuthorizationHeader(jettyRequest);
+            RestClientLogger.logRequest(jettyRequest);
             long startTime = System.nanoTime();
             ContentResponse response = jettyRequest.send();
             long endTime = System.nanoTime();
-            LOGGER.info("Processing [{} - {}] took: [{}] ms!", request.getMethod(), request.getUri(),
-                    NANOSECONDS.toMillis(endTime - startTime));
+            long executionTime = endTime - startTime;
+            RestClientLogger.logResponse(response, executionTime);
             return ClientResponseFactory.newClientResponse(response, request.getResponseType());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
+        } finally {
+            RestClientLogger.removeReqId();
         }
     }
 
