@@ -1,7 +1,5 @@
 package com.adeptj.modules.restclient;
 
-import org.apache.commons.lang3.Validate;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +28,8 @@ public class ClientRequest<T, R> {
     private T body;
 
     private ClientRequest(URI uri, Class<R> responseType) {
-        Validate.isTrue(uri != null, "URI can't be null!");
-        Validate.isTrue(responseType != null, "responseType can't be null!");
+        Assert.notNull(uri, "URI can't be null!");
+        Assert.notNull(responseType, "responseType can't be null!");
         this.uri = uri;
         this.responseType = responseType;
     }

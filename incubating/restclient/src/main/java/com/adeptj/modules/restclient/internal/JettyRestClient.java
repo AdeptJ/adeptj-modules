@@ -25,6 +25,7 @@ import static com.adeptj.modules.restclient.HttpMethod.DELETE;
 import static com.adeptj.modules.restclient.HttpMethod.GET;
 import static com.adeptj.modules.restclient.HttpMethod.POST;
 import static com.adeptj.modules.restclient.HttpMethod.PUT;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static org.eclipse.jetty.http.HttpHeader.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -85,7 +86,11 @@ public class JettyRestClient implements RestClient {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.handleAuthorizationHeader(jettyRequest);
+            long startTime = System.nanoTime();
             ContentResponse response = jettyRequest.send();
+            long endTime = System.nanoTime();
+            LOGGER.info("Processing [{} - {}] took: [{}] ms!", request.getMethod(), request.getUri(),
+                    NANOSECONDS.toMillis(endTime - startTime));
             return ClientResponseFactory.newClientResponse(response, request.getResponseType());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -106,7 +111,7 @@ public class JettyRestClient implements RestClient {
     private void handleAuthorizationHeader(Request request) {
         // Create a temp var because the service is dynamic.
         AuthorizationHeaderPlugin ahp = this.plugin;
-        if (ahp == null) {
+        if (ahp == null || ahp.getPathPatterns().isEmpty()) {
             return;
         }
         AntPathMatcher matcher = new AntPathMatcher.Builder().build();
