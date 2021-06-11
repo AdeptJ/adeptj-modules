@@ -81,4 +81,10 @@ public @interface JettyHttpClientConfig {
             description = "Whether TCP_NODELAY is enabled."
     )
     boolean tcp_no_delay() default true;
+
+    @AttributeDefinition(
+            name = "Debug Request",
+            description = "Debug for detecting any issues with the request execution. Please keep it disabled on production systems."
+    )
+    boolean debug_request();
 }

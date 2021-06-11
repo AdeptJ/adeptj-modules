@@ -40,6 +40,8 @@ public class JettyRestClient implements RestClient {
 
     private AuthorizationHeaderPlugin plugin;
 
+    private final boolean debugRequest;
+
     @Activate
     public JettyRestClient(JettyHttpClientConfig config) {
         this.jettyClient = new HttpClient();
@@ -59,6 +61,7 @@ public class JettyRestClient implements RestClient {
         } catch (Exception ex) {
             throw new HttpClientInitializationException(ex);
         }
+        this.debugRequest = config.debug_request();
     }
 
     @Override
@@ -83,6 +86,23 @@ public class JettyRestClient implements RestClient {
 
     @Override
     public <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request) {
+        if (this.debugRequest) {
+            return this.doExecuteRequestDebug(request);
+        }
+        return this.doExecuteRequest(request);
+    }
+
+    @Override
+    public <T> T doWithHttpClient(Function<HttpClient, T> function) {
+        return function.apply(this.jettyClient);
+    }
+
+    @Override
+    public void doWithHttpClient(Consumer<HttpClient> consumer) {
+        consumer.accept(this.jettyClient);
+    }
+
+    private <T, R> ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.handleAuthorizationHeader(jettyRequest);
@@ -98,14 +118,16 @@ public class JettyRestClient implements RestClient {
         }
     }
 
-    @Override
-    public <T> T doWithHttpClient(Function<HttpClient, T> function) {
-        return function.apply(this.jettyClient);
-    }
-
-    @Override
-    public void doWithHttpClient(Consumer<HttpClient> consumer) {
-        consumer.accept(this.jettyClient);
+    private <T, R> ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
+        try {
+            Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
+            this.handleAuthorizationHeader(jettyRequest);
+            ContentResponse response = jettyRequest.send();
+            return ClientResponseFactory.newClientResponse(response, request.getResponseType());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new RestClientException(ex);
+        }
     }
 
     private void handleAuthorizationHeader(Request request) {
