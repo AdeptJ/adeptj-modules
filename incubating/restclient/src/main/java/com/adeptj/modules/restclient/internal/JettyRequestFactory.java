@@ -21,36 +21,36 @@ class JettyRequestFactory {
         HttpMethod method = cr.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
         Request request = jettyClient.newRequest(cr.getUri()).method(method.toString());
-        // Handle headers
+        // 1. Handle headers
         Map<String, String> headers = cr.getHeaders();
         if (headers != null && !headers.isEmpty()) {
             request.headers(m -> headers.forEach(m::add));
         }
-        // Handle query params
+        // 2. Handle query params
         Map<String, String> queryParams = cr.getQueryParams();
         if (queryParams != null && !queryParams.isEmpty()) {
             queryParams.forEach(request::param);
         }
-        // No body for http GET, return right away.
+        // 3. No body for http GET, return right away.
         if (method == GET) {
             return request;
         }
-        T body = cr.getBody();
-        if (body == null) {
-            // check if it is a form post
-            Map<String, String> formParams = cr.getFormParams();
-            if (formParams != null && !formParams.isEmpty()) {
-                Fields fields = new Fields();
-                formParams.forEach(fields::put);
-                request.body(new FormRequestContent(fields));
-            }
+        // 4. Handle Form Post - application/x-www-form-urlencoded
+        Map<String, String> formParams = cr.getFormParams();
+        if (formParams != null && !formParams.isEmpty()) {
+            Fields fields = new Fields();
+            formParams.forEach(fields::put);
+            request.body(new FormRequestContent(fields));
             return request;
         }
-        // check if a body is provided (either a direct String or an Object, if Object then serialize it to JSON).
-        if (body instanceof String) {
-            request.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
-        } else {
-            request.body(new StringRequestContent(CONTENT_TYPE_JSON, ObjectMappers.serialize(body)));
+        // 5. Handle Body, a JSON string or an Object which will be serialized to JSON.
+        T body = cr.getBody();
+        if (body != null) {
+            if (body instanceof String) {
+                request.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
+            } else {
+                request.body(new StringRequestContent(CONTENT_TYPE_JSON, ObjectMappers.serialize(body)));
+            }
         }
         return request;
     }

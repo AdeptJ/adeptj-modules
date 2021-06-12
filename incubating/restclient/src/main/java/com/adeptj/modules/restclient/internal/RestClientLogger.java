@@ -32,21 +32,20 @@ class RestClientLogger {
     private static final String RESP_FMT
             = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n{}\n Response Body:\n {}\n Total Time: {} milliseconds\n\n{}";
 
-    static <T, R> void logRequest(ClientRequest<T, R> request, Request jettyRequest, String mdcReqIdAttrName) {
+    static <T, R> String logRequest(ClientRequest<T, R> request, Request jettyRequest, String mdcReqIdAttrName) {
         String reqId = MDC.get(mdcReqIdAttrName);
-        // Just in case it is not set up by application code earlier.
+        // Just in case MDC attribute is not set up by application code earlier.
         if (reqId == null) {
-            MDC.put(mdcReqIdAttrName, UUID.randomUUID().toString());
+            reqId = UUID.randomUUID().toString();
         }
-        LOGGER.info(REQ_FMT, REQUEST_START, MDC.get(mdcReqIdAttrName), request.getMethod(),
-                request.getUri(),
+        LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(), request.getUri(),
                 serializeHeaders(jettyRequest.getHeaders()),
                 getBody(request));
+        return reqId;
     }
 
-    static void logResponse(ContentResponse response, String mdcReqIdAttrName, long executionTime) {
-        LOGGER.info(RESP_FMT, RESPONSE_START, MDC.get(mdcReqIdAttrName), response.getStatus(),
-                serializeHeaders(response.getHeaders()),
+    static void logResponse(String reqId, ContentResponse response, long executionTime) {
+        LOGGER.info(RESP_FMT, RESPONSE_START, reqId, response.getStatus(), serializeHeaders(response.getHeaders()),
                 new String(response.getContent(), StandardCharsets.UTF_8),
                 TimeUnit.NANOSECONDS.toMillis(executionTime),
                 REQUEST_END);
