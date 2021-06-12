@@ -39,6 +39,8 @@ public class JettyRestClient implements RestClient {
 
     private final boolean debugRequest;
 
+    private final String mdcReqIdAttrName;
+
     private AuthorizationHeaderPlugin plugin;
 
     @Activate
@@ -61,6 +63,7 @@ public class JettyRestClient implements RestClient {
             throw new HttpClientInitializationException(ex);
         }
         this.debugRequest = config.debug_request();
+        this.mdcReqIdAttrName = config.mdc_req_id_attribute_name();
     }
 
     @Override
@@ -102,22 +105,19 @@ public class JettyRestClient implements RestClient {
     }
 
     private <T, R> ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
-        RestClientLogger.initReqId();
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.handleAuthorizationHeader(jettyRequest);
-            RestClientLogger.logRequest(jettyRequest);
+            RestClientLogger.logRequest(request, jettyRequest, this.mdcReqIdAttrName);
             long startTime = System.nanoTime();
             ContentResponse response = jettyRequest.send();
             long endTime = System.nanoTime();
             long executionTime = endTime - startTime;
-            RestClientLogger.logResponse(response, executionTime);
+            RestClientLogger.logResponse(response, this.mdcReqIdAttrName, executionTime);
             return ClientResponseFactory.newClientResponse(response, request.getResponseType());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
-        } finally {
-            RestClientLogger.removeReqId();
         }
     }
 

@@ -44,6 +44,14 @@ public class ObjectMappers {
         }
     }
 
+    public static <T> String serializePrettyPrint(T object) {
+        try {
+            return getWriter().withDefaultPrettyPrinter().writeValueAsString(object);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     public static <T> T deserialize(byte[] bytes, Class<T> valueType) {
         try {
             return getReader(valueType).readValue(bytes);

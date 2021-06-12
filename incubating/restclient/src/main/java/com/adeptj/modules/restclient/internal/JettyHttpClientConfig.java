@@ -86,5 +86,11 @@ public @interface JettyHttpClientConfig {
             name = "Debug Request",
             description = "Debug for detecting any issues with the request execution. Please keep it disabled on production systems."
     )
-    boolean debug_request() default true;
+    boolean debug_request();
+
+    @AttributeDefinition(
+            name = "SLF4J MDC Request Attribute Name",
+            description = "The attribute might already been setup by application during initial request processing."
+    )
+    String mdc_req_id_attribute_name() default "REQ_ID";
 }

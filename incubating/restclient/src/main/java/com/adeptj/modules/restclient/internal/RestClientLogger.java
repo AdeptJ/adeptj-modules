@@ -1,16 +1,20 @@
 package com.adeptj.modules.restclient.internal;
 
+import com.adeptj.modules.restclient.ClientRequest;
+import com.adeptj.modules.restclient.ObjectMappers;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
-import static com.adeptj.modules.restclient.RestClientConstants.REST_CLIENT_REQ_ID;
 
 class RestClientLogger {
 
@@ -23,37 +27,42 @@ class RestClientLogger {
     private static final String RESPONSE_START = "<<==================== Response ====================>>\n";
 
     private static final String REQ_FMT
-            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers:\n [\n\n{}]\n Request Body: {}";
+            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers:\n{}\n Request Body:\n {}";
 
     private static final String RESP_FMT
-            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n [\n\n{}]\n Response Body: {}\n Total Time: {} ms\n\n{}";
+            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n{}\n Response Body:\n {}\n Total Time: {} milliseconds\n\n{}";
 
-    static void logRequest(Request request) {
-        LOGGER.info(REQ_FMT, REQUEST_START, MDC.get(REST_CLIENT_REQ_ID), request.getMethod(),
-                request.getURI(),
-                request.getHeaders(),
-                "<<NO BODY>>");
+    static <T, R> void logRequest(ClientRequest<T, R> request, Request jettyRequest, String mdcReqIdAttrName) {
+        String reqId = MDC.get(mdcReqIdAttrName);
+        // Just in case it is not set up by application code earlier.
+        if (reqId == null) {
+            MDC.put(mdcReqIdAttrName, UUID.randomUUID().toString());
+        }
+        LOGGER.info(REQ_FMT, REQUEST_START, MDC.get(mdcReqIdAttrName), request.getMethod(),
+                request.getUri(),
+                ObjectMappers.serializePrettyPrint(toMap(jettyRequest.getHeaders())),
+                getBody(request));
     }
 
-    static void logResponse(ContentResponse response, long executionTime) {
-        LOGGER.info(RESP_FMT, RESPONSE_START, MDC.get(REST_CLIENT_REQ_ID), response.getStatus(),
-                response.getHeaders(),
-                "<<SKIPPED>>",
+    static void logResponse(ContentResponse response, String mdcReqIdAttrName, long executionTime) {
+        LOGGER.info(RESP_FMT, RESPONSE_START, MDC.get(mdcReqIdAttrName), response.getStatus(),
+                ObjectMappers.serializePrettyPrint(toMap(response.getHeaders())),
+                new String(response.getContent(), StandardCharsets.UTF_8),
                 TimeUnit.NANOSECONDS.toMillis(executionTime),
                 REQUEST_END);
     }
 
-    static void initReqId() {
-        String reqId = MDC.get("REQ_ID");
-        if (reqId == null) {
-            MDC.put(REST_CLIENT_REQ_ID, UUID.randomUUID().toString());
+    private static <T, R> String getBody(ClientRequest<T, R> request) {
+        T body = request.getBody();
+        if (body == null) {
+            return "<<NO BODY>>";
         }
+        return (body instanceof String) ? (String) body : ObjectMappers.serialize(body);
     }
 
-    static void removeReqId() {
-        String reqId = MDC.get(REST_CLIENT_REQ_ID);
-        if (reqId != null) {
-            MDC.remove(REST_CLIENT_REQ_ID);
-        }
+    private static Map<String, String> toMap(HttpFields fields) {
+        Map<String, String> headers = new HashMap<>();
+        fields.forEach(f -> headers.put(f.getName(), f.getValue()));
+        return headers;
     }
 }
