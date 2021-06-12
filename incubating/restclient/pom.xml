@@ -141,7 +141,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-client</artifactId>
-            <version>11.0.3</version>
+            <version>${jetty-client.version}</version>
             <scope>provided</scope>
         </dependency>
 
