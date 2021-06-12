@@ -40,13 +40,13 @@ class RestClientLogger {
         }
         LOGGER.info(REQ_FMT, REQUEST_START, MDC.get(mdcReqIdAttrName), request.getMethod(),
                 request.getUri(),
-                ObjectMappers.serializePrettyPrint(toMap(jettyRequest.getHeaders())),
+                serializeHeaders(jettyRequest.getHeaders()),
                 getBody(request));
     }
 
     static void logResponse(ContentResponse response, String mdcReqIdAttrName, long executionTime) {
         LOGGER.info(RESP_FMT, RESPONSE_START, MDC.get(mdcReqIdAttrName), response.getStatus(),
-                ObjectMappers.serializePrettyPrint(toMap(response.getHeaders())),
+                serializeHeaders(response.getHeaders()),
                 new String(response.getContent(), StandardCharsets.UTF_8),
                 TimeUnit.NANOSECONDS.toMillis(executionTime),
                 REQUEST_END);
@@ -60,9 +60,9 @@ class RestClientLogger {
         return (body instanceof String) ? (String) body : ObjectMappers.serialize(body);
     }
 
-    private static Map<String, String> toMap(HttpFields fields) {
+    private static String serializeHeaders(HttpFields fields) {
         Map<String, String> headers = new HashMap<>();
         fields.forEach(f -> headers.put(f.getName(), f.getValue()));
-        return headers;
+        return ObjectMappers.serializePrettyPrint(headers);
     }
 }
