@@ -1,5 +1,6 @@
-package com.adeptj.modules.restclient;
+package com.adeptj.modules.restclient.plugin;
 
+import com.adeptj.modules.restclient.RestClient;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ConsumerType;
 
@@ -35,7 +36,11 @@ public interface AuthorizationHeaderPlugin {
     /**
      * Should return the request path patterns on which the Authorization header to be injected.
      * <p>
-     * Example: /api/* or /api/users/* etc.
+     * Example: /api/** or /api/users/* etc.
+     * <p>
+     * '?' - matches one character
+     * '*' - matches zero or more characters
+     * '**' - matches zero or more directories in a path
      *
      * @return request path patterns
      */

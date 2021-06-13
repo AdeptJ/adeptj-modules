@@ -1,6 +1,6 @@
 package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.restclient.AuthorizationHeaderPlugin;
+import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
 import com.adeptj.modules.restclient.ClientRequest;
 import com.adeptj.modules.restclient.ClientResponse;
 import com.adeptj.modules.restclient.RestClient;
