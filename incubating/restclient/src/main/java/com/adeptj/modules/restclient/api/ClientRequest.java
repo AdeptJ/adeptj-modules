@@ -1,4 +1,6 @@
-package com.adeptj.modules.restclient;
+package com.adeptj.modules.restclient.api;
+
+import com.adeptj.modules.restclient.util.Assert;
 
 import java.net.URI;
 import java.util.HashMap;

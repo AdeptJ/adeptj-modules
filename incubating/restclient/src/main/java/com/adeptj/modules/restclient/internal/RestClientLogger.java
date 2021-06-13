@@ -1,7 +1,7 @@
 package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.restclient.ClientRequest;
-import com.adeptj.modules.restclient.ObjectMappers;
+import com.adeptj.modules.restclient.api.ClientRequest;
+import com.adeptj.modules.restclient.util.ObjectMappers;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;

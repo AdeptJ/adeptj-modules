@@ -1,6 +1,5 @@
 package com.adeptj.modules.restclient.plugin;
 
-import com.adeptj.modules.restclient.RestClient;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ConsumerType;
 
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * Plugin for injecting the Authorization header in matching request paths.
  * <p>
- * {@link RestClient} consumers should implemented this interface if they need seamless injection of Authorization
+ * RestClient consumers should implemented this interface if they need seamless injection of Authorization
  * header in matching request paths.
  *
  * @author Rakesh.Kumar, AdeptJ

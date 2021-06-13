@@ -1,9 +1,9 @@
 package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.restclient.Assert;
-import com.adeptj.modules.restclient.ClientRequest;
-import com.adeptj.modules.restclient.HttpMethod;
-import com.adeptj.modules.restclient.ObjectMappers;
+import com.adeptj.modules.restclient.api.ClientRequest;
+import com.adeptj.modules.restclient.api.HttpMethod;
+import com.adeptj.modules.restclient.util.Assert;
+import com.adeptj.modules.restclient.util.ObjectMappers;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormRequestContent;
@@ -12,8 +12,8 @@ import org.eclipse.jetty.util.Fields;
 
 import java.util.Map;
 
-import static com.adeptj.modules.restclient.HttpMethod.GET;
 import static com.adeptj.modules.restclient.RestClientConstants.CONTENT_TYPE_JSON;
+import static com.adeptj.modules.restclient.api.HttpMethod.GET;
 
 class JettyRequestFactory {
 

@@ -1,9 +1,9 @@
 package com.adeptj.modules.restclient.internal;
 
 import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
-import com.adeptj.modules.restclient.ClientRequest;
-import com.adeptj.modules.restclient.ClientResponse;
-import com.adeptj.modules.restclient.RestClient;
+import com.adeptj.modules.restclient.api.ClientRequest;
+import com.adeptj.modules.restclient.api.ClientResponse;
+import com.adeptj.modules.restclient.api.RestClient;
 import com.adeptj.modules.restclient.RestClientException;
 import io.github.azagniotov.matcher.AntPathMatcher;
 import org.eclipse.jetty.client.HttpClient;
@@ -21,10 +21,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.adeptj.modules.restclient.HttpMethod.DELETE;
-import static com.adeptj.modules.restclient.HttpMethod.GET;
-import static com.adeptj.modules.restclient.HttpMethod.POST;
-import static com.adeptj.modules.restclient.HttpMethod.PUT;
+import static com.adeptj.modules.restclient.api.HttpMethod.DELETE;
+import static com.adeptj.modules.restclient.api.HttpMethod.GET;
+import static com.adeptj.modules.restclient.api.HttpMethod.POST;
+import static com.adeptj.modules.restclient.api.HttpMethod.PUT;
 import static org.eclipse.jetty.http.HttpHeader.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;

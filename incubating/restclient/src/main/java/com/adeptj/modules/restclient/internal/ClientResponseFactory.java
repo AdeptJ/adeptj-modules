@@ -1,7 +1,7 @@
 package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.restclient.ClientResponse;
-import com.adeptj.modules.restclient.ObjectMappers;
+import com.adeptj.modules.restclient.api.ClientResponse;
+import com.adeptj.modules.restclient.util.ObjectMappers;
 import org.eclipse.jetty.client.api.ContentResponse;
 
 import java.util.HashMap;

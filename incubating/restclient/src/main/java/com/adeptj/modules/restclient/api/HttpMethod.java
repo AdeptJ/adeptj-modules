@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient;
+package com.adeptj.modules.restclient.api;
 
 /**
  * Enum for common Http methods.

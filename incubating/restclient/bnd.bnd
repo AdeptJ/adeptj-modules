@@ -27,8 +27,9 @@
 -includeresource: ant-style-*.jar;lib:=true
 
 -exportcontents: com.adeptj.modules.restclient, \
+                 com.adeptj.modules.restclient.api, \
                  com.adeptj.modules.restclient.plugin, \
-                 !com.adeptj.modules.restclient.internal
+                 com.adeptj.modules.restclient.util
 
 Bundle-Name: ${project.name}
 
