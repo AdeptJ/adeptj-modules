@@ -9,12 +9,15 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormRequestContent;
 import org.eclipse.jetty.client.util.StringRequestContent;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.jetty.util.StringUtil;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.adeptj.modules.restclient.RestClientConstants.CONTENT_TYPE_JSON;
 import static com.adeptj.modules.restclient.api.HttpMethod.GET;
+import static com.adeptj.modules.restclient.api.HttpMethod.HEAD;
+import static com.adeptj.modules.restclient.api.HttpMethod.POST;
 
 class JettyRequestFactory {
 
@@ -36,26 +39,23 @@ class JettyRequestFactory {
         if (queryParams != null && !queryParams.isEmpty()) {
             queryParams.forEach(jettyRequest::param);
         }
-        // 4. No body for http GET, return right away.
-        if (method == GET) {
+        // 4. No body for http GET,HEAD methods, return right away.
+        if (method == GET || method == HEAD) {
             return jettyRequest;
         }
         // 5. Handle Form Post - application/x-www-form-urlencoded
         Map<String, String> formParams = request.getFormParams();
-        if (formParams != null && !formParams.isEmpty()) {
+        if (method == POST && formParams != null && !formParams.isEmpty()) {
             Fields fields = new Fields();
             formParams.forEach(fields::put);
             jettyRequest.body(new FormRequestContent(fields));
             return jettyRequest;
         }
+        // POST, PUT, PATCH methods must have body, DELETE can also have a body.
         // 6. Handle Body, a JSON string or an Object which will be serialized to JSON.
-        T body = request.getBody();
-        if (body != null) {
-            if (body instanceof String) {
-                jettyRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
-            } else {
-                jettyRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, ObjectMappers.serialize(body)));
-            }
+        String body = ObjectMappers.serialize(request.getBody());
+        if (StringUtil.isNotBlank(body)) {
+            jettyRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, body));
         }
         return jettyRequest;
     }

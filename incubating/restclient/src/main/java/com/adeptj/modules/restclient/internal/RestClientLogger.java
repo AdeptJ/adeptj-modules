@@ -5,6 +5,7 @@ import com.adeptj.modules.restclient.util.ObjectMappers;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -58,11 +59,11 @@ class RestClientLogger {
     }
 
     private static <T, R> String getBody(ClientRequest<T, R> request) {
-        T body = request.getBody();
-        if (body == null) {
+        String body = ObjectMappers.serialize(request.getBody());
+        if (StringUtil.isBlank(body)) {
             return "<<NO BODY>>";
         }
-        return (body instanceof String) ? (String) body : ObjectMappers.serialize(body);
+        return body;
     }
 
     private static String serializeHeaders(HttpFields fields) {

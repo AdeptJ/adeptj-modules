@@ -11,6 +11,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class ObjectMappers {
 
@@ -37,6 +38,15 @@ public class ObjectMappers {
     }
 
     public static <T> String serialize(T object) {
+        if (object == null) {
+            return null;
+        }
+        if (object instanceof String) {
+            return (String) object;
+        }
+        if (object instanceof byte[]) {
+            return new String((byte[]) object, UTF_8);
+        }
         try {
             return getWriter().writeValueAsString(object);
         } catch (JsonProcessingException ex) {

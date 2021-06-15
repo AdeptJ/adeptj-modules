@@ -1,10 +1,10 @@
 package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
+import com.adeptj.modules.restclient.RestClientException;
 import com.adeptj.modules.restclient.api.ClientRequest;
 import com.adeptj.modules.restclient.api.ClientResponse;
 import com.adeptj.modules.restclient.api.RestClient;
-import com.adeptj.modules.restclient.RestClientException;
+import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
 import io.github.azagniotov.matcher.AntPathMatcher;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
