@@ -17,7 +17,7 @@ public class ClientRequest<T, R> {
 
     private final URI uri;
 
-    private final Class<R> responseType;
+    private final Class<R> responseAs;
 
     private HttpMethod method;
 
@@ -29,19 +29,19 @@ public class ClientRequest<T, R> {
 
     private T body;
 
-    private ClientRequest(URI uri, Class<R> responseType) {
+    private ClientRequest(URI uri, Class<R> responseAs) {
         Assert.notNull(uri, "URI can't be null!");
-        Assert.notNull(responseType, "responseType can't be null!");
+        Assert.notNull(responseAs, "responseAs can't be null!");
         this.uri = uri;
-        this.responseType = responseType;
+        this.responseAs = responseAs;
     }
 
     public URI getUri() {
         return uri;
     }
 
-    public Class<R> getResponseType() {
-        return responseType;
+    public Class<R> getResponseAs() {
+        return responseAs;
     }
 
     public HttpMethod getMethod() {
@@ -90,7 +90,7 @@ public class ClientRequest<T, R> {
 
         private T body;
 
-        private Class<R> responseType;
+        private Class<R> responseAs;
 
         public Builder<T, R> uri(URI uri) {
             this.uri = uri;
@@ -131,13 +131,13 @@ public class ClientRequest<T, R> {
             return this;
         }
 
-        public Builder<T, R> responseType(Class<R> responseType) {
-            this.responseType = responseType;
+        public Builder<T, R> responseAs(Class<R> responseAs) {
+            this.responseAs = responseAs;
             return this;
         }
 
         public ClientRequest<T, R> build() {
-            ClientRequest<T, R> request = new ClientRequest<>(this.uri, this.responseType);
+            ClientRequest<T, R> request = new ClientRequest<>(this.uri, this.responseAs);
             request.method = this.method;
             request.headers = this.headers;
             request.queryParams = this.queryParams;

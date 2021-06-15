@@ -114,7 +114,7 @@ public class JettyRestClient implements RestClient {
             long endTime = System.nanoTime();
             long executionTime = endTime - startTime;
             RestClientLogger.logResponse(reqId, response, executionTime);
-            return ClientResponseFactory.newClientResponse(response, request.getResponseType());
+            return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
@@ -125,8 +125,8 @@ public class JettyRestClient implements RestClient {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.handleAuthorizationHeader(jettyRequest);
-            ContentResponse response = jettyRequest.send();
-            return ClientResponseFactory.newClientResponse(response, request.getResponseType());
+            ContentResponse jettyResponse = jettyRequest.send();
+            return ClientResponseFactory.newClientResponse(jettyResponse, request.getResponseAs());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);

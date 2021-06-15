@@ -17,41 +17,41 @@ import static com.adeptj.modules.restclient.api.HttpMethod.GET;
 
 class JettyRequestFactory {
 
-    static <T, R> Request newRequest(HttpClient jettyClient, ClientRequest<T, R> cr) {
-        HttpMethod method = cr.getMethod();
+    static <T, R> Request newRequest(HttpClient jettyClient, ClientRequest<T, R> request) {
+        HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
-        Request request = jettyClient.newRequest(cr.getUri()).method(method.toString());
+        Request jettyRequest = jettyClient.newRequest(request.getUri()).method(method.toString());
         // 1. Handle headers
-        Map<String, String> headers = cr.getHeaders();
+        Map<String, String> headers = request.getHeaders();
         if (headers != null && !headers.isEmpty()) {
-            request.headers(m -> headers.forEach(m::add));
+            jettyRequest.headers(m -> headers.forEach(m::add));
         }
         // 2. Handle query params
-        Map<String, String> queryParams = cr.getQueryParams();
+        Map<String, String> queryParams = request.getQueryParams();
         if (queryParams != null && !queryParams.isEmpty()) {
-            queryParams.forEach(request::param);
+            queryParams.forEach(jettyRequest::param);
         }
         // 3. No body for http GET, return right away.
         if (method == GET) {
-            return request;
+            return jettyRequest;
         }
         // 4. Handle Form Post - application/x-www-form-urlencoded
-        Map<String, String> formParams = cr.getFormParams();
+        Map<String, String> formParams = request.getFormParams();
         if (formParams != null && !formParams.isEmpty()) {
             Fields fields = new Fields();
             formParams.forEach(fields::put);
-            request.body(new FormRequestContent(fields));
-            return request;
+            jettyRequest.body(new FormRequestContent(fields));
+            return jettyRequest;
         }
         // 5. Handle Body, a JSON string or an Object which will be serialized to JSON.
-        T body = cr.getBody();
+        T body = request.getBody();
         if (body != null) {
             if (body instanceof String) {
-                request.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
+                jettyRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, (String) body));
             } else {
-                request.body(new StringRequestContent(CONTENT_TYPE_JSON, ObjectMappers.serialize(body)));
+                jettyRequest.body(new StringRequestContent(CONTENT_TYPE_JSON, ObjectMappers.serialize(body)));
             }
         }
-        return request;
+        return jettyRequest;
     }
 }

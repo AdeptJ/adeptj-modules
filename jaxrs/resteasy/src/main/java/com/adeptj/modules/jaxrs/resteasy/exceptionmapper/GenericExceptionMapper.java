@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ import javax.ws.rs.ext.Provider;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper.PRIORITY;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * A global {@link ExceptionMapper} for handling all uncaught exception types.
@@ -67,8 +66,8 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
     public Response toResponse(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         return Response.serverError()
-                .type(TEXT_PLAIN)
-                .entity(this.sendExceptionTrace ? ExceptionUtils.getStackTrace(exception) : DEFAULT_ERROR_MSG)
+                .type(APPLICATION_JSON)
+                .entity(new ErrorMessage(exception, DEFAULT_ERROR_MSG, this.sendExceptionTrace))
                 .build();
     }
 }

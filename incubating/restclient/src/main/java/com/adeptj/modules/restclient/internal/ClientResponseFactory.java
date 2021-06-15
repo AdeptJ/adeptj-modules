@@ -7,33 +7,31 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 class ClientResponseFactory {
 
-    static <R> ClientResponse<R> newClientResponse(ContentResponse cr, Class<R> responseType) {
+    static <R> ClientResponse<R> newClientResponse(ContentResponse jettyResponse, Class<R> responseAs) {
         ClientResponse<R> response = new ClientResponse<>();
-        response.setStatus(cr.getStatus());
-        response.setReason(cr.getReason());
+        response.setStatus(jettyResponse.getStatus());
+        response.setReason(jettyResponse.getReason());
         // 1. Copy all the headers which may be needed by the caller.
-        if (cr.getHeaders().size() > 0) {
+        if (jettyResponse.getHeaders().size() > 0) {
             Map<String, String> headers = new HashMap<>();
-            cr.getHeaders().forEach(f -> headers.put(f.getName(), f.getValue()));
+            jettyResponse.getHeaders().forEach(f -> headers.put(f.getName(), f.getValue()));
             response.setHeaders(headers);
         }
         // 2. if no response body is expected then return without setting the content.
-        if (responseType.equals(void.class)) {
+        if (responseAs.equals(void.class)) {
             return response;
         }
         // 3. byte[] is expected - the Jetty client response is already byte[]
-        if (responseType.equals(byte[].class)) {
-            response.setContent(responseType.cast(cr.getContent()));
-        } else if (responseType.equals(String.class)) {
+        if (responseAs.equals(byte[].class)) {
+            response.setContent(responseAs.cast(jettyResponse.getContent()));
+        } else if (responseAs.equals(String.class)) {
             // 4. A text response is expected, create a String from the Jetty client response byte[].
-            response.setContent(responseType.cast(new String(cr.getContent(), UTF_8)));
+            response.setContent(responseAs.cast(jettyResponse.getContentAsString()));
         } else {
             // 5. A custom type is expected, deserialize the Jetty client response byte[] to the expected type.
-            response.setContent(ObjectMappers.deserialize(cr.getContent(), responseType));
+            response.setContent(ObjectMappers.deserialize(jettyResponse.getContent(), responseAs));
         }
         return response;
     }

@@ -62,7 +62,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
                 .type(APPLICATION_JSON)
                 .entity(JakartaJsonUtil.getJsonBuilderFactory().createObjectBuilder()
                         .add(JSON_KEY_CODE, currentResponse.getStatus())
-                        .add(JSON_KEY_MESSAGE, exception.getMessage())
+                        .add(JSON_KEY_MESSAGE, currentResponse.getStatusInfo().getReasonPhrase())
                         .build())
                 .build();
     }
