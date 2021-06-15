@@ -21,6 +21,8 @@ public class ClientRequest<T, R> {
 
     private HttpMethod method;
 
+    private long timeout;
+
     private Map<String, String> headers;
 
     private Map<String, String> queryParams;
@@ -46,6 +48,10 @@ public class ClientRequest<T, R> {
 
     public HttpMethod getMethod() {
         return method;
+    }
+
+    public long getTimeout() {
+        return timeout;
     }
 
     // For overriding HttpMethod at RestClient level, see JettyRestClient#GET.
@@ -82,6 +88,8 @@ public class ClientRequest<T, R> {
 
         private HttpMethod method;
 
+        private long timeout;
+
         private Map<String, String> headers;
 
         private Map<String, String> queryParams;
@@ -99,6 +107,17 @@ public class ClientRequest<T, R> {
 
         public Builder<T, R> method(HttpMethod method) {
             this.method = method;
+            return this;
+        }
+
+        /**
+         * The request timeout in milliseconds.
+         *
+         * @param timeout the total timeout for the request/response conversation;
+         * @return timeout
+         */
+        public Builder<T, R> timeout(long timeout) {
+            this.timeout = timeout;
             return this;
         }
 
@@ -139,6 +158,7 @@ public class ClientRequest<T, R> {
         public ClientRequest<T, R> build() {
             ClientRequest<T, R> request = new ClientRequest<>(this.uri, this.responseAs);
             request.method = this.method;
+            request.timeout = this.timeout;
             request.headers = this.headers;
             request.queryParams = this.queryParams;
             request.formParams = this.formParams;

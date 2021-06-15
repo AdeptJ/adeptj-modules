@@ -11,6 +11,7 @@ import org.eclipse.jetty.client.util.StringRequestContent;
 import org.eclipse.jetty.util.Fields;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.adeptj.modules.restclient.RestClientConstants.CONTENT_TYPE_JSON;
 import static com.adeptj.modules.restclient.api.HttpMethod.GET;
@@ -21,21 +22,25 @@ class JettyRequestFactory {
         HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
         Request jettyRequest = jettyClient.newRequest(request.getUri()).method(method.toString());
-        // 1. Handle headers
+        // 1. Handle timeout
+        if (request.getTimeout() > 0) {
+            jettyRequest.timeout(request.getTimeout(), TimeUnit.MILLISECONDS);
+        }
+        // 2. Handle headers
         Map<String, String> headers = request.getHeaders();
         if (headers != null && !headers.isEmpty()) {
             jettyRequest.headers(m -> headers.forEach(m::add));
         }
-        // 2. Handle query params
+        // 3. Handle query params
         Map<String, String> queryParams = request.getQueryParams();
         if (queryParams != null && !queryParams.isEmpty()) {
             queryParams.forEach(jettyRequest::param);
         }
-        // 3. No body for http GET, return right away.
+        // 4. No body for http GET, return right away.
         if (method == GET) {
             return jettyRequest;
         }
-        // 4. Handle Form Post - application/x-www-form-urlencoded
+        // 5. Handle Form Post - application/x-www-form-urlencoded
         Map<String, String> formParams = request.getFormParams();
         if (formParams != null && !formParams.isEmpty()) {
             Fields fields = new Fields();
@@ -43,7 +48,7 @@ class JettyRequestFactory {
             jettyRequest.body(new FormRequestContent(fields));
             return jettyRequest;
         }
-        // 5. Handle Body, a JSON string or an Object which will be serialized to JSON.
+        // 6. Handle Body, a JSON string or an Object which will be serialized to JSON.
         T body = request.getBody();
         if (body != null) {
             if (body instanceof String) {
