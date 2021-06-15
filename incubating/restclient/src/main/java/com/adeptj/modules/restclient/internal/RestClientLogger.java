@@ -29,10 +29,10 @@ class RestClientLogger {
     private static final String RESPONSE_START = "<<==================== Response ====================>>\n";
 
     private static final String REQ_FMT
-            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers:\n{}\n Request Body:\n {}";
+            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers:\n{}\n Request Body:\n{}";
 
     private static final String RESP_FMT
-            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n{}\n Response Body:\n {}\n Total Time: {} milliseconds\n\n{}";
+            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n{}\n Response Body:\n{}\n Total Time: {} milliseconds\n\n{}";
 
     static <T, R> String logRequest(ClientRequest<T, R> request, Request jettyRequest, String mdcReqIdAttrName) {
         String reqId = getReqId(mdcReqIdAttrName);
