@@ -107,7 +107,7 @@ public class JettyRestClient implements RestClient {
     private <T, R> ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
-            this.handleAuthorizationHeader(jettyRequest);
+            this.addAuthorizationHeader(jettyRequest);
             String reqId = RestClientLogger.logRequest(request, jettyRequest, this.mdcReqIdAttrName);
             long startTime = System.nanoTime();
             ContentResponse response = jettyRequest.send();
@@ -124,7 +124,7 @@ public class JettyRestClient implements RestClient {
     private <T, R> ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
-            this.handleAuthorizationHeader(jettyRequest);
+            this.addAuthorizationHeader(jettyRequest);
             ContentResponse jettyResponse = jettyRequest.send();
             return ClientResponseFactory.newClientResponse(jettyResponse, request.getResponseAs());
         } catch (Exception ex) {
@@ -133,7 +133,7 @@ public class JettyRestClient implements RestClient {
         }
     }
 
-    private void handleAuthorizationHeader(Request request) {
+    private void addAuthorizationHeader(Request request) {
         // Create a temp var because the service is dynamic.
         AuthorizationHeaderPlugin ahp = this.plugin;
         if (ahp == null || ahp.getPathPatterns().isEmpty()) {
