@@ -19,13 +19,13 @@
 */
 package com.adeptj.modules.commons.utils;
 
-import javax.json.Json;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonReaderFactory;
 import javax.json.JsonWriterFactory;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
+import javax.json.spi.JsonProvider;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
 
@@ -51,10 +51,14 @@ public final class JakartaJsonUtil {
     private static final JsonBuilderFactory JSON_BUILDER_FACTORY;
 
     static {
-        JSONB = JsonbBuilder.create(new JsonbConfig().withEncoding(UTF8));
-        READER_FACTORY = Json.createReaderFactory(null);
-        WRITER_FACTORY = Json.createWriterFactory(null);
-        JSON_BUILDER_FACTORY = Json.createBuilderFactory(null);
+        JsonProvider provider = JsonProvider.provider();
+        JSONB = JsonbBuilder.newBuilder()
+                .withProvider(provider)
+                .withConfig(new JsonbConfig().withEncoding(UTF8))
+                .build();
+        READER_FACTORY = provider.createReaderFactory(null);
+        WRITER_FACTORY = provider.createWriterFactory(null);
+        JSON_BUILDER_FACTORY = provider.createBuilderFactory(null);
     }
 
     public static Jsonb getJsonb() {
