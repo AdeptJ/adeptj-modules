@@ -80,14 +80,14 @@ public class ResteasyLifecycle {
      */
     private final ValidatorService validatorService;
 
-    private final DynamicFeature dynamicFeature;
+    private final DynamicFeature jwtDynamicFeature;
 
     @Activate
     public ResteasyLifecycle(@Reference ValidatorService vs,
                              @Reference(target = SERVICE_FILTER) DynamicFeature dynamicFeature,
                              BundleContext context, ResteasyConfig config) {
         this.validatorService = vs;
-        this.dynamicFeature = dynamicFeature;
+        this.jwtDynamicFeature = dynamicFeature;
         this.context = context;
         this.config = config;
     }
@@ -117,7 +117,7 @@ public class ResteasyLifecycle {
                         .register(new JsonbContextResolver())
                         .register(new JsonReaderFactoryContextResolver())
                         .register(new JsonWriterFactoryContextResolver())
-                        .register(this.dynamicFeature);
+                        .register(this.jwtDynamicFeature);
                 this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, dispatcher.getRegistry());
                 this.serviceTracker.open();
                 LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));

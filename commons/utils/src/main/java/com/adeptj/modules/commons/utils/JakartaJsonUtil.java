@@ -26,11 +26,16 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import javax.json.spi.JsonProvider;
+import javax.json.stream.JsonGeneratorFactory;
+import javax.json.stream.JsonParserFactory;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import static com.adeptj.modules.commons.utils.Constants.UTF8;
+import static java.lang.Boolean.TRUE;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
  * Provides Jakarta {@link Jsonb} and other objects from Jakarta Json-P plus some utility methods.
@@ -48,16 +53,23 @@ public final class JakartaJsonUtil {
 
     private static final JsonWriterFactory WRITER_FACTORY;
 
+    private static final JsonGeneratorFactory GENERATOR_FACTORY;
+
+    private static final JsonParserFactory PARSER_FACTORY;
+
     private static final JsonBuilderFactory JSON_BUILDER_FACTORY;
 
     static {
         JsonProvider provider = JsonProvider.provider();
         JSONB = JsonbBuilder.newBuilder()
                 .withProvider(provider)
-                .withConfig(new JsonbConfig().withEncoding(UTF8))
+                .withConfig(new JsonbConfig().withFormatting(TRUE).withEncoding(UTF8))
                 .build();
+        Map<String, ?> config = Map.of(PRETTY_PRINTING, TRUE);
         READER_FACTORY = provider.createReaderFactory(null);
-        WRITER_FACTORY = provider.createWriterFactory(null);
+        WRITER_FACTORY = provider.createWriterFactory(config);
+        GENERATOR_FACTORY = provider.createGeneratorFactory(config);
+        PARSER_FACTORY = provider.createParserFactory(null);
         JSON_BUILDER_FACTORY = provider.createBuilderFactory(null);
     }
 
@@ -71,6 +83,14 @@ public final class JakartaJsonUtil {
 
     public static JsonWriterFactory getJsonWriterFactory() {
         return WRITER_FACTORY;
+    }
+
+    public static JsonGeneratorFactory getJsonGeneratorFactory() {
+        return GENERATOR_FACTORY;
+    }
+
+    public static JsonParserFactory getJsonParserFactory() {
+        return PARSER_FACTORY;
     }
 
     public static JsonBuilderFactory getJsonBuilderFactory() {
