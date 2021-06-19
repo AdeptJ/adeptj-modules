@@ -31,17 +31,23 @@ import com.adeptj.modules.data.jpa.entity.Address;
 import com.adeptj.modules.data.jpa.entity.User;
 import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
+import org.eclipse.persistence.jpa.PersistenceProvider;
+import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Persistence;
+import javax.persistence.EntityManagerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.adeptj.modules.data.jpa.query.QueryType.JPA;
 import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
@@ -56,15 +62,61 @@ public class UserRepositoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String UNIT_NAME = "AdeptJ_PU";
-
     private static UserRepository repository;
 
-    @BeforeAll
-    public static void init() {
+    public static void initHibernateEntityManagerFactoryPostgres() {
+        String unitName = "AdeptJ_PU_Postgres_Hibernate";
         repository = new UserRepository();
-        repository.setEntityManagerFactory(Persistence.createEntityManagerFactory(UNIT_NAME));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("javax.persistence.nonJtaDataSource", getDataSource());
+        EntityManagerFactory entityManagerFactory = null;
+        try {
+            entityManagerFactory = new HibernatePersistenceProvider().createEntityManagerFactory(unitName, properties);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        repository.setEntityManagerFactory(entityManagerFactory);
         LOGGER.info("EntityManagerFactory created!!");
+    }
+
+    public static void initEclipseLinkEntityManagerFactoryMySQL() {
+        String unitName = "AdeptJ_PU_MySQL_EclipseLink";
+        repository = new UserRepository();
+        EntityManagerFactory entityManagerFactory = null;
+        try {
+            entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, new HashMap<>());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        repository.setEntityManagerFactory(entityManagerFactory);
+        LOGGER.info("EntityManagerFactory created!!");
+    }
+
+    @BeforeAll
+    public static void initEclipseLinkEntityManagerFactoryPostgres() {
+        String unitName = "AdeptJ_PU_Postgres_EclipseLink";
+        repository = new UserRepository();
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("javax.persistence.nonJtaDataSource", getDataSource());
+        EntityManagerFactory entityManagerFactory = null;
+        try {
+            entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, properties);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        repository.setEntityManagerFactory(entityManagerFactory);
+        LOGGER.info("EntityManagerFactory created!!");
+    }
+
+    @NotNull
+    private static PGSimpleDataSource getDataSource() {
+        PGSimpleDataSource ds = new MyPGSimpleDataSource();
+        ds.setServerNames(null);
+        ds.setPortNumbers(null);
+        ds.setUser("ut");
+        ds.setPassword("EclipseLink@2018");
+        ds.setDatabaseName("JPA");
+        return ds;
     }
 
     @AfterAll
