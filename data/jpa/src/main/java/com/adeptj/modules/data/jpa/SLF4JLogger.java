@@ -142,23 +142,22 @@ public class SLF4JLogger extends AbstractSessionLog {
         if (category == null) {
             throw new IllegalArgumentException("Unknown logging category name.");
         }
-        final byte levelId = (byte) logEntry.getLevel();
-        if (this.logLevels[category.getId()].shouldLog(levelId)) {
+        final int levelId = logEntry.getLevel();
+        if (this.logLevels[category.getId()].shouldLog((byte) levelId)) {
             final Logger logger = LoggerFactory.getLogger(category.getNameSpace());
             final LogLevel level = LogLevel.toValue(levelId);
-            // If EclipseLink level is ALL or FINEST but SLF4J TRACE is not enabled, return right away.
-            if ((level == LogLevel.ALL || level == LogLevel.FINEST) && !logger.isTraceEnabled()) {
+            // If EclipseLink LogLevel is ALL or FINEST but SLF4J TRACE is not enabled
+            // OR
+            // If EclipseLink LogLevel is FINER or FINE but SLF4J DEBUG is not enabled, return right away.
+            if (((level == LogLevel.ALL || level == LogLevel.FINEST) && !logger.isTraceEnabled())
+                    || ((level == LogLevel.FINER || level == LogLevel.FINE) && !logger.isDebugEnabled())) {
                 return;
             }
-            // If EclipseLink level is FINER or FINE but SLF4J DEBUG is not enabled, return right away.
-            if ((level == LogLevel.FINER || level == LogLevel.FINE) && !logger.isDebugEnabled()) {
-                return;
-            }
-            this.doLog(logEntry, logger, level);
+            this.doLog(logger, logEntry, level);
         }
     }
 
-    private void doLog(SessionLogEntry logEntry, Logger logger, LogLevel level) {
+    private void doLog(final Logger logger, final SessionLogEntry logEntry, final LogLevel level) {
         if (logEntry.hasException()) {
             if (super.shouldLogExceptionStackTrace()) {
                 // Message is rendered on EclipseLink side. SLF4J gets final String. Exception is passed too.
