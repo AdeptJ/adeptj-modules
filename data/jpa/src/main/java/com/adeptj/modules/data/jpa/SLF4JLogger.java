@@ -19,7 +19,6 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.LogCategory;
 import org.eclipse.persistence.logging.LogLevel;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,153 +27,13 @@ import java.util.Arrays;
 /**
  * EclipseLink logger bridge over SLF4J.
  * <p>
- * Copy of EclipseLink's org.eclipse.persistence.logging.slf4j.SLF4JLogger because that class was not exported by the
- * containing bundle which results in {@link ClassNotFoundException} at run time.
+ * Borrowed (with much appreciation) from EclipseLink's org.eclipse.persistence.logging.slf4j.SLF4JLogger.
+ * EclipseLink's SLF4JLogger class is not exported by the containing bundle which results in {@link ClassNotFoundException}.
  *
  * @author Jaro Kuruc  - Initial API and implementation.
  * @author Tomas Kraus - EclipseLink 2.7 integration.
  */
 public class SLF4JLogger extends AbstractSessionLog {
-
-    /**
-     * Logger callback interface.
-     */
-    private interface LoggerCall {
-
-        void log(final Logger logger, final String msg, final Throwable t);
-
-        void log(final Logger logger, final String message);
-    }
-
-    /**
-     * {@code TRACE} level log.
-     */
-    private static final class LogTrace implements LoggerCall {
-
-        @Override
-        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
-            logger.trace(msg, t);
-        }
-
-        @Override
-        public void log(final @NotNull Logger logger, final String message) {
-            logger.trace(message);
-        }
-    }
-
-    /**
-     * {@code DEBUG} level log.
-     */
-    private static final class LogDebug implements LoggerCall {
-
-        @Override
-        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
-            logger.debug(msg, t);
-        }
-
-        @Override
-        public void log(final @NotNull Logger logger, final String message) {
-            logger.debug(message);
-        }
-    }
-
-    /**
-     * {@code INFO} level log.
-     */
-    private static final class LogInfo implements LoggerCall {
-
-        @Override
-        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
-            logger.info(msg, t);
-        }
-
-        @Override
-        public void log(final @NotNull Logger logger, final String message) {
-            logger.info(message);
-        }
-    }
-
-    /**
-     * {@code WARN} level log.
-     */
-    private static final class LogWarn implements LoggerCall {
-
-        @Override
-        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
-            logger.warn(msg, t);
-        }
-
-        @Override
-        public void log(final @NotNull Logger logger, final String message) {
-            logger.warn(message);
-        }
-    }
-
-    /**
-     * {@code ERROR} level log.
-     */
-    private static final class LogError implements LoggerCall {
-
-        @Override
-        public void log(final @NotNull Logger logger, final String msg, final Throwable t) {
-            logger.error(msg, t);
-        }
-
-        @Override
-        public void log(final @NotNull Logger logger, final String message) {
-            logger.error(message);
-        }
-    }
-
-    /**
-     * Do not log anything.
-     */
-    private static final class LogNop implements LoggerCall {
-
-        @Override
-        public void log(final Logger logger, final String msg, final Throwable t) {
-        }
-
-        @Override
-        public void log(final Logger logger, final String message) {
-        }
-    }
-
-    /**
-     * SLF4J logger calls mapping for EclipseLink logging levels.
-     */
-    private static final LoggerCall[] loggerCall = new LoggerCall[LogLevel.length];
-
-    /**
-     * Loggers lookup array.
-     */
-    private static final Logger[] categoryLoggers = new Logger[LogCategory.length];
-
-    static {
-        // Initialize loggers lookup array.
-        Arrays.fill(categoryLoggers, null);
-        // Initialize SLF4J logger calls mapping for EclipseLink logging levels.
-        loggerCall[LogLevel.ALL.getId()] = loggerCall[LogLevel.FINEST.getId()] = new LogTrace();
-        loggerCall[LogLevel.FINER.getId()] = loggerCall[LogLevel.FINE.getId()] = new LogDebug();
-        loggerCall[LogLevel.CONFIG.getId()] = loggerCall[LogLevel.INFO.getId()] = new LogInfo();
-        loggerCall[LogLevel.WARNING.getId()] = new LogWarn();
-        loggerCall[LogLevel.SEVERE.getId()] = new LogError();
-        loggerCall[LogLevel.OFF.getId()] = new LogNop();
-    }
-
-    /**
-     * Retrieve Logger for the given category.
-     *
-     * @param category EclipseLink logging category
-     * @return Logger for the given logging category.
-     */
-    private Logger getLogger(final @NotNull LogCategory category) {
-        final Logger logger = categoryLoggers[category.getId()];
-        if (logger == null) {
-            return categoryLoggers[category.getId()] = LoggerFactory.getLogger(category.getNameSpace());
-        }
-        return logger;
-    }
 
     /**
      * Logging levels for individual logging categories.
@@ -285,19 +144,65 @@ public class SLF4JLogger extends AbstractSessionLog {
         }
         final byte levelId = (byte) logEntry.getLevel();
         if (this.logLevels[category.getId()].shouldLog(levelId)) {
+            final Logger logger = LoggerFactory.getLogger(category.getNameSpace());
             final LogLevel level = LogLevel.toValue(levelId);
-            final Logger logger = this.getLogger(category);
-            if (logEntry.hasException()) {
-                if (this.shouldLogExceptionStackTrace()) {
-                    // Message is rendered on EclipseLink side. SLF4J gets final String. Exception is passed too.
-                    loggerCall[level.getId()].log(logger, formatMessage(logEntry), logEntry.getException());
-                } else {
-                    // Exception message is rendered on EclipseLink side. SLF4J gets final String.
-                    loggerCall[level.getId()].log(logger, logEntry.getException().toString());
-                }
+            // If EclipseLink level is ALL or FINEST but SLF4J TRACE is not enabled, return right away.
+            if ((level == LogLevel.ALL || level == LogLevel.FINEST) && !logger.isTraceEnabled()) {
+                return;
+            }
+            // If EclipseLink level is FINER or FINE but SLF4J DEBUG is not enabled, return right away.
+            if ((level == LogLevel.FINER || level == LogLevel.FINE) && !logger.isDebugEnabled()) {
+                return;
+            }
+            this.doLog(logEntry, logger, level);
+        }
+    }
+
+    private void doLog(SessionLogEntry logEntry, Logger logger, LogLevel level) {
+        if (logEntry.hasException()) {
+            if (super.shouldLogExceptionStackTrace()) {
+                // Message is rendered on EclipseLink side. SLF4J gets final String. Exception is passed too.
+                this.doLogSLF4J(logger, level, super.formatMessage(logEntry), logEntry.getException());
             } else {
-                // Message is rendered on EclipseLink side. SLF4J gets final String.
-                loggerCall[level.getId()].log(logger, formatMessage(logEntry));
+                // Exception message is rendered on EclipseLink side. SLF4J gets final String.
+                this.doLogSLF4J(logger, level, logEntry.getException().toString(), null);
+            }
+        } else {
+            // Message is rendered on EclipseLink side. SLF4J gets final String.
+            this.doLogSLF4J(logger, level, super.formatMessage(logEntry), null);
+        }
+    }
+
+    private void doLogSLF4J(final Logger logger, final LogLevel level, final String msg, final Throwable t) {
+        if (level == LogLevel.ALL || level == LogLevel.FINEST) {
+            if (t == null) {
+                logger.trace(msg);
+            } else {
+                logger.trace(msg, t);
+            }
+        } else if (level == LogLevel.FINER || level == LogLevel.FINE) {
+            if (t == null) {
+                logger.debug(msg);
+            } else {
+                logger.debug(msg, t);
+            }
+        } else if (level == LogLevel.CONFIG || level == LogLevel.INFO) {
+            if (t == null) {
+                logger.info(msg);
+            } else {
+                logger.info(msg, t);
+            }
+        } else if (level == LogLevel.WARNING) {
+            if (t == null) {
+                logger.warn(msg);
+            } else {
+                logger.warn(msg, t);
+            }
+        } else if (level == LogLevel.SEVERE) {
+            if (t == null) {
+                logger.error(msg);
+            } else {
+                logger.error(msg, t);
             }
         }
     }

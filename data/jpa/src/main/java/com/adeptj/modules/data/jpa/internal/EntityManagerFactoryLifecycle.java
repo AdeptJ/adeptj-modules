@@ -120,7 +120,7 @@ public class EntityManagerFactoryLifecycle {
             }
             properties.put(CLASSLOADER, provider.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(this.unitName, properties);
-            Validate.validState(this.entityManagerFactory != null, EMF_NULL_EX_MSG);
+            Validate.validState((this.entityManagerFactory != null), EMF_NULL_EX_MSG);
             LOGGER.info(EMF_CREATED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -135,11 +135,11 @@ public class EntityManagerFactoryLifecycle {
     protected void stop() {
         long startTime = System.nanoTime();
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
-        Activator.disposeDefaultLog();
+        JpaActivator.disposeEclipseLinkSingletonLog();
         LOGGER.info(EMF_CLOSED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));
     }
 
-    // <<----------------------------------- JpaRepository Bind ------------------------------------>>
+    // <<------------------------------------------ JpaRepository Bind ------------------------------------------->>
 
     @Reference(service = JpaRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindJpaRepository(JpaRepository<?, ?> repository) {
