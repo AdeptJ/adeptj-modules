@@ -146,11 +146,12 @@ public class SLF4JLogger extends AbstractSessionLog {
         if (this.logLevels[category.getId()].shouldLog((byte) levelId)) {
             final Logger logger = LoggerFactory.getLogger(category.getNameSpace());
             final LogLevel level = LogLevel.toValue(levelId);
-            // If EclipseLink LogLevel is ALL or FINEST but SLF4J TRACE is not enabled
-            // OR
+            // If EclipseLink LogLevel is ALL or FINEST but SLF4J TRACE is not enabled, return right away.
+            if ((level == LogLevel.ALL || level == LogLevel.FINEST) && !logger.isTraceEnabled()) {
+                return;
+            }
             // If EclipseLink LogLevel is FINER or FINE but SLF4J DEBUG is not enabled, return right away.
-            if (((level == LogLevel.ALL || level == LogLevel.FINEST) && !logger.isTraceEnabled())
-                    || ((level == LogLevel.FINER || level == LogLevel.FINE) && !logger.isDebugEnabled())) {
+            if ((level == LogLevel.FINER || level == LogLevel.FINE) && !logger.isDebugEnabled()) {
                 return;
             }
             this.doLog(logger, logEntry, level);
@@ -164,45 +165,39 @@ public class SLF4JLogger extends AbstractSessionLog {
                 this.doLogSLF4J(logger, level, super.formatMessage(logEntry), logEntry.getException());
             } else {
                 // Exception message is rendered on EclipseLink side. SLF4J gets final String.
-                this.doLogSLF4J(logger, level, logEntry.getException().toString(), null);
+                this.doLogSLF4J(logger, level, logEntry.getException().toString());
             }
         } else {
             // Message is rendered on EclipseLink side. SLF4J gets final String.
-            this.doLogSLF4J(logger, level, super.formatMessage(logEntry), null);
+            this.doLogSLF4J(logger, level, super.formatMessage(logEntry));
         }
     }
 
     private void doLogSLF4J(final Logger logger, final LogLevel level, final String msg, final Throwable t) {
         if (level == LogLevel.ALL || level == LogLevel.FINEST) {
-            if (t == null) {
-                logger.trace(msg);
-            } else {
-                logger.trace(msg, t);
-            }
+            logger.trace(msg, t);
         } else if (level == LogLevel.FINER || level == LogLevel.FINE) {
-            if (t == null) {
-                logger.debug(msg);
-            } else {
-                logger.debug(msg, t);
-            }
+            logger.debug(msg, t);
         } else if (level == LogLevel.CONFIG || level == LogLevel.INFO) {
-            if (t == null) {
-                logger.info(msg);
-            } else {
-                logger.info(msg, t);
-            }
+            logger.info(msg, t);
         } else if (level == LogLevel.WARNING) {
-            if (t == null) {
-                logger.warn(msg);
-            } else {
-                logger.warn(msg, t);
-            }
+            logger.warn(msg, t);
         } else if (level == LogLevel.SEVERE) {
-            if (t == null) {
-                logger.error(msg);
-            } else {
-                logger.error(msg, t);
-            }
+            logger.error(msg, t);
+        }
+    }
+
+    private void doLogSLF4J(final Logger logger, final LogLevel level, final String msg) {
+        if (level == LogLevel.ALL || level == LogLevel.FINEST) {
+            logger.trace(msg);
+        } else if (level == LogLevel.FINER || level == LogLevel.FINE) {
+            logger.debug(msg);
+        } else if (level == LogLevel.CONFIG || level == LogLevel.INFO) {
+            logger.info(msg);
+        } else if (level == LogLevel.WARNING) {
+            logger.warn(msg);
+        } else if (level == LogLevel.SEVERE) {
+            logger.error(msg);
         }
     }
 }
