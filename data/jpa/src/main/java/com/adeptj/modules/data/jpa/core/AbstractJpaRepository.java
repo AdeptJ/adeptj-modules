@@ -127,8 +127,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             for (int i = 0; i < entities.size(); i++) {
                 if (i > 0 && (i % batchSize == 0)) {
                     em.getTransaction().commit();
-                    em.getTransaction().begin();
                     em.clear();
+                    em.getTransaction().begin();
                 }
                 em.persist(entities.get(i));
             }
@@ -197,7 +197,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     public void delete(Class<T> entity, ID primaryKey) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            // This should happen in a single transaction therefor start the transaction right away.
+            // This should happen in a single transaction therefore start the transaction right away.
             em.getTransaction().begin();
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
