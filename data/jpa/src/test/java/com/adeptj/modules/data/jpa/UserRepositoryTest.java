@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.adeptj.modules.data.jpa.JpaConstants.SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING;
 import static com.adeptj.modules.data.jpa.query.QueryType.JPA;
 import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
 
@@ -64,6 +65,11 @@ public class UserRepositoryTest {
 
     private static UserRepository repository;
 
+    static {
+        System.setProperty(SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING, "true");
+    }
+
+    //@BeforeAll
     public static void initHibernateEntityManagerFactoryPostgres() {
         String unitName = "AdeptJ_PU_Postgres_Hibernate";
         repository = new UserRepository();

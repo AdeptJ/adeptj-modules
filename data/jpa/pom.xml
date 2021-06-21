@@ -35,8 +35,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <eclipselink.version>2.7.5</eclipselink.version>
-        <postgresql.version>42.2.10</postgresql.version>
+        <eclipselink.version>2.7.9</eclipselink.version>
+        <postgresql.version>42.2.22</postgresql.version>
     </properties>
 
     <!-- Project Information -->
