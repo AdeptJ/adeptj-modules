@@ -110,11 +110,11 @@ public class UserRepositoryTest {
 
     @NotNull
     private static PGSimpleDataSource getDataSource() {
-        PGSimpleDataSource ds = new MyPGSimpleDataSource();
+        PGSimpleDataSource ds = new MyPGSimpleDataSource(false);
         ds.setServerNames(null);
         ds.setPortNumbers(null);
-        ds.setUser("ut");
-        ds.setPassword("EclipseLink@2018");
+        ds.setUser("postgres");
+        ds.setPassword("postgres");
         ds.setDatabaseName("JPA");
         return ds;
     }

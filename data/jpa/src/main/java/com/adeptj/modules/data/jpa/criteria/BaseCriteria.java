@@ -21,6 +21,7 @@
 package com.adeptj.modules.data.jpa.criteria;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import org.apache.commons.lang3.Validate;
 
 import java.util.Map;
 
@@ -36,6 +37,7 @@ public abstract class BaseCriteria<T extends BaseEntity> {
     Map<String, Object> criteriaAttributes;
 
     BaseCriteria(Class<T> entity) {
+        Validate.isTrue((entity != null), "Entity class cannot be null!");
         this.entity = entity;
     }
 
