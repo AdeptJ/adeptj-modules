@@ -52,6 +52,7 @@ import java.util.Map;
 import static com.adeptj.modules.data.jpa.JpaConstants.SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING;
 import static com.adeptj.modules.data.jpa.query.QueryType.JPA;
 import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SESSION_CUSTOMIZER;
 
 /**
  * JpaCrudRepositoryTest
@@ -104,6 +105,7 @@ public class UserRepositoryTest {
         repository = new UserRepository();
         Map<String, Object> properties = new HashMap<>();
         properties.put("javax.persistence.nonJtaDataSource", getDataSource());
+        properties.put(SESSION_CUSTOMIZER, new PostgresCustomizer());
         EntityManagerFactory entityManagerFactory = null;
         try {
             entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, properties);
