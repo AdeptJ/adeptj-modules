@@ -176,8 +176,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             criteria.getUpdateAttributes().forEach(cu::set);
             Root<T> root = cu.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
+            Query query = em.createQuery(cu.where(predicates));
             em.getTransaction().begin();
-            int rowsUpdated = em.createQuery(cu.where(predicates)).executeUpdate();
+            int rowsUpdated = query.executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
@@ -222,9 +223,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     public int deleteByJpaNamedQuery(CrudDTO<T> crudDTO) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            em.getTransaction().begin();
             TypedQuery<T> query = em.createNamedQuery(crudDTO.getNamedQueryName(), crudDTO.getEntity());
             JpaUtil.bindQueryParams(query, crudDTO.getQueryParams());
+            em.getTransaction().begin();
             int rowsDeleted = query.executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("deleteByJpaNamedQuery: No. of rows deleted: [{}]", rowsDeleted);
@@ -245,12 +246,13 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     public int deleteByCriteria(DeleteCriteria<T> criteria) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            em.getTransaction().begin();
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
             Root<T> root = cd.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
-            int rowsDeleted = em.createQuery(cd.where(predicates)).executeUpdate();
+            Query query = em.createQuery(cd.where(predicates));
+            em.getTransaction().begin();
+            int rowsDeleted = query.executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
@@ -270,8 +272,10 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     public int deleteAll(Class<T> entity) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
+            CriteriaDelete<T> cd = em.getCriteriaBuilder().createCriteriaDelete(entity);
+            Query query = em.createQuery(cd);
             em.getTransaction().begin();
-            int rowsDeleted = em.createQuery(em.getCriteriaBuilder().createCriteriaDelete(entity)).executeUpdate();
+            int rowsDeleted = query.executeUpdate();
             em.getTransaction().commit();
             LOGGER.debug("deleteAll: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;

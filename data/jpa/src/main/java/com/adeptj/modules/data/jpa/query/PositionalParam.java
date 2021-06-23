@@ -30,13 +30,13 @@ import org.apache.commons.lang3.Validate;
 public class PositionalParam extends AbstractQueryParam {
 
     /**
-     * Note: Query parameter position always starts with 1 therefore it should always be non zero.
+     * Note: Query parameter position always starts with 1 therefore it should always be greater than zero.
      */
     private final int position;
 
     public PositionalParam(int position, Object value) {
         super(value);
-        Validate.isTrue(position!= 0, "Query bind parameter position can't be zero!");
+        Validate.isTrue((position > 0), "Query bind parameter position must be greater than zero!");
         this.position = position;
     }
 
