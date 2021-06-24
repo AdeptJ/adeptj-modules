@@ -29,7 +29,7 @@ public abstract class AbstractCayenneRepository<T> implements CayenneRepository<
     }
 
     protected ObjectContext newContext() {
-        return this.cayenne.newContext();
+        return this.getCayenne().newContext();
     }
 
     @Override
