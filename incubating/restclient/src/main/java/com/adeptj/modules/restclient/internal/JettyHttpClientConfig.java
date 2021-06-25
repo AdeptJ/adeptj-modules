@@ -65,7 +65,7 @@ public @interface JettyHttpClientConfig {
 
     @AttributeDefinition(
             name = "Jetty HttpClient Max Redirects",
-            description = "Name to be used by Jetty QueuedThreadPool(QTP)"
+            description = "The max number of HTTP redirects that are followed in a conversation, or -1 for unlimited redirects."
     )
     int max_redirects() default 8;
 
