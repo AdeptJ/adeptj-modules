@@ -145,12 +145,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>io.github.azagniotov</groupId>
-            <artifactId>ant-style-path-matcher</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
     </dependencies>
 
 </project>

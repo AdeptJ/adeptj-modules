@@ -1,11 +1,11 @@
 package com.adeptj.modules.restclient.internal;
 
+import com.adeptj.modules.restclient.AntPathMatcher;
 import com.adeptj.modules.restclient.RestClientException;
 import com.adeptj.modules.restclient.api.ClientRequest;
 import com.adeptj.modules.restclient.api.ClientResponse;
 import com.adeptj.modules.restclient.api.RestClient;
 import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
-import io.github.azagniotov.matcher.AntPathMatcher;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -139,7 +139,7 @@ public class JettyRestClient implements RestClient {
         if (ahp == null || ahp.getPathPatterns().isEmpty()) {
             return;
         }
-        AntPathMatcher matcher = new AntPathMatcher.Builder().build();
+        AntPathMatcher matcher = AntPathMatcher.builder().build();
         for (String pattern : ahp.getPathPatterns()) {
             if (matcher.isMatch(pattern, request.getPath())) {
                 request.headers(f -> f.add(AUTHORIZATION, ahp.getType() + " " + ahp.getValue()));
