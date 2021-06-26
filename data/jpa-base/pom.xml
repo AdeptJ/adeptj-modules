@@ -31,7 +31,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Data :: JPA :: Base</name>
-    <description>AdeptJ Modules :: Data :: JPA(EclipseLink) :: Base</description>
+    <description>AdeptJ Modules :: Data :: JPA :: Base</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
