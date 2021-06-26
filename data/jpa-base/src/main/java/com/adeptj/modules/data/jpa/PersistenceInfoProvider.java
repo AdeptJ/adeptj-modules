@@ -47,7 +47,7 @@ public interface PersistenceInfoProvider {
      * For example an object of DescriptorCustomizer implementation could be provided or one or more configurations
      * provided by AdeptJ JPA EntityManagerFactory configuration could be overridden.
      * <p>
-     * Note: Be cautious while overriding configurations, this may result in unpredictable behaviour at runtime.
+     * Note: Be cautious while overriding configurations, this may result in unpredictable behaviour.
      *
      * @return the extra persistence info properties.
      */
