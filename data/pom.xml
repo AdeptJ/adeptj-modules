@@ -27,13 +27,15 @@
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Data :: Builder</name>
     <description>AdeptJ Modules :: Data :: Builder</description>
-    <url>http://www.adeptj.com</url>
+    <url>https://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
 
         <module>mybatis-api</module>
         <module>mongodb-api</module>
+        
+        <module>jpa-base</module>
         <module>jpa</module>
         <module>mybatis</module>
         <module>mongodb</module>

@@ -18,16 +18,13 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.eclipselink.extension;
 
 import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.osgi.annotation.versioning.ProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-
-import static com.adeptj.modules.data.jpa.JpaConstants.SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING;
 
 /**
  * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
@@ -37,10 +34,11 @@ import static com.adeptj.modules.data.jpa.JpaConstants.SYS_PROP_ENABLE_EXCEPTION
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ProviderType
 public class JpaExceptionHandler implements ExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING = "enable.eclipselink.exceptionhandler.logging";
 
     /**
      * {@inheritDoc}

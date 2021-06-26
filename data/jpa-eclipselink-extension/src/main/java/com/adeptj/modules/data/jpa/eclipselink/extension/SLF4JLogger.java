@@ -13,7 +13,7 @@
  *      Tomas Kraus - EclipseLink 2.7 integration.
  ******************************************************************************
  */
-package com.adeptj.modules.data.jpa;
+package com.adeptj.modules.data.jpa.eclipselink.extension;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.LogCategory;

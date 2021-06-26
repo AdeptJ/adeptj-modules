@@ -93,15 +93,25 @@ public @interface EntityManagerFactoryConfig {
 
     @AttributeDefinition(
             name = "Deploy on Startup",
-            description = "Whether to register PersistenceUnit when the application starts up"
+            description = "Whether to register PersistenceUnit when the application starts up",
+            options = {
+                    @Option(label = "YES", value = "true"),
+                    @Option(label = "NO", value = "false")
+            }
     )
-    boolean deployOnStartup() default true;
+    String deployOnStartup() default "true";
 
     @AttributeDefinition(
             name = "Use EclipseLink ExceptionHandler",
             description = "Whether to use EclipseLink's ExceptionHandler mechanism"
     )
     boolean useExceptionHandler() default true;
+
+    @AttributeDefinition(
+            name = "EclipseLink ExceptionHandler FQCN",
+            description = "Fully qualified class name of the EclipseLink ExceptionHandler"
+    )
+    String exceptionHandlerFQCN() default "com.adeptj.modules.data.jpa.eclipselink.extension.JpaExceptionHandler";
 
     @AttributeDefinition(
             name = "Log JPA Query Parameters",
@@ -184,6 +194,12 @@ public @interface EntityManagerFactoryConfig {
             CATEGORY_LOGGING_LEVEL_ + EVENT,
             CATEGORY_LOGGING_LEVEL_ + MISC
     };
+
+    @AttributeDefinition(
+            name = "EclipseLink SLF4J Logger FQCN",
+            description = "Fully qualified class name of the EclipseLink SLF4J Logger"
+    )
+    String eclipseLinkSLF4JLoggerFQCN() default "com.adeptj.modules.data.jpa.eclipselink.extension.SLF4JLogger";
 
     @AttributeDefinition(
             name = "DDL Generation Mode",

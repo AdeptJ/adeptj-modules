@@ -31,7 +31,6 @@ import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
 import com.adeptj.modules.data.jpa.dto.CrudDTO;
 import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
-import com.adeptj.modules.data.jpa.internal.EntityManagerFactoryLifecycle;
 import com.adeptj.modules.data.jpa.query.InParam;
 import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
@@ -72,7 +71,7 @@ import static javax.persistence.ParameterMode.OUT;
  * <p>
  * The consumer should subclass this and registered with the OSGi service registry.
  * <p>
- * The {@link EntityManagerFactoryLifecycle} will bind to the {@link JpaRepository} implementations as and when they
+ * The EntityManagerFactoryLifecycle will bind to the {@link JpaRepository} implementations as and when they
  * become available and set an active {@link EntityManagerFactory} instance to the {@link AbstractJpaRepository}.
  *
  * @param <T>  The {@link BaseEntity} subclass type which this repository is dealing with.
@@ -624,7 +623,6 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     /**
      * {@inheritDoc}
      */
-    @Deprecated(forRemoval = true)
     @Override
     public <E> E executeCallback(JpaCallback<E> action) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);

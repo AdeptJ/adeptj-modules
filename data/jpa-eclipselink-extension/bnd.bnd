@@ -16,15 +16,9 @@
 #                                                                          #
 ############################################################################
 
--metatypeannotations: *
+# Always Make sure this fragment should be installed before the Host Bundle
 
--metatypeannotations-options: version;minimum=1.4.0
-
--dsannotations: *
-
--dsannotations-options: version;minimum=1.4.0
-
-Private-Package: com.adeptj.modules.data.jpa.internal
+Fragment-Host: org.eclipse.persistence.jpa;bundle-version="[2.7,3)"
 
 Bundle-Name: ${project.name}
 

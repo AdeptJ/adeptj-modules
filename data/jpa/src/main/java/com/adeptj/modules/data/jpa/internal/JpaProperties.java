@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.data.jpa.internal;
 
-import com.adeptj.modules.data.jpa.JpaExceptionHandler;
-import com.adeptj.modules.data.jpa.SLF4JLogger;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -56,10 +54,9 @@ final class JpaProperties {
         properties.put(DDL_GENERATION, config.ddlGeneration());
         properties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
         properties.put(SESSION_CUSTOMIZER, new QueryRetryCustomizer(config.queryRetryAttemptCount()));
-        // DEPLOY_ON_STARTUP must be a string value
-        properties.put(DEPLOY_ON_STARTUP, Boolean.toString(config.deployOnStartup()));
+        properties.put(DEPLOY_ON_STARTUP, config.deployOnStartup());
         properties.put(LOGGING_LEVEL, config.loggingLevel());
-        properties.put(LOGGING_LOGGER, SLF4JLogger.class.getName());
+        properties.put(LOGGING_LOGGER, config.eclipseLinkSLF4JLoggerFQCN());
         properties.put(LOGGING_PARAMETERS, Boolean.toString(config.logQueryParameters()));
         // Add all loggers
         Stream.of(config.eclipselinkLoggers()).forEach(logger -> properties.put(logger, config.loggingLevel()));
@@ -68,7 +65,7 @@ final class JpaProperties {
         properties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
         properties.put(VALIDATION_MODE, config.validationMode());
         if (config.useExceptionHandler()) {
-            properties.put(EXCEPTION_HANDLER_CLASS, JpaExceptionHandler.class.getName());
+            properties.put(EXCEPTION_HANDLER_CLASS, config.exceptionHandlerFQCN());
         }
         // Extra properties are in [key=value] format.
         Stream.of(config.jpaProperties())

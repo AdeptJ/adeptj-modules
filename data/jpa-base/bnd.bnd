@@ -24,7 +24,16 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Private-Package: com.adeptj.modules.data.jpa.internal
+Export-Package: com.adeptj.modules.data.jpa, \
+                com.adeptj.modules.data.jpa.core, \
+                com.adeptj.modules.data.jpa.query, \
+                com.adeptj.modules.data.jpa.criteria, \
+                com.adeptj.modules.data.jpa.dto, \
+                com.adeptj.modules.data.jpa.util, \
+                com.adeptj.modules.data.jpa.exception
+
+Import-Package: org.eclipse.persistence.indirection, \
+                *
 
 Bundle-Name: ${project.name}
 
