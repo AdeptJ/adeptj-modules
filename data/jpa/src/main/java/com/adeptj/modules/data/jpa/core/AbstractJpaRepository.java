@@ -61,6 +61,8 @@ import javax.persistence.criteria.Selection;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static javax.persistence.ParameterMode.OUT;
@@ -101,6 +103,14 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         return this.entityManagerFactory;
     }
 
+    protected void beginTransaction(EntityManager em) {
+        em.getTransaction().begin();
+    }
+
+    protected void commitTransaction(EntityManager em) {
+        em.getTransaction().commit();
+    }
+
     // <---------------------------------------------- Insert ---------------------------------------------->>
 
     /**
@@ -111,9 +121,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         Validate.notNull(entity, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             em.persist(entity);
-            em.getTransaction().commit();
+            this.commitTransaction(em);
             return entity;
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
@@ -130,16 +140,16 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         Validate.isTrue(batchSize > 1, "batchSize should be greater than 1!!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             for (int i = 0; i < entities.size(); i++) {
                 if (i > 0 && (i % batchSize == 0)) {
-                    em.getTransaction().commit();
+                    this.commitTransaction(em);
                     em.clear();
-                    em.getTransaction().begin();
+                    this.beginTransaction(em);
                 }
                 em.persist(entities.get(i));
             }
-            em.getTransaction().commit();
+            this.commitTransaction(em);
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
             throw new JpaException(ex);
@@ -160,9 +170,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         T updated;
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             updated = em.merge(entity);
-            em.getTransaction().commit();
+            this.commitTransaction(em);
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
             throw new JpaException(ex);
@@ -186,9 +196,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             Root<T> root = cu.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
             Query query = em.createQuery(cu.where(predicates));
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             int rowsUpdated = query.executeUpdate();
-            em.getTransaction().commit();
+            this.commitTransaction(em);
             LOGGER.debug("No. of rows updated: {}", rowsUpdated);
             return rowsUpdated;
         } catch (Exception ex) { // NOSONAR
@@ -210,14 +220,14 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             // This should happen in a single transaction therefore start the transaction right away.
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
                 LOGGER.warn("Entity couldn't be deleted because it doesn't exists in DB: [{}]", entity);
             } else {
                 em.remove(entityToDelete);
             }
-            em.getTransaction().commit();
+            this.commitTransaction(em);
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
             throw new JpaException(ex);
@@ -236,9 +246,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         try {
             TypedQuery<T> query = em.createNamedQuery(crudDTO.getNamedQueryName(), crudDTO.getEntity());
             JpaUtil.bindQueryParams(query, crudDTO.getQueryParams());
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             int rowsDeleted = query.executeUpdate();
-            em.getTransaction().commit();
+            this.commitTransaction(em);
             LOGGER.debug("deleteByJpaNamedQuery: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (Exception ex) { // NOSONAR
@@ -262,9 +272,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             Root<T> root = cd.from(criteria.getEntity());
             Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
             Query query = em.createQuery(cd.where(predicates));
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             int rowsDeleted = query.executeUpdate();
-            em.getTransaction().commit();
+            this.commitTransaction(em);
             LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (Exception ex) { // NOSONAR
@@ -285,9 +295,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         try {
             CriteriaDelete<T> cd = em.getCriteriaBuilder().createCriteriaDelete(entity);
             Query query = em.createQuery(cd);
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             int rowsDeleted = query.executeUpdate();
-            em.getTransaction().commit();
+            this.commitTransaction(em);
             LOGGER.debug("deleteAll: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (Exception ex) { // NOSONAR
@@ -614,6 +624,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     /**
      * {@inheritDoc}
      */
+    @Deprecated(forRemoval = true)
     @Override
     public <E> E executeCallback(JpaCallback<E> action) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
@@ -634,9 +645,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         E result;
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            em.getTransaction().begin();
+            this.beginTransaction(em);
             result = action.doInJpa(em);
-            em.getTransaction().commit();
+            this.commitTransaction(em);
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
             throw new JpaException(ex);
@@ -645,6 +656,54 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             JpaUtil.closeEntityManager(em);
         }
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <E> E doWithEntityManager(Function<EntityManager, E> function, boolean requiresTxn) {
+        E result;
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            if (requiresTxn) {
+                this.beginTransaction(em);
+                result = function.apply(em);
+                this.commitTransaction(em);
+            } else {
+                result = function.apply(em);
+            }
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doWithEntityManager(Consumer<EntityManager> consumer, boolean requiresTxn) {
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            if (requiresTxn) {
+                this.beginTransaction(em);
+                consumer.accept(em);
+                this.commitTransaction(em);
+            } else {
+                consumer.accept(em);
+            }
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
     }
 
     // <---------------------------------------- Stored Procedures ---------------------------------------->>

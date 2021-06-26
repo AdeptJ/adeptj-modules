@@ -33,9 +33,12 @@ import com.adeptj.modules.data.jpa.query.QueryParam;
 import com.adeptj.modules.data.jpa.query.QueryType;
 import org.osgi.annotation.versioning.ConsumerType;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * JPA 2.2 Repository for CRUD operations to be performed by the application on underlying DB.
@@ -314,6 +317,24 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      * @return a result object returned by the action, or null
      */
     <E> E executeCallbackInTransaction(JpaCallback<E> action);
+
+    /**
+     * Use the {@link Function} for any specific operation on {@link EntityManager}.
+     *
+     * @param function    the function which takes {@link EntityManager} as argument.
+     * @param requiresTxn whether an entity transaction is needed
+     * @param <E>         the result type
+     * @return a result object returned by the action, or null
+     */
+    <E> E doWithEntityManager(Function<EntityManager, E> function, boolean requiresTxn);
+
+    /**
+     * Use the {@link Consumer} for any specific operation on {@link EntityManager}.
+     *
+     * @param consumer    the consumer which takes {@link EntityManager} as argument.
+     * @param requiresTxn whether an entity transaction is needed
+     */
+    void doWithEntityManager(Consumer<EntityManager> consumer, boolean requiresTxn);
 
     // <<------------------------ StoredProcedure Support ------------------------>>
 

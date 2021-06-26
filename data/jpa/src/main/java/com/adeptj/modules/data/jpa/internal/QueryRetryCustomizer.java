@@ -40,6 +40,7 @@ class QueryRetryCustomizer implements SessionCustomizer {
 
     @Override
     public void customize(@NotNull Session session) {
-        ((DatabaseLogin) session.getDatasourceLogin()).setQueryRetryAttemptCount(this.queryRetryAttemptCount);
+        DatabaseLogin datasourceLogin = (DatabaseLogin) session.getDatasourceLogin();
+        datasourceLogin.setQueryRetryAttemptCount(this.queryRetryAttemptCount);
     }
 }
