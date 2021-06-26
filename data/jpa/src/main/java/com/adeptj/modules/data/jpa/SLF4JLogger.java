@@ -140,7 +140,8 @@ public class SLF4JLogger extends AbstractSessionLog {
         }
         final LogCategory category = LogCategory.toValue(logEntry.getNameSpace());
         if (category == null) {
-            throw new IllegalArgumentException("Unknown logging category name.");
+            // Lets just silently return.
+            return;
         }
         final int levelId = logEntry.getLevel();
         if (this.logLevels[category.getId()].shouldLog((byte) levelId)) {
@@ -165,39 +166,57 @@ public class SLF4JLogger extends AbstractSessionLog {
                 this.doLogSLF4J(logger, level, super.formatMessage(logEntry), logEntry.getException());
             } else {
                 // Exception message is rendered on EclipseLink side. SLF4J gets final String.
-                this.doLogSLF4J(logger, level, logEntry.getException().toString());
+                this.doLogSLF4J(logger, level, logEntry.getException().toString(), null);
             }
         } else {
             // Message is rendered on EclipseLink side. SLF4J gets final String.
-            this.doLogSLF4J(logger, level, super.formatMessage(logEntry));
+            this.doLogSLF4J(logger, level, super.formatMessage(logEntry), null);
         }
     }
 
     private void doLogSLF4J(final Logger logger, final LogLevel level, final String msg, final Throwable t) {
-        if (level == LogLevel.ALL || level == LogLevel.FINEST) {
-            logger.trace(msg, t);
-        } else if (level == LogLevel.FINER || level == LogLevel.FINE) {
-            logger.debug(msg, t);
-        } else if (level == LogLevel.CONFIG || level == LogLevel.INFO) {
-            logger.info(msg, t);
-        } else if (level == LogLevel.WARNING) {
-            logger.warn(msg, t);
-        } else if (level == LogLevel.SEVERE) {
-            logger.error(msg, t);
-        }
-    }
-
-    private void doLogSLF4J(final Logger logger, final LogLevel level, final String msg) {
-        if (level == LogLevel.ALL || level == LogLevel.FINEST) {
-            logger.trace(msg);
-        } else if (level == LogLevel.FINER || level == LogLevel.FINE) {
-            logger.debug(msg);
-        } else if (level == LogLevel.CONFIG || level == LogLevel.INFO) {
-            logger.info(msg);
-        } else if (level == LogLevel.WARNING) {
-            logger.warn(msg);
-        } else if (level == LogLevel.SEVERE) {
-            logger.error(msg);
+        switch (level) {
+            case ALL:
+            case FINEST:
+                if (t == null) {
+                    logger.trace(msg);
+                } else {
+                    logger.trace(msg, t);
+                }
+                break;
+            case FINER:
+            case FINE:
+                if (t == null) {
+                    logger.debug(msg);
+                } else {
+                    logger.debug(msg, t);
+                }
+                break;
+            case CONFIG:
+            case INFO:
+                if (t == null) {
+                    logger.info(msg);
+                } else {
+                    logger.info(msg, t);
+                }
+                break;
+            case WARNING:
+                if (t == null) {
+                    logger.warn(msg);
+                } else {
+                    logger.warn(msg, t);
+                }
+                break;
+            case SEVERE:
+                if (t == null) {
+                    logger.error(msg);
+                } else {
+                    logger.error(msg, t);
+                }
+                break;
+            case OFF:
+            default:
+                // do nothing
         }
     }
 }

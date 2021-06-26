@@ -86,15 +86,22 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * The {@link EntityManagerFactory}'s lifecycle is managed by EntityManagerFactoryLifecycle therefore consumers
      * must not attempt to create or close it on their own.
      * <p>
-     * It will be automatically created and closed appropriately.
-     * <p>
-     * Kept protected so that subclasses could access it directly.
+     * It will be created and closed appropriately.
      */
-    protected EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
     public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
     }
+
+    protected EntityManagerFactory getEntityManagerFactory() {
+        if (this.entityManagerFactory == null) {
+            throw new IllegalStateException("EntityManagerFactory is null!!");
+        }
+        return this.entityManagerFactory;
+    }
+
+    // <---------------------------------------------- Insert ---------------------------------------------->>
 
     /**
      * {@inheritDoc}
@@ -141,6 +148,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             JpaUtil.closeEntityManager(em);
         }
     }
+
+    // <---------------------------------------------- Update ---------------------------------------------->>
 
     /**
      * {@inheritDoc}
@@ -191,6 +200,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         }
     }
 
+    // <---------------------------------------------- Delete ---------------------------------------------->>
+
     /**
      * {@inheritDoc}
      */
@@ -202,7 +213,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             em.getTransaction().begin();
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
-                LOGGER.warn("Entity couldn't be deleted as it doesn't exists in DB: [{}]", entity);
+                LOGGER.warn("Entity couldn't be deleted because it doesn't exists in DB: [{}]", entity);
             } else {
                 em.remove(entityToDelete);
             }
@@ -287,6 +298,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             JpaUtil.closeEntityManager(em);
         }
     }
+
+    // <---------------------------------------------- Find ---------------------------------------------->>
 
     /**
      * {@inheritDoc}
@@ -633,6 +646,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         }
         return result;
     }
+
+    // <---------------------------------------- Stored Procedures ---------------------------------------->>
 
     /**
      * {@inheritDoc}

@@ -34,7 +34,7 @@ import java.util.List;
 public class UserRepository extends AbstractJpaRepository<User, Long> {
 
     void closeEntityManagerFactory() {
-        JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
+        JpaUtil.closeEntityManagerFactory(this.getEntityManagerFactory());
     }
 
     List<User> findAllUsers() {
