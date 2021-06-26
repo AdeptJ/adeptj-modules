@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient;
+package com.adeptj.modules.restclient.util;
 
 /**
  * Borrowed(with much appreciation) from https://github.com/azagniotov/ant-style-path-matcher

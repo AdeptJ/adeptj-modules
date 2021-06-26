@@ -1,6 +1,6 @@
 package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.restclient.AntPathMatcher;
+import com.adeptj.modules.restclient.util.AntPathMatcher;
 import com.adeptj.modules.restclient.RestClientException;
 import com.adeptj.modules.restclient.api.ClientRequest;
 import com.adeptj.modules.restclient.api.ClientResponse;
