@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.eclipselink.internal;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.persistence.logging.AbstractSessionLog;

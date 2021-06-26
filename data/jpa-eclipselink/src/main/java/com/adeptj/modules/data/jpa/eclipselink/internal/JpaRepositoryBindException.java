@@ -1,4 +1,4 @@
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.eclipselink.internal;
 
 /**
  * Exception thrown when {@link com.adeptj.modules.data.jpa.JpaRepository} could not be bind to.

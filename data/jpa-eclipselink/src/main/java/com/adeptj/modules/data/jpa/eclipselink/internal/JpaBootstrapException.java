@@ -18,29 +18,22 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
-
-import org.eclipse.persistence.config.SessionCustomizer;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.Session;
-import org.jetbrains.annotations.NotNull;
+package com.adeptj.modules.data.jpa.eclipselink.internal;
 
 /**
- * A {@link SessionCustomizer} for setting the query retry attempt count to {@link DatabaseLogin}.
+ * Exception thrown when there is failure bootstrapping {@link javax.persistence.EntityManagerFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class QueryRetryCustomizer implements SessionCustomizer {
+class JpaBootstrapException extends RuntimeException {
 
-    private final int queryRetryAttemptCount;
+    private static final long serialVersionUID = 4572809035305367737L;
 
-    QueryRetryCustomizer(int queryRetryAttemptCount) {
-        this.queryRetryAttemptCount = queryRetryAttemptCount;
+    JpaBootstrapException(String message) {
+        super(message);
     }
 
-    @Override
-    public void customize(@NotNull Session session) {
-        DatabaseLogin datasourceLogin = (DatabaseLogin) session.getDatasourceLogin();
-        datasourceLogin.setQueryRetryAttemptCount(this.queryRetryAttemptCount);
+    JpaBootstrapException(Throwable throwable) {
+        super(throwable);
     }
 }

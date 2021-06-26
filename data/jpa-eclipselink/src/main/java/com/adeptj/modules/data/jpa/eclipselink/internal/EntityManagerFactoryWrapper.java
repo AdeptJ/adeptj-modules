@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.eclipselink.internal;
 
 import org.jetbrains.annotations.NotNull;
 

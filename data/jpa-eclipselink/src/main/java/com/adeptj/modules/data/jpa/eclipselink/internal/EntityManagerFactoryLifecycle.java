@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.data.jpa.internal;
+package com.adeptj.modules.data.jpa.eclipselink.internal;
 
 import com.adeptj.modules.commons.jdbc.service.DataSourceService;
 import com.adeptj.modules.commons.utils.MapUtil;

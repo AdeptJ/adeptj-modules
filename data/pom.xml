@@ -34,9 +34,9 @@
 
         <module>mybatis-api</module>
         <module>mongodb-api</module>
-        
-        <module>jpa-base</module>
         <module>jpa</module>
+        <module>jpa-eclipselink</module>
+        <module>jpa-eclipselink-extension</module>
         <module>mybatis</module>
         <module>mongodb</module>
 
