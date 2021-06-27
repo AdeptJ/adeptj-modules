@@ -135,6 +135,12 @@ public class EntityManagerFactoryLifecycle {
     protected void stop() {
         long startTime = System.nanoTime();
         JpaUtil.closeEntityManagerFactory(this.entityManagerFactory);
+        // This is needed because the fragment bundle [adeptj-modules-data-jpa-eclipselink-extension] update will
+        // fire bundle wiring update and this component will be disposed of, at this moment AbstractSessionLog is still
+        // holding the SLF4JLogger instance as a static field and that can cause a memory leak due to the holding of
+        // old class and instance. When this component is disposed of due to normal configurations or bundle  update
+        // then also remove the SLF4JLogger instance from AbstractSessionLog, because a new one will be created when
+        // this component is being activated again and EclipseLink is going to create a new EntityManagerFactory.
         JpaActivator.disposeEclipseLinkSingletonLog();
         LOGGER.info(EMF_CLOSED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));
     }
