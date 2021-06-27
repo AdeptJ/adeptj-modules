@@ -44,7 +44,7 @@ public class JettyRestClient implements RestClient {
 
     private final String mdcReqIdAttrName;
 
-    private List<AuthorizationHeaderPlugin> plugins;
+    private final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
 
     @Activate
     public JettyRestClient(JettyHttpClientConfig config) {
@@ -67,7 +67,7 @@ public class JettyRestClient implements RestClient {
         }
         this.debugRequest = config.debug_request();
         this.mdcReqIdAttrName = config.mdc_req_id_attribute_name();
-        this.plugins = new CopyOnWriteArrayList<>();
+        this.authorizationHeaderPlugins = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -139,13 +139,13 @@ public class JettyRestClient implements RestClient {
 
     private void addAuthorizationHeader(Request request) {
         // Create a temp var because the service is dynamic.
-        List<AuthorizationHeaderPlugin> authorizationHeaderPlugins = this.plugins;
-        if (authorizationHeaderPlugins.isEmpty()) {
+        List<AuthorizationHeaderPlugin> plugins = this.authorizationHeaderPlugins;
+        if (plugins.isEmpty()) {
             return;
         }
         AntPathMatcher matcher = AntPathMatcher.builder().build();
         AtomicBoolean authorizationHeaderAdded = new AtomicBoolean();
-        for (AuthorizationHeaderPlugin plugin : authorizationHeaderPlugins) {
+        for (AuthorizationHeaderPlugin plugin : plugins) {
             if (authorizationHeaderAdded.get()) {
                 break;
             }
@@ -153,7 +153,7 @@ public class JettyRestClient implements RestClient {
                 if (matcher.isMatch(pattern, request.getPath())) {
                     request.headers(f -> f.add(AUTHORIZATION, (plugin.getType() + " " + plugin.getValue())));
                     authorizationHeaderAdded.set(true);
-                    LOGGER.info("Authorization header added to request [{}] by plugin: [{}]", request.getURI(), plugin);
+                    LOGGER.info("Authorization header added to request [{}] by plugin [{}]", request.getURI(), plugin);
                     break;
                 }
             }
@@ -175,11 +175,11 @@ public class JettyRestClient implements RestClient {
     @Reference(service = AuthorizationHeaderPlugin.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
         LOGGER.info("Binding AuthorizationHeaderPlugin: {}", plugin);
-        this.plugins.add(plugin);
+        this.authorizationHeaderPlugins.add(plugin);
     }
 
     protected void unbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        if (this.plugins.remove(plugin)) {
+        if (this.authorizationHeaderPlugins.remove(plugin)) {
             LOGGER.info("Unbounded AuthorizationHeaderPlugin: {}", plugin);
         }
     }
