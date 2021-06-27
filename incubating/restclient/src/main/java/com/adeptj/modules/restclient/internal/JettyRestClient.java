@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -144,15 +143,15 @@ public class JettyRestClient implements RestClient {
             return;
         }
         AntPathMatcher matcher = AntPathMatcher.builder().build();
-        AtomicBoolean authorizationHeaderAdded = new AtomicBoolean();
+        boolean authorizationHeaderAdded = false;
         for (AuthorizationHeaderPlugin plugin : plugins) {
-            if (authorizationHeaderAdded.get()) {
+            if (authorizationHeaderAdded) {
                 break;
             }
             for (String pattern : plugin.getPathPatterns()) {
                 if (matcher.isMatch(pattern, request.getPath())) {
                     request.headers(f -> f.add(AUTHORIZATION, (plugin.getType() + " " + plugin.getValue())));
-                    authorizationHeaderAdded.set(true);
+                    authorizationHeaderAdded = true;
                     LOGGER.info("Authorization header added to request [{}] by plugin [{}]", request.getURI(), plugin);
                     break;
                 }
