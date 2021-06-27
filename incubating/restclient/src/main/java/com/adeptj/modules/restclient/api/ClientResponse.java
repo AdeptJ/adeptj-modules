@@ -2,6 +2,12 @@ package com.adeptj.modules.restclient.api;
 
 import java.util.Map;
 
+/**
+ * The response from {@link RestClient}.
+ *
+ * @param <T> The type of the response
+ * @author Rakesh.Kumar, AdeptJ
+ */
 public class ClientResponse<T> {
 
     private int status;

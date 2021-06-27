@@ -1,11 +1,11 @@
 package com.adeptj.modules.restclient.internal;
 
-import com.adeptj.modules.restclient.util.AntPathMatcher;
 import com.adeptj.modules.restclient.RestClientException;
 import com.adeptj.modules.restclient.api.ClientRequest;
 import com.adeptj.modules.restclient.api.ClientResponse;
 import com.adeptj.modules.restclient.api.RestClient;
 import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
+import com.adeptj.modules.restclient.util.AntPathMatcher;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -18,6 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -26,7 +29,7 @@ import static com.adeptj.modules.restclient.api.HttpMethod.GET;
 import static com.adeptj.modules.restclient.api.HttpMethod.POST;
 import static com.adeptj.modules.restclient.api.HttpMethod.PUT;
 import static org.eclipse.jetty.http.HttpHeader.AUTHORIZATION;
-import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Designate(ocd = JettyHttpClientConfig.class)
@@ -41,7 +44,7 @@ public class JettyRestClient implements RestClient {
 
     private final String mdcReqIdAttrName;
 
-    private AuthorizationHeaderPlugin plugin;
+    private List<AuthorizationHeaderPlugin> plugins;
 
     @Activate
     public JettyRestClient(JettyHttpClientConfig config) {
@@ -60,10 +63,11 @@ public class JettyRestClient implements RestClient {
         try {
             this.jettyClient.start();
         } catch (Exception ex) {
-            throw new HttpClientInitializationException(ex);
+            throw new JettyHttpClientInitializationException(ex);
         }
         this.debugRequest = config.debug_request();
         this.mdcReqIdAttrName = config.mdc_req_id_attribute_name();
+        this.plugins = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -135,15 +139,23 @@ public class JettyRestClient implements RestClient {
 
     private void addAuthorizationHeader(Request request) {
         // Create a temp var because the service is dynamic.
-        AuthorizationHeaderPlugin ahp = this.plugin;
-        if (ahp == null || ahp.getPathPatterns().isEmpty()) {
+        List<AuthorizationHeaderPlugin> authorizationHeaderPlugins = this.plugins;
+        if (authorizationHeaderPlugins.isEmpty()) {
             return;
         }
         AntPathMatcher matcher = AntPathMatcher.builder().build();
-        for (String pattern : ahp.getPathPatterns()) {
-            if (matcher.isMatch(pattern, request.getPath())) {
-                request.headers(f -> f.add(AUTHORIZATION, ahp.getType() + " " + ahp.getValue()));
+        AtomicBoolean authorizationHeaderAdded = new AtomicBoolean();
+        for (AuthorizationHeaderPlugin plugin : authorizationHeaderPlugins) {
+            if (authorizationHeaderAdded.get()) {
                 break;
+            }
+            for (String pattern : plugin.getPathPatterns()) {
+                if (matcher.isMatch(pattern, request.getPath())) {
+                    request.headers(f -> f.add(AUTHORIZATION, (plugin.getType() + " " + plugin.getValue())));
+                    authorizationHeaderAdded.set(true);
+                    LOGGER.info("Authorization header added to request [{}] by plugin: [{}]", request.getURI(), plugin);
+                    break;
+                }
             }
         }
     }
@@ -160,16 +172,15 @@ public class JettyRestClient implements RestClient {
         }
     }
 
-    @Reference(service = AuthorizationHeaderPlugin.class, cardinality = OPTIONAL, policy = DYNAMIC)
+    @Reference(service = AuthorizationHeaderPlugin.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
         LOGGER.info("Binding AuthorizationHeaderPlugin: {}", plugin);
-        this.plugin = plugin;
+        this.plugins.add(plugin);
     }
 
     protected void unbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        LOGGER.info("Unbinding AuthorizationHeaderPlugin: {}", plugin);
-        if (this.plugin == plugin) {
-            this.plugin = null;
+        if (this.plugins.remove(plugin)) {
+            LOGGER.info("Unbounded AuthorizationHeaderPlugin: {}", plugin);
         }
     }
 }
