@@ -33,6 +33,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import static com.adeptj.modules.commons.utils.Constants.UTF8;
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
@@ -63,7 +64,7 @@ public final class JakartaJsonUtil {
         JsonProvider provider = JsonProvider.provider();
         JSONB = JsonbBuilder.newBuilder()
                 .withProvider(provider)
-                .withConfig(new JsonbConfig().withFormatting(TRUE).withEncoding(UTF8))
+                .withConfig(new JsonbConfig().withFormatting(FALSE).withEncoding(UTF8))
                 .build();
         Map<String, ?> config = Map.of(PRETTY_PRINTING, TRUE);
         READER_FACTORY = provider.createReaderFactory(null);
