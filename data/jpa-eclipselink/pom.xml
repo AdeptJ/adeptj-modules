@@ -36,7 +36,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <eclipselink.version>2.7.9</eclipselink.version>
-        <postgresql.version>42.2.22</postgresql.version>
+        <hibernate-core.version>5.5.4.Final</hibernate-core.version>
     </properties>
 
     <!-- Project Information -->
@@ -222,7 +222,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.5.2.Final</version>
+            <version>${hibernate-core.version}</version>
             <scope>test</scope>
         </dependency>
 
