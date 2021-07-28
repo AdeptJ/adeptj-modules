@@ -61,14 +61,33 @@ public class HikariDataSourceService implements DataSourceService {
     /**
      * Initialize the {@link HikariDataSource} using the required configurations.
      *
-     * @param config the Hikari {@link DataSourceConfig}
+     * @param dsc the Hikari {@link DataSourceConfig}
      * @throws DataSourceConfigurationException so that component activation fails and SCR ignores the service.
      */
     @Activate
-    public HikariDataSourceService(DataSourceConfig config) {
+    public HikariDataSourceService(@NotNull DataSourceConfig dsc) {
+        Validate.isTrue(StringUtils.isNotEmpty(dsc.poolName()), "JDBC Pool Name can't be null!!");
         try {
-            this.dataSource = this.createHikariDataSource(config);
-            LOGGER.info("HikariDataSource: [{}] initialized!!", config.poolName());
+            HikariConfig config = new HikariConfig();
+            config.setPoolName(dsc.poolName());
+            config.setJdbcUrl(dsc.jdbcUrl());
+            config.setDriverClassName(dsc.driverClassName());
+            config.setUsername(dsc.username());
+            config.setPassword(dsc.password());
+            config.setAutoCommit(dsc.autoCommit());
+            config.setConnectionTimeout(dsc.connectionTimeout());
+            config.setIdleTimeout(dsc.idleTimeout());
+            config.setMaxLifetime(dsc.maxLifetime());
+            config.setMinimumIdle(dsc.minimumIdle());
+            config.setMaximumPoolSize(dsc.maximumPoolSize());
+            // Extra DataSource properties are in [key=value] format.
+            Stream.of(dsc.dataSourceProperties())
+                    .filter(StringUtils::isNotEmpty)
+                    .map(row -> StringUtils.split(row, EQ))
+                    .filter(parts -> ArrayUtils.getLength(parts) == 2)
+                    .forEach(parts -> config.addDataSourceProperty(parts[0].trim(), parts[1].trim()));
+            this.dataSource = new HikariDataSource(config);
+            LOGGER.info("HikariDataSource: [{}] initialized!!", dsc.poolName());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw new DataSourceConfigurationException(ex);
@@ -81,29 +100,6 @@ public class HikariDataSourceService implements DataSourceService {
     @Override
     public @NotNull DataSource getDataSource() {
         return new DataSourceWrapper(this.dataSource);
-    }
-
-    private @NotNull HikariDataSource createHikariDataSource(DataSourceConfig dsc) {
-        Validate.isTrue(StringUtils.isNotEmpty(dsc.poolName()), "JDBC Pool Name can't be null!!");
-        HikariConfig config = new HikariConfig();
-        config.setPoolName(dsc.poolName());
-        config.setJdbcUrl(dsc.jdbcUrl());
-        config.setDriverClassName(dsc.driverClassName());
-        config.setUsername(dsc.username());
-        config.setPassword(dsc.password());
-        config.setAutoCommit(dsc.autoCommit());
-        config.setConnectionTimeout(dsc.connectionTimeout());
-        config.setIdleTimeout(dsc.idleTimeout());
-        config.setMaxLifetime(dsc.maxLifetime());
-        config.setMinimumIdle(dsc.minimumIdle());
-        config.setMaximumPoolSize(dsc.maximumPoolSize());
-        // Extra DataSource properties are in [key=value] format.
-        Stream.of(dsc.dataSourceProperties())
-                .filter(StringUtils::isNotEmpty)
-                .map(row -> StringUtils.split(row, EQ))
-                .filter(parts -> ArrayUtils.getLength(parts) == 2)
-                .forEach(parts -> config.addDataSourceProperty(parts[0].trim(), parts[1].trim()));
-        return new HikariDataSource(config);
     }
 
     // <<----------------------------------------- OSGi Internal  ------------------------------------------>>
