@@ -39,9 +39,9 @@
         <mime4j.version>0.8.4</mime4j.version>
         <asyncutil.version>0.1.0</asyncutil.version>
         <microprofile-config-api.version>2.0</microprofile-config-api.version>
-        <smallrye-config.version>2.4.3</smallrye-config.version>
-        <smallrye-config-core.version>2.4.3</smallrye-config-core.version>
-        <smallrye-config-common.version>2.4.3</smallrye-config-common.version>
+        <smallrye-config.version>2.4.4</smallrye-config.version>
+        <smallrye-config-core.version>2.4.4</smallrye-config-core.version>
+        <smallrye-config-common.version>2.4.4</smallrye-config-common.version>
         <smallrye-common-annotation.version>1.6.0</smallrye-common-annotation.version>
         <smallrye-common-expression.version>1.6.0</smallrye-common-expression.version>
         <smallrye-common-constraint.version>1.6.0</smallrye-common-constraint.version>
