@@ -73,7 +73,7 @@ public class HibernateValidatorService implements ValidatorService {
     @Override
     public <T> void validate(T instance) {
         Validate.notNull(instance, "Object to be validated can't be null!!");
-        Set<ConstraintViolation<T>> violations = this.validatorFactory.getValidator().validate(instance);
+        Set<ConstraintViolation<T>> violations = this.getValidator().validate(instance);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
@@ -86,7 +86,7 @@ public class HibernateValidatorService implements ValidatorService {
     public <T> Set<ConstraintViolation<T>> validateProperty(T instance, String property) {
         Validate.notNull(instance, "Object to be validated can't be null!!");
         Validate.isTrue(StringUtils.isNotEmpty(property), "property [%s] can't be blank!!", property);
-        return this.validatorFactory.getValidator().validateProperty(instance, property);
+        return this.getValidator().validateProperty(instance, property);
     }
 
     /**
@@ -95,7 +95,7 @@ public class HibernateValidatorService implements ValidatorService {
     @Override
     public <T> Set<ConstraintViolation<T>> getConstraintViolations(T instance) {
         Validate.notNull(instance, "Object to be validated can't be null!!");
-        return this.validatorFactory.getValidator().validate(instance);
+        return this.getValidator().validate(instance);
     }
 
     /**

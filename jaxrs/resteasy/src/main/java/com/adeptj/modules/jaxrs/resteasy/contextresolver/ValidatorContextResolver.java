@@ -44,17 +44,16 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
 
     static final int PRIORITY = 4500;
 
-    private final GeneralValidator validator;
+    private final ValidatorFactory validatorFactory;
 
-    public ValidatorContextResolver(ValidatorFactory validatorFactory) {
-        this.validator = new GeneralValidatorImpl(validatorFactory, true,
-                EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS));
+    public ValidatorContextResolver(final ValidatorFactory validatorFactory) {
+        this.validatorFactory = validatorFactory;
     }
 
     @Override
     public GeneralValidator getContext(Class<?> type) {
         // Not doing the type check of passed Class object as RESTEasy passes null while processing resource methods
         // at bootstrap time.
-        return this.validator;
+        return new GeneralValidatorImpl(this.validatorFactory, true, EnumSet.of(CONSTRUCTORS, NON_GETTER_METHODS));
     }
 }
