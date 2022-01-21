@@ -1,4 +1,4 @@
-package com.adeptj.modules.security.jwt.internal;
+package com.adeptj.modules.security.jwt;
 
 import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 import io.jsonwebtoken.io.DeserializationException;
@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class JwtDeserializer implements Deserializer<Map<String, ?>> {
+public final class JwtDeserializer implements Deserializer<Map<String, ?>> {
 
     @SuppressWarnings("unchecked")
     @Override

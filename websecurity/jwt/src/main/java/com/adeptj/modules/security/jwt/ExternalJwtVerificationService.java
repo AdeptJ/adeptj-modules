@@ -19,11 +19,14 @@
 */
 package com.adeptj.modules.security.jwt;
 
+import org.osgi.annotation.versioning.ProviderType;
+
 /**
  * A Jwt verification service for verifying 3rd party Jwt(s).
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@ProviderType
 public interface ExternalJwtVerificationService {
 
     /**

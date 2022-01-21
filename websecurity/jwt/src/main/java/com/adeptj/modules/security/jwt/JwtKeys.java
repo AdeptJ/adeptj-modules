@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.internal;
+package com.adeptj.modules.security.jwt;
 
 import io.jsonwebtoken.lang.Assert;
 import org.apache.commons.lang3.StringUtils;
@@ -46,11 +46,11 @@ import static javax.crypto.Cipher.DECRYPT_MODE;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
- * Utility for creating JWT signing and verification key.
+ * Utility for creating RSA based JWT signing and verification keys.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class JwtKeys {
+public final class JwtKeys {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -78,38 +78,38 @@ final class JwtKeys {
     private JwtKeys() {
     }
 
-    static PrivateKey createSigningKey(@NotNull JwtConfig config, String algorithm) {
+    public static PrivateKey createSigningKey(@NotNull RsaSigningKeyInfo info) {
         LOGGER.info("Creating RSA signing key!!");
-        Assert.isTrue(StringUtils.startsWithAny(config.privateKey(), PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER),
+        Assert.isTrue(StringUtils.startsWithAny(info.getPrivateKey(), PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER),
                 INVALID_PRIVATE_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
-            if (StringUtils.startsWith(config.privateKey(), PRIVATE_ENCRYPTED_KEY_HEADER)) {
+            KeyFactory keyFactory = KeyFactory.getInstance(info.getAlgorithm().getFamilyName());
+            if (StringUtils.startsWith(info.getPrivateKey(), PRIVATE_ENCRYPTED_KEY_HEADER)) {
                 LOGGER.info("Creating PKCS8EncodedKeySpec from private [encrypted] key !!");
-                Assert.hasText(config.privateKeyPassword(), KEYPASS_NULL_MSG);
-                byte[] keyBytes = decodePrivateKey(config, true);
+                Assert.hasText(info.getPrivateKeyPassword(), KEYPASS_NULL_MSG);
+                byte[] keyBytes = decodePrivateKey(info.getPrivateKey(), true);
                 EncryptedPrivateKeyInfo privateKeyInfo = new EncryptedPrivateKeyInfo(keyBytes);
                 SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(privateKeyInfo.getAlgName());
-                PBEKeySpec keySpec = new PBEKeySpec(config.privateKeyPassword().toCharArray());
+                PBEKeySpec keySpec = new PBEKeySpec(info.getPrivateKeyPassword().toCharArray());
                 SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
                 Cipher cipher = Cipher.getInstance(privateKeyInfo.getAlgName());
                 cipher.init(DECRYPT_MODE, secretKey, privateKeyInfo.getAlgParameters());
                 return keyFactory.generatePrivate(privateKeyInfo.getKeySpec(cipher));
             }
             LOGGER.info("Creating PKCS8EncodedKeySpec from private key !!");
-            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodePrivateKey(config, false)));
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodePrivateKey(info.getPrivateKey(), false)));
         } catch (GeneralSecurityException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new JwtKeyInitializationException(ex.getMessage(), ex);
         }
     }
 
-    static PublicKey createVerificationKey(String publicKey, String algorithm) {
+    public static PublicKey createVerificationKey(@NotNull RsaVerificationKeyInfo info) {
         LOGGER.info("Creating RSA verification key!!");
-        Assert.isTrue(StringUtils.startsWith(publicKey, PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
+        Assert.isTrue(StringUtils.startsWith(info.getPublicKey(), PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
-            byte[] publicKeyData = Base64.getDecoder().decode(publicKey
+            KeyFactory keyFactory = KeyFactory.getInstance(info.getAlgorithm().getFamilyName());
+            byte[] publicKeyData = Base64.getDecoder().decode(info.getPublicKey()
                     .replace(PUB_KEY_HEADER, EMPTY)
                     .replace(PUB_KEY_FOOTER, EMPTY)
                     .replaceAll(REGEX_SPACE, EMPTY)
@@ -123,8 +123,8 @@ final class JwtKeys {
         }
     }
 
-    private static byte[] decodePrivateKey(@NotNull JwtConfig config, boolean encryptedKey) {
-        return Base64.getDecoder().decode(config.privateKey()
+    private static byte[] decodePrivateKey(@NotNull String privateKey, boolean encryptedKey) {
+        return Base64.getDecoder().decode(privateKey
                 .replace(encryptedKey ? PRIVATE_ENCRYPTED_KEY_HEADER : PRIVATE_KEY_HEADER, EMPTY)
                 .replace(encryptedKey ? PRIVATE_ENCRYPTED_KEY_FOOTER : PRIVATE_KEY_FOOTER, EMPTY)
                 .replaceAll(REGEX_SPACE, EMPTY)

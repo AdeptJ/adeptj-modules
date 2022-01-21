@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.security.jwt;
 
-import com.adeptj.modules.security.jwt.internal.JwtConfig;
 import org.osgi.annotation.versioning.ProviderType;
 
 import java.util.Map;
@@ -40,7 +39,7 @@ public interface JwtService {
      * such as "iss", "sub", "iat" etc. Since its a map and existing keys will be replaced when the same ones
      * provided in the payload which is not the intended behaviour.
      * <p>
-     * Default claims parameters should come from {@link JwtConfig} and others can be generated at execution time
+     * Default claims parameters should come from JwtConfig and others can be generated at execution time
      * such as "iat", "exp", "jti" etc.
      *
      * @param subject to whom JWT has to be issued.
@@ -55,7 +54,7 @@ public interface JwtService {
      * Note: This method expects that caller should pass the default claims parameters in claims map
      * such as "sub", "iss", "exp", "iat", "jti" etc.
      * <p>
-     * Default claims parameters from {@link JwtConfig} are not considered.
+     * Default claims parameters from JwtConfig are not considered.
      *
      * @param claims Caller supplied JWT claims map
      * @return JWT signed with the configured signing key.

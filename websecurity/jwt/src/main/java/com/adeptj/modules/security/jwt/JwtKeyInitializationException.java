@@ -18,29 +18,18 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.internal;
-
-import com.adeptj.modules.security.jwt.JwtClaims;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtHandlerAdapter;
-import org.jetbrains.annotations.NotNull;
+package com.adeptj.modules.security.jwt;
 
 /**
- * Simple implementation of {@link JwtHandlerAdapter} which extracts the {@link Claims} from passes {@link Jws}.
+ * Thrown while Jwt signing key creation failed.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-final class ClaimsConsumer extends JwtHandlerAdapter<JwtClaims> {
+public final class JwtKeyInitializationException extends RuntimeException {
 
-    /**
-     * Simply returns the {@link JwtClaims} by composing the Jwt {@link Claims}.
-     *
-     * @param jws the Json web signature.
-     * @return the {@link JwtClaims}.
-     */
-    @Override
-    public @NotNull JwtClaims onClaimsJws(@NotNull Jws<Claims> jws) {
-        return new JwtClaims(jws.getBody());
+    private static final long serialVersionUID = 3525176439467354181L;
+
+    public JwtKeyInitializationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
