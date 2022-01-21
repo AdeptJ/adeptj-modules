@@ -16,10 +16,11 @@ import java.lang.invoke.MethodHandles;
 import java.security.Key;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 @Designate(ocd = HmacExternalJwtConfig.class)
 @ExternalJwtAlgo("Hmac")
-@Component(immediate = true, service = ExternalJwtVerificationService.class)
+@Component(service = ExternalJwtVerificationService.class, configurationPolicy = REQUIRE)
 public class HmacExternalJwtVerificationService implements ExternalJwtVerificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

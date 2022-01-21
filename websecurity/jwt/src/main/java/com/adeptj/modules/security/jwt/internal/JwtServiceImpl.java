@@ -62,7 +62,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = JwtConfig.class)
-@Component(configurationPolicy = REQUIRE)
+@Component(service = JwtService.class, configurationPolicy = REQUIRE)
 public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
