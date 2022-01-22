@@ -54,7 +54,7 @@ public class JwtSecurityContext implements SecurityContext {
     @Override
     public boolean isUserInRole(String role) {
         Object roles = this.principal.getClaims().get(ROLES);
-        // Roles are deserialized as an ArrayList but we are not sure if it can be some other Collection impl later.
+        // Roles are deserialized as an ArrayList, but we are not sure if it can be some other Collection impl later.
         if (roles instanceof Collection) {
             return ((Collection<String>) roles).contains(role);
         }

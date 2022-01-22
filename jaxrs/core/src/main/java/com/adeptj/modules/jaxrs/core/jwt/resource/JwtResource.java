@@ -25,6 +25,7 @@ import com.adeptj.modules.jaxrs.api.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.api.JaxRSResource;
 import com.adeptj.modules.jaxrs.api.UsernamePasswordCredential;
 import com.adeptj.modules.security.jwt.JwtService;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -91,7 +92,7 @@ public class JwtResource {
     // <<---------------------------------------- OSGi INTERNAL ------------------------------------------>>
 
     @Modified
-    protected void update(JwtCookieConfig cookieConfig) {
+    protected void update(@NotNull JwtCookieConfig cookieConfig) {
         JwtCookieConfigHolder.getInstance().setJwtCookieConfig(cookieConfig);
     }
 }

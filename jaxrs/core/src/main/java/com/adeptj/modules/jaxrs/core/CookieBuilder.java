@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.core;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.ws.rs.core.NewCookie;
 import java.util.Date;
 import java.util.Objects;
@@ -43,6 +45,7 @@ public class CookieBuilder {
         return Objects.requireNonNull(this.cookie, "NewCookie instance is uninitialized!!");
     }
 
+    @NotNull
     public static Builder builder() {
         return new Builder();
     }
