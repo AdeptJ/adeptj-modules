@@ -24,17 +24,20 @@ import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.BootstrapConfiguration;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.executable.ExecutableType;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
@@ -54,11 +57,19 @@ public class HibernateValidatorService implements ValidatorService {
 
     private final ValidatorFactory validatorFactory;
 
+    private final boolean executableValidationEnabled;
+
+    private final Set<ExecutableType> defaultValidatedExecutableTypes;
+
     public HibernateValidatorService() {
         try {
             long startTime = System.nanoTime();
-            this.validatorFactory = Validation.byProvider(HibernateValidator.class)
-                    .configure()
+            HibernateValidatorConfiguration validatorConfiguration = Validation.byProvider(HibernateValidator.class)
+                    .configure();
+            BootstrapConfiguration bootstrapConfiguration = validatorConfiguration.getBootstrapConfiguration();
+            this.executableValidationEnabled = bootstrapConfiguration.isExecutableValidationEnabled();
+            this.defaultValidatedExecutableTypes = bootstrapConfiguration.getDefaultValidatedExecutableTypes();
+            this.validatorFactory = validatorConfiguration
                     .buildValidatorFactory();
             LOGGER.info(VALIDATOR_FACTORY_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
         } catch (ValidationException ex) {
@@ -112,6 +123,16 @@ public class HibernateValidatorService implements ValidatorService {
     @Override
     public Validator getValidator() {
         return this.validatorFactory.getValidator();
+    }
+
+    @Override
+    public boolean isExecutableValidationEnabled() {
+        return this.executableValidationEnabled;
+    }
+
+    @Override
+    public Set<ExecutableType> getDefaultValidatedExecutableTypes() {
+        return this.defaultValidatedExecutableTypes;
     }
 
     // <<------------------------------------------ OSGi INTERNAL ---------------------------------------------->>

@@ -25,6 +25,8 @@ import org.osgi.annotation.versioning.ProviderType;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.executable.ExecutableType;
+import javax.validation.executable.ValidateOnExecution;
 import java.util.Set;
 
 /**
@@ -80,4 +82,23 @@ public interface ValidatorService {
      * @return the {@link Validator} instance.
      */
     Validator getValidator();
+
+    /**
+     * Returns true if the validation execution is explicitly marked as enabled
+     * or if it is left undefined.
+     *
+     * @return whether validation execution is globally enabled
+     */
+    boolean isExecutableValidationEnabled();
+
+    /**
+     * Returns the set of executable types that should be considered
+     * unless explicitly overridden via {@link ValidateOnExecution}.
+     * <p>
+     * Returns a set containing {@link ExecutableType#CONSTRUCTORS} and
+     * {@link ExecutableType#NON_GETTER_METHODS} if unspecified in the configuration.
+     *
+     * @return set of validated executable types
+     */
+    Set<ExecutableType> getDefaultValidatedExecutableTypes();
 }

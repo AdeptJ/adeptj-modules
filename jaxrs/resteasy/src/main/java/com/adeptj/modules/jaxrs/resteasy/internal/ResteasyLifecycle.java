@@ -83,10 +83,10 @@ public class ResteasyLifecycle {
     private final DynamicFeature jwtDynamicFeature;
 
     @Activate
-    public ResteasyLifecycle(@Reference ValidatorService vs,
+    public ResteasyLifecycle(@Reference ValidatorService validatorService,
                              @Reference(target = SERVICE_FILTER) DynamicFeature dynamicFeature,
                              BundleContext context, ResteasyConfig config) {
-        this.validatorService = vs;
+        this.validatorService = validatorService;
         this.jwtDynamicFeature = dynamicFeature;
         this.context = context;
         this.config = config;
@@ -113,7 +113,9 @@ public class ResteasyLifecycle {
                         .register(ResteasyUtil.newCorsFilter(this.config))
                         .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
                         .register(new WebApplicationExceptionMapper())
-                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory()))
+                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory(),
+                                this.validatorService.isExecutableValidationEnabled(),
+                                this.validatorService.getDefaultValidatedExecutableTypes()))
                         .register(new JsonbContextResolver())
                         .register(new JsonReaderFactoryContextResolver())
                         .register(new JsonWriterFactoryContextResolver())

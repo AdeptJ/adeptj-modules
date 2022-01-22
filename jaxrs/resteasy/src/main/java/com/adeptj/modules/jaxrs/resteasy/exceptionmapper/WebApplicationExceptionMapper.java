@@ -53,7 +53,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
      *
      * @param exception a subtype of {@link WebApplicationException} or {@link WebApplicationException} itself.
      * @return a new Json {@link Response} with status from the {@link Response} hold by the type of
-     * {@link WebApplicationException} currently being passed..
+     * {@link WebApplicationException} currently being passed.
      */
     @Override
     public Response toResponse(@NotNull WebApplicationException exception) {
