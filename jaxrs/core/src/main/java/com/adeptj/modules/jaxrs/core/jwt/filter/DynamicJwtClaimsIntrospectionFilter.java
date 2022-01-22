@@ -24,7 +24,6 @@ import com.adeptj.modules.jaxrs.api.JwtClaimsIntrospector;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import static com.adeptj.modules.jaxrs.core.jwt.filter.DynamicJwtClaimsIntrospectionFilter.FILTER_NAME;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
@@ -33,16 +32,11 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Component(service = JwtClaimsIntrospectionFilter.class, immediate = true, property = FILTER_NAME)
+@JwtFilterType("dynamic")
+@Component(service = JwtClaimsIntrospectionFilter.class, immediate = true)
 public class DynamicJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntrospectionFilter {
 
-    static final String FILTER_NAME = "jwt.filter.type=dynamic";
-
-    public DynamicJwtClaimsIntrospectionFilter() {
-        super(DefaultJwtClaimsIntrospector.INSTANCE);
-    }
-
-    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
+    // <<------------------------------------------- OSGi Internal ------------------------------------------->>
 
     @Reference(service = JwtClaimsIntrospector.class, cardinality = OPTIONAL, policy = DYNAMIC)
     protected void bindJwtClaimsIntrospector(JwtClaimsIntrospector claimsIntrospector) {

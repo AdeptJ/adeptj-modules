@@ -24,6 +24,7 @@ import com.adeptj.modules.jaxrs.core.jwt.filter.DynamicJwtClaimsIntrospectionFil
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -72,8 +73,11 @@ public class JwtDynamicFeature implements DynamicFeature {
     private static final String SERVICE_FILTER = "(jwt.filter.type=dynamic)";
 
     /**
-     * Each element should be in the form - Resource's FQCN=resourceMethod1,resourceMethod1,...resourceMethodN.
-     * If JwtClaimsIntrospectionFilter has to be applied on given methods, otherwise just provide
+     * Each element should be in the form -
+     * <p>
+     * Resource's FQCN=resourceMethod1,resourceMethod1,...resourceMethodN.
+     * <p>
+     * if the JwtClaimsIntrospectionFilter has to be applied on given methods, otherwise just provide
      * the Resource's FQCN equals to [*] then the filter will be applied on all the resource methods.
      */
     private final String[] filterMapping;
@@ -81,8 +85,8 @@ public class JwtDynamicFeature implements DynamicFeature {
     private final JwtClaimsIntrospectionFilter claimsIntrospectionFilter;
 
     @Activate
-    public JwtDynamicFeature(@Reference(target = SERVICE_FILTER)
-                                     JwtClaimsIntrospectionFilter filter, JwtDynamicFeatureConfig config) {
+    public JwtDynamicFeature(@Reference(target = SERVICE_FILTER) JwtClaimsIntrospectionFilter filter,
+                             @NotNull JwtDynamicFeatureConfig config) {
         this.claimsIntrospectionFilter = filter;
         this.filterMapping = config.filterMapping();
     }

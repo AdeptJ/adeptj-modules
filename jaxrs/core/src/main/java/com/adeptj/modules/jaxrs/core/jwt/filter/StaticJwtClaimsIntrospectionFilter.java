@@ -20,15 +20,14 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.api.JaxRSProvider;
-import com.adeptj.modules.jaxrs.api.RequiresAuthentication;
 import com.adeptj.modules.jaxrs.api.JwtClaimsIntrospector;
+import com.adeptj.modules.jaxrs.api.RequiresAuthentication;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ext.Provider;
 
-import static com.adeptj.modules.jaxrs.core.jwt.filter.StaticJwtClaimsIntrospectionFilter.FILTER_NAME;
 import static javax.ws.rs.Priorities.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -38,20 +37,15 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
+@JwtFilterType("static")
 @JaxRSProvider(name = "StaticJwtFilter")
 @RequiresAuthentication
 @Priority(AUTHORIZATION)
 @Provider
-@Component(service = JwtClaimsIntrospectionFilter.class, immediate = true, property = FILTER_NAME)
+@Component(service = JwtClaimsIntrospectionFilter.class, immediate = true)
 public class StaticJwtClaimsIntrospectionFilter extends AbstractJwtClaimsIntrospectionFilter {
 
-    static final String FILTER_NAME = "jwt.filter.type=static";
-
-    public StaticJwtClaimsIntrospectionFilter() {
-        super(DefaultJwtClaimsIntrospector.INSTANCE);
-    }
-
-    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
+    // <<------------------------------------------- OSGi Internal ------------------------------------------->>
 
     @Reference(service = JwtClaimsIntrospector.class, cardinality = OPTIONAL, policy = DYNAMIC)
     protected void bindJwtClaimsIntrospector(JwtClaimsIntrospector claimsIntrospector) {

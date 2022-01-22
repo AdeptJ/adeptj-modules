@@ -37,8 +37,8 @@ public abstract class AbstractJwtClaimsIntrospectionFilter implements JwtClaimsI
 
     protected JwtClaimsIntrospector claimsIntrospector;
 
-    public AbstractJwtClaimsIntrospectionFilter(JwtClaimsIntrospector claimsIntrospector) {
-        this.claimsIntrospector = claimsIntrospector;
+    public AbstractJwtClaimsIntrospectionFilter() {
+        this.claimsIntrospector = DefaultJwtClaimsIntrospector.INSTANCE;
     }
 
     /**

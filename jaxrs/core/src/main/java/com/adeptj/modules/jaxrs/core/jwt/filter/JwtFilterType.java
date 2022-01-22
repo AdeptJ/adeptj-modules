@@ -20,21 +20,22 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import javax.ws.rs.container.ContainerRequestFilter;
+import org.osgi.service.component.annotations.ComponentPropertyType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Interface helping in exposing {@link JwtClaimsIntrospectionFilter} as a service in OSGi service registry.
- * Thereafter, can be injected as a reference in other services and components.
- * <p>
- * It is implemented in two variants as described below.
- * <p>
- * 1. {@link StaticJwtClaimsIntrospectionFilter} deals with
- * {@link com.adeptj.modules.jaxrs.api.RequiresAuthentication} annotated resource classes and methods.
- * <p>
- * 2. {@link DynamicJwtClaimsIntrospectionFilter} deals with
- * resource classes and methods configured via {@link com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature}
+ * {@link ComponentPropertyType} for specifying Jwt filter type i.e. static or dynamic.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public interface JwtClaimsIntrospectionFilter extends ContainerRequestFilter {
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+@ComponentPropertyType
+public @interface JwtFilterType {
+
+    String value();
 }

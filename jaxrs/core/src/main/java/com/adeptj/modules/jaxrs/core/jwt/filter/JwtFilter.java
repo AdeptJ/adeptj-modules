@@ -26,7 +26,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
  * <p>
  * A Cookie named as per configuration should be present in request.
  * <p>
- * If a non null Jwt is resolved then verify it using {@link JwtService}.
+ * If a non-null Jwt is resolved then verify it using {@link JwtService}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -46,7 +46,7 @@ public class JwtFilter implements ContainerRequestFilter {
      * 1. Checks if the {@link JwtService} is null, if so, then do nothing.
      * 2. Extract Jwt from request (either from cookies or headers), if Jwt is null then do nothing.
      * 3. Verify Jwt using {@link JwtService}, if a null {@link JwtClaims} is returned then do nothing.
-     * 4. When there is a non null {@link JwtClaims} returned then create a {@link JwtSecurityContext} using the returned
+     * 4. When there is a non-null {@link JwtClaims} returned then create a {@link JwtSecurityContext} using the returned
      * claims and set this in the {@link ContainerRequestContext} to be used by other filters in chain as well as JaxRS resources.
      *
      * @param requestContext the JaxRS request context
