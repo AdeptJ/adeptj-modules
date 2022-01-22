@@ -26,6 +26,7 @@ import org.apache.felix.webconsole.WebConsoleSecurityProvider;
 import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -65,7 +66,9 @@ public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
      */
     @Override
     public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
-        return Stream.of(this.roles).anyMatch(request::isUserInRole);
+        // store in a local var as it might be updated by the modified method, see the update method in this class.
+        String[] tempRoles = this.roles;
+        return Stream.of(tempRoles).anyMatch(request::isUserInRole);
     }
 
     // <------------------------ WebConsoleSecurityProvider3 ---------------------------->
@@ -75,12 +78,14 @@ public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
      */
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
+        // store in a local var as it might be updated by the modified method, see the update method in this class.
+        String tempLogoutURI = this.logoutURI;
         // Note: Semantics of this method states that Session invalidation should not happen here.
         // Not using response.sendRedirect due to exception handling we need to do, avoiding that.
         // Set the status to [302] and location header to [/admin/logout] so that browser could redirect there.
-        // AuthServlet will take care of Session invalidation later.
+        // AdminServlet will take care of Session invalidation later.
         response.setStatus(SC_FOUND);
-        response.setHeader(HEADER_LOC, this.logoutURI);
+        response.setHeader(HEADER_LOC, tempLogoutURI);
     }
 
     // <<----------------- Below two methods from WebConsoleSecurityProvider never get called --------------->>
@@ -105,7 +110,7 @@ public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
 
     @Activate
     @Modified
-    protected void start(WebConsoleSecurityConfig config) {
+    protected void start(@NotNull WebConsoleSecurityConfig config) {
         this.roles = config.roles();
         this.logoutURI = config.logout_uri();
         if (StringUtils.isNotEmpty(config.admin_password())) {
