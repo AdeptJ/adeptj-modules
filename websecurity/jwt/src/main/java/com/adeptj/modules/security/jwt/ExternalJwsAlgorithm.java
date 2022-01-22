@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.security.jwt.internal;
+package com.adeptj.modules.security.jwt;
 
 import org.osgi.service.component.annotations.ComponentPropertyType;
 
@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 @ComponentPropertyType
-public @interface ExternalJwtAlgo {
+public @interface ExternalJwsAlgorithm {
 
     String value();
 }

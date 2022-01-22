@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#    Copyright 2016-2022, AdeptJ (http://www.adeptj.com)                      #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,14 +19,14 @@
 */
 package com.adeptj.modules.security.jwt;
 
-import org.osgi.annotation.versioning.ProviderType;
+import org.osgi.annotation.versioning.ConsumerType;
 
 /**
  * A Jwt verification service for verifying 3rd party Jwt(s).
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ProviderType
+@ConsumerType
 public interface ExternalJwtVerificationService {
 
     /**
