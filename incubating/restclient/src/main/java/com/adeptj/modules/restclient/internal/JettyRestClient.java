@@ -6,9 +6,12 @@ import com.adeptj.modules.restclient.api.ClientResponse;
 import com.adeptj.modules.restclient.api.RestClient;
 import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
 import com.adeptj.modules.restclient.util.AntPathMatcher;
+import org.eclipse.jetty.client.AbstractHttpClientTransport;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.io.ClientConnector;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -46,7 +49,7 @@ public class JettyRestClient implements RestClient {
     private final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
 
     @Activate
-    public JettyRestClient(JettyHttpClientConfig config) {
+    public JettyRestClient(@NotNull JettyHttpClientConfig config) {
         this.jettyClient = new HttpClient();
         this.jettyClient.setName(config.name());
         this.jettyClient.setConnectTimeout(config.connect_timeout());
@@ -57,7 +60,11 @@ public class JettyRestClient implements RestClient {
         this.jettyClient.setMaxRedirects(config.max_redirects());
         this.jettyClient.setRequestBufferSize(config.request_buffer_size());
         this.jettyClient.setResponseBufferSize(config.response_buffer_size());
-        this.jettyClient.setTCPNoDelay(config.tcp_no_delay());
+        ((AbstractHttpClientTransport) this.jettyClient.getTransport())
+                .getContainedBeans(ClientConnector.class)
+                .stream()
+                .findFirst()
+                .ifPresent(connector -> connector.setTCPNoDelay(config.tcp_no_delay()));
         LOGGER.info("Starting Jetty HttpClient!");
         try {
             this.jettyClient.start();
