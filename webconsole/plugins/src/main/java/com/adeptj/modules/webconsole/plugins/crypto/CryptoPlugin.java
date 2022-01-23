@@ -92,7 +92,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     @Activate
     public CryptoPlugin(@Reference CryptoService cryptoService) {
         this.cryptoService = cryptoService;
-        LOGGER.info("CryptoPlugin initialized!!");
+        LOGGER.info("AdeptJ CryptoPlugin initialized!!");
     }
 
     // << ---------------------------------- From ConfigurationPlugin ---------------------------------->>

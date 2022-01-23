@@ -40,6 +40,7 @@ import com.adeptj.modules.data.jpa.util.Predicates;
 import com.adeptj.modules.data.jpa.util.Transactions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ConsumerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,11 +103,11 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         return this.entityManagerFactory;
     }
 
-    protected void beginTransaction(EntityManager em) {
+    protected void beginTransaction(@NotNull EntityManager em) {
         em.getTransaction().begin();
     }
 
-    protected void commitTransaction(EntityManager em) {
+    protected void commitTransaction(@NotNull EntityManager em) {
         em.getTransaction().commit();
     }
 

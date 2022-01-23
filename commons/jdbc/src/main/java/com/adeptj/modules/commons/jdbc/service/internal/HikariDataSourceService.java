@@ -110,7 +110,7 @@ public class HikariDataSourceService implements DataSourceService {
      * @param config the Hikari {@link DataSourceConfig}
      */
     @Deactivate
-    protected void stop(DataSourceConfig config) {
+    protected void stop(@NotNull DataSourceConfig config) {
         try {
             this.dataSource.close();
             LOGGER.info("HikariDataSource: [{}] closed!!", config.poolName());
