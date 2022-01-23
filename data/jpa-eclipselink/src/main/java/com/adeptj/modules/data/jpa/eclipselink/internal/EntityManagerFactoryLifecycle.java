@@ -87,7 +87,7 @@ public class EntityManagerFactoryLifecycle {
      * Initializes the {@link EntityManagerFactory} with necessary configurations.
      * <p>
      * Important Note: For creating the {@link EntityManagerFactory} the {@link ClassLoader} of the
-     * {@link PersistenceInfoProvider} service will be used and it must have the visibility to all the entity classes,
+     * {@link PersistenceInfoProvider} service will be used, and it must have the visibility to all the entity classes,
      * persistence.xml and mapping files such as orm.xml otherwise EclipseLink may not be able to create
      * the {@link EntityManagerFactory}
      *
