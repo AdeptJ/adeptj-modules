@@ -42,12 +42,17 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
         this.mongoCollection = mongoCollection;
     }
 
-    public Class<T> getDocumentClass() {
-        return this.documentClass;
+    public MongoClient getMongoClient() {
+        Validate.validState((this.mongoClient != null), "MongoClient is null!");
+        return mongoClient;
     }
 
     public void setMongoClient(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
+    }
+
+    public Class<T> getDocumentClass() {
+        return this.documentClass;
     }
 
     // << --------------------------- Public --------------------------- >>
@@ -99,11 +104,11 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     @Override
     public T doWithMongoClient(@NotNull Function<MongoClient, T> function) {
-        return function.apply(this.mongoClient);
+        return function.apply(this.getMongoClient());
     }
 
     @Override
     public void doWithMongoClient(@NotNull Consumer<MongoClient> consumer) {
-        consumer.accept(this.mongoClient);
+        consumer.accept(this.getMongoClient());
     }
 }
