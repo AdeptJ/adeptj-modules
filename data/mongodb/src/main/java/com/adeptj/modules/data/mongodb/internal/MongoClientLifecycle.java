@@ -1,6 +1,7 @@
 package com.adeptj.modules.data.mongodb.internal;
 
 import com.adeptj.modules.data.mongodb.api.AbstractMongoRepository;
+import com.adeptj.modules.data.mongodb.api.MongoClientProvider;
 import com.adeptj.modules.data.mongodb.api.MongoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
@@ -38,8 +39,8 @@ import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIP
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Designate(ocd = MongoClientConfig.class)
-@Component(immediate = true, configurationPolicy = REQUIRE)
-public class MongoClientLifecycle {
+@Component(configurationPolicy = REQUIRE)
+public class MongoClientLifecycle implements MongoClientProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -74,6 +75,11 @@ public class MongoClientLifecycle {
         LOGGER.info("MongoClient initialized!");
     }
 
+    @Override
+    public MongoClient getMongoClient() {
+        return new MongoClientWrapper(this.mongoClient);
+    }
+
     @Deactivate
     protected void stop() {
         this.mongoClient.close();
@@ -101,7 +107,7 @@ public class MongoClientLifecycle {
         JacksonMongoCollection<T> mongoCollection = this.mongoCollectionBuilder
                 .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD);
         mongoRepository.setMongoCollection(mongoCollection);
-        mongoRepository.setMongoClient(new MongoClientWrapper(this.mongoClient));
+        mongoRepository.setMongoClient(this.getMongoClient());
     }
 
     protected <T> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
