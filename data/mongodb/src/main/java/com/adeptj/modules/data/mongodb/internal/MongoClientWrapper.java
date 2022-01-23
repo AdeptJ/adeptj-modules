@@ -18,7 +18,7 @@ class MongoClientWrapper implements MongoClient {
 
     private final MongoClient delegate;
 
-    MongoClientWrapper(MongoClient delegate) {
+    MongoClientWrapper(@NotNull MongoClient delegate) {
         this.delegate = delegate;
     }
 
@@ -39,7 +39,7 @@ class MongoClientWrapper implements MongoClient {
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException("MongoClient can't be closed!!");
+        throw new UnsupportedOperationException("MongoClient can't be closed by the consumer!!");
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.adeptj.modules.data.mongodb.internal;
 
 import com.adeptj.modules.data.mongodb.api.AbstractMongoRepository;
-import com.adeptj.modules.data.mongodb.api.MongoClientProvider;
 import com.adeptj.modules.data.mongodb.api.MongoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
@@ -13,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.mongojack.JacksonMongoCollection;
 import org.mongojack.ObjectMapperConfigurer;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -24,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,10 +49,8 @@ public class MongoClientLifecycle {
 
     private final JacksonMongoCollectionBuilder mongoCollectionBuilder;
 
-    private final ServiceRegistration<MongoClientProvider> mcpRegistration;
-
     @Activate
-    public MongoClientLifecycle(BundleContext context, @NotNull MongoClientConfig config) {
+    public MongoClientLifecycle(@NotNull MongoClientConfig config) {
         String username = config.auth_username();
         String database = config.auth_database();
         String password = config.auth_password();
@@ -78,15 +72,12 @@ public class MongoClientLifecycle {
                         .enable(INDENT_OUTPUT)
                         .setDefaultPropertyInclusion(NON_DEFAULT)));
         LOGGER.info("MongoClient initialized!");
-        MongoClientProvider mcp = new MongoClientProviderImpl(new MongoClientWrapper(this.mongoClient));
-        this.mcpRegistration = context.registerService(MongoClientProvider.class, mcp, new Hashtable<>());
     }
 
     @Deactivate
     protected void stop() {
         this.mongoClient.close();
         LOGGER.info("MongoClient closed!");
-        this.mcpRegistration.unregister();
     }
 
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
@@ -110,6 +101,7 @@ public class MongoClientLifecycle {
         JacksonMongoCollection<T> mongoCollection = this.mongoCollectionBuilder
                 .build(this.mongoClient, databaseName, collectionName, documentClass, STANDARD);
         mongoRepository.setMongoCollection(mongoCollection);
+        mongoRepository.setMongoClient(new MongoClientWrapper(this.mongoClient));
     }
 
     protected <T> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
@@ -118,6 +110,7 @@ public class MongoClientLifecycle {
             LOGGER.info("Unbinding MongoRepository [{}]", repository);
             AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
             mongoRepository.setMongoCollection(null);
+            mongoRepository.setMongoClient(null);
         }
     }
 }

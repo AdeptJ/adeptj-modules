@@ -1,19 +1,25 @@
 package com.adeptj.modules.data.mongodb.api;
 
+import com.mongodb.Function;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.apache.commons.lang3.Validate;
 import org.bson.conversions.Bson;
+import org.jetbrains.annotations.NotNull;
 import org.mongojack.JacksonMongoCollection;
 import org.osgi.annotation.versioning.ConsumerType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @ConsumerType
 public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     private volatile JacksonMongoCollection<T> mongoCollection;
+
+    private volatile MongoClient mongoClient;
 
     private final Class<T> documentClass;
 
@@ -38,6 +44,10 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     public Class<T> getDocumentClass() {
         return this.documentClass;
+    }
+
+    public void setMongoClient(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
     }
 
     // << --------------------------- Public --------------------------- >>
@@ -85,5 +95,15 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     @Override
     public DeleteResult removeById(Object id) {
         return this.getMongoCollection().removeById(id);
+    }
+
+    @Override
+    public T doWithMongoClient(@NotNull Function<MongoClient, T> function) {
+        return function.apply(this.mongoClient);
+    }
+
+    @Override
+    public void doWithMongoClient(@NotNull Consumer<MongoClient> consumer) {
+        consumer.accept(this.mongoClient);
     }
 }
