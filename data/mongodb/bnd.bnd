@@ -22,7 +22,7 @@
 
 -dsannotations: *
 
--dsannotations-options: version;minimum=1.4.0
+-dsannotations-options: version;minimum=1.5.0
 
 Export-Package: com.adeptj.modules.data.mongodb, \
                 com.adeptj.modules.data.mongodb.core

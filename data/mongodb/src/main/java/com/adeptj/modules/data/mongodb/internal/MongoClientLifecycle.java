@@ -39,7 +39,7 @@ import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIP
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Designate(ocd = MongoClientConfig.class)
-@Component(configurationPolicy = REQUIRE)
+@Component(configurationPolicy = REQUIRE, immediate = true)
 public class MongoClientLifecycle implements MongoClientProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
