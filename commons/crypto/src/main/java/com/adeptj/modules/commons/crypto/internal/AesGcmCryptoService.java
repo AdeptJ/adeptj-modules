@@ -114,7 +114,7 @@ public class AesGcmCryptoService implements CryptoService {
                     .put(salt)
                     .put(cipherBytes)
                     .array();
-            // 6. create an UTF-8 String after Base64 encoding the iv+salt+cipherBytes
+            // 6. create a UTF-8 String after Base64 encoding the iv+salt+cipherBytes
             return new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -128,6 +128,9 @@ public class AesGcmCryptoService implements CryptoService {
     @Override
     public String decrypt(String cipherText) {
         Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
+        byte[] cipherTextDecodedBytes = Base64.getDecoder().decode(cipherText.getBytes(UTF_8));
+        Validate.isTrue(cipherTextDecodedBytes.length > (IV_LENGTH + SALT_LENGTH),
+                "cipherText doesn't seem to be an encrypted string!!");
         char[] cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
         int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
         this.validateKeyMaterials(cryptoKey, iterations);
@@ -137,7 +140,7 @@ public class AesGcmCryptoService implements CryptoService {
         byte[] decryptedBytes = null;
         try {
             // 1. Base64 decode the passed string.
-            ByteBuffer buffer = ByteBuffer.wrap(Base64.getDecoder().decode(cipherText.getBytes(UTF_8)));
+            ByteBuffer buffer = ByteBuffer.wrap(cipherTextDecodedBytes);
             iv = new byte[IV_LENGTH];
             // 2. extract iv
             buffer.get(iv);

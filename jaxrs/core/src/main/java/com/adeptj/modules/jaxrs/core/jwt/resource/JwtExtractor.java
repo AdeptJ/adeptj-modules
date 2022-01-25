@@ -22,6 +22,8 @@ package com.adeptj.modules.jaxrs.core.jwt.resource;
 
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
@@ -61,7 +63,7 @@ public final class JwtExtractor {
         return StringUtils.isEmpty(jwt) ? extractFromAuthorizationHeader(requestContext) : jwt;
     }
 
-    private static String extractFromAuthorizationHeader(ContainerRequestContext requestContext) {
+    private static @Nullable String extractFromAuthorizationHeader(@NotNull ContainerRequestContext requestContext) {
         String bearerToken = requestContext.getHeaderString(AUTHORIZATION);
         return StringUtils.startsWith(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE)
                 ? StringUtils.substring(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE.length()).trim()
