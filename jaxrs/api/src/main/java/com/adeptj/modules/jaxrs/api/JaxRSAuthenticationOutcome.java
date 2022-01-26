@@ -35,7 +35,7 @@ public class JaxRSAuthenticationOutcome extends HashMap<String, Object> {
     private static final long serialVersionUID = 7103662084651804227L;
 
     public JaxRSAuthenticationOutcome addJwtClaim(String name, Object value) {
-        if (value != null) {
+        if (name != null && !name.isEmpty() && value != null) {
             super.put(name, value);
         }
         return this;
