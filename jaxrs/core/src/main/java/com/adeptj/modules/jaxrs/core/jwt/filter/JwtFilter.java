@@ -73,7 +73,7 @@ public class JwtFilter implements ContainerRequestFilter {
         }
         SecurityContext oldSecurityContext = requestContext.getSecurityContext();
         if (oldSecurityContext instanceof JwtSecurityContext) {
-            return;
+            LOGGER.warn("Current SecurityContext is already an instance of JwtSecurityContext!");
         }
         boolean httpsRequest = oldSecurityContext.isSecure();
         requestContext.setSecurityContext(new JwtSecurityContext(claims, httpsRequest));
