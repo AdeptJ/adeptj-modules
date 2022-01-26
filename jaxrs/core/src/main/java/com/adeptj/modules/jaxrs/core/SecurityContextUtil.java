@@ -43,7 +43,7 @@ public final class SecurityContextUtil {
         return principal instanceof JwtPrincipal ? (JwtPrincipal) principal : null;
     }
 
-    public static boolean isJwtExpired(@NotNull ContainerRequestContext requestContext) {
+    public static boolean isUserPrincipalNullOrJwtExpired(@NotNull ContainerRequestContext requestContext) {
         JwtPrincipal principal = getJwtPrincipal(requestContext.getSecurityContext());
         return principal == null || principal.isHoldingExpiredJwt();
     }

@@ -27,7 +27,7 @@
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: WebSecurity :: Builder</name>
     <description>AdeptJ Modules :: WebSecurity :: Builder</description>
-    <url>http://www.adeptj.com</url>
+    <url>https://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
