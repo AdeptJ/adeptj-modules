@@ -21,7 +21,7 @@
 package com.adeptj.modules.jaxrs.core.jwt.resource;
 
 /**
- * Provides the {@link JwtCookieConfig} configured by {@link JwtResource} component.
+ * Provides the {@link JwtCookieConfig} configured by {@link JwtAuthenticationResource} component.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

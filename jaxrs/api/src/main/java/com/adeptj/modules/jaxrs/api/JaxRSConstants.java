@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.api;
 
 /**
  * Constants for Jax-RS modules.
@@ -35,8 +35,6 @@ public final class JaxRSConstants {
 
     public static final String AUTH_SCHEME_TOKEN = "TOKEN";
 
-    public static final String ROLES = "roles";
-
-    public static final String ROLES_DELIMITER = ",";
+    public static final String JWT_CLAIM_ROLES = "roles";
 
 }

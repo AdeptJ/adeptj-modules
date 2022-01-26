@@ -21,6 +21,9 @@
 package com.adeptj.modules.jaxrs.api;
 
 import java.util.HashMap;
+import java.util.Set;
+
+import static com.adeptj.modules.jaxrs.api.JaxRSConstants.JWT_CLAIM_ROLES;
 
 /**
  * JaxRSAuthenticationOutcome holding arbitrary data for JWT based JAX-RS resource authorization.
@@ -31,8 +34,17 @@ public class JaxRSAuthenticationOutcome extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 7103662084651804227L;
 
-    public JaxRSAuthenticationOutcome addAttribute(String name, Object value) {
-        super.put(name, value);
+    public JaxRSAuthenticationOutcome addJwtClaim(String name, Object value) {
+        if (value != null) {
+            super.put(name, value);
+        }
+        return this;
+    }
+
+    public JaxRSAuthenticationOutcome addRolesInJwtClaim(Set<String> roles) {
+        if (roles != null && !roles.isEmpty()) {
+            super.put(JWT_CLAIM_ROLES, roles);
+        }
         return this;
     }
 }

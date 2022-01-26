@@ -43,15 +43,15 @@ import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
- * JAX-RS resource for issuance and verification of JWT.
+ * JAX-RS resource for issuance of JWT basis the successful authentication by {@link JaxRSAuthenticator}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @JaxRSResource(name = "jwt")
 @Path("/token-auth/_j_security_check")
 @Designate(ocd = JwtCookieConfig.class)
-@Component(service = JwtResource.class)
-public class JwtResource {
+@Component(service = JwtAuthenticationResource.class)
+public class JwtAuthenticationResource {
 
     private static final String J_USERNAME = "j_username";
 
@@ -62,7 +62,7 @@ public class JwtResource {
     private final JaxRSAuthenticator authenticator;
 
     @Activate
-    public JwtResource(@Reference JwtService jwtService, @Reference JaxRSAuthenticator authenticator) {
+    public JwtAuthenticationResource(@Reference JwtService jwtService, @Reference JaxRSAuthenticator authenticator) {
         this.jwtService = jwtService;
         this.authenticator = authenticator;
     }

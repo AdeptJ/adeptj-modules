@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_BEARER_WITH_SPACE;
+import static com.adeptj.modules.jaxrs.api.JaxRSConstants.AUTH_SCHEME_BEARER_WITH_SPACE;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
 /**

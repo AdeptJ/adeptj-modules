@@ -26,8 +26,8 @@ import com.adeptj.modules.security.jwt.JwtClaims;
 import javax.ws.rs.core.SecurityContext;
 import java.util.Collection;
 
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.AUTH_SCHEME_TOKEN;
-import static com.adeptj.modules.jaxrs.core.JaxRSConstants.ROLES;
+import static com.adeptj.modules.jaxrs.api.JaxRSConstants.AUTH_SCHEME_TOKEN;
+import static com.adeptj.modules.jaxrs.api.JaxRSConstants.JWT_CLAIM_ROLES;
 
 /**
  * Jwt based JAX-RS {@link SecurityContext}.
@@ -53,7 +53,7 @@ public class JwtSecurityContext implements SecurityContext {
     @SuppressWarnings("unchecked")
     @Override
     public boolean isUserInRole(String role) {
-        Object roles = this.principal.getClaims().get(ROLES);
+        Object roles = this.principal.getClaims().get(JWT_CLAIM_ROLES);
         // Roles are deserialized as an ArrayList, but we are not sure if it can be some other Collection impl later.
         if (roles instanceof Collection) {
             return ((Collection<String>) roles).contains(role);
