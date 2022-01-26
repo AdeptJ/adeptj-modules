@@ -1,4 +1,4 @@
-package com.adeptj.modules.commons.email.service.internal;
+package com.adeptj.modules.commons.email.internal;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;

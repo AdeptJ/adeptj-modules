@@ -18,9 +18,8 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.email.service;
+package com.adeptj.modules.commons.email;
 
-import org.apache.commons.mail.EmailException;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -31,5 +30,5 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface EmailService {
 
-    void sendEmail() throws EmailException;
+    void sendSimpleEmail(String subject, String message, String fromAddress, String... toAddresses);
 }
