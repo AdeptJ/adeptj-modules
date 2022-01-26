@@ -30,6 +30,8 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
 
+import static at.favre.lib.crypto.bcrypt.BCrypt.Version.VERSION_2A;
+
 /**
  * Service implementation for encoding/matching passwords using BCrypt.
  *
@@ -56,6 +58,6 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
     public boolean matches(char[] rawPassword, char[] encodedPassword) {
         Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
         Validate.isTrue(ArrayUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
-        return BCrypt.verifyer().verify(rawPassword, encodedPassword).verified;
+        return BCrypt.verifyer(VERSION_2A).verifyStrict(rawPassword, encodedPassword).verified;
     }
 }
