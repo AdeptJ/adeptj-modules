@@ -22,7 +22,7 @@ package com.adeptj.modules.commons.crypto.internal;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
-import com.adeptj.modules.commons.utils.RandomUtil;
+import com.adeptj.modules.commons.utils.RandomGenerators;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +51,7 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
     @Override
     public String encode(char[] rawPassword) {
         Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
-        return BCrypt.with(RandomUtil.getSecureRandom()).hashToString(this.exponentialCost, rawPassword);
+        return BCrypt.with(RandomGenerators.getSecureRandom()).hashToString(this.exponentialCost, rawPassword);
     }
 
     @Override

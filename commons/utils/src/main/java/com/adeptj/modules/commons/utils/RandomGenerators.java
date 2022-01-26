@@ -29,11 +29,11 @@ import java.security.SecureRandom;
 import java.util.UUID;
 
 /**
- * Provides random bytes using {@link SecureRandom}.
+ * Provides random bytes using {@link SecureRandom} and {@link UUID}s.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class RandomUtil {
+public class RandomGenerators {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -43,7 +43,7 @@ public class RandomUtil {
 
     private static final int DEFAULT_MAX_LENGTH = 64;
 
-    private RandomUtil() {
+    private RandomGenerators() {
     }
 
     public static SecureRandom getSecureRandom() {

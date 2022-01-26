@@ -23,7 +23,7 @@ package com.adeptj.modules.commons.crypto.internal;
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
-import com.adeptj.modules.commons.utils.RandomUtil;
+import com.adeptj.modules.commons.utils.RandomGenerators;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -56,10 +56,9 @@ public class AesGcmCryptoService implements CryptoService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final int IV_LENGTH = 12;
+    private static final int GCM_IV_LENGTH = 12;
 
-    private static final int SALT_LENGTH = 16;
-
+    // AES with Galois/Counter Mode (GCM) block mode
     private static final String CIPHER_ALGO = "AES/GCM/NoPadding";
 
     private static final String SECRET_KEY_SPEC_ALGO = "AES";
@@ -96,31 +95,27 @@ public class AesGcmCryptoService implements CryptoService {
         int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
         this.validateKeyMaterials(cryptoKey, iterations);
         byte[] iv = null;
-        byte[] salt = null;
-        byte[] cipherBytes = null;
+        byte[] cipherTextBytes = null;
         byte[] compositeCipherBytes = null;
         try {
             // 1. get iv
-            iv = RandomUtil.randomBytes(IV_LENGTH);
-            // 2. get salt
-            salt = RandomUtil.randomBytes(SALT_LENGTH);
-            // 3. init encrypt mode cipher
-            Cipher cipher = this.initCipher(ENCRYPT_MODE, salt, iv, cryptoKey, iterations);
-            // 4. generate cipher bytes
-            cipherBytes = cipher.doFinal(plainText.getBytes(UTF_8));
-            // 5. put everything in a ByteBuffer
-            compositeCipherBytes = ByteBuffer.allocate(iv.length + salt.length + cipherBytes.length)
+            iv = RandomGenerators.randomBytes(GCM_IV_LENGTH);
+            // 2. init encrypt mode cipher
+            Cipher cipher = this.initCipher(ENCRYPT_MODE, iv, cryptoKey, iterations);
+            // 3. generate cipher bytes
+            cipherTextBytes = cipher.doFinal(plainText.getBytes(UTF_8));
+            // 4. put everything in a ByteBuffer
+            compositeCipherBytes = ByteBuffer.allocate(iv.length + cipherTextBytes.length)
                     .put(iv)
-                    .put(salt)
-                    .put(cipherBytes)
+                    .put(cipherTextBytes)
                     .array();
-            // 6. create a UTF-8 String after Base64 encoding the iv+salt+cipherBytes
+            // 5. create a UTF-8 String after Base64 encoding the iv+cipherTextBytes
             return new String(Base64.getEncoder().encode(compositeCipherBytes), UTF_8);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new CryptoException(ex);
         } finally {
-            CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, compositeCipherBytes);
+            CryptoUtil.nullSafeWipeAll(iv, cipherTextBytes, compositeCipherBytes);
             Arrays.fill(cryptoKey, Character.MIN_VALUE);
         }
     }
@@ -128,49 +123,44 @@ public class AesGcmCryptoService implements CryptoService {
     @Override
     public String decrypt(String cipherText) {
         Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
+        // 1. Base64 decode the passed string.
         byte[] cipherTextDecodedBytes = Base64.getDecoder().decode(cipherText.getBytes(UTF_8));
-        Validate.isTrue(cipherTextDecodedBytes.length > (IV_LENGTH + SALT_LENGTH),
+        // This will prevent a BufferUnderflowException when we try to extract the data from the ByteBuffer.
+        Validate.isTrue((cipherTextDecodedBytes.length > GCM_IV_LENGTH),
                 "cipherText doesn't seem to be an encrypted string!!");
         char[] cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
         int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
         this.validateKeyMaterials(cryptoKey, iterations);
         byte[] iv = null;
-        byte[] salt = null;
         byte[] cipherBytes = null;
         byte[] decryptedBytes = null;
         try {
-            // 1. Base64 decode the passed string.
             ByteBuffer buffer = ByteBuffer.wrap(cipherTextDecodedBytes);
-            iv = new byte[IV_LENGTH];
+            iv = new byte[GCM_IV_LENGTH];
             // 2. extract iv
             buffer.get(iv);
-            salt = new byte[SALT_LENGTH];
-            // 3. extract salt
-            buffer.get(salt);
-            // 4. init decrypt mode cipher
-            Cipher cipher = this.initCipher(DECRYPT_MODE, salt, iv, cryptoKey, iterations);
+            // 3. init decrypt mode cipher
+            Cipher cipher = this.initCipher(DECRYPT_MODE, iv, cryptoKey, iterations);
             cipherBytes = new byte[buffer.remaining()];
-            // 5. extract cipherBytes
+            // 4. extract cipherBytes
             buffer.get(cipherBytes);
-            // 6. decrypt cipherBytes
+            // 5. decrypt cipherBytes
             decryptedBytes = cipher.doFinal(cipherBytes);
-            // 7. create a UTF-8 String from decryptedBytes
+            // 6. create a UTF-8 String from decryptedBytes
             return new String(decryptedBytes, UTF_8);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new CryptoException(ex);
         } finally {
-            CryptoUtil.nullSafeWipeAll(iv, salt, cipherBytes, decryptedBytes);
+            CryptoUtil.nullSafeWipeAll(iv, cipherBytes, decryptedBytes);
             Arrays.fill(cryptoKey, Character.MIN_VALUE);
         }
     }
 
-    private Cipher initCipher(int mode,
-                              byte[] salt,
-                              byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
+    private Cipher initCipher(int mode, byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
         byte[] key = null;
         try {
-            key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, cryptoKey, salt, iterations, PBE_KEY_LENGTH);
+            key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, cryptoKey, iv, iterations, PBE_KEY_LENGTH);
             SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
             Cipher cipher = Cipher.getInstance(CIPHER_ALGO);

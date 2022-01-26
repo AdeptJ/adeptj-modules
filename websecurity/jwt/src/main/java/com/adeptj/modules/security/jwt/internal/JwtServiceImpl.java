@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.jwt.internal;
 
-import com.adeptj.modules.commons.utils.RandomUtil;
+import com.adeptj.modules.commons.utils.RandomGenerators;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtKeyInitializationException;
 import com.adeptj.modules.security.jwt.JwtKeys;
@@ -112,7 +112,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims) // passed claims map can override the subject claim.
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
-                .setId(claims.containsKey(ID) ? claims.get(ID).toString() : RandomUtil.uuidString())
+                .setId(claims.containsKey(ID) ? claims.get(ID).toString() : RandomGenerators.uuidString())
                 .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
                 .signWith(this.signingKey, this.algorithm)
                 .serializeToJsonWith(new JwtSerializer())

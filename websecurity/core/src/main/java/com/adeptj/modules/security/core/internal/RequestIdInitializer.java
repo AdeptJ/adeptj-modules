@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.security.core.internal;
 
-import com.adeptj.modules.commons.utils.RandomUtil;
+import com.adeptj.modules.commons.utils.RandomGenerators;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.http.whiteboard.Preprocessor;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class RequestIdInitializer implements Preprocessor {
             LOGGER.debug(PROCESSING_REQUEST_MSG, request.getMethod(), request.getRequestURI());
         }
         try {
-            MDC.put(KEY_REQUEST_ID, RandomUtil.uuidString());
+            MDC.put(KEY_REQUEST_ID, RandomGenerators.uuidString());
             chain.doFilter(req, resp);
         } finally {
             MDC.remove(KEY_REQUEST_ID);
