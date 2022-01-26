@@ -108,8 +108,8 @@ public class JwtServiceImpl implements JwtService {
         Instant now = Instant.now();
         return Jwts.builder()
                 .setHeaderParam(TYPE, JWT_TYPE)
-                .setClaims(claims)
                 .setSubject(subject)
+                .setClaims(claims) // passed claims map can override the subject claim.
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(this.expirationDuration)))
                 .setId(claims.containsKey(ID) ? claims.get(ID).toString() : RandomUtil.uuidString())

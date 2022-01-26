@@ -41,7 +41,7 @@ public class JaxRSAuthenticationOutcome extends HashMap<String, Object> {
         return this;
     }
 
-    public JaxRSAuthenticationOutcome addRolesInJwtClaim(Set<String> roles) {
+    public JaxRSAuthenticationOutcome addRolesJwtClaim(Set<String> roles) {
         if (roles != null && !roles.isEmpty()) {
             super.put(JWT_CLAIM_ROLES, roles);
         }
