@@ -22,6 +22,7 @@ package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.api.JwtClaimsIntrospector;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
+import org.jetbrains.annotations.NotNull;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
@@ -50,7 +51,7 @@ public abstract class AbstractJwtClaimsIntrospectionFilter implements JwtClaimsI
      * @param requestContext the JaxRS request context
      */
     @Override
-    public void filter(ContainerRequestContext requestContext) {
+    public void filter(@NotNull ContainerRequestContext requestContext) {
         if (requestContext.getSecurityContext() instanceof JwtSecurityContext) {
             // Since JwtClaimsIntrospector is a dynamic service so assign this to a local variable.
             JwtClaimsIntrospector introspector = this.claimsIntrospector;

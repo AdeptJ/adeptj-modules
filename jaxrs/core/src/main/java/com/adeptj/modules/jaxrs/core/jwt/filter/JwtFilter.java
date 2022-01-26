@@ -1,18 +1,22 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.api.JaxRSProvider;
-import com.adeptj.modules.jaxrs.core.jwt.resource.JwtExtractor;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
+import com.adeptj.modules.jaxrs.core.jwt.resource.JwtExtractor;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
+import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.FILTER_NAME;
 import static javax.ws.rs.Priorities.AUTHENTICATION;
@@ -36,6 +40,8 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Component(immediate = true)
 public class JwtFilter implements ContainerRequestFilter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     static final String FILTER_NAME = "JaxRS.Security.JwtFilter";
 
     private JwtService jwtService;
@@ -57,12 +63,23 @@ public class JwtFilter implements ContainerRequestFilter {
         if (tokenService == null) {
             return;
         }
-        JwtClaims claims;
         String jwt = JwtExtractor.extract(requestContext);
-        if (StringUtils.isEmpty(jwt) || (claims = tokenService.verifyJwt(jwt)) == null) {
+        if (StringUtils.isEmpty(jwt)) {
             return;
         }
-        requestContext.setSecurityContext(new JwtSecurityContext(claims, requestContext.getSecurityContext().isSecure()));
+        JwtClaims claims = tokenService.verifyJwt(jwt);
+        if (claims == null) {
+            return;
+        }
+        SecurityContext oldSecurityContext = requestContext.getSecurityContext();
+        if (oldSecurityContext instanceof JwtSecurityContext) {
+            return;
+        }
+        boolean httpsRequest = oldSecurityContext.isSecure();
+        requestContext.setSecurityContext(new JwtSecurityContext(claims, httpsRequest));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("JwtSecurityContext initialized and set in ContainerRequestContext!");
+        }
     }
 
     // <<------------------------------------- OSGi Internal  -------------------------------------->>
