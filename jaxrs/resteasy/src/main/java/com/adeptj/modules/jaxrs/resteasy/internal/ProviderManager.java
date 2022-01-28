@@ -61,7 +61,8 @@ public class ProviderManager<T> {
     /**
      * Removes the JAX-RS provider from the RESTEasy {@link ResteasyProviderFactory}.
      *
-     * @param provider The service object for the removed service.
+     * @param reference the provider {@link ServiceReference}
+     * @param provider  The service object for the removed service.
      */
     public void removeProvider(ServiceReference<T> reference, T provider) {
         if (this.providerFactory.getProviderInstances().remove(provider)) {

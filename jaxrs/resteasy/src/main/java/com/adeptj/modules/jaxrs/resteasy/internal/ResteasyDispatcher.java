@@ -26,6 +26,7 @@ import org.jboss.resteasy.core.ResteasyContext;
 import org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher;
 import org.jboss.resteasy.plugins.server.servlet.ServletBootstrap;
 import org.jboss.resteasy.spi.ResteasyDeployment;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,13 +60,13 @@ public class ResteasyDispatcher extends HttpServlet30Dispatcher {
 
     private final transient ResteasyDeployment deployment;
 
-    ResteasyDispatcher(@NotNull ServletConfig servletConfig, String[] providerDenyList) {
+    ResteasyDispatcher(@NotNull ServletConfig servletConfig, ResteasyProviderFactory providerFactory) {
         // This is needed for resolving the ResteasyProxyServlet's init parameters by RESTEasy's ServletConfigSource.
         ResteasyContext.pushContext(ServletConfig.class, servletConfig);
         // This is needed by RESTEasy's ResteasyConfigProvider class in ConfigurationBootstrap.createDeployment().
         ConfigProviderResolver.setInstance(new SmallRyeConfigProviderResolver());
         this.deployment = new ServletBootstrap(servletConfig).createDeployment();
-        this.deployment.setProviderFactory(new ResteasyProviderFactoryAdapter(providerDenyList));
+        this.deployment.setProviderFactory(providerFactory);
         this.deployment.start();
         LOGGER.info("ResteasyDeployment started!!");
         ResteasyUtil.addResteasyDeployment(servletConfig.getServletContext(), this.deployment);

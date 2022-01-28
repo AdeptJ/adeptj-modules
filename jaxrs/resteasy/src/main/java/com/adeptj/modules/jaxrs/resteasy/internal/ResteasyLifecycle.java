@@ -31,7 +31,7 @@ import com.adeptj.modules.jaxrs.resteasy.contextresolver.ValidatorContextResolve
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
-import org.jboss.resteasy.spi.Dispatcher;
+import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
@@ -106,21 +106,11 @@ public class ResteasyLifecycle {
                 LOGGER.info("Bootstrapping JAX-RS Runtime!!");
                 // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
                 ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
-                this.resteasyDispatcher = new ResteasyDispatcher(servletConfig, this.config.providerDenyList());
+                ResteasyProviderFactory providerFactory = this.initResteasyProviderFactory();
+                this.resteasyDispatcher = new ResteasyDispatcher(servletConfig, providerFactory);
                 this.resteasyDispatcher.init(servletConfig);
-                Dispatcher dispatcher = this.resteasyDispatcher.getDispatcher();
-                ResteasyProviderFactory providerFactory = dispatcher.getProviderFactory()
-                        .register(ResteasyUtil.newCorsFilter(this.config))
-                        .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
-                        .register(new WebApplicationExceptionMapper())
-                        .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory(),
-                                this.validatorService.isExecutableValidationEnabled(),
-                                this.validatorService.getDefaultValidatedExecutableTypes()))
-                        .register(new JsonbContextResolver())
-                        .register(new JsonReaderFactoryContextResolver())
-                        .register(new JsonWriterFactoryContextResolver())
-                        .register(this.jwtDynamicFeature);
-                this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, dispatcher.getRegistry());
+                Registry registry = this.resteasyDispatcher.getDispatcher().getRegistry();
+                this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, registry);
                 this.serviceTracker.open();
                 LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
             } catch (Exception ex) { // NOSONAR
@@ -128,6 +118,20 @@ public class ResteasyLifecycle {
                 throw new ResteasyBootstrapException(ex.getMessage(), ex);
             }
         });
+    }
+
+    private ResteasyProviderFactory initResteasyProviderFactory() {
+        return new ResteasyProviderFactoryAdapter(this.config.providerDenyList())
+                .register(ResteasyUtil.newCorsFilter(this.config))
+                .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
+                .register(new WebApplicationExceptionMapper())
+                .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory(),
+                        this.validatorService.isExecutableValidationEnabled(),
+                        this.validatorService.getDefaultValidatedExecutableTypes()))
+                .register(new JsonbContextResolver())
+                .register(new JsonReaderFactoryContextResolver())
+                .register(new JsonWriterFactoryContextResolver())
+                .register(this.jwtDynamicFeature);
     }
 
     /**
