@@ -53,7 +53,9 @@ public class HibernateValidatorService implements ValidatorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public static final String VALIDATOR_FACTORY_INIT_MSG = "HibernateValidator initialized in [{}] ms!!";
+    private static final String VALIDATOR_FACTORY_INIT_MSG = "HibernateValidator initialized in [{}] ms!!";
+
+    private static final String VALIDATOR_FACTORY_NULL_MSG = "javax.validation.ValidatorFactory is null!!";
 
     private final ValidatorFactory validatorFactory;
 
@@ -69,10 +71,10 @@ public class HibernateValidatorService implements ValidatorService {
             BootstrapConfiguration bootstrapConfiguration = validatorConfiguration.getBootstrapConfiguration();
             this.executableValidationEnabled = bootstrapConfiguration.isExecutableValidationEnabled();
             this.defaultValidatedExecutableTypes = bootstrapConfiguration.getDefaultValidatedExecutableTypes();
-            this.validatorFactory = validatorConfiguration
-                    .buildValidatorFactory();
+            this.validatorFactory = validatorConfiguration.buildValidatorFactory();
+            Validate.validState((this.validatorFactory != null), VALIDATOR_FACTORY_NULL_MSG);
             LOGGER.info(VALIDATOR_FACTORY_INIT_MSG, NANOSECONDS.toMillis(System.nanoTime() - startTime));
-        } catch (ValidationException ex) {
+        } catch (ValidationException | IllegalStateException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
         }
