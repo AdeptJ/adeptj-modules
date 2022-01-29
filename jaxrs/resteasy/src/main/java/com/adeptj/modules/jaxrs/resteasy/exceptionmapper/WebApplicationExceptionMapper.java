@@ -22,6 +22,8 @@ package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
 import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
 import javax.json.JsonObject;
@@ -29,6 +31,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper.PRIORITY;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -41,6 +44,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Priority(PRIORITY)
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final int PRIORITY = 7000;
 
@@ -58,6 +63,9 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
      */
     @Override
     public Response toResponse(@NotNull WebApplicationException exception) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug(exception.getMessage(), exception);
+        }
         Response currentResponse = exception.getResponse();
         JsonObject entity = JakartaJsonUtil.getJsonBuilderFactory()
                 .createObjectBuilder()
