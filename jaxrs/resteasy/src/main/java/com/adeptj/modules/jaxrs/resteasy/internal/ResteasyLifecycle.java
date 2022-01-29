@@ -30,7 +30,6 @@ import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.contextresolver.ValidatorContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper;
-import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jetbrains.annotations.NotNull;
@@ -146,7 +145,6 @@ public class ResteasyLifecycle {
         OSGiUtil.closeQuietly(this.serviceTracker);
         this.resteasyDispatcher.destroy();
         ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
-        ConfigProviderResolver.setInstance(null);
         LOGGER.info("JAX-RS Runtime stopped!!");
     }
 

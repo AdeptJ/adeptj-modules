@@ -36,17 +36,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <resteasy-tracing-api.version>1.1.0.Final</resteasy-tracing-api.version>
-        <reseasy-microprofile-config.version>1.0.0.Final</reseasy-microprofile-config.version>
         <asyncutil.version>0.1.0</asyncutil.version>
-        <microprofile-config-api.version>2.0</microprofile-config-api.version>
-        <smallrye-config.version>2.8.2</smallrye-config.version>
-        <smallrye-config-core.version>2.8.2</smallrye-config-core.version>
-        <smallrye-config-common.version>2.8.2</smallrye-config-common.version>
-        <smallrye-common-annotation.version>1.8.0</smallrye-common-annotation.version>
-        <smallrye-common-expression.version>1.8.0</smallrye-common-expression.version>
-        <smallrye-common-constraint.version>1.8.0</smallrye-common-constraint.version>
-        <smallrye-common-classloader.version>1.8.0</smallrye-common-classloader.version>
-        <smallrye-common-function.version>1.8.0</smallrye-common-function.version>
     </properties>
 
     <!-- Project Information -->
@@ -227,56 +217,6 @@
             <groupId>com.ibm.async</groupId>
             <artifactId>asyncutil</artifactId>
             <version>${asyncutil.version}</version>
-        </dependency>
-
-        <!-- Following dependencies to be embedded because these are not OSGi bundles-->
-
-        <dependency>
-            <groupId>io.smallrye.common</groupId>
-            <artifactId>smallrye-common-annotation</artifactId>
-            <version>${smallrye-common-annotation.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.common</groupId>
-            <artifactId>smallrye-common-function</artifactId>
-            <version>${smallrye-common-function.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.common</groupId>
-            <artifactId>smallrye-common-expression</artifactId>
-            <version>${smallrye-common-expression.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.common</groupId>
-            <artifactId>smallrye-common-constraint</artifactId>
-            <version>${smallrye-common-constraint.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.common</groupId>
-            <artifactId>smallrye-common-classloader</artifactId>
-            <version>${smallrye-common-classloader.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.config</groupId>
-            <artifactId>smallrye-config-common</artifactId>
-            <version>${smallrye-config-common.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.config</groupId>
-            <artifactId>smallrye-config-core</artifactId>
-            <version>${smallrye-config-core.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.smallrye.config</groupId>
-            <artifactId>smallrye-config</artifactId>
-            <version>${smallrye-config.version}</version>
         </dependency>
 
         <dependency>
@@ -600,30 +540,6 @@
                 <exclusion>
                     <groupId>org.jboss.spec.javax.ws.rs</groupId>
                     <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.resteasy.microprofile</groupId>
-            <artifactId>microprofile-config</artifactId>
-            <version>${reseasy-microprofile-config.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.smallrye.config</groupId>
-                    <artifactId>smallrye-config</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.servlet</groupId>
-                    <artifactId>jakarta.servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.microprofile.config</groupId>
-                    <artifactId>microprofile-config-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

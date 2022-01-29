@@ -27,7 +27,7 @@
 -dsannotations-options: version;minimum=1.4.0
 
 # Copy RESTEasy dependencies to the root folder of the target JAR and add them to the bundle classpath
--includeresource: resteasy-*.jar;microprofile-config-*.Final.jar;smallrye-*.jar;asyncutil*.jar;lib:=true
+-includeresource: resteasy-*.jar;asyncutil*.jar;lib:=true
 
 -exportcontents: com.adeptj.modules.jaxrs.resteasy, \
                  !com.adeptj.modules.jaxrs.resteasy.internal, \
