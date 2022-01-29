@@ -20,15 +20,14 @@
 
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
+import com.adeptj.modules.commons.validator.service.ValidatorService;
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Priority;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.util.Set;
 
 import static com.adeptj.modules.jaxrs.resteasy.contextresolver.ValidatorContextResolver.PRIORITY;
 
@@ -46,10 +45,10 @@ public class ValidatorContextResolver implements ContextResolver<GeneralValidato
     // Cache or no cache the GeneralValidator instance?
     private final GeneralValidator validator;
 
-    public ValidatorContextResolver(final ValidatorFactory validatorFactory,
-                                    final boolean executableValidationEnabled,
-                                    final Set<ExecutableType> defaultValidatedExecutableTypes) {
-        this.validator = new GeneralValidatorImpl(validatorFactory, executableValidationEnabled, defaultValidatedExecutableTypes);
+    public ValidatorContextResolver(@NotNull ValidatorService validatorService) {
+        this.validator = new GeneralValidatorImpl(validatorService.getValidatorFactory(),
+                validatorService.isExecutableValidationEnabled(),
+                validatorService.getDefaultValidatedExecutableTypes());
     }
 
     @Override

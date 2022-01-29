@@ -124,9 +124,7 @@ public class ResteasyLifecycle {
                 .register(ResteasyUtil.newCorsFilter(this.config))
                 .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
                 .register(new WebApplicationExceptionMapper())
-                .register(new ValidatorContextResolver(this.validatorService.getValidatorFactory(),
-                        this.validatorService.isExecutableValidationEnabled(),
-                        this.validatorService.getDefaultValidatedExecutableTypes()))
+                .register(new ValidatorContextResolver(this.validatorService))
                 .register(new JsonbContextResolver())
                 .register(new JsonReaderFactoryContextResolver())
                 .register(new JsonWriterFactoryContextResolver())
