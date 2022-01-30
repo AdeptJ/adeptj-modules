@@ -30,6 +30,7 @@ import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.contextresolver.ValidatorContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper;
+import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,9 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.container.DynamicFeature;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 
+import static com.adeptj.modules.commons.utils.Constants.COMMA;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
 /**
@@ -120,10 +123,10 @@ public class ResteasyLifecycle {
     }
 
     private ResteasyProviderFactory initResteasyProviderFactory() {
-        return new ResteasyProviderFactoryAdapter(this.config.providerDenyList())
-                .register(ResteasyUtil.newCorsFilter(this.config))
-                .register(new GenericExceptionMapper(this.config.sendExceptionTrace()))
-                .register(new WebApplicationExceptionMapper())
+        return new ResteasyProviderFactoryAdapter(this.config.provider_skip_list())
+                .register(this.initCorsFilter(this.config))
+                .register(new GenericExceptionMapper(this.config.send_exception_trace()))
+                .register(new WebApplicationExceptionMapper(this.config.log_web_application_exception()))
                 .register(new ValidatorContextResolver(this.validatorService))
                 .register(new JsonbContextResolver())
                 .register(new JsonReaderFactoryContextResolver())
@@ -131,11 +134,22 @@ public class ResteasyLifecycle {
                 .register(this.jwtDynamicFeature);
     }
 
+    private @NotNull CorsFilter initCorsFilter(@NotNull ResteasyConfig config) {
+        CorsFilter corsFilter = new CorsFilter();
+        corsFilter.setAllowCredentials(config.allow_credentials());
+        corsFilter.setCorsMaxAge(config.cors_max_age());
+        corsFilter.setExposedHeaders(String.join(COMMA, config.exposed_headers()));
+        corsFilter.setAllowedMethods(String.join(COMMA, config.allowed_methods()));
+        corsFilter.setAllowedHeaders(String.join(COMMA, config.allowed_headers()));
+        corsFilter.getAllowedOrigins().addAll(Arrays.asList(config.allowed_origins()));
+        return corsFilter;
+    }
+
     /**
      * The ResteasyLifecycle will first close the {@link CompositeServiceTracker} instance so that the OSGi service
      * instances(JAX-RS providers and resources) can be released.
      * <p>
-     * Finally call {@link ResteasyDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
+     * Finally, call {@link ResteasyDispatcher#destroy} so that RESTEasy can be shutdown gracefully.
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */

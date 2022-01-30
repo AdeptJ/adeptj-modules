@@ -58,7 +58,7 @@ public @interface ResteasyConfig {
             name = "CORS Preflight Max Age",
             description = "%resteasy.desc"
     )
-    int corsMaxAge() default 86400; // Indicates that preflight response is good for 86400 seconds or 1 day
+    int cors_max_age() default 86400; // Indicates that preflight response is good for 86400 seconds or 1 day
 
     @AttributeDefinition(
             name = "CORS Allow Credentials",
@@ -68,7 +68,7 @@ public @interface ResteasyConfig {
                     + "in the value of the [Access-Control-Allow-Origin] header, "
                     + "instead of specifying the (*) wildcard."
     )
-    boolean allowCredentials() default true;
+    boolean allow_credentials() default true;
 
     @AttributeDefinition(
             name = "CORS Allowed Methods",
@@ -77,7 +77,7 @@ public @interface ResteasyConfig {
                     + "or methods allowed when accessing the resource. "
                     + "This is used in response to a preflight request."
     )
-    String[] allowedMethods() default {
+    String[] allowed_methods() default {
             GET,
             POST,
             PUT,
@@ -93,7 +93,7 @@ public @interface ResteasyConfig {
                     + "request to indicate which HTTP headers "
                     + "can be used when making the actual request"
     )
-    String[] allowedHeaders() default {
+    String[] allowed_headers() default {
             CACHE_CONTROL,
             CONTENT_LANGUAGE,
             CONTENT_LENGTH,
@@ -109,7 +109,7 @@ public @interface ResteasyConfig {
             description = "This header lets a server whitelist headers that clients are allowed to access. "
                     + "Value of [Access-Control-Expose-Headers] header."
     )
-    String[] exposedHeaders() default {
+    String[] exposed_headers() default {
             CONTENT_LENGTH,
             AUTHORIZATION,
     };
@@ -119,13 +119,13 @@ public @interface ResteasyConfig {
             description = "Allowed origins for CORS request, Note: Please don't use (*) on production systems! "
                     + "Value of [Access-Control-Allow-Origin] header."
     )
-    String[] allowedOrigins() default {"*"};
+    String[] allowed_origins() default {"*"};
 
     @AttributeDefinition(
-            name = "RESTEasy Provider Deny List",
-            description = "RESTEasy providers which are omitted from deployment."
+            name = "RESTEasy Provider Skip List",
+            description = "RESTEasy providers which are skipped from deployment."
     )
-    String[] providerDenyList() default {
+    String[] provider_skip_list() default {
             "org.jboss.resteasy.plugins.validation.ValidatorContextResolver",
             "org.jboss.resteasy.plugins.validation.ValidatorContextResolverCDI",
     };
@@ -134,7 +134,13 @@ public @interface ResteasyConfig {
 
     @AttributeDefinition(
             name = "Send Exception Trace",
-            description = "Whether to send exception trace in response from GenericExceptionHandler."
+            description = "Whether to send exception trace in response from GenericExceptionMapper."
     )
-    boolean sendExceptionTrace() default true;
+    boolean send_exception_trace();
+
+    @AttributeDefinition(
+            name = "Log JAX-RS WebApplicationException",
+            description = "Whether to log JAX-RS WebApplicationException in WebApplicationExceptionMapper."
+    )
+    boolean log_web_application_exception();
 }

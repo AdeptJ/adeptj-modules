@@ -21,15 +21,12 @@
 package com.adeptj.modules.jaxrs.resteasy.internal;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.ServiceReference;
 
 import javax.servlet.ServletContext;
-import java.util.Arrays;
 
-import static com.adeptj.modules.commons.utils.Constants.COMMA;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.KEY_PROVIDER_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.KEY_RESOURCE_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DEPLOYMENT;
@@ -42,17 +39,6 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTE
 final class ResteasyUtil {
 
     private ResteasyUtil() {
-    }
-
-    static @NotNull CorsFilter newCorsFilter(@NotNull ResteasyConfig config) {
-        CorsFilter corsFilter = new CorsFilter();
-        corsFilter.setAllowCredentials(config.allowCredentials());
-        corsFilter.setCorsMaxAge(config.corsMaxAge());
-        corsFilter.setExposedHeaders(String.join(COMMA, config.exposedHeaders()));
-        corsFilter.setAllowedMethods(String.join(COMMA, config.allowedMethods()));
-        corsFilter.setAllowedHeaders(String.join(COMMA, config.allowedHeaders()));
-        corsFilter.getAllowedOrigins().addAll(Arrays.asList(config.allowedOrigins()));
-        return corsFilter;
     }
 
     static void addResteasyDeployment(@NotNull ServletContext servletContext, ResteasyDeployment deployment) {

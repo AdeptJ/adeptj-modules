@@ -53,6 +53,12 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 
     private static final String JSON_KEY_MESSAGE = "message";
 
+    private final boolean logWebApplicationException;
+
+    public WebApplicationExceptionMapper(boolean logWebApplicationException) {
+        this.logWebApplicationException = logWebApplicationException;
+    }
+
     /**
      * Returns a {@link Response} object with status from the {@link Response} hold by the type of
      * {@link WebApplicationException} currently being passed.
@@ -63,8 +69,8 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
      */
     @Override
     public Response toResponse(@NotNull WebApplicationException exception) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(exception.getMessage(), exception);
+        if (this.logWebApplicationException) {
+            LOGGER.error(exception.getMessage(), exception);
         }
         Response currentResponse = exception.getResponse();
         JsonObject entity = JakartaJsonUtil.getJsonBuilderFactory()
