@@ -51,26 +51,26 @@ final class JpaProperties {
 
     static @NotNull Map<String, Object> create(@NotNull EntityManagerFactoryConfig config) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put(DDL_GENERATION, config.ddlGeneration());
-        properties.put(DDL_GENERATION_MODE, config.ddlGenerationOutputMode());
-        properties.put(SESSION_CUSTOMIZER, new QueryRetryCustomizer(config.queryRetryAttemptCount()));
-        properties.put(DEPLOY_ON_STARTUP, config.deployOnStartup());
-        properties.put(LOGGING_LEVEL, config.loggingLevel());
-        properties.put(LOGGING_LOGGER, config.eclipseLinkSLF4JLoggerFQCN());
-        properties.put(LOGGING_PARAMETERS, Boolean.toString(config.logQueryParameters()));
+        properties.put(DDL_GENERATION, config.ddl_generation());
+        properties.put(DDL_GENERATION_MODE, config.ddl_generation_output_mode());
+        properties.put(SESSION_CUSTOMIZER, new QueryRetryCustomizer(config.query_retry_attempt_count()));
+        properties.put(DEPLOY_ON_STARTUP, config.deploy_on_startup());
+        properties.put(LOGGING_LEVEL, config.logging_level());
+        properties.put(LOGGING_LOGGER, config.eclipselink_slf4j_logger_fqcn());
+        properties.put(LOGGING_PARAMETERS, Boolean.toString(config.log_query_parameters()));
         // Add all loggers
-        Stream.of(config.eclipselinkLoggers())
+        Stream.of(config.eclipselink_loggers())
                 .filter(StringUtils::isNotEmpty)
-                .forEach(logger -> properties.put(logger, config.loggingLevel()));
-        properties.put(TRANSACTION_TYPE, config.persistenceUnitTransactionType());
-        properties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistenceXmlLocation());
-        properties.put(SHARED_CACHE_MODE, config.sharedCacheMode());
-        properties.put(VALIDATION_MODE, config.validationMode());
-        if (config.useExceptionHandler()) {
-            properties.put(EXCEPTION_HANDLER_CLASS, config.exceptionHandlerFQCN());
+                .forEach(logger -> properties.put(logger, config.logging_level()));
+        properties.put(TRANSACTION_TYPE, config.persistence_unit_transaction_type());
+        properties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistence_xml_location());
+        properties.put(SHARED_CACHE_MODE, config.shared_cache_mode());
+        properties.put(VALIDATION_MODE, config.validation_mode());
+        if (config.use_exception_handler()) {
+            properties.put(EXCEPTION_HANDLER_CLASS, config.exception_handler_fqcn());
         }
         // Extra properties are in [key=value] format.
-        Stream.of(config.jpaProperties())
+        Stream.of(config.jpa_properties())
                 .filter(StringUtils::isNotEmpty)
                 .map(row -> row.split(EQ))
                 .filter(parts -> ArrayUtils.getLength(parts) == 2)

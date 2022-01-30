@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.service.internal;
+package com.adeptj.modules.commons.jdbc.internal;
 
 import org.jetbrains.annotations.NotNull;
 

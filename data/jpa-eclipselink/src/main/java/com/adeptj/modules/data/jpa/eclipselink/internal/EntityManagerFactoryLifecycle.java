@@ -20,10 +20,10 @@
 
 package com.adeptj.modules.data.jpa.eclipselink.internal;
 
-import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import com.adeptj.modules.commons.jdbc.DataSourceService;
 import com.adeptj.modules.commons.utils.MapUtil;
 import com.adeptj.modules.commons.utils.TimeUtil;
-import com.adeptj.modules.commons.validator.service.ValidatorService;
+import com.adeptj.modules.commons.validator.ValidatorService;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.PersistenceInfoProvider;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
@@ -114,7 +114,7 @@ public class EntityManagerFactoryLifecycle {
                 properties.putAll(providerProperties);
             }
             properties.put(NON_JTA_DATASOURCE, dataSourceService.getDataSource());
-            ValidationMode validationMode = ValidationMode.valueOf(config.validationMode());
+            ValidationMode validationMode = ValidationMode.valueOf(config.validation_mode());
             if (validationMode == AUTO || validationMode == CALLBACK) {
                 properties.put(VALIDATOR_FACTORY, validatorService.getValidatorFactory());
             }

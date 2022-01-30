@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                               #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -18,27 +18,40 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.service;
-
-import org.jetbrains.annotations.NotNull;
-import org.osgi.annotation.versioning.ProviderType;
-
-import javax.sql.DataSource;
+package com.adeptj.modules.commons.jdbc.internal;
 
 /**
- * DataSourceService interface for providing Hikari JDBC DataSource.
+ * Constants for {@link com.zaxxer.hikari.HikariDataSource} properties.
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-@ProviderType
-public interface DataSourceService {
+final class DataSourceConstants {
 
-    /**
-     * Returns the configured Hikari {@link DataSource} instance.
-     * <p>
-     * Note: Caller should NEVER try to close the DataSource as it's lifecycle is managed by HikariDataSourceService.
-     *
-     * @return The configured Hikari {@link DataSource} instance.
-     */
-    @NotNull DataSource getDataSource();
+    // Class just declaring constants, no instances required.
+    private DataSourceConstants() {
+    }
+
+    static final String POOL_NAME = "JDBC Pool Name";
+
+    static final String JDBC_URL = "JDBC URL";
+
+    static final String DRIVER_CLASS_NAME = "JDBC Driver Class Name";
+
+    static final String USERNAME = "JDBC Username";
+
+    static final String PWD = "JDBC Password";
+
+    static final String AUTO_COMMIT = "JDBC AutoCommit";
+
+    static final String CONN_TIMEOUT = "JDBC Connection Timeout";
+
+    static final String IDLE_TIMEOUT = "JDBC Idle Timeout";
+
+    static final String MAX_LIFETIME = "JDBC Max Lifetime";
+
+    static final String MIN_IDLE = "JDBC Minimum Idle";
+
+    static final String MAX_POOL_SIZE = "JDBC Maximum Pool Size";
+
+    static final String DATASOURCE_PROPS = "JDBC DataSource Properties";
 }

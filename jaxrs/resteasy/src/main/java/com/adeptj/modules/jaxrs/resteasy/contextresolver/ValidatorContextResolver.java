@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
-import com.adeptj.modules.commons.validator.service.ValidatorService;
+import com.adeptj.modules.commons.validator.ValidatorService;
 import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jetbrains.annotations.NotNull;

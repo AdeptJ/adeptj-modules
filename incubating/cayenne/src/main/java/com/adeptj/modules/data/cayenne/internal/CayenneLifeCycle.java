@@ -1,6 +1,6 @@
 package com.adeptj.modules.data.cayenne.internal;
 
-import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import com.adeptj.modules.commons.jdbc.DataSourceService;
 import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.data.cayenne.CayenneRepository;
 import com.adeptj.modules.data.cayenne.core.AbstractCayenneRepository;

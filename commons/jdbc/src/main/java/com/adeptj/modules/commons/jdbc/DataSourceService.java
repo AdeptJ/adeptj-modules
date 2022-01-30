@@ -18,20 +18,27 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.service.internal;
+package com.adeptj.modules.commons.jdbc;
 
-import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ProviderType;
+
+import javax.sql.DataSource;
 
 /**
- * Thrown from {@link DataSourceService} when the DataSource is being configured in start method.
+ * DataSourceService interface for providing Hikari JDBC DataSource.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh.Kumar, AdeptJ.
  */
-class DataSourceConfigurationException extends RuntimeException {
+@ProviderType
+public interface DataSourceService {
 
-    private static final long serialVersionUID = -4649854107775357466L;
-
-    DataSourceConfigurationException(Throwable ex) {
-        super(ex);
-    }
+    /**
+     * Returns the configured Hikari {@link DataSource} instance.
+     * <p>
+     * Note: Caller should NEVER try to close the DataSource as it's lifecycle is managed by HikariDataSourceService.
+     *
+     * @return The configured Hikari {@link DataSource} instance.
+     */
+    @NotNull DataSource getDataSource();
 }

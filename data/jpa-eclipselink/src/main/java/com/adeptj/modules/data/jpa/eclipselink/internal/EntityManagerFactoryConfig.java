@@ -89,7 +89,7 @@ public @interface EntityManagerFactoryConfig {
             name = "Persistence XML Location",
             description = "Location of the persistence.xml file"
     )
-    String persistenceXmlLocation() default ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
+    String persistence_xml_location() default ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 
     @AttributeDefinition(
             name = "Deploy on Startup",
@@ -99,32 +99,32 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "NO", value = "false")
             }
     )
-    String deployOnStartup() default "true";
+    String deploy_on_startup() default "true";
 
     @AttributeDefinition(
             name = "Use EclipseLink ExceptionHandler",
             description = "Whether to use EclipseLink's ExceptionHandler mechanism"
     )
-    boolean useExceptionHandler() default true;
+    boolean use_exception_handler() default true;
 
     @AttributeDefinition(
             name = "EclipseLink ExceptionHandler FQCN",
             description = "Fully qualified class name of the EclipseLink ExceptionHandler"
     )
-    String exceptionHandlerFQCN() default "com.adeptj.modules.data.jpa.eclipselink.extension.JpaExceptionHandler";
+    String exception_handler_fqcn() default "com.adeptj.modules.data.jpa.eclipselink.extension.JpaExceptionHandler";
 
     @AttributeDefinition(
             name = "Log JPA Query Parameters",
             description = "Whether to log JPA query parameters"
     )
-    boolean logQueryParameters();
+    boolean log_query_parameters();
 
     @AttributeDefinition(
             name = "EclipseLink Query Retry Attempt Count",
             description = "The number of attempts EclipseLink should make to re-connect to a database and re-execute" +
                     " a query after a query has failed because of a communication issue."
     )
-    int queryRetryAttemptCount();
+    int query_retry_attempt_count();
 
     @AttributeDefinition(
             name = "Transaction Type",
@@ -133,7 +133,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "RESOURCE_LOCAL", value = "RESOURCE_LOCAL"),
                     @Option(label = "JTA", value = "JTA")
             })
-    String persistenceUnitTransactionType() default JPA_TRANSACTION_TYPE;
+    String persistence_unit_transaction_type() default JPA_TRANSACTION_TYPE;
 
     @AttributeDefinition(
             name = "L2 Cache Mode",
@@ -145,7 +145,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "NONE", value = "NONE"),
                     @Option(label = "UNSPECIFIED", value = "UNSPECIFIED")
             })
-    String sharedCacheMode() default "ENABLE_SELECTIVE";
+    String shared_cache_mode() default "ENABLE_SELECTIVE";
 
     @AttributeDefinition(
             name = "Entity Validation Mode",
@@ -155,7 +155,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "CALLBACK", value = "CALLBACK"),
                     @Option(label = "NONE", value = "NONE")
             })
-    String validationMode() default "NONE";
+    String validation_mode() default "NONE";
 
     @AttributeDefinition(
             name = "EclipseLink LoggingLevel",
@@ -171,13 +171,13 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = OFF, value = OFF),
                     @Option(label = ALL, value = ALL)
             })
-    String loggingLevel() default FINE;
+    String logging_level() default FINE;
 
     @AttributeDefinition(
             name = "EclipseLink Loggers",
             description = "EclipseLink Logger Names For SLF4J Logging"
     )
-    String[] eclipselinkLoggers() default {
+    String[] eclipselink_loggers() default {
             CATEGORY_LOGGING_LEVEL_ + CONNECTION,
             CATEGORY_LOGGING_LEVEL_ + JPA,
             CATEGORY_LOGGING_LEVEL_ + SEQUENCING,
@@ -199,7 +199,7 @@ public @interface EntityManagerFactoryConfig {
             name = "EclipseLink SLF4J Logger FQCN",
             description = "Fully qualified class name of the EclipseLink SLF4J Logger"
     )
-    String eclipseLinkSLF4JLoggerFQCN() default "com.adeptj.modules.data.jpa.eclipselink.extension.SLF4JLogger";
+    String eclipselink_slf4j_logger_fqcn() default "com.adeptj.modules.data.jpa.eclipselink.extension.SLF4JLogger";
 
     @AttributeDefinition(
             name = "DDL Generation Mode",
@@ -209,7 +209,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "DATABASE", value = DDL_DATABASE_GENERATION),
                     @Option(label = "SQL_SCRIPT", value = DDL_SQL_SCRIPT_GENERATION),
             })
-    String ddlGenerationOutputMode() default DDL_BOTH_GENERATION;
+    String ddl_generation_output_mode() default DDL_BOTH_GENERATION;
 
     @AttributeDefinition(
             name = "DDL Generation Strategy",
@@ -221,11 +221,11 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "DROP_ONLY", value = DROP_ONLY),
                     @Option(label = "NONE", value = NONE),
             })
-    String ddlGeneration() default CREATE_OR_EXTEND;
+    String ddl_generation() default CREATE_OR_EXTEND;
 
     @AttributeDefinition(
             name = "JPA Properties",
             description = "Extra JPA Properties(key=value) format"
     )
-    String[] jpaProperties();
+    String[] jpa_properties();
 }

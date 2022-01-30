@@ -18,9 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.validator.service.internal;
+package com.adeptj.modules.commons.validator.internal;
 
-import com.adeptj.modules.commons.validator.service.ValidatorService;
+import com.adeptj.modules.commons.validator.ValidatorService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.validator.HibernateValidator;

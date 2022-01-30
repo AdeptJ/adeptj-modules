@@ -53,44 +53,44 @@ public @interface JwtConfig {
                     @Option(label = "RSA 512", value = "RS512"),
             }
     )
-    String signatureAlgorithm();
+    String signature_algorithm();
 
     @AttributeDefinition(
             name = "Jwt PrivateKey(Signing Key)",
             description = "PrivateKey data (PEM-encoded PKCS#8 format) for JWT signing."
     )
-    String privateKey();
+    String private_key();
 
     @AttributeDefinition(
             name = "Jwt PrivateKey Password",
             description = "Pass phrase of the Jwt PrivateKey, leave unaltered if not a password protected key.",
             type = PASSWORD
     )
-    String privateKeyPassword();
+    String private_key_password();
 
     @AttributeDefinition(
             name = "Jwt PublicKey(Verification Key)",
             description = "PublicKey data (PEM-encoded) for JWT verification."
     )
-    String publicKey();
+    String public_key();
 
     @AttributeDefinition(name = "JWT Default Issuer", description = "Default Issuer of JWT")
-    String defaultIssuer() default "AdeptJ Runtime";
+    String default_issuer() default "AdeptJ Runtime";
 
     @AttributeDefinition(name = "JWT Expiration Time", description = "JWT Expiration Time in minutes.")
-    long expirationTime() default DEFAULT_EXPIRATION_TIME;
+    long expiration_time() default DEFAULT_EXPIRATION_TIME;
 
     @AttributeDefinition(
             name = "Log Jwt Verification Exception Trace",
             description = "Whether to log the Jwt verification exception trace in server logs."
     )
-    boolean logJwtVerificationExceptionTrace();
+    boolean log_jwt_verification_exception_trace();
 
     @AttributeDefinition(
             name = "Mandatory JWT Claims",
             description = "Mandatory JWT claims which need to be checked for null and emptiness."
     )
-    String[] mandatoryClaims() default {
+    String[] mandatory_claims() default {
             SUBJECT,
             ISSUER,
             ID,

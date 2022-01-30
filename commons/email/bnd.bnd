@@ -26,7 +26,7 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Export-Package: com.adeptj.modules.commons.email.service
+Export-Package: com.adeptj.modules.commons.email
 
 Bundle-Name: ${project.name}
 

@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.validator.service.internal;
+package com.adeptj.modules.commons.validator.internal;
 
 import javax.validation.ClockProvider;
 import javax.validation.ConstraintValidatorFactory;

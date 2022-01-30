@@ -18,9 +18,9 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.service.internal;
+package com.adeptj.modules.commons.jdbc.internal;
 
-import com.adeptj.modules.commons.jdbc.service.DataSourceService;
+import com.adeptj.modules.commons.jdbc.DataSourceService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.ArrayUtils;
@@ -66,28 +66,28 @@ public class HikariDataSourceService implements DataSourceService {
      */
     @Activate
     public HikariDataSourceService(@NotNull DataSourceConfig dsc) {
-        Validate.isTrue(StringUtils.isNotEmpty(dsc.poolName()), "JDBC Pool Name can't be null!!");
+        Validate.isTrue(StringUtils.isNotEmpty(dsc.pool_name()), "JDBC Pool Name can't be null!!");
         try {
             HikariConfig config = new HikariConfig();
-            config.setPoolName(dsc.poolName());
-            config.setJdbcUrl(dsc.jdbcUrl());
-            config.setDriverClassName(dsc.driverClassName());
-            config.setUsername(dsc.username());
-            config.setPassword(dsc.password());
-            config.setAutoCommit(dsc.autoCommit());
-            config.setConnectionTimeout(dsc.connectionTimeout());
-            config.setIdleTimeout(dsc.idleTimeout());
-            config.setMaxLifetime(dsc.maxLifetime());
-            config.setMinimumIdle(dsc.minimumIdle());
-            config.setMaximumPoolSize(dsc.maximumPoolSize());
+            config.setPoolName(dsc.pool_name());
+            config.setJdbcUrl(dsc.jdbc_url());
+            config.setDriverClassName(dsc.driver_class_name());
+            config.setUsername(dsc.db_username());
+            config.setPassword(dsc.db_password());
+            config.setAutoCommit(dsc.auto_commit());
+            config.setConnectionTimeout(dsc.connection_timeout());
+            config.setIdleTimeout(dsc.idle_timeout());
+            config.setMaxLifetime(dsc.max_lifetime());
+            config.setMinimumIdle(dsc.minimum_idle());
+            config.setMaximumPoolSize(dsc.maximum_pool_size());
             // Extra DataSource properties are in [key=value] format.
-            Stream.of(dsc.dataSourceProperties())
+            Stream.of(dsc.datasource_properties())
                     .filter(StringUtils::isNotEmpty)
                     .map(row -> StringUtils.split(row, EQ))
                     .filter(parts -> ArrayUtils.getLength(parts) == 2)
                     .forEach(parts -> config.addDataSourceProperty(parts[0].trim(), parts[1].trim()));
             this.dataSource = new HikariDataSource(config);
-            LOGGER.info("HikariDataSource: [{}] initialized!!", dsc.poolName());
+            LOGGER.info("HikariDataSource: [{}] initialized!!", dsc.pool_name());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
             throw new DataSourceConfigurationException(ex);
@@ -113,7 +113,7 @@ public class HikariDataSourceService implements DataSourceService {
     protected void stop(@NotNull DataSourceConfig config) {
         try {
             this.dataSource.close();
-            LOGGER.info("HikariDataSource: [{}] closed!!", config.poolName());
+            LOGGER.info("HikariDataSource: [{}] closed!!", config.pool_name());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }

@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                               #
+#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -18,40 +18,20 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.jdbc.service.internal;
+package com.adeptj.modules.commons.jdbc.internal;
+
+import com.adeptj.modules.commons.jdbc.DataSourceService;
 
 /**
- * Constants for {@link com.zaxxer.hikari.HikariDataSource} properties.
+ * Thrown from {@link DataSourceService} when the DataSource is being configured in start method.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh.Kumar, AdeptJ
  */
-final class DataSourceConstants {
+class DataSourceConfigurationException extends RuntimeException {
 
-    // Class just declaring constants, no instances required.
-    private DataSourceConstants() {
+    private static final long serialVersionUID = -4649854107775357466L;
+
+    DataSourceConfigurationException(Throwable ex) {
+        super(ex);
     }
-
-    static final String POOL_NAME = "JDBC Pool Name";
-
-    static final String JDBC_URL = "JDBC URL";
-
-    static final String DRIVER_CLASS_NAME = "JDBC Driver Class Name";
-
-    static final String USERNAME = "JDBC Username";
-
-    static final String PWD = "JDBC Password";
-
-    static final String AUTO_COMMIT = "JDBC AutoCommit";
-
-    static final String CONN_TIMEOUT = "JDBC Connection Timeout";
-
-    static final String IDLE_TIMEOUT = "JDBC Idle Timeout";
-
-    static final String MAX_LIFETIME = "JDBC Max Lifetime";
-
-    static final String MIN_IDLE = "JDBC Minimum Idle";
-
-    static final String MAX_POOL_SIZE = "JDBC Maximum Pool Size";
-
-    static final String DATASOURCE_PROPS = "JDBC DataSource Properties";
 }

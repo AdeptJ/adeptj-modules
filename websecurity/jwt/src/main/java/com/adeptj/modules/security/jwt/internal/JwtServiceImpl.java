@@ -81,17 +81,17 @@ public class JwtServiceImpl implements JwtService {
 
     @Activate
     public JwtServiceImpl(@NotNull JwtConfig config) {
-        this.defaultIssuer = config.defaultIssuer();
-        this.expirationDuration = Duration.of(config.expirationTime(), MINUTES);
-        this.mandatoryClaims = config.mandatoryClaims();
+        this.defaultIssuer = config.default_issuer();
+        this.expirationDuration = Duration.of(config.expiration_time(), MINUTES);
+        this.mandatoryClaims = config.mandatory_claims();
         try {
-            this.algorithm = SignatureAlgorithm.forName(config.signatureAlgorithm());
+            this.algorithm = SignatureAlgorithm.forName(config.signature_algorithm());
             LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", this.algorithm.getJcaName());
-            RsaSigningKeyInfo signingKeyInfo = new RsaSigningKeyInfo(this.algorithm, config.privateKey());
-            signingKeyInfo.setPrivateKeyPassword(config.privateKeyPassword());
+            RsaSigningKeyInfo signingKeyInfo = new RsaSigningKeyInfo(this.algorithm, config.private_key());
+            signingKeyInfo.setPrivateKeyPassword(config.private_key_password());
             this.signingKey = JwtKeys.createSigningKey(signingKeyInfo);
-            Key verificationKey = JwtKeys.createVerificationKey(new RsaVerificationKeyInfo(this.algorithm, config.publicKey()));
-            this.jwtVerifier = new JwtVerifier(verificationKey, config.logJwtVerificationExceptionTrace());
+            Key verificationKey = JwtKeys.createVerificationKey(new RsaVerificationKeyInfo(this.algorithm, config.public_key()));
+            this.jwtVerifier = new JwtVerifier(verificationKey, config.log_jwt_verification_exception_trace());
         } catch (SignatureException | JwtKeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;

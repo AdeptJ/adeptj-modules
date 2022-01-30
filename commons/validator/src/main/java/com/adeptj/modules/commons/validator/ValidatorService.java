@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.commons.validator.service;
+package com.adeptj.modules.commons.validator;
 
 import org.osgi.annotation.versioning.ProviderType;
 
