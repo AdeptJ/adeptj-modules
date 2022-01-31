@@ -31,7 +31,7 @@ import org.osgi.service.log.LogReaderService;
 /**
  * This OSGi component registers the {@link LogEntryConsumer} as a {@link LogListener} with {@link LogReaderService}.
  * <p>
- * The registered {@link LogListener} accepts the {@link LogEntry} which contains information such as human readable
+ * The registered {@link LogListener} accepts the {@link LogEntry} which contains information such as human-readable
  * message, exception etc.
  *
  * @author Rakesh.Kumar, AdeptJ
@@ -39,9 +39,9 @@ import org.osgi.service.log.LogReaderService;
 @Component(immediate = true)
 public class LogListenerManager {
 
-    private final LogListener logListener;
-
     private final LogReaderService logReaderService;
+
+    private final LogListener logListener;
 
     @Activate
     public LogListenerManager(@Reference LogReaderService logReaderService) {
@@ -50,7 +50,7 @@ public class LogListenerManager {
         this.logReaderService.addLogListener(this.logListener);
     }
 
-    // <<------------------------------------------- OSGi INTERNAL ------------------------------------------->>
+    // <<------------------------------------------- OSGi Internal ------------------------------------------->>
 
     @Deactivate
     protected void stop() {

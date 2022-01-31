@@ -56,7 +56,7 @@ public class HikariDataSourceService implements DataSourceService {
 
     private static final String EQ = "=";
 
-    private final HikariDataSource dataSource;
+    private final HikariDataSource hikariDataSource;
 
     /**
      * Initialize the {@link HikariDataSource} using the required configurations.
@@ -86,7 +86,7 @@ public class HikariDataSourceService implements DataSourceService {
                     .map(row -> StringUtils.split(row, EQ))
                     .filter(parts -> ArrayUtils.getLength(parts) == 2)
                     .forEach(parts -> config.addDataSourceProperty(parts[0].trim(), parts[1].trim()));
-            this.dataSource = new HikariDataSource(config);
+            this.hikariDataSource = new HikariDataSource(config);
             LOGGER.info("HikariDataSource: [{}] initialized!!", dsc.pool_name());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
@@ -99,7 +99,7 @@ public class HikariDataSourceService implements DataSourceService {
      */
     @Override
     public @NotNull DataSource getDataSource() {
-        return new DataSourceWrapper(this.dataSource);
+        return new DataSourceWrapper(this.hikariDataSource);
     }
 
     // <<----------------------------------------- OSGi Internal  ------------------------------------------>>
@@ -112,7 +112,7 @@ public class HikariDataSourceService implements DataSourceService {
     @Deactivate
     protected void stop(@NotNull DataSourceConfig config) {
         try {
-            this.dataSource.close();
+            this.hikariDataSource.close();
             LOGGER.info("HikariDataSource: [{}] closed!!", config.pool_name());
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
