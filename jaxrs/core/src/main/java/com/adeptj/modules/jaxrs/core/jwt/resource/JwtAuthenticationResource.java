@@ -47,7 +47,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@JaxRSResource(name = "jwt")
+@JaxRSResource(name = "jwt-authentication")
 @Path("/token-auth/_j_security_check")
 @Designate(ocd = JwtCookieConfig.class)
 @Component(service = JwtAuthenticationResource.class)
