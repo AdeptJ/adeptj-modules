@@ -3,6 +3,8 @@ package com.adeptj.modules.commons.email.internal;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
+
 /**
  * AdeptJ EmailService Config.
  *
@@ -20,12 +22,12 @@ public @interface EmailConfig {
     @AttributeDefinition(name = "SMTP Port", description = "Port of the SMTP host")
     int smtp_port();
 
-    @AttributeDefinition(name = "SMTP Host", description = "Address of the SMTP host")
+    @AttributeDefinition(name = "Email From Address", description = "Email from address")
     String email_from_address();
 
-    @AttributeDefinition(name = "SMTP Host", description = "Address of the SMTP host")
+    @AttributeDefinition(name = "SMTP Username", description = "SMTP username")
     String email_username();
 
-    @AttributeDefinition(name = "SMTP Host", description = "Address of the SMTP host")
+    @AttributeDefinition(name = "SMTP Password", description = "SMTP password", type = PASSWORD)
     String email_password();
 }

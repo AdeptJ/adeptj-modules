@@ -28,7 +28,7 @@
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-commons-email</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Commons :: Email</name>
     <description>AdeptJ Modules :: Commons :: Email Service Provider</description>
@@ -40,7 +40,7 @@
     <!-- Project Information -->
     <organization>
         <name>AdeptJ</name>
-        <url>http://www.adeptj.com</url>
+        <url>https://www.adeptj.com</url>
     </organization>
 
     <licenses>
