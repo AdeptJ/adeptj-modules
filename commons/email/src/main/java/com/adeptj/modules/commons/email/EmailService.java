@@ -30,5 +30,5 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface EmailService {
 
-    void sendSimpleEmail(String subject, String message, String fromAddress, String... toAddresses);
+    void sendEmail(EmailType emailType, EmailInfo emailInfo);
 }
