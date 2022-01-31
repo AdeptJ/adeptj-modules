@@ -75,8 +75,6 @@ public class AesGcmCryptoService implements CryptoService {
 
     private static final int MIN_ITERATIONS = 1000;
 
-    private final int iterations;
-
     private final BundleContext context;
 
     /**
@@ -88,12 +86,12 @@ public class AesGcmCryptoService implements CryptoService {
     @Activate
     public AesGcmCryptoService(final BundleContext context) {
         this.context = context;
-        this.iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
     }
 
     @Override
     public String encrypt(String plainText) {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
+        int iterations = this.getIterations();
         char[] cryptoKey = this.getCryptoKey();
         byte[] iv = null;
         byte[] cipherTextBytes = null;
@@ -102,7 +100,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 1. get iv
             iv = RandomGenerators.randomBytes(GCM_IV_LENGTH);
             // 2. init encrypt mode cipher
-            Cipher cipher = this.initCipher(ENCRYPT_MODE, iv, cryptoKey, this.iterations);
+            Cipher cipher = this.initCipher(ENCRYPT_MODE, iv, cryptoKey, iterations);
             // 3. generate cipher bytes
             cipherTextBytes = cipher.doFinal(plainText.getBytes(UTF_8));
             // 4. put everything in a ByteBuffer
@@ -129,6 +127,7 @@ public class AesGcmCryptoService implements CryptoService {
         // This will prevent a BufferUnderflowException when we try to extract the data from the ByteBuffer.
         Validate.isTrue((cipherTextDecodedBytes.length > GCM_IV_LENGTH),
                 "cipherText doesn't seem to be an encrypted string!!");
+        int iterations = this.getIterations();
         char[] cryptoKey = this.getCryptoKey();
         byte[] iv = null;
         byte[] cipherBytes = null;
@@ -138,11 +137,11 @@ public class AesGcmCryptoService implements CryptoService {
             iv = new byte[GCM_IV_LENGTH];
             // 2. extract iv
             buffer.get(iv);
-            // 3. init decrypt mode cipher
-            Cipher cipher = this.initCipher(DECRYPT_MODE, iv, cryptoKey, this.iterations);
+            // 3. extract cipherBytes
             cipherBytes = new byte[buffer.remaining()];
-            // 4. extract cipherBytes
             buffer.get(cipherBytes);
+            // 4. init decrypt mode cipher
+            Cipher cipher = this.initCipher(DECRYPT_MODE, iv, cryptoKey, iterations);
             // 5. decrypt cipherBytes
             decryptedBytes = cipher.doFinal(cipherBytes);
             // 6. create a UTF-8 String from decryptedBytes
@@ -156,7 +155,7 @@ public class AesGcmCryptoService implements CryptoService {
         }
     }
 
-    private Cipher initCipher(int mode, byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
+    private @NotNull Cipher initCipher(int mode, byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
         byte[] key = null;
         try {
             key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, cryptoKey, iv, iterations, PBE_KEY_LENGTH);
@@ -170,9 +169,14 @@ public class AesGcmCryptoService implements CryptoService {
         }
     }
 
-    private char @NotNull [] getCryptoKey() {
-        Validate.validState((this.iterations >= MIN_ITERATIONS),
+    private int getIterations() {
+        int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
+        Validate.validState((iterations >= MIN_ITERATIONS),
                 String.format("crypto.iterations should be greater than or equal to [%d]!!", MIN_ITERATIONS));
+        return iterations;
+    }
+
+    private char @NotNull [] getCryptoKey() {
         String cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY);
         Validate.validState(StringUtils.isNotEmpty(cryptoKey), "crypto.key can't be null or empty!!");
         return cryptoKey.toCharArray();
