@@ -46,8 +46,7 @@ import javax.persistence.ValidationMode;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
-import static javax.persistence.ValidationMode.AUTO;
-import static javax.persistence.ValidationMode.CALLBACK;
+import static javax.persistence.ValidationMode.NONE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
@@ -115,7 +114,7 @@ public class EntityManagerFactoryLifecycle {
             }
             properties.put(NON_JTA_DATASOURCE, dataSourceService.getDataSource());
             ValidationMode validationMode = ValidationMode.valueOf(config.validation_mode());
-            if (validationMode == AUTO || validationMode == CALLBACK) {
+            if (validationMode != NONE) {
                 properties.put(VALIDATOR_FACTORY, validatorService.getValidatorFactory());
             }
             properties.put(CLASSLOADER, provider.getClass().getClassLoader());

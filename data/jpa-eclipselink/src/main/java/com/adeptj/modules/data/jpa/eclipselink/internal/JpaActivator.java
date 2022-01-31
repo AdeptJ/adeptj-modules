@@ -61,6 +61,10 @@ public class JpaActivator implements BundleActivator {
         // of SLF4JLogger if this bundle or EntityManagerFactoryLifecycle is going to be stopped.
         try {
             Field field = FieldUtils.getDeclaredField(AbstractSessionLog.class, FIELD_DEFAULT_LOG, true);
+            if (field == null) {
+                LOGGER.warn("Field defaultLog is not found in EclipseLink AbstractSessionLog!!");
+                return;
+            }
             Object defaultLog = field.get(null);
             if (defaultLog instanceof SessionLog) {
                 ((SessionLog) defaultLog).setSession(null);
