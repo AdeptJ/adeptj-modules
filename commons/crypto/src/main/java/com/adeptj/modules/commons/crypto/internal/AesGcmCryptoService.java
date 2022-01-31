@@ -24,9 +24,9 @@ import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
 import com.adeptj.modules.commons.utils.RandomGenerators;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -75,6 +75,8 @@ public class AesGcmCryptoService implements CryptoService {
 
     private static final int MIN_ITERATIONS = 1000;
 
+    private final int iterations;
+
     private final BundleContext context;
 
     /**
@@ -84,16 +86,15 @@ public class AesGcmCryptoService implements CryptoService {
      * @param context the {@link BundleContext} of crypto module.
      */
     @Activate
-    public AesGcmCryptoService(BundleContext context) {
+    public AesGcmCryptoService(final BundleContext context) {
         this.context = context;
+        this.iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
     }
 
     @Override
     public String encrypt(String plainText) {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
-        char[] cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
-        int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
-        this.validateKeyMaterials(cryptoKey, iterations);
+        char[] cryptoKey = this.getCryptoKey();
         byte[] iv = null;
         byte[] cipherTextBytes = null;
         byte[] compositeCipherBytes = null;
@@ -101,7 +102,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 1. get iv
             iv = RandomGenerators.randomBytes(GCM_IV_LENGTH);
             // 2. init encrypt mode cipher
-            Cipher cipher = this.initCipher(ENCRYPT_MODE, iv, cryptoKey, iterations);
+            Cipher cipher = this.initCipher(ENCRYPT_MODE, iv, cryptoKey, this.iterations);
             // 3. generate cipher bytes
             cipherTextBytes = cipher.doFinal(plainText.getBytes(UTF_8));
             // 4. put everything in a ByteBuffer
@@ -128,9 +129,7 @@ public class AesGcmCryptoService implements CryptoService {
         // This will prevent a BufferUnderflowException when we try to extract the data from the ByteBuffer.
         Validate.isTrue((cipherTextDecodedBytes.length > GCM_IV_LENGTH),
                 "cipherText doesn't seem to be an encrypted string!!");
-        char[] cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY).toCharArray();
-        int iterations = Integer.parseInt(this.context.getProperty(PROPERTY_CRYPTO_ITERATIONS));
-        this.validateKeyMaterials(cryptoKey, iterations);
+        char[] cryptoKey = this.getCryptoKey();
         byte[] iv = null;
         byte[] cipherBytes = null;
         byte[] decryptedBytes = null;
@@ -140,7 +139,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 2. extract iv
             buffer.get(iv);
             // 3. init decrypt mode cipher
-            Cipher cipher = this.initCipher(DECRYPT_MODE, iv, cryptoKey, iterations);
+            Cipher cipher = this.initCipher(DECRYPT_MODE, iv, cryptoKey, this.iterations);
             cipherBytes = new byte[buffer.remaining()];
             // 4. extract cipherBytes
             buffer.get(cipherBytes);
@@ -171,14 +170,11 @@ public class AesGcmCryptoService implements CryptoService {
         }
     }
 
-    private void validateKeyMaterials(char[] cryptoKey, int iterations) {
-        Validate.isTrue(ArrayUtils.isNotEmpty(cryptoKey), "crypto.key can't be null or empty!!");
-        try {
-            Validate.isTrue((iterations >= MIN_ITERATIONS),
-                    String.format("crypto.iterations should be greater than or equal to [%d]!!", MIN_ITERATIONS));
-        } catch (IllegalArgumentException ex) {
-            Arrays.fill(cryptoKey, Character.MIN_VALUE);
-            throw ex;
-        }
+    private char @NotNull [] getCryptoKey() {
+        Validate.validState((this.iterations >= MIN_ITERATIONS),
+                String.format("crypto.iterations should be greater than or equal to [%d]!!", MIN_ITERATIONS));
+        String cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY);
+        Validate.validState(StringUtils.isNotEmpty(cryptoKey), "crypto.key can't be null or empty!!");
+        return cryptoKey.toCharArray();
     }
 }
