@@ -36,58 +36,47 @@ public class EmailServiceImpl implements EmailService {
     public void sendEmail(@NotNull EmailType emailType, @NotNull EmailInfo emailInfo) {
         switch (emailType) {
             case SIMPLE:
-                this.doSendSimpleEmail(emailInfo);
+                this.doSendEmail(new SimpleEmail(), emailInfo);
                 break;
             case HTML:
-                this.doSendHtmlEmail(emailInfo);
+                this.sendHtmlEmail(emailInfo);
                 break;
             case MULTIPART:
-                this.doSendMultipartEmail(emailInfo);
+                this.sendMultipartEmail(emailInfo);
+                break;
+            default:
+                // noop
         }
     }
 
-    private void doSendSimpleEmail(@NotNull EmailInfo emailInfo) {
+    private void sendHtmlEmail(@NotNull EmailInfo emailInfo) {
+        HtmlEmail email = new HtmlEmail();
+        this.doSendEmail(email, emailInfo);
+    }
+
+    private void sendMultipartEmail(@NotNull EmailInfo emailInfo) {
+        MultiPartEmail email = new MultiPartEmail();
+        this.doSendEmail(email, emailInfo);
+    }
+
+    private void doSendEmail(@NotNull Email email, @NotNull EmailInfo emailInfo) {
         try {
-            SimpleEmail email = new SimpleEmail();
-            this.setCommonAttributes(email, emailInfo);
+            email.setHostName(this.config.smtp_host());
+            email.setSmtpPort(this.config.smtp_port());
+            email.setAuthentication(this.config.email_username(), this.config.email_password());
+            email.setStartTLSEnabled(true);
+            if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
+                email.setFrom(this.config.email_from_address());
+            } else {
+                email.setFrom(emailInfo.getFromAddress());
+            }
+            email.setSubject(emailInfo.getSubject());
+            email.setMsg(emailInfo.getMessage());
+            email.addTo(emailInfo.getToAddresses().toArray(new String[0]));
             email.send();
         } catch (EmailException ex) {
             LOGGER.error(ex.getMessage(), ex);
+            throw new com.adeptj.modules.commons.email.EmailException(ex);
         }
-    }
-
-    private void doSendHtmlEmail(@NotNull EmailInfo emailInfo) {
-        try {
-            HtmlEmail email = new HtmlEmail();
-            this.setCommonAttributes(email, emailInfo);
-            email.send();
-        } catch (EmailException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
-    }
-
-    private void doSendMultipartEmail(@NotNull EmailInfo emailInfo) {
-        try {
-            MultiPartEmail email = new MultiPartEmail();
-            this.setCommonAttributes(email, emailInfo);
-            email.send();
-        } catch (EmailException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
-    }
-
-    private void setCommonAttributes(@NotNull Email email, @NotNull EmailInfo emailInfo) throws EmailException {
-        email.setHostName(this.config.smtp_host());
-        email.setSmtpPort(this.config.smtp_port());
-        email.setAuthentication(this.config.email_username(), this.config.email_password());
-        email.setStartTLSEnabled(true);
-        if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
-            email.setFrom(this.config.email_from_address());
-        } else {
-            email.setFrom(emailInfo.getFromAddress());
-        }
-        email.setSubject(emailInfo.getSubject());
-        email.setMsg(emailInfo.getMessage());
-        email.addTo(emailInfo.getToAddresses().toArray(new String[0]));
     }
 }
