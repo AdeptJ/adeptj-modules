@@ -16,11 +16,9 @@
 	<db-entity name="USERS" catalog="AdeptJ">
 		<db-attribute name="EMAIL" type="VARCHAR" length="25"/>
 		<db-attribute name="FIRST_NAME" type="VARCHAR" length="25"/>
-		<db-attribute name="GOVT_ID" type="VARCHAR" length="25"/>
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 		<db-attribute name="LAST_NAME" type="VARCHAR" length="25"/>
 		<db-attribute name="MOBILE_NO" type="VARCHAR" length="25"/>
-		<db-attribute name="SECONDARY_MOBILE_NO" type="VARCHAR" length="25"/>
 	</db-entity>
 	<obj-entity name="Address" className="com.adeptj.modules.data.cayenne.model.Address" dbEntityName="ADDRESS">
 		<obj-attribute name="city" type="java.lang.String" db-attribute-path="CITY"/>
@@ -31,10 +29,8 @@
 	<obj-entity name="Users" className="com.adeptj.modules.data.cayenne.model.Users" dbEntityName="USERS">
 		<obj-attribute name="email" type="java.lang.String" db-attribute-path="EMAIL"/>
 		<obj-attribute name="firstName" type="java.lang.String" db-attribute-path="FIRST_NAME"/>
-		<obj-attribute name="govtId" type="java.lang.String" db-attribute-path="GOVT_ID"/>
 		<obj-attribute name="lastName" type="java.lang.String" db-attribute-path="LAST_NAME"/>
 		<obj-attribute name="mobileNo" type="java.lang.String" db-attribute-path="MOBILE_NO"/>
-		<obj-attribute name="secondaryMobileNo" type="java.lang.String" db-attribute-path="SECONDARY_MOBILE_NO"/>
 	</obj-entity>
 	<db-relationship name="user" source="ADDRESS" target="USERS">
 		<db-attribute-pair source="USER_ID" target="ID"/>
