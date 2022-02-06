@@ -34,7 +34,7 @@
                  *
 # Strange error started appearing with smallrye common dependency update to v1.9.0.
 # Please see GH issue - https://github.com/bndtools/bnd/issues/4322
--fixupmessages: "Classes found in the wrong directory:";is:=ignore
+# -fixupmessages: "Classes found in the wrong directory:";is:=ignore
 
 Import-Package: \
   javax.annotation;\
