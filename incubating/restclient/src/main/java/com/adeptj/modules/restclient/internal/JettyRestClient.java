@@ -59,7 +59,7 @@ public class JettyRestClient implements RestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final HttpClient jettyClient;
+    private final HttpClientWrapper jettyClient;
 
     private final boolean debugRequest;
 
@@ -69,7 +69,7 @@ public class JettyRestClient implements RestClient {
 
     @Activate
     public JettyRestClient(@NotNull JettyHttpClientConfig config) {
-        this.jettyClient = new HttpClient();
+        this.jettyClient = new HttpClientWrapper();
         this.jettyClient.setName(config.name());
         this.jettyClient.setConnectTimeout(config.connect_timeout());
         this.jettyClient.setIdleTimeout(config.idle_timeout());
@@ -190,6 +190,7 @@ public class JettyRestClient implements RestClient {
     @Deactivate
     protected void stop() {
         LOGGER.info("Stopping Jetty HttpClient!");
+        this.jettyClient.setStopInternal();
         try {
             this.jettyClient.stop();
         } catch (Exception ex) {
