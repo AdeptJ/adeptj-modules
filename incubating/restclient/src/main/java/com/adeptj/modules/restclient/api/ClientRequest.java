@@ -69,14 +69,13 @@ public class ClientRequest<T, R> {
         return method;
     }
 
-    public long getTimeout() {
-        return timeout;
+    // For overriding HttpMethod at RestClient level, see JettyRestClient#GET.
+    public void setMethod(HttpMethod method) {
+        this.method = method;
     }
 
-    // For overriding HttpMethod at RestClient level, see JettyRestClient#GET.
-    public ClientRequest<T, R> withMethod(HttpMethod method) {
-        this.method = method;
-        return this;
+    public long getTimeout() {
+        return timeout;
     }
 
     public Map<String, String> getHeaders() {

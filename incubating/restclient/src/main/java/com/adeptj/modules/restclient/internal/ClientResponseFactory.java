@@ -22,13 +22,14 @@ package com.adeptj.modules.restclient.internal;
 import com.adeptj.modules.restclient.api.ClientResponse;
 import com.adeptj.modules.restclient.util.ObjectMappers;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
 class ClientResponseFactory {
 
-    static <R> ClientResponse<R> newClientResponse(ContentResponse jettyResponse, Class<R> responseAs) {
+    static <R> @NotNull ClientResponse<R> newClientResponse(@NotNull ContentResponse jettyResponse, Class<R> responseAs) {
         ClientResponse<R> response = new ClientResponse<>();
         response.setStatus(jettyResponse.getStatus());
         response.setReason(jettyResponse.getReason());
@@ -39,7 +40,7 @@ class ClientResponseFactory {
             response.setHeaders(headers);
         }
         // 2. if no response body is expected then return without setting the content.
-        if (responseAs.equals(void.class)) {
+        if (responseAs.equals(void.class) || responseAs.equals(Void.class)) {
             return response;
         }
         // 3. byte[] is expected - the Jetty client response is already byte[]

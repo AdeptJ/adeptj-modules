@@ -22,6 +22,7 @@ package com.adeptj.modules.restclient.internal;
 import com.adeptj.modules.restclient.RestClientException;
 import com.adeptj.modules.restclient.api.ClientRequest;
 import com.adeptj.modules.restclient.api.ClientResponse;
+import com.adeptj.modules.restclient.api.HttpMethod;
 import com.adeptj.modules.restclient.api.RestClient;
 import com.adeptj.modules.restclient.plugin.AuthorizationHeaderPlugin;
 import com.adeptj.modules.restclient.util.AntPathMatcher;
@@ -96,23 +97,27 @@ public class JettyRestClient implements RestClient {
     }
 
     @Override
-    public <T, R> ClientResponse<R> GET(ClientRequest<T, R> request) {
-        return this.executeRequest(request.withMethod(GET));
+    public <T, R> ClientResponse<R> GET(@NotNull ClientRequest<T, R> request) {
+        this.checkHttpMethod(request, GET);
+        return this.executeRequest(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> POST(ClientRequest<T, R> request) {
-        return this.executeRequest(request.withMethod(POST));
+    public <T, R> ClientResponse<R> POST(@NotNull ClientRequest<T, R> request) {
+        this.checkHttpMethod(request, POST);
+        return this.executeRequest(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> PUT(ClientRequest<T, R> request) {
-        return this.executeRequest(request.withMethod(PUT));
+    public <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request) {
+        this.checkHttpMethod(request, PUT);
+        return this.executeRequest(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request) {
-        return this.executeRequest(request.withMethod(DELETE));
+    public <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request) {
+        this.checkHttpMethod(request, DELETE);
+        return this.executeRequest(request);
     }
 
     @Override
@@ -124,16 +129,22 @@ public class JettyRestClient implements RestClient {
     }
 
     @Override
-    public <T> T doWithHttpClient(Function<HttpClient, T> function) {
+    public <T> T doWithHttpClient(@NotNull Function<HttpClient, T> function) {
         return function.apply(this.jettyClient);
     }
 
     @Override
-    public void doWithHttpClient(Consumer<HttpClient> consumer) {
+    public void doWithHttpClient(@NotNull Consumer<HttpClient> consumer) {
         consumer.accept(this.jettyClient);
     }
 
-    private <T, R> ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
+    private <T, R> void checkHttpMethod(@NotNull ClientRequest<T, R> request, HttpMethod method) {
+        if (request.getMethod() == null) {
+            request.setMethod(method);
+        }
+    }
+
+    private <T, R> @NotNull ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.addAuthorizationHeader(jettyRequest);
@@ -150,7 +161,7 @@ public class JettyRestClient implements RestClient {
         }
     }
 
-    private <T, R> ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
+    private <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.addAuthorizationHeader(jettyRequest);

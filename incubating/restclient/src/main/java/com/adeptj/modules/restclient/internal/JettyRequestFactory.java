@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.util.FormRequestContent;
 import org.eclipse.jetty.client.util.StringRequestContent;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,7 @@ import static com.adeptj.modules.restclient.api.HttpMethod.POST;
 
 class JettyRequestFactory {
 
-    static <T, R> Request newRequest(HttpClient jettyClient, ClientRequest<T, R> request) {
+    static <T, R> Request newRequest(@NotNull HttpClient jettyClient, @NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
         Request jettyRequest = jettyClient.newRequest(request.getUri()).method(method.toString());
