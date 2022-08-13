@@ -30,7 +30,7 @@ import java.lang.invoke.MethodHandles;
  * Use eclipselink.exception-handler to specify the EclipseLink exception handler class: a Java class that implements
  * the {@link ExceptionHandler} interface and provides a default (zero-argument) constructor.
  * <p>
- * See more at: http://eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_exception_handler.htm
+ * See more at: <a href="http://eclipse.org/eclipselink/documentation/2.5/jpa/extensions/p_exception_handler.htm">EclipseLink ExceptionHandler</a>
  *
  * @author Rakesh.Kumar, AdeptJ
  */

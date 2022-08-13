@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <eclipselink.version>2.7.10</eclipselink.version>
+        <eclipselink.version>2.7.11-RC1</eclipselink.version>
         <hibernate-core.version>5.5.4.Final</hibernate-core.version>
     </properties>
 

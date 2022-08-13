@@ -26,6 +26,7 @@ import com.adeptj.modules.commons.crypto.CryptoUtil;
 import com.adeptj.modules.commons.utils.RandomGenerators;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -154,7 +155,7 @@ public class AesGcmCryptoService implements CryptoService {
         }
     }
 
-    private Cipher initCipher(int mode, byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
+    private @NotNull Cipher initCipher(int mode, byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
         byte[] key = null;
         try {
             key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, cryptoKey, iv, iterations, PBE_KEY_LENGTH);
@@ -176,7 +177,7 @@ public class AesGcmCryptoService implements CryptoService {
         return iterations;
     }
 
-    private char[] getCryptoKey() {
+    private char @NotNull [] getCryptoKey() {
         String cryptoKey = this.context.getProperty(PROPERTY_CRYPTO_KEY);
         Validate.validState(StringUtils.isNotEmpty(cryptoKey),
                 "OSGi framework property [crypto.key] can't be null or empty!!");

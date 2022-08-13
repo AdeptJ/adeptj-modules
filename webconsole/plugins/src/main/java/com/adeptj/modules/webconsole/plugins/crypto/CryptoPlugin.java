@@ -29,6 +29,7 @@ import org.apache.felix.webconsole.AbstractWebConsolePlugin;
 import org.apache.felix.webconsole.DefaultVariableResolver;
 import org.apache.felix.webconsole.VariableResolver;
 import org.apache.felix.webconsole.WebConsoleUtil;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationPlugin;
 import org.osgi.service.component.annotations.Activate;
@@ -98,7 +99,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     // << ---------------------------------- From ConfigurationPlugin ---------------------------------->>
 
     @Override
-    public void modifyConfiguration(ServiceReference<?> serviceReference, Dictionary<String, Object> properties) {
+    public void modifyConfiguration(ServiceReference<?> serviceReference, @NotNull Dictionary<String, Object> properties) {
         Object pid = properties.get(SERVICE_PID);
         for (Iterator<String> iterator = properties.keys().asIterator(); iterator.hasNext(); ) {
             String key = iterator.next();
@@ -121,7 +122,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         }
     }
 
-    private void handleMultiValueProperty(Object pid, String key, String[] currentValues) {
+    private void handleMultiValueProperty(Object pid, String key, String @NotNull [] currentValues) {
         for (int i = 0; i < currentValues.length; i++) {
             String currentValue = currentValues[i];
             if (StringUtils.startsWith(currentValue, ENCRYPTION_PREFIX)) {
@@ -149,7 +150,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     }
 
     @Override
-    protected void renderContent(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    protected void renderContent(@NotNull HttpServletRequest req, HttpServletResponse res) throws IOException {
         // Put the default values in DefaultVariableResolver while rendering the form (a GET request).
         // But when this method is called via a doGet call after the form submission (a POST request)
         // then the request method is still POST, so population with empty values will not happen.
@@ -160,7 +161,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(@NotNull HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String plainText = req.getParameter(KEY_PLAIN_TEXT);
         String cipherText = EMPTY;
         if (StringUtils.isNotEmpty(plainText)) {
