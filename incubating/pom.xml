@@ -34,6 +34,7 @@
 
         <module>cayenne</module>
         <module>restclient</module>
+        <module>graphql</module>
 
     </modules>
 
