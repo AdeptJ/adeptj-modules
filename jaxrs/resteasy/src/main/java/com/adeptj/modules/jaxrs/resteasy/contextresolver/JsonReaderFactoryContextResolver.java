@@ -1,7 +1,5 @@
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
-import com.adeptj.modules.commons.utils.JakartaJsonUtil;
-
 import javax.annotation.Priority;
 import javax.json.JsonReaderFactory;
 import javax.ws.rs.Produces;

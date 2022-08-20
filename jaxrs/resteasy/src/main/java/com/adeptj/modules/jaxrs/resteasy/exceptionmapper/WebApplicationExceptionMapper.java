@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import com.adeptj.modules.commons.utils.JakartaJsonUtil;
+import com.adeptj.modules.jaxrs.resteasy.contextresolver.JakartaJsonUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

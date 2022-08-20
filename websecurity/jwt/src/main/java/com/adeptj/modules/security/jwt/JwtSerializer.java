@@ -4,7 +4,7 @@ import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 import io.jsonwebtoken.io.SerializationException;
 import io.jsonwebtoken.io.Serializer;
 
-import javax.json.bind.JsonbException;
+import jakarta.json.bind.JsonbException;
 import java.util.Map;
 
 /**

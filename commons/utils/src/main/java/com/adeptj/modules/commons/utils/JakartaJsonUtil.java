@@ -19,15 +19,15 @@
 */
 package com.adeptj.modules.commons.utils;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonReaderFactory;
-import javax.json.JsonWriterFactory;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonGeneratorFactory;
-import javax.json.stream.JsonParserFactory;
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonReaderFactory;
+import jakarta.json.JsonWriterFactory;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.bind.JsonbConfig;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonGeneratorFactory;
+import jakarta.json.stream.JsonParserFactory;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -36,10 +36,10 @@ import static com.adeptj.modules.commons.utils.Constants.UTF8;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
+import static jakarta.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
- * Provides Jakarta {@link Jsonb} and other objects from Jakarta Json-P plus some utility methods.
+ * Provides Jakarta(jakarta namespace) {@link Jsonb} and other objects from Jakarta Json-P plus some utility methods.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
