@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import com.adeptj.modules.jaxrs.resteasy.contextresolver.JakartaJsonUtil;
+import com.adeptj.modules.jaxrs.resteasy.contextresolver.JakartaJsonProvider;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             LOGGER.error(exception.getMessage(), exception);
         }
         Response currentResponse = exception.getResponse();
-        JsonObject entity = JakartaJsonUtil.getJsonBuilderFactory()
+        JsonObject entity = JakartaJsonProvider.getJsonBuilderFactory()
                 .createObjectBuilder()
                 .add(JSON_KEY_CODE, currentResponse.getStatus())
                 .add(JSON_KEY_MESSAGE, currentResponse.getStatusInfo().getReasonPhrase())

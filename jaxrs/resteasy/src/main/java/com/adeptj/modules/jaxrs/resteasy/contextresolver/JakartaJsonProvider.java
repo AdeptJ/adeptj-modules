@@ -17,13 +17,13 @@ import static java.lang.Boolean.TRUE;
 import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
- * Provides Jakarta(javax namespace) {@link Jsonb} and other objects from Jakarta Json-P plus some utility methods.
+ * Provides Jakarta(javax namespace) {@link Jsonb} and other objects from Jakarta Json-P.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JakartaJsonUtil {
+public class JakartaJsonProvider {
 
-    private JakartaJsonUtil() {
+    private JakartaJsonProvider() {
     }
 
     private static final Jsonb JSONB;

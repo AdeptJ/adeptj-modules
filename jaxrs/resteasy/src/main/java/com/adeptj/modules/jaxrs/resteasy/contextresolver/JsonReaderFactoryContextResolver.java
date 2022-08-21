@@ -9,7 +9,7 @@ import javax.ws.rs.ext.Provider;
 import static com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonReaderFactoryContextResolver.PRIORITY;
 
 /**
- * ContextResolver for {@link JsonReaderFactory}.
+ * ContextResolver for Jakarta's {@link JsonReaderFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -22,6 +22,6 @@ public class JsonReaderFactoryContextResolver implements ContextResolver<JsonRea
 
     @Override
     public JsonReaderFactory getContext(Class<?> type) {
-        return type == JsonReaderFactory.class ? JakartaJsonUtil.getJsonReaderFactory() : null;
+        return type == JsonReaderFactory.class ? JakartaJsonProvider.getJsonReaderFactory() : null;
     }
 }

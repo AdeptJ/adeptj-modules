@@ -29,7 +29,7 @@ import javax.ws.rs.ext.Provider;
 import static com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver.PRIORITY;
 
 /**
- * ContextResolver for Jackson's {@link Jsonb}.
+ * ContextResolver for Jakarta's {@link Jsonb}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
@@ -42,6 +42,7 @@ public class JsonbContextResolver implements ContextResolver<Jsonb> {
 
     @Override
     public Jsonb getContext(Class<?> type) {
-        return JakartaJsonUtil.getJsonb();
+        // type check not needed because Resteasy always passes a null here.
+        return JakartaJsonProvider.getJsonb();
     }
 }
