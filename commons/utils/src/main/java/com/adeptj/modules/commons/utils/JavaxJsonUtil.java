@@ -1,4 +1,4 @@
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.commons.utils;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonReaderFactory;
@@ -9,10 +9,13 @@ import javax.json.bind.JsonbConfig;
 import javax.json.spi.JsonProvider;
 import javax.json.stream.JsonGeneratorFactory;
 import javax.json.stream.JsonParserFactory;
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
@@ -20,9 +23,9 @@ import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JavaxJsonProvider {
+public class JavaxJsonUtil {
 
-    private JavaxJsonProvider() {
+    private JavaxJsonUtil() {
     }
 
     private static final String UTF8 = "UTF-8";
@@ -75,5 +78,33 @@ public class JavaxJsonProvider {
 
     public static JsonBuilderFactory getJsonBuilderFactory() {
         return JSON_BUILDER_FACTORY;
+    }
+
+    // Serialize methods.
+
+    public static <T> String serialize(T object) {
+        return JavaxJsonUtil.getJsonb().toJson(object);
+    }
+
+    public static <T> byte[] serializeToBytes(T object) {
+        return JavaxJsonUtil.serialize(object).getBytes(UTF_8);
+    }
+
+    // Deserialize methods.
+
+    public static <T> T deserialize(byte[] data, Class<T> type) {
+        return JavaxJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
+    }
+
+    public static <T> T deserialize(String data, Class<T> type) {
+        return JavaxJsonUtil.getJsonb().fromJson(data, type);
+    }
+
+    public static <T> T deserialize(byte[] data, Type type) {
+        return JavaxJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
+    }
+
+    public static <T> T deserialize(String data, Type type) {
+        return JavaxJsonUtil.getJsonb().fromJson(data, type);
     }
 }

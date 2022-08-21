@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import com.adeptj.modules.jaxrs.core.JavaxJsonProvider;
+import com.adeptj.modules.commons.utils.JavaxJsonUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         }
         Response currentResponse = exception.getResponse();
         StringWriter writer = new StringWriter();
-        JavaxJsonProvider.getJsonGeneratorFactory().createGenerator(writer)
+        JavaxJsonUtil.getJsonGeneratorFactory().createGenerator(writer)
                 .writeStartObject()
                 .write(JSON_KEY_CODE, currentResponse.getStatus())
                 .write(JSON_KEY_MESSAGE, currentResponse.getStatusInfo().getReasonPhrase())
