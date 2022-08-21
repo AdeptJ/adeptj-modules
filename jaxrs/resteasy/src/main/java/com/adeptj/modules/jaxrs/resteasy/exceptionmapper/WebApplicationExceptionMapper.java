@@ -20,17 +20,17 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import com.adeptj.modules.jaxrs.resteasy.contextresolver.JakartaJsonProvider;
+import com.adeptj.modules.jaxrs.core.JavaxJsonProvider;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
-import javax.json.JsonObject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper.PRIORITY;
@@ -73,14 +73,16 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
             LOGGER.error(exception.getMessage(), exception);
         }
         Response currentResponse = exception.getResponse();
-        JsonObject entity = JakartaJsonProvider.getJsonBuilderFactory()
-                .createObjectBuilder()
-                .add(JSON_KEY_CODE, currentResponse.getStatus())
-                .add(JSON_KEY_MESSAGE, currentResponse.getStatusInfo().getReasonPhrase())
-                .build();
+        StringWriter writer = new StringWriter();
+        JavaxJsonProvider.getJsonGeneratorFactory().createGenerator(writer)
+                .writeStartObject()
+                .write(JSON_KEY_CODE, currentResponse.getStatus())
+                .write(JSON_KEY_MESSAGE, currentResponse.getStatusInfo().getReasonPhrase())
+                .writeEnd()
+                .close();
         return Response.status(currentResponse.getStatus())
                 .type(APPLICATION_JSON)
-                .entity(entity)
+                .entity(writer.toString())
                 .build();
     }
 }

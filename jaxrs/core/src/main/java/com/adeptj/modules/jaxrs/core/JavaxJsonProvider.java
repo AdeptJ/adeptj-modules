@@ -1,4 +1,4 @@
-package com.adeptj.modules.jaxrs.resteasy.contextresolver;
+package com.adeptj.modules.jaxrs.core;
 
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonReaderFactory;
@@ -7,24 +7,25 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import javax.json.spi.JsonProvider;
+import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonGeneratorFactory;
 import javax.json.stream.JsonParserFactory;
 import java.util.Map;
 
-import static com.adeptj.modules.commons.utils.Constants.UTF8;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
  * Provides Jakarta(javax namespace) {@link Jsonb} and other objects from Jakarta Json-P.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JakartaJsonProvider {
+public class JavaxJsonProvider {
 
-    private JakartaJsonProvider() {
+    private JavaxJsonProvider() {
     }
+
+    private static final String UTF8 = "UTF-8";
 
     private static final Jsonb JSONB;
 
@@ -44,7 +45,7 @@ public class JakartaJsonProvider {
                 .withProvider(provider)
                 .withConfig(new JsonbConfig().withFormatting(FALSE).withEncoding(UTF8))
                 .build();
-        Map<String, ?> config = Map.of(PRETTY_PRINTING, TRUE);
+        Map<String, ?> config = Map.of(JsonGenerator.PRETTY_PRINTING, TRUE);
         READER_FACTORY = provider.createReaderFactory(null);
         WRITER_FACTORY = provider.createWriterFactory(config);
         GENERATOR_FACTORY = provider.createGeneratorFactory(config);

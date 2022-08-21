@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
+import com.adeptj.modules.jaxrs.core.JavaxJsonProvider;
+
 import javax.annotation.Priority;
 import javax.json.bind.Jsonb;
 import javax.ws.rs.Produces;
@@ -42,7 +44,7 @@ public class JsonbContextResolver implements ContextResolver<Jsonb> {
 
     @Override
     public Jsonb getContext(Class<?> type) {
-        // type check not needed because Resteasy always passes a null here.
-        return JakartaJsonProvider.getJsonb();
+        // type check not needed because Resteasy will call this method for serializing arbitrary objects.
+        return JavaxJsonProvider.getJsonb();
     }
 }
