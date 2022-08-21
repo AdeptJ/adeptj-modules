@@ -46,14 +46,14 @@ public class JacksonJsonUtil {
     private JacksonJsonUtil() {
     }
 
-    private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper()
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .enable(INDENT_OUTPUT)
             .disable(WRITE_DATES_AS_TIMESTAMPS)
             .setSerializationInclusion(NON_NULL)
             .setDefaultPropertyInclusion(NON_DEFAULT);
 
     public static ObjectMapper objectMapper() {
-        return DEFAULT_OBJECT_MAPPER;
+        return OBJECT_MAPPER;
     }
 
     public static ObjectNode objectNode() {

@@ -62,16 +62,16 @@ public final class JakartaJsonUtil {
 
     static {
         JsonProvider provider = JsonProvider.provider();
-        JSONB = JsonbBuilder.newBuilder()
-                .withProvider(provider)
-                .withConfig(new JsonbConfig().withFormatting(FALSE).withEncoding(UTF8))
-                .build();
         Map<String, ?> config = Map.of(PRETTY_PRINTING, TRUE);
         READER_FACTORY = provider.createReaderFactory(null);
         WRITER_FACTORY = provider.createWriterFactory(config);
         GENERATOR_FACTORY = provider.createGeneratorFactory(config);
         PARSER_FACTORY = provider.createParserFactory(null);
         JSON_BUILDER_FACTORY = provider.createBuilderFactory(null);
+        JSONB = JsonbBuilder.newBuilder()
+                .withProvider(provider)
+                .withConfig(new JsonbConfig().withFormatting(FALSE).withEncoding(UTF8))
+                .build();
     }
 
     public static Jsonb getJsonb() {
