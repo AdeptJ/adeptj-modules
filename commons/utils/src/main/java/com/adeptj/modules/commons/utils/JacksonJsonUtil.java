@@ -21,10 +21,12 @@
 package com.adeptj.modules.commons.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -58,6 +60,10 @@ public class JacksonJsonUtil {
 
     public static ObjectNode objectNode() {
         return (ObjectNode) JacksonJsonUtil.objectReader().createObjectNode();
+    }
+
+    public static ArrayNode arrayNode() {
+        return (ArrayNode) JacksonJsonUtil.objectReader().createArrayNode();
     }
 
     public static ObjectReader objectReader() {
@@ -109,6 +115,22 @@ public class JacksonJsonUtil {
     }
 
     public static <T> T deserialize(String data, Class<T> valueType) {
+        try {
+            return JacksonJsonUtil.objectReader().forType(valueType).readValue(data);
+        } catch (IOException ex) {
+            throw new JacksonException(ex);
+        }
+    }
+
+    public static <T> T deserialize(byte[] bytes, TypeReference<T> valueType) {
+        try {
+            return JacksonJsonUtil.objectReader().forType(valueType).readValue(bytes);
+        } catch (IOException ex) {
+            throw new JacksonException(ex);
+        }
+    }
+
+    public static <T> T deserialize(String data, TypeReference<T> valueType) {
         try {
             return JacksonJsonUtil.objectReader().forType(valueType).readValue(data);
         } catch (IOException ex) {

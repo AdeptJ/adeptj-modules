@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import static com.adeptj.modules.commons.utils.Constants.UTF8;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -27,8 +28,6 @@ public class JavaxJsonUtil {
 
     private JavaxJsonUtil() {
     }
-
-    private static final String UTF8 = "UTF-8";
 
     private static final Jsonb JSONB;
 
