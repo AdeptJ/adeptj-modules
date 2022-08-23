@@ -145,8 +145,8 @@
         </dependency>
 
         <dependency>
-            <groupId>jakarta.json.bind</groupId>
-            <artifactId>jakarta.json.bind-api</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jsonb_1.0_spec</artifactId>
         </dependency>
 
         <dependency>
