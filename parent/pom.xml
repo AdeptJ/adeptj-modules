@@ -112,7 +112,7 @@
                 <plugin>
                     <groupId>biz.aQute.bnd</groupId>
                     <artifactId>bnd-maven-plugin</artifactId>
-                    <version>${bnd-maven-plugin.version}</version>
+                    <version>${bnd.version}</version>
                     <configuration>
                         <bndfile>bnd.bnd</bndfile>
                     </configuration>
@@ -128,7 +128,7 @@
                 <plugin>
                     <groupId>biz.aQute.bnd</groupId>
                     <artifactId>bnd-baseline-maven-plugin</artifactId>
-                    <version>${bnd-baseline-maven-plugin.version}</version>
+                    <version>${bnd.version}</version>
                     <configuration>
                         <failOnMissing>false</failOnMissing>
                         <includeDistributionManagement>false</includeDistributionManagement>
