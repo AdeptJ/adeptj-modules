@@ -24,7 +24,7 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Private-Package:  com.adeptj.modules.restclient.jetty
+Private-Package: com.adeptj.modules.restclient.jetty
 
 Bundle-Name: ${project.name}
 
