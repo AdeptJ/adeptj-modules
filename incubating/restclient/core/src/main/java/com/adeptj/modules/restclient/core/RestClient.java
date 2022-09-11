@@ -38,4 +38,11 @@ public interface RestClient {
     <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request);
 
     <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request);
+
+    /**
+     * Provides the internal http client.
+     *
+     * @return the internal http client
+     */
+    Object unwrap();
 }

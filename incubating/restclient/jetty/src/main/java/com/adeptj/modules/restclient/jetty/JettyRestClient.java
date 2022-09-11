@@ -125,6 +125,11 @@ public class JettyRestClient extends AbstractRestClient {
         return this.doExecuteRequest(request);
     }
 
+    @Override
+    public Object unwrap() {
+        return this.jettyClient;
+    }
+
     private <T, R> @NotNull ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
