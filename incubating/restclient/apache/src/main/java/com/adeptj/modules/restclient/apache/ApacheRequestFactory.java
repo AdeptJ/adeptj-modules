@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient.ahc;
+package com.adeptj.modules.restclient.apache;
 
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.HttpMethod;
@@ -20,8 +20,7 @@ public class ApacheRequestFactory {
             case POST:
             case PUT:
             case PATCH:
-            case DELETE:
-                // Sometimes DELETE has a payload.
+            case DELETE: // Sometimes DELETE has a payload.
                 apacheRequest = HttpClientUtils.createEntityEnclosingRequest(request);
                 break;
             default:

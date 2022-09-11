@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient.ahc;
+package com.adeptj.modules.restclient.apache;
 
 import com.adeptj.modules.restclient.core.AbstractRestClient;
 import com.adeptj.modules.restclient.core.ClientRequest;
@@ -47,12 +47,13 @@ import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
+import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Designate(ocd = ApacheHttpClientConfig.class)
-@Component(service = RestClient.class)
-public class ApacheHttpRestClient extends AbstractRestClient {
+@Component(service = RestClient.class, configurationPolicy = REQUIRE)
+public class ApacheRestClient extends AbstractRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -71,8 +72,8 @@ public class ApacheHttpRestClient extends AbstractRestClient {
     private final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
 
     @Activate
-    public ApacheHttpRestClient(ApacheHttpClientConfig config) {
-        if (config.skipHostnameVerification()) {
+    public ApacheRestClient(ApacheHttpClientConfig config) {
+        if (config.skip_hostname_verification()) {
             try {
                 SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, TrustSelfSignedStrategy.INSTANCE)
                         .build();
@@ -181,23 +182,24 @@ public class ApacheHttpRestClient extends AbstractRestClient {
      * @param connectionManager the {@link PoolingHttpClientConnectionManager}.
      */
     private void initHttpClient(PoolingHttpClientConnectionManager connectionManager, ApacheHttpClientConfig config) {
-        connectionManager.setDefaultMaxPerRoute(config.maxPerRoute());
-        connectionManager.setMaxTotal(config.maxTotal());
-        connectionManager.setValidateAfterInactivity(config.validateAfterInactivity());
+        connectionManager.setDefaultMaxPerRoute(config.max_per_route());
+        connectionManager.setMaxTotal(config.max_total());
+        connectionManager.setValidateAfterInactivity(config.validate_after_inactivity());
         this.httpClient = HttpClients.custom()
                 .setConnectionManager(connectionManager)
-                .setKeepAliveStrategy(new HttpClientConnectionKeepAliveStrategy(config.maxIdleTime()))
+                .setKeepAliveStrategy(new HttpClientConnectionKeepAliveStrategy(config.max_idle_time()))
                 .disableCookieManagement()
                 .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(config.connectTimeout())
-                        .setConnectionRequestTimeout(config.connectionRequestTimeout())
-                        .setSocketTimeout(config.socketTimeout())
+                        .setConnectTimeout(config.connect_timeout())
+                        .setConnectionRequestTimeout(config.connection_request_timeout())
+                        .setSocketTimeout(config.socket_timeout())
                         .build())
                 .build();
-        int idleTimeout = config.idleTimeout();
+        int idleTimeout = config.idle_timeout();
+        int initialDelay = idleTimeout * 2;
         this.executorService = Executors.newSingleThreadScheduledExecutor();
-        this.executorService.scheduleAtFixedRate(new HttpClientIdleConnectionManager(idleTimeout, connectionManager),
-                (idleTimeout + 10),
+        this.executorService.scheduleAtFixedRate(new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager),
+                initialDelay,
                 idleTimeout,
                 SECONDS);
     }

@@ -33,7 +33,7 @@
     <modules>
 
         <module>core</module>
-        <module>ahc</module>
+        <module>apache</module>
         <module>jetty</module>
 
     </modules>

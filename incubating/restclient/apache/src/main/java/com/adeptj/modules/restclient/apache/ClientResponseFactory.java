@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient.ahc;
+package com.adeptj.modules.restclient.apache;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
@@ -37,18 +37,18 @@ public class ClientResponseFactory {
         if (responseAs.equals(void.class) || responseAs.equals(Void.class)) {
             return clientResponse;
         }
-        HttpEntity httpEntity = response.getEntity();
+        HttpEntity entity = response.getEntity();
         // 3. byte[] is expected.
         if (responseAs.equals(byte[].class)) {
-            clientResponse.setContent(responseAs.cast(IOUtils.toByteArray(httpEntity.getContent())));
+            clientResponse.setContent(responseAs.cast(IOUtils.toByteArray(entity.getContent())));
         } else if (responseAs.equals(String.class)) {
-            // 4. A text clientResponse is expected, create a String from the HttpEntity.
-            clientResponse.setContent(responseAs.cast(EntityUtils.toString(httpEntity, UTF_8)));
+            // 4. A text response is expected, create a String from the HttpEntity.
+            clientResponse.setContent(responseAs.cast(EntityUtils.toString(entity, UTF_8)));
         } else {
             // 5. A custom type is expected, deserialize the HttpEntity to the expected type.
-            clientResponse.setContent(ObjectMappers.deserialize(IOUtils.toByteArray(httpEntity.getContent()), responseAs));
+            clientResponse.setContent(ObjectMappers.deserialize(IOUtils.toByteArray(entity.getContent()), responseAs));
         }
-        EntityUtils.consumeQuietly(httpEntity);
+        EntityUtils.consumeQuietly(entity);
         return clientResponse;
     }
 }

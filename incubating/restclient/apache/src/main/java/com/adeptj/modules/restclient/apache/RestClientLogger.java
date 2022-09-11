@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient.ahc;
+package com.adeptj.modules.restclient.apache;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;

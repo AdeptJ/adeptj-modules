@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient.ahc;
+package com.adeptj.modules.restclient.apache;
 
 import org.apache.http.conn.HttpClientConnectionManager;
 
@@ -9,13 +9,13 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class HttpClientIdleConnectionManager implements Runnable {
+class HttpClientIdleConnectionEvictor implements Runnable {
 
     private final int idleTimeout;
 
     private final HttpClientConnectionManager connectionManager;
 
-    HttpClientIdleConnectionManager(int idleTimeout, HttpClientConnectionManager connectionManager) {
+    HttpClientIdleConnectionEvictor(int idleTimeout, HttpClientConnectionManager connectionManager) {
         this.idleTimeout = idleTimeout;
         this.connectionManager = connectionManager;
     }

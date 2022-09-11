@@ -27,7 +27,7 @@
         <version>1</version>
         <relativePath>../../../parent/pom.xml</relativePath>
     </parent>
-    <artifactId>adeptj-modules-incubating-restclient-ahc</artifactId>
+    <artifactId>adeptj-modules-incubating-restclient-apache</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     <name>AdeptJ Modules :: Incubating :: RestClient :: Apache HttpClient</name>

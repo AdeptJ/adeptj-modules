@@ -1,4 +1,4 @@
-package com.adeptj.modules.restclient.ahc;
+package com.adeptj.modules.restclient.apache;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
