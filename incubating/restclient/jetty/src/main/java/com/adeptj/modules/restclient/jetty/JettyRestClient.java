@@ -19,13 +19,12 @@
 */
 package com.adeptj.modules.restclient.jetty;
 
+import com.adeptj.modules.restclient.core.AbstractRestClient;
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.ClientResponse;
-import com.adeptj.modules.restclient.core.HttpMethod;
 import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
 import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
-import com.adeptj.modules.restclient.core.util.AntPathMatcher;
 import org.eclipse.jetty.client.AbstractHttpClientTransport;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -52,8 +51,8 @@ import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIP
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Designate(ocd = JettyHttpClientConfig.class)
-@Component
-public class JettyRestClient implements RestClient {
+@Component(service = RestClient.class)
+public class JettyRestClient extends AbstractRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -95,25 +94,25 @@ public class JettyRestClient implements RestClient {
 
     @Override
     public <T, R> ClientResponse<R> GET(@NotNull ClientRequest<T, R> request) {
-        this.checkHttpMethod(request, GET);
+        this.ensureHttpMethod(request, GET);
         return this.executeRequest(request);
     }
 
     @Override
     public <T, R> ClientResponse<R> POST(@NotNull ClientRequest<T, R> request) {
-        this.checkHttpMethod(request, POST);
+        this.ensureHttpMethod(request, POST);
         return this.executeRequest(request);
     }
 
     @Override
     public <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request) {
-        this.checkHttpMethod(request, PUT);
+        this.ensureHttpMethod(request, PUT);
         return this.executeRequest(request);
     }
 
     @Override
     public <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request) {
-        this.checkHttpMethod(request, DELETE);
+        this.ensureHttpMethod(request, DELETE);
         return this.executeRequest(request);
     }
 
@@ -123,12 +122,6 @@ public class JettyRestClient implements RestClient {
             return this.doExecuteRequestDebug(request);
         }
         return this.doExecuteRequest(request);
-    }
-
-    private <T, R> void checkHttpMethod(@NotNull ClientRequest<T, R> request, HttpMethod method) {
-        if (request.getMethod() == null) {
-            request.setMethod(method);
-        }
     }
 
     private <T, R> @NotNull ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
@@ -166,20 +159,10 @@ public class JettyRestClient implements RestClient {
         if (plugins.isEmpty()) {
             return;
         }
-        AntPathMatcher matcher = AntPathMatcher.builder().build();
-        boolean authorizationHeaderAdded = false;
-        for (AuthorizationHeaderPlugin plugin : plugins) {
-            if (authorizationHeaderAdded) {
-                break;
-            }
-            for (String pattern : plugin.getPathPatterns()) {
-                if (matcher.isMatch(pattern, request.getPath())) {
-                    request.headers(f -> f.add(AUTHORIZATION, (plugin.getType() + " " + plugin.getValue())));
-                    authorizationHeaderAdded = true;
-                    LOGGER.info("Authorization header added to request [{}] by plugin [{}]", request.getURI(), plugin);
-                    break;
-                }
-            }
+        AuthorizationHeaderPlugin plugin = this.resolveAuthorizationHeaderPlugin(plugins, request.getPath());
+        if (plugin != null) {
+            request.headers(f -> f.add(AUTHORIZATION, (plugin.getType() + " " + plugin.getValue())));
+            LOGGER.info("Authorization header added to request [{}] by plugin [{}]", request.getURI(), plugin);
         }
     }
 
