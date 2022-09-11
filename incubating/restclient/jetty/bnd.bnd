@@ -28,6 +28,6 @@ Private-Package: com.adeptj.modules.restclient.jetty
 
 Bundle-Name: ${project.name}
 
-Bundle-Category: AdeptJ Commons
+Bundle-Category: AdeptJ Incubating
 
 Bundle-Vendor: AdeptJ

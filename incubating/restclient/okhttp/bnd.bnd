@@ -24,9 +24,7 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
-Export-Package: com.adeptj.modules.restclient.core, \
-                com.adeptj.modules.restclient.core.plugin, \
-                com.adeptj.modules.restclient.core.util
+Private-Package: com.adeptj.modules.restclient.okhttp
 
 Bundle-Name: ${project.name}
 

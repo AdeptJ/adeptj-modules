@@ -137,12 +137,12 @@ public class ApacheRestClient extends AbstractRestClient {
     private <T, R> @NotNull ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
         HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
         this.addAuthorizationHeader(apacheRequest);
-        String reqId = RestClientLogger.logRequest(apacheRequest, this.mdcReqIdAttrName);
+        String reqId = ApacheRestClientLogger.logRequest(apacheRequest, this.mdcReqIdAttrName);
         AtomicLong startTime = new AtomicLong(System.nanoTime());
         try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
             long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
             ClientResponse<R> resp = ClientResponseFactory.newClientResponse(response, request.getResponseAs());
-            RestClientLogger.logResponse(reqId, resp, executionTime);
+            ApacheRestClientLogger.logResponse(reqId, resp, executionTime);
             return resp;
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
