@@ -33,6 +33,7 @@
     <modules>
 
         <module>core</module>
+        <module>ahc</module>
         <module>jetty</module>
 
     </modules>
