@@ -26,6 +26,7 @@ import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
 import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import org.eclipse.jetty.client.AbstractHttpClientTransport;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.io.ClientConnector;
@@ -56,7 +57,7 @@ public class JettyRestClient extends AbstractRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final HttpClientWrapper jettyClient;
+    private final HttpClient jettyClient;
 
     private final boolean debugRequest;
 
@@ -66,7 +67,7 @@ public class JettyRestClient extends AbstractRestClient {
 
     @Activate
     public JettyRestClient(@NotNull JettyHttpClientConfig config) {
-        this.jettyClient = new HttpClientWrapper();
+        this.jettyClient = new HttpClient();
         this.jettyClient.setName(config.name());
         this.jettyClient.setConnectTimeout(config.connect_timeout());
         this.jettyClient.setIdleTimeout(config.idle_timeout());
@@ -171,7 +172,6 @@ public class JettyRestClient extends AbstractRestClient {
     @Deactivate
     protected void stop() {
         LOGGER.info("Stopping Jetty HttpClient!");
-        this.jettyClient.setStopInternal();
         try {
             this.jettyClient.stop();
         } catch (Exception ex) {
