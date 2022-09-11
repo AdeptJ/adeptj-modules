@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.jetty;
+package com.adeptj.modules.restclient.okhttp;
 
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.HttpMethod;

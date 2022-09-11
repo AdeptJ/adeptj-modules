@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.jetty;
+package com.adeptj.modules.restclient.okhttp;
 
 import com.adeptj.modules.restclient.core.AbstractRestClient;
 import com.adeptj.modules.restclient.core.ClientRequest;
@@ -44,11 +44,10 @@ import static com.adeptj.modules.restclient.core.HttpMethod.DELETE;
 import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
-@Component(service = RestClient.class, configurationPolicy = REQUIRE)
+@Component(service = RestClient.class)
 public class OkHttpRestClient extends AbstractRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

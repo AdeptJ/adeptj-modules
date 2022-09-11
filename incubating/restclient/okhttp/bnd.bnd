@@ -24,6 +24,17 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
+-includeresource: okhttp-*.jar;okio-*.jar;lib:=true
+
+-exportcontents: !com.adeptj.modules.restclient.okhttp
+
+Import-Package: !android.*, \
+                !com.android.*, \
+                !dalvik.system.*, \
+                !org.conscrypt.*, \
+                !sun.security.ssl.*, \
+                *
+
 Private-Package: com.adeptj.modules.restclient.okhttp
 
 Bundle-Name: ${project.name}

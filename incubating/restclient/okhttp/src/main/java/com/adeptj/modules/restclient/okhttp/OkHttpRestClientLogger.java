@@ -17,15 +17,37 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.jetty;
+package com.adeptj.modules.restclient.okhttp;
 
-import com.adeptj.modules.restclient.core.ClientResponse;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
-class ClientResponseFactory {
+import java.lang.invoke.MethodHandles;
+import java.util.UUID;
 
-    static <R> @NotNull ClientResponse<R> newClientResponse(@NotNull Response okHttpResponse, Class<R> responseAs) {
-        return null;
+class OkHttpRestClientLogger {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String REQUEST_START = "<<==================== Request Processing Start ====================>>\n";
+
+    private static final String REQUEST_END = "<<==================== Request Processing Complete ====================>>";
+
+    private static final String RESPONSE_START = "<<==================== Response ====================>>\n";
+
+    private static final String REQ_FMT
+            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers:\n{}\n Request Body:\n{}";
+
+    private static final String RESP_FMT
+            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n{}\n Response Body:\n{}\n Total Time: {} milliseconds\n\n{}";
+
+    private static String getReqId(String mdcReqIdAttrName) {
+        String reqId = MDC.get(mdcReqIdAttrName);
+        // Just in case MDC attribute is not set up by application code earlier.
+        if (reqId == null) {
+            reqId = UUID.randomUUID().toString();
+        }
+        return reqId;
     }
 }

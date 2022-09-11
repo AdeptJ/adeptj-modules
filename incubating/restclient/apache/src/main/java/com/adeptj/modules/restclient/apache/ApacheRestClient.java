@@ -47,12 +47,11 @@ import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
-import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Designate(ocd = ApacheHttpClientConfig.class)
-@Component(service = RestClient.class, configurationPolicy = REQUIRE)
+@Component(service = RestClient.class)
 public class ApacheRestClient extends AbstractRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
