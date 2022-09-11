@@ -9,13 +9,13 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-class HttpClientIdleConnectionEvictor implements Runnable {
+class HttpClientIdleConnectionManager implements Runnable {
 
     private final int idleTimeout;
 
     private final HttpClientConnectionManager connectionManager;
 
-    HttpClientIdleConnectionEvictor(int idleTimeout, HttpClientConnectionManager connectionManager) {
+    HttpClientIdleConnectionManager(int idleTimeout, HttpClientConnectionManager connectionManager) {
         this.idleTimeout = idleTimeout;
         this.connectionManager = connectionManager;
     }

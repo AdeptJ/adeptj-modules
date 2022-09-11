@@ -196,7 +196,7 @@ public class ApacheHttpRestClient extends AbstractRestClient {
                 .build();
         int idleTimeout = config.idleTimeout();
         this.executorService = Executors.newSingleThreadScheduledExecutor();
-        this.executorService.scheduleAtFixedRate(new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager),
+        this.executorService.scheduleAtFixedRate(new HttpClientIdleConnectionManager(idleTimeout, connectionManager),
                 (idleTimeout + 10),
                 idleTimeout,
                 SECONDS);
