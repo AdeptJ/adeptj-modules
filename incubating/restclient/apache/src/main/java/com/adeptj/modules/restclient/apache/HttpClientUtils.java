@@ -33,8 +33,8 @@ public class HttpClientUtils {
             entityEnclosingRequest.setEntity(entity);
         } else if (request.getMethod() == POST && formParams != null && !formParams.isEmpty()) {
             // Handle Form Post - application/x-www-form-urlencoded
-            List<NameValuePair> pairs = HttpClientUtils.createNameValuePairs(formParams);
-            entityEnclosingRequest.setEntity(new UrlEncodedFormEntity(pairs, UTF_8));
+            List<NameValuePair> params = HttpClientUtils.createNameValuePairs(formParams);
+            entityEnclosingRequest.setEntity(new UrlEncodedFormEntity(params, UTF_8));
         }
         return entityEnclosingRequest;
     }
