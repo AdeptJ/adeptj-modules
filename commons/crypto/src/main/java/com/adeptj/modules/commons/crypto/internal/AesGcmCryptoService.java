@@ -91,8 +91,6 @@ public class AesGcmCryptoService implements CryptoService {
     @Override
     public String encrypt(String plainText) {
         Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
-        int iterations = this.getIterations();
-        char[] cryptoKey = this.getCryptoKey();
         byte[] iv = null;
         byte[] cipherTextBytes = null;
         byte[] compositeCipherBytes = null;
@@ -100,7 +98,7 @@ public class AesGcmCryptoService implements CryptoService {
             // 1. get iv
             iv = RandomGenerators.randomBytes(GCM_IV_LENGTH);
             // 2. init encrypt mode cipher
-            Cipher cipher = this.initCipher(ENCRYPT_MODE, iv, cryptoKey, iterations);
+            Cipher cipher = this.initCipher(ENCRYPT_MODE, iv);
             // 3. generate cipher bytes
             cipherTextBytes = cipher.doFinal(plainText.getBytes(UTF_8));
             // 4. put everything in a ByteBuffer
@@ -115,7 +113,6 @@ public class AesGcmCryptoService implements CryptoService {
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, cipherTextBytes, compositeCipherBytes);
-            Arrays.fill(cryptoKey, Character.MIN_VALUE);
         }
     }
 
@@ -127,8 +124,6 @@ public class AesGcmCryptoService implements CryptoService {
         // This will prevent a BufferUnderflowException when we try to extract the data from the ByteBuffer.
         Validate.isTrue((cipherTextDecodedBytes.length > GCM_IV_LENGTH),
                 "cipherText doesn't seem to be an encrypted string!!");
-        int iterations = this.getIterations();
-        char[] cryptoKey = this.getCryptoKey();
         byte[] iv = null;
         byte[] cipherBytes = null;
         byte[] decryptedBytes = null;
@@ -141,7 +136,7 @@ public class AesGcmCryptoService implements CryptoService {
             cipherBytes = new byte[buffer.remaining()];
             buffer.get(cipherBytes);
             // 4. init decrypt mode cipher
-            Cipher cipher = this.initCipher(DECRYPT_MODE, iv, cryptoKey, iterations);
+            Cipher cipher = this.initCipher(DECRYPT_MODE, iv);
             // 5. decrypt cipherBytes
             decryptedBytes = cipher.doFinal(cipherBytes);
             // 6. create a UTF-8 String from decryptedBytes
@@ -151,21 +146,23 @@ public class AesGcmCryptoService implements CryptoService {
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(iv, cipherBytes, decryptedBytes);
-            Arrays.fill(cryptoKey, Character.MIN_VALUE);
         }
     }
 
-    private @NotNull Cipher initCipher(int mode, byte[] iv, char[] cryptoKey, int iterations) throws GeneralSecurityException {
-        byte[] key = null;
+    private @NotNull Cipher initCipher(int mode, byte[] iv) throws GeneralSecurityException {
+        char[] cryptoKey = this.getCryptoKey();
+        int iterations = this.getIterations();
+        byte[] secretKey = null;
         try {
-            key = CryptoUtil.newSecretKeyBytes(PBE_ALGO, cryptoKey, iv, iterations, PBE_KEY_LENGTH);
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, SECRET_KEY_SPEC_ALGO);
+            secretKey = CryptoUtil.newSecretKeyBytes(PBE_ALGO, cryptoKey, iv, iterations, PBE_KEY_LENGTH);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, SECRET_KEY_SPEC_ALGO);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_AUTH_TAG_LENGTH, iv);
             Cipher cipher = Cipher.getInstance(CIPHER_ALGO);
             cipher.init(mode, secretKeySpec, parameterSpec);
             return cipher;
         } finally {
-            CryptoUtil.nullSafeWipe(key);
+            CryptoUtil.nullSafeWipe(secretKey);
+            Arrays.fill(cryptoKey, Character.MIN_VALUE);
         }
     }
 
