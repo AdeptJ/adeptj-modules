@@ -25,11 +25,11 @@ import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
 import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
-import org.eclipse.jetty.client.AbstractHttpClientTransport;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -40,13 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
-import static com.adeptj.modules.restclient.core.HttpMethod.DELETE;
-import static com.adeptj.modules.restclient.core.HttpMethod.GET;
-import static com.adeptj.modules.restclient.core.HttpMethod.POST;
-import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
 import static org.eclipse.jetty.http.HttpHeader.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -59,14 +54,9 @@ public class JettyRestClient extends AbstractRestClient {
 
     private final HttpClient jettyClient;
 
-    private final boolean debugRequest;
-
-    private final String mdcReqIdAttrName;
-
-    private final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
-
     @Activate
     public JettyRestClient(@NotNull JettyHttpClientConfig config) {
+        super(config.debug_request(), config.mdc_req_id_attribute_name());
         this.jettyClient = new HttpClient();
         this.jettyClient.setName(config.name());
         this.jettyClient.setConnectTimeout(config.connect_timeout());
@@ -77,83 +67,29 @@ public class JettyRestClient extends AbstractRestClient {
         this.jettyClient.setMaxRedirects(config.max_redirects());
         this.jettyClient.setRequestBufferSize(config.request_buffer_size());
         this.jettyClient.setResponseBufferSize(config.response_buffer_size());
-        ((AbstractHttpClientTransport) this.jettyClient.getTransport())
-                .getContainedBeans(ClientConnector.class)
-                .stream()
-                .findFirst()
-                .ifPresent(connector -> connector.setTCPNoDelay(config.tcp_no_delay()));
+        HttpClientTransportOverHTTP transport = (HttpClientTransportOverHTTP) this.jettyClient.getTransport();
+        transport.getClientConnector().setTCPNoDelay(config.tcp_no_delay());
         LOGGER.info("Starting Jetty HttpClient!");
         try {
             this.jettyClient.start();
         } catch (Exception ex) {
             throw new JettyHttpClientInitializationException(ex);
         }
-        this.debugRequest = config.debug_request();
-        this.mdcReqIdAttrName = config.mdc_req_id_attribute_name();
-        this.authorizationHeaderPlugins = new CopyOnWriteArrayList<>();
     }
 
     @Override
-    public <T, R> ClientResponse<R> GET(@NotNull ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, GET);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> POST(@NotNull ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, POST);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, PUT);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, DELETE);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request) {
-        if (request.getMethod() == null) {
-            throw new IllegalStateException("No HttpMethod set in the ClientRequest!!");
-        }
-        if (this.debugRequest) {
-            return this.doExecuteRequestDebug(request);
-        }
-        return this.doExecuteRequest(request);
-    }
-
-    @Override
-    public Object unwrap() {
-        return this.jettyClient;
-    }
-
-    private <T, R> @NotNull ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
+    protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
         try {
             Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
             this.addAuthorizationHeader(jettyRequest);
-            String reqId = JettyRestClientLogger.logRequest(request, jettyRequest, this.mdcReqIdAttrName);
-            long startTime = System.nanoTime();
-            ContentResponse response = jettyRequest.send();
-            long endTime = System.nanoTime();
-            long executionTime = endTime - startTime;
-            JettyRestClientLogger.logResponse(reqId, response, executionTime);
-            return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new RestClientException(ex);
-        }
-    }
-
-    private <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
-        try {
-            Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
-            this.addAuthorizationHeader(jettyRequest);
+            if (this.debugRequest) {
+                String reqId = JettyRestClientLogger.logRequest(request, jettyRequest, this.mdcReqIdAttrName);
+                AtomicLong startTime = new AtomicLong(System.nanoTime());
+                ContentResponse response = jettyRequest.send();
+                long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
+                JettyRestClientLogger.logResponse(reqId, response, executionTime);
+                return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
+            }
             ContentResponse jettyResponse = jettyRequest.send();
             return ClientResponseFactory.newClientResponse(jettyResponse, request.getResponseAs());
         } catch (Exception ex) {
@@ -162,17 +98,24 @@ public class JettyRestClient extends AbstractRestClient {
         }
     }
 
-    private void addAuthorizationHeader(Request request) {
-        // Create a temp var because the service is dynamic.
-        List<AuthorizationHeaderPlugin> plugins = this.authorizationHeaderPlugins;
-        if (plugins.isEmpty()) {
-            return;
+    private void addAuthorizationHeader(@NotNull Request request) {
+        String authorizationHeaderValue = this.getAuthorizationHeaderValue(request.getPath());
+        if (StringUtils.isNotEmpty(authorizationHeaderValue)) {
+            request.headers(f -> f.add(AUTHORIZATION, authorizationHeaderValue));
         }
-        AuthorizationHeaderPlugin plugin = this.resolveAuthorizationHeaderPlugin(plugins, request.getPath());
-        if (plugin != null) {
-            request.headers(f -> f.add(AUTHORIZATION, (plugin.getType() + " " + plugin.getValue())));
-            LOGGER.info("Authorization header added to request [{}] by plugin [{}]", request.getURI(), plugin);
+    }
+
+    @Override
+    public <T> T unwrap(@NotNull Class<T> type) {
+        if (type.isInstance(this.jettyClient)) {
+            return type.cast(this.jettyClient);
         }
+        return null;
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
     }
 
     // <<----------------------------------------- OSGi Internal  ------------------------------------------>>
@@ -189,13 +132,10 @@ public class JettyRestClient extends AbstractRestClient {
 
     @Reference(service = AuthorizationHeaderPlugin.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        LOGGER.info("Binding AuthorizationHeaderPlugin: {}", plugin);
-        this.authorizationHeaderPlugins.add(plugin);
+        this.doBindAuthorizationHeaderPlugin(plugin);
     }
 
     protected void unbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        if (this.authorizationHeaderPlugins.remove(plugin)) {
-            LOGGER.info("Unbounded AuthorizationHeaderPlugin: {}", plugin);
-        }
+        this.doUnbindAuthorizationHeaderPlugin(plugin);
     }
 }

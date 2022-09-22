@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.adeptj.modules.restclient.core.HttpMethod.OPTIONS;
 import static com.adeptj.modules.restclient.core.RestClientConstants.CONTENT_TYPE_JSON;
 import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.HEAD;
@@ -60,7 +61,7 @@ class JettyRequestFactory {
             queryParams.forEach(jettyRequest::param);
         }
         // 4. No-body for http GET,HEAD methods, return right away.
-        if (method == GET || method == HEAD) {
+        if (method == GET || method == HEAD || method == OPTIONS) {
             return jettyRequest;
         }
         // 5. Handle Form Post - application/x-www-form-urlencoded

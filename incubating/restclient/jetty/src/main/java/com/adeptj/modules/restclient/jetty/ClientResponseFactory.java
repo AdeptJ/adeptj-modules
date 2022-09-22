@@ -22,10 +22,10 @@ package com.adeptj.modules.restclient.jetty;
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpField;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 class ClientResponseFactory {
 
@@ -35,18 +35,18 @@ class ClientResponseFactory {
         response.setReason(jettyResponse.getReason());
         // 1. Copy all the headers which may be needed by the caller.
         if (jettyResponse.getHeaders().size() > 0) {
-            Map<String, String> headers = new HashMap<>();
-            jettyResponse.getHeaders().forEach(f -> headers.put(f.getName(), f.getValue()));
-            response.setHeaders(headers);
+            response.setHeaders(jettyResponse.getHeaders()
+                    .stream()
+                    .collect(Collectors.toMap(HttpField::getName, HttpField::getValue)));
         }
         // 2. if no response body is expected then return without setting the content.
-        if (responseAs.equals(void.class) || responseAs.equals(Void.class)) {
+        if (responseAs == void.class || responseAs == Void.class) {
             return response;
         }
         // 3. byte[] is expected - the Jetty client response is already byte[]
-        if (responseAs.equals(byte[].class)) {
+        if (responseAs == byte[].class) {
             response.setContent(responseAs.cast(jettyResponse.getContent()));
-        } else if (responseAs.equals(String.class)) {
+        } else if (responseAs == String.class) {
             // 4. A text response is expected, create a String from the Jetty client response byte[].
             response.setContent(responseAs.cast(jettyResponse.getContentAsString()));
         } else {

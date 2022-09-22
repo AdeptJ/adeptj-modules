@@ -29,6 +29,7 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -37,13 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import static com.adeptj.modules.restclient.core.HttpMethod.DELETE;
-import static com.adeptj.modules.restclient.core.HttpMethod.GET;
-import static com.adeptj.modules.restclient.core.HttpMethod.POST;
-import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
@@ -54,52 +49,17 @@ public class OkHttpRestClient extends AbstractRestClient {
 
     private final OkHttpClient httpClient;
 
-    private final boolean debugRequest;
-
-    private final String mdcReqIdAttrName;
-
-    private final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
-
     @Activate
-    public OkHttpRestClient(OkHttpClientConfig config) {
+    public OkHttpRestClient(@NotNull OkHttpClientConfig config) {
+        super(config.debug_request(), config.mdc_req_id_attribute_name());
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         this.httpClient = builder.build();
-        this.debugRequest = config.debug_request();
-        this.mdcReqIdAttrName = config.mdc_req_id_attribute_name();
-        this.authorizationHeaderPlugins = new CopyOnWriteArrayList<>();
     }
 
     @Override
-    public <T, R> ClientResponse<R> GET(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, GET);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> POST(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, POST);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> PUT(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, PUT);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, DELETE);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request) {
-        if (request.getMethod() == null) {
-            throw new IllegalStateException("No HttpMethod set in the ClientRequest!!");
-        }
-        AuthorizationHeaderPlugin plugin = this.getAuthorizationHeaderPlugin(request);
-        Request okHttpRequest = OkHttpRequestFactory.newRequest(request, plugin);
+    protected @NotNull <T, R> ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
+        String authorizationHeaderValue = this.getAuthorizationHeaderValue(request.getUri().getPath());
+        Request okHttpRequest = OkHttpRequestFactory.newRequest(request, authorizationHeaderValue);
         try (Response response = this.httpClient.newCall(okHttpRequest).execute()) {
             return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
         } catch (Exception e) {
@@ -108,21 +68,16 @@ public class OkHttpRestClient extends AbstractRestClient {
     }
 
     @Override
-    public Object unwrap() {
-        return this.httpClient;
+    public <T> T unwrap(@NotNull Class<T> type) {
+        if (type.isInstance(this.httpClient)) {
+            return type.cast(this.httpClient);
+        }
+        return null;
     }
 
-    private <T, R> AuthorizationHeaderPlugin getAuthorizationHeaderPlugin(ClientRequest<T, R> request) {
-        // Create a temp var because the service is dynamic.
-        List<AuthorizationHeaderPlugin> plugins = this.authorizationHeaderPlugins;
-        if (plugins.isEmpty()) {
-            return null;
-        }
-        AuthorizationHeaderPlugin plugin = this.resolveAuthorizationHeaderPlugin(plugins, request.getUri().getPath());
-        if (plugin != null) {
-            LOGGER.info("Authorization header added to request [{}] by plugin [{}]", request.getUri(), plugin);
-        }
-        return plugin;
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
     }
 
     // <<----------------------------------------- OSGi Internal  ------------------------------------------>>
@@ -144,13 +99,10 @@ public class OkHttpRestClient extends AbstractRestClient {
 
     @Reference(service = AuthorizationHeaderPlugin.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        LOGGER.info("Binding AuthorizationHeaderPlugin: {}", plugin);
-        this.authorizationHeaderPlugins.add(plugin);
+        this.doBindAuthorizationHeaderPlugin(plugin);
     }
 
     protected void unbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        if (this.authorizationHeaderPlugins.remove(plugin)) {
-            LOGGER.info("Unbounded AuthorizationHeaderPlugin: {}", plugin);
-        }
+        this.doUnbindAuthorizationHeaderPlugin(plugin);
     }
 }

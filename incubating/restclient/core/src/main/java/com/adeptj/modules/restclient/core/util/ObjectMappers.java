@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -84,6 +85,14 @@ public class ObjectMappers {
     public static <T> T deserialize(byte[] bytes, Class<T> valueType) {
         try {
             return getReader(valueType).readValue(bytes);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static <T> T deserialize(InputStream stream, Class<T> valueType) {
+        try {
+            return getReader(valueType).readValue(stream);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

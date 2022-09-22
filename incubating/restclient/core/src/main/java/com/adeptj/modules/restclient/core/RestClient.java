@@ -19,6 +19,7 @@
 */
 package com.adeptj.modules.restclient.core;
 
+import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -29,20 +30,20 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface RestClient {
 
-    <T, R> ClientResponse<R> GET(ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> GET(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> POST(ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> POST(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> PUT(ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> executeRequest(@NotNull ClientRequest<T, R> request);
 
     /**
      * Provides the internal http client.
      *
      * @return the internal http client
      */
-    Object unwrap();
+    <T> T unwrap(@NotNull Class<T> type);
 }

@@ -22,4 +22,6 @@ package com.adeptj.modules.restclient.core;
 public class RestClientConstants {
 
     public static final String CONTENT_TYPE_JSON = "application/json";
+
+    public static final String HEADER_AUTHORIZATION = "Authorization";
 }

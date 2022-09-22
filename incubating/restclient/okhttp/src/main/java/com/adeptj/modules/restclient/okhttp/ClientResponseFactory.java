@@ -47,15 +47,15 @@ class ClientResponseFactory {
         }
         clientResponse.setHeaders(clientRespHeaders);
         // 2. if no clientResponse body is expected then return without setting the content.
-        if (responseAs.equals(void.class) || responseAs.equals(Void.class)) {
+        if (responseAs == void.class || responseAs == Void.class) {
             return clientResponse;
         }
         ResponseBody body = okHttpResponse.body();
         if (body != null) {
             // 3. byte[] is expected.
-            if (responseAs.equals(byte[].class)) {
+            if (responseAs == byte[].class) {
                 clientResponse.setContent(responseAs.cast(body.bytes()));
-            } else if (responseAs.equals(String.class)) {
+            } else if (responseAs == String.class) {
                 // 4. A text response is expected, create a String from the HttpEntity.
                 clientResponse.setContent(responseAs.cast(body.string()));
             } else {

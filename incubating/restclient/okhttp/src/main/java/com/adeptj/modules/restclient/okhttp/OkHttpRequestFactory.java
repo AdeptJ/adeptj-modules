@@ -21,7 +21,6 @@ package com.adeptj.modules.restclient.okhttp;
 
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.HttpMethod;
-import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import com.adeptj.modules.restclient.core.util.Assert;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import okhttp3.FormBody;
@@ -29,6 +28,7 @@ import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -38,12 +38,13 @@ import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.HEAD;
 import static com.adeptj.modules.restclient.core.HttpMethod.OPTIONS;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
+import static com.adeptj.modules.restclient.core.RestClientConstants.HEADER_AUTHORIZATION;
 
 class OkHttpRequestFactory {
 
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-    static <T, R> Request newRequest(@NotNull ClientRequest<T, R> request, AuthorizationHeaderPlugin plugin) {
+    static <T, R> Request newRequest(@NotNull ClientRequest<T, R> request, String authorizationHeaderValue) {
         HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
         T body = request.getBody();
@@ -62,8 +63,8 @@ class OkHttpRequestFactory {
             String data = ObjectMappers.serialize(body);
             builder.method(method.toString(), RequestBody.create(JSON, data));
         }
-        if (plugin != null) {
-            builder.addHeader("Authorization", (plugin.getType() + " " + plugin.getValue()));
+        if (StringUtils.isNotEmpty(authorizationHeaderValue)) {
+            builder.addHeader(HEADER_AUTHORIZATION, authorizationHeaderValue);
         }
         Map<String, String> headers = request.getHeaders();
         if (headers != null && !headers.isEmpty()) {

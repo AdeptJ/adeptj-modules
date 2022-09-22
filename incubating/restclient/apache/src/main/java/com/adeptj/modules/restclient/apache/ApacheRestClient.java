@@ -6,6 +6,7 @@ import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
 import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -17,6 +18,7 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
@@ -35,16 +37,10 @@ import java.lang.invoke.MethodHandles;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.adeptj.modules.restclient.core.HttpMethod.DELETE;
-import static com.adeptj.modules.restclient.core.HttpMethod.GET;
-import static com.adeptj.modules.restclient.core.HttpMethod.POST;
-import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -60,98 +56,56 @@ public class ApacheRestClient extends AbstractRestClient {
 
     private static final String SCHEME_HTTP = "http";
 
-    private CloseableHttpClient httpClient;
+    private final CloseableHttpClient httpClient;
 
-    private ScheduledExecutorService executorService;
-
-    private final boolean debugRequest;
-
-    private final String mdcReqIdAttrName;
-
-    private final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
+    private final ScheduledExecutorService executorService;
 
     @Activate
-    public ApacheRestClient(ApacheHttpClientConfig config) {
+    public ApacheRestClient(@NotNull ApacheHttpClientConfig config) {
+        super(config.debug_request(), config.mdc_req_id_attribute_name());
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        PoolingHttpClientConnectionManager connectionManager;
         if (config.skip_hostname_verification()) {
             try {
-                SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, TrustSelfSignedStrategy.INSTANCE)
+                SSLContext sslContext = SSLContexts.custom()
+                        .loadTrustMaterial(null, TrustSelfSignedStrategy.INSTANCE)
                         .build();
-                Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                         .register(SCHEME_HTTPS, new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
                         .register(SCHEME_HTTP, new PlainConnectionSocketFactory())
                         .build();
-                this.initHttpClient(new PoolingHttpClientConnectionManager(socketFactoryRegistry), config);
+                connectionManager = new PoolingHttpClientConnectionManager(registry);
             } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException ex) {
                 LOGGER.error(ex.getMessage(), ex);
                 throw new IllegalStateException(ex);
             }
         } else {
-            this.initHttpClient(new PoolingHttpClientConnectionManager(), config);
+            connectionManager = new PoolingHttpClientConnectionManager();
         }
-        this.debugRequest = config.debug_request();
-        this.mdcReqIdAttrName = config.mdc_req_id_attribute_name();
-        this.authorizationHeaderPlugins = new CopyOnWriteArrayList<>();
+        this.httpClient = this.initHttpClient(connectionManager, config);
+        int idleTimeout = config.idle_timeout();
+        int initialDelay = idleTimeout * 2;
+        HttpClientIdleConnectionEvictor evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager);
+        this.executorService.scheduleAtFixedRate(evictor, initialDelay, idleTimeout, SECONDS);
     }
 
     @Override
-    public <T, R> ClientResponse<R> GET(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, GET);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> POST(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, POST);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> PUT(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, PUT);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> DELETE(ClientRequest<T, R> request) {
-        this.ensureHttpMethod(request, DELETE);
-        return this.executeRequest(request);
-    }
-
-    @Override
-    public <T, R> ClientResponse<R> executeRequest(ClientRequest<T, R> request) {
-        if (request.getMethod() == null) {
-            throw new IllegalStateException("No HttpMethod set in the ClientRequest!!");
-        }
+    protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
+        HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
+        this.addAuthorizationHeader(apacheRequest);
         if (this.debugRequest) {
-            return this.doExecuteRequestDebug(request);
+            String reqId = ApacheRestClientLogger.logRequest(apacheRequest, this.mdcReqIdAttrName);
+            AtomicLong startTime = new AtomicLong(System.nanoTime());
+            try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
+                long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
+                ClientResponse<R> resp = ClientResponseFactory.newClientResponse(response, request.getResponseAs());
+                ApacheRestClientLogger.logResponse(reqId, resp, executionTime);
+                return resp;
+            } catch (Exception ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                throw new RestClientException(ex);
+            }
         }
-        return this.doExecuteRequest(request);
-    }
-
-    @Override
-    public Object unwrap() {
-        return this.httpClient;
-    }
-
-    private <T, R> @NotNull ClientResponse<R> doExecuteRequestDebug(ClientRequest<T, R> request) {
-        HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
-        this.addAuthorizationHeader(apacheRequest);
-        String reqId = ApacheRestClientLogger.logRequest(apacheRequest, this.mdcReqIdAttrName);
-        AtomicLong startTime = new AtomicLong(System.nanoTime());
-        try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
-            long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-            ClientResponse<R> resp = ClientResponseFactory.newClientResponse(response, request.getResponseAs());
-            ApacheRestClientLogger.logResponse(reqId, resp, executionTime);
-            return resp;
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new RestClientException(ex);
-        }
-    }
-
-    private <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
-        HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
-        this.addAuthorizationHeader(apacheRequest);
         try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
             return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
         } catch (Exception ex) {
@@ -160,48 +114,52 @@ public class ApacheRestClient extends AbstractRestClient {
         }
     }
 
-    private void addAuthorizationHeader(HttpUriRequest request) {
-        // Create a temp var because the service is dynamic.
-        List<AuthorizationHeaderPlugin> plugins = this.authorizationHeaderPlugins;
-        if (plugins.isEmpty()) {
-            return;
-        }
-        AuthorizationHeaderPlugin plugin = this.resolveAuthorizationHeaderPlugin(plugins, request.getURI().getPath());
-        if (plugin != null) {
-            request.addHeader(AUTHORIZATION, (plugin.getType() + " " + plugin.getValue()));
-            LOGGER.info("Authorization header added to request [{}] by plugin [{}]", request.getURI(), plugin);
+    private void addAuthorizationHeader(@NotNull HttpUriRequest request) {
+        String authorizationHeaderValue = this.getAuthorizationHeaderValue(request.getURI().getPath());
+        if (StringUtils.isNotEmpty(authorizationHeaderValue)) {
+            request.addHeader(AUTHORIZATION, authorizationHeaderValue);
         }
     }
 
-    // <<----------------------------------------- OSGi Internal  ------------------------------------------>>
+    @Override
+    public <T> T unwrap(@NotNull Class<T> type) {
+        if (type.isInstance(this.httpClient)) {
+            return type.cast(this.httpClient);
+        }
+        return null;
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOGGER;
+    }
 
     /**
      * Initialize the Apache {@link CloseableHttpClient} with a pooling connection manager.
      *
-     * @param connectionManager the {@link PoolingHttpClientConnectionManager}.
+     * @param cm     the {@link PoolingHttpClientConnectionManager}
+     * @param config the {@link ApacheHttpClientConfig}.
      */
-    private void initHttpClient(PoolingHttpClientConnectionManager connectionManager, ApacheHttpClientConfig config) {
-        connectionManager.setDefaultMaxPerRoute(config.max_per_route());
-        connectionManager.setMaxTotal(config.max_total());
-        connectionManager.setValidateAfterInactivity(config.validate_after_inactivity());
-        this.httpClient = HttpClients.custom()
-                .setConnectionManager(connectionManager)
-                .setKeepAliveStrategy(new HttpClientConnectionKeepAliveStrategy(config.max_idle_time()))
-                .disableCookieManagement()
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(config.connect_timeout())
-                        .setConnectionRequestTimeout(config.connection_request_timeout())
-                        .setSocketTimeout(config.socket_timeout())
-                        .build())
+    private CloseableHttpClient initHttpClient(PoolingHttpClientConnectionManager cm, ApacheHttpClientConfig config) {
+        cm.setDefaultMaxPerRoute(config.max_per_route());
+        cm.setMaxTotal(config.max_total());
+        cm.setValidateAfterInactivity(config.validate_after_inactivity());
+        RequestConfig defaultRequestConfig = RequestConfig.custom()
+                .setConnectTimeout(config.connect_timeout())
+                .setConnectionRequestTimeout(config.connection_request_timeout())
+                .setSocketTimeout(config.socket_timeout())
                 .build();
-        int idleTimeout = config.idle_timeout();
-        int initialDelay = idleTimeout * 2;
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
-        this.executorService.scheduleAtFixedRate(new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager),
-                initialDelay,
-                idleTimeout,
-                SECONDS);
+        HttpClientBuilder clientBuilder = HttpClients.custom()
+                .setConnectionManager(cm)
+                .setKeepAliveStrategy(new HttpClientConnectionKeepAliveStrategy(config.max_idle_time()))
+                .setDefaultRequestConfig(defaultRequestConfig);
+        if (config.disable_cookie_management()) {
+            clientBuilder.disableCookieManagement();
+        }
+        return clientBuilder.build();
     }
+
+    // <<----------------------------------------- OSGi Internal  ------------------------------------------>>
 
     @Deactivate
     protected void stop() {
@@ -220,13 +178,10 @@ public class ApacheRestClient extends AbstractRestClient {
 
     @Reference(service = AuthorizationHeaderPlugin.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        LOGGER.info("Binding AuthorizationHeaderPlugin: {}", plugin);
-        this.authorizationHeaderPlugins.add(plugin);
+        this.doBindAuthorizationHeaderPlugin(plugin);
     }
 
     protected void unbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        if (this.authorizationHeaderPlugins.remove(plugin)) {
-            LOGGER.info("Unbounded AuthorizationHeaderPlugin: {}", plugin);
-        }
+        this.doUnbindAuthorizationHeaderPlugin(plugin);
     }
 }

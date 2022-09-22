@@ -24,7 +24,7 @@ public class ApacheRequestFactory {
                 apacheRequest = HttpClientUtils.createEntityEnclosingRequest(request);
                 break;
             default:
-                throw new IllegalStateException("Unsupported Verb!!");
+                throw new IllegalStateException("Unsupported HttpMethod!!");
         }
         HttpClientUtils.handleUri(request, apacheRequest);
         HttpClientUtils.addHeaders(request, apacheRequest);

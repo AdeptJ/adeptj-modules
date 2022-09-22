@@ -25,7 +25,6 @@ package com.adeptj.modules.restclient.core;
  * @author Rakesh.Kumar, AdeptJ
  */
 public enum HttpMethod {
-
     HEAD,
     OPTIONS,
     GET,
@@ -34,5 +33,4 @@ public enum HttpMethod {
     DELETE,
     PATCH,
     TRACE
-
 }

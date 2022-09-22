@@ -21,6 +21,12 @@ public @interface ApacheHttpClientConfig {
     boolean skip_hostname_verification() default true;
 
     @AttributeDefinition(
+            name = "Disable Cookie Management",
+            description = "Whether to disable cookie management"
+    )
+    boolean disable_cookie_management();
+
+    @AttributeDefinition(
             name = "Connect Timeout",
             description = "HttpClient request connect timeout (milliseconds)."
     )
@@ -69,6 +75,8 @@ public @interface ApacheHttpClientConfig {
             description = "Time interval for validating the connection after inactivity (milliseconds)."
     )
     int validate_after_inactivity() default 5000;
+
+    // <-------------------------------------------- RestClient Settings -------------------------------------------->
 
     @AttributeDefinition(
             name = "Debug Request",

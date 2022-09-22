@@ -138,6 +138,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-incubating-restclient-core</artifactId>
             <version>1.0.0</version>
