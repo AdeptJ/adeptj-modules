@@ -64,29 +64,13 @@ public class ApacheRestClient extends AbstractRestClient {
     public ApacheRestClient(@NotNull ApacheHttpClientConfig config) {
         super(config.debug_request(), config.mdc_req_id_attribute_name());
         this.executorService = Executors.newSingleThreadScheduledExecutor();
-        PoolingHttpClientConnectionManager connectionManager;
-        if (config.skip_hostname_verification()) {
-            try {
-                SSLContext sslContext = SSLContexts.custom()
-                        .loadTrustMaterial(null, TrustSelfSignedStrategy.INSTANCE)
-                        .build();
-                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                        .register(SCHEME_HTTPS, new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
-                        .register(SCHEME_HTTP, new PlainConnectionSocketFactory())
-                        .build();
-                connectionManager = new PoolingHttpClientConnectionManager(registry);
-            } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException ex) {
-                LOGGER.error(ex.getMessage(), ex);
-                throw new IllegalStateException(ex);
-            }
-        } else {
-            connectionManager = new PoolingHttpClientConnectionManager();
-        }
+        PoolingHttpClientConnectionManager connectionManager = this.getConnectionManager(config);
         this.httpClient = this.initHttpClient(connectionManager, config);
         int idleTimeout = config.idle_timeout();
         int initialDelay = idleTimeout * 2;
         HttpClientIdleConnectionEvictor evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager);
         this.executorService.scheduleAtFixedRate(evictor, initialDelay, idleTimeout, SECONDS);
+        LOGGER.info("Apache HttpClient Started!");
     }
 
     @Override
@@ -140,10 +124,7 @@ public class ApacheRestClient extends AbstractRestClient {
      * @param cm     the {@link PoolingHttpClientConnectionManager}
      * @param config the {@link ApacheHttpClientConfig}.
      */
-    private CloseableHttpClient initHttpClient(PoolingHttpClientConnectionManager cm, ApacheHttpClientConfig config) {
-        cm.setDefaultMaxPerRoute(config.max_per_route());
-        cm.setMaxTotal(config.max_total());
-        cm.setValidateAfterInactivity(config.validate_after_inactivity());
+    private CloseableHttpClient initHttpClient(PoolingHttpClientConnectionManager cm, @NotNull ApacheHttpClientConfig config) {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setConnectTimeout(config.connect_timeout())
                 .setConnectionRequestTimeout(config.connection_request_timeout())
@@ -157,6 +138,31 @@ public class ApacheRestClient extends AbstractRestClient {
             clientBuilder.disableCookieManagement();
         }
         return clientBuilder.build();
+    }
+
+    private @NotNull PoolingHttpClientConnectionManager getConnectionManager(@NotNull ApacheHttpClientConfig config) {
+        PoolingHttpClientConnectionManager connectionManager;
+        if (config.skip_hostname_verification()) {
+            try {
+                SSLContext sslContext = SSLContexts.custom()
+                        .loadTrustMaterial(null, TrustSelfSignedStrategy.INSTANCE)
+                        .build();
+                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                        .register(SCHEME_HTTPS, new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
+                        .register(SCHEME_HTTP, new PlainConnectionSocketFactory())
+                        .build();
+                connectionManager = new PoolingHttpClientConnectionManager(registry);
+            } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException ex) {
+                LOGGER.error(ex.getMessage(), ex);
+                throw new IllegalStateException(ex);
+            }
+        } else {
+            connectionManager = new PoolingHttpClientConnectionManager();
+        }
+        connectionManager.setDefaultMaxPerRoute(config.max_per_route());
+        connectionManager.setMaxTotal(config.max_total());
+        connectionManager.setValidateAfterInactivity(config.validate_after_inactivity());
+        return connectionManager;
     }
 
     // <<----------------------------------------- OSGi Internal  ------------------------------------------>>

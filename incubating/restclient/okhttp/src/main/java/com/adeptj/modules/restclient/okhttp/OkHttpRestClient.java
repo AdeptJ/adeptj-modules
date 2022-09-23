@@ -54,6 +54,7 @@ public class OkHttpRestClient extends AbstractRestClient {
         super(config.debug_request(), config.mdc_req_id_attribute_name());
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         this.httpClient = builder.build();
+        LOGGER.info("Ok HttpClient Started!");
     }
 
     @Override
