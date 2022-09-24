@@ -52,25 +52,26 @@ public class JettyRestClient extends AbstractRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final HttpClient jettyClient;
+    private final HttpClient httpClient;
 
     @Activate
     public JettyRestClient(@NotNull JettyHttpClientConfig config) {
         super(config.debug_request(), config.mdc_req_id_attribute_name());
-        this.jettyClient = new HttpClient();
-        this.jettyClient.setName(config.name());
-        this.jettyClient.setConnectTimeout(config.connect_timeout());
-        this.jettyClient.setIdleTimeout(config.idle_timeout());
-        this.jettyClient.setMaxConnectionsPerDestination(config.max_connections_per_destination());
-        this.jettyClient.setMaxRequestsQueuedPerDestination(config.max_requests_queued_per_destination());
-        this.jettyClient.setAddressResolutionTimeout(config.address_resolution_timeout());
-        this.jettyClient.setMaxRedirects(config.max_redirects());
-        this.jettyClient.setRequestBufferSize(config.request_buffer_size());
-        this.jettyClient.setResponseBufferSize(config.response_buffer_size());
-        HttpClientTransportOverHTTP transport = (HttpClientTransportOverHTTP) this.jettyClient.getTransport();
+        this.httpClient = new HttpClient();
+        this.httpClient.setFollowRedirects(config.follow_redirects());
+        this.httpClient.setName(config.name());
+        this.httpClient.setConnectTimeout(config.connect_timeout());
+        this.httpClient.setIdleTimeout(config.idle_timeout());
+        this.httpClient.setMaxConnectionsPerDestination(config.max_connections_per_destination());
+        this.httpClient.setMaxRequestsQueuedPerDestination(config.max_requests_queued_per_destination());
+        this.httpClient.setAddressResolutionTimeout(config.address_resolution_timeout());
+        this.httpClient.setMaxRedirects(config.max_redirects());
+        this.httpClient.setRequestBufferSize(config.request_buffer_size());
+        this.httpClient.setResponseBufferSize(config.response_buffer_size());
+        HttpClientTransportOverHTTP transport = (HttpClientTransportOverHTTP) this.httpClient.getTransport();
         transport.getClientConnector().setTCPNoDelay(config.tcp_no_delay());
         try {
-            this.jettyClient.start();
+            this.httpClient.start();
         } catch (Exception ex) {
             throw new JettyHttpClientInitializationException(ex);
         }
@@ -80,7 +81,7 @@ public class JettyRestClient extends AbstractRestClient {
     @Override
     protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
         try {
-            Request jettyRequest = JettyRequestFactory.newRequest(this.jettyClient, request);
+            Request jettyRequest = JettyRequestFactory.newRequest(this.httpClient, request);
             this.addAuthorizationHeader(jettyRequest);
             if (this.debugRequest) {
                 String reqId = JettyRestClientLogger.logRequest(request, jettyRequest, this.mdcReqIdAttrName);
@@ -90,8 +91,8 @@ public class JettyRestClient extends AbstractRestClient {
                 JettyRestClientLogger.logResponse(reqId, response, executionTime);
                 return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
             }
-            ContentResponse jettyResponse = jettyRequest.send();
-            return ClientResponseFactory.newClientResponse(jettyResponse, request.getResponseAs());
+            ContentResponse response = jettyRequest.send();
+            return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
@@ -107,8 +108,8 @@ public class JettyRestClient extends AbstractRestClient {
 
     @Override
     public <T> T unwrap(@NotNull Class<T> type) {
-        if (type.isInstance(this.jettyClient)) {
-            return type.cast(this.jettyClient);
+        if (type.isInstance(this.httpClient)) {
+            return type.cast(this.httpClient);
         }
         return null;
     }
@@ -124,7 +125,7 @@ public class JettyRestClient extends AbstractRestClient {
     protected void stop() {
         LOGGER.info("Stopping Jetty HttpClient!");
         try {
-            this.jettyClient.stop();
+            this.httpClient.stop();
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }

@@ -42,10 +42,10 @@ import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 
 class JettyRequestFactory {
 
-    static <T, R> Request newRequest(@NotNull HttpClient jettyClient, @NotNull ClientRequest<T, R> request) {
+    static <T, R> Request newRequest(@NotNull HttpClient httpClient, @NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
-        Request jettyRequest = jettyClient.newRequest(request.getURI()).method(method.toString());
+        Request jettyRequest = httpClient.newRequest(request.getURI()).method(method.toString());
         // 1. Handle timeout
         if (request.getTimeout() > 0) {
             jettyRequest.timeout(request.getTimeout(), TimeUnit.MILLISECONDS);

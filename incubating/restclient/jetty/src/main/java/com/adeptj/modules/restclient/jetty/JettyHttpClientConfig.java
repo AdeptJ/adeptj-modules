@@ -102,6 +102,12 @@ public @interface JettyHttpClientConfig {
     boolean tcp_no_delay() default true;
 
     @AttributeDefinition(
+            name = "Jetty HttpClient Follow Redirects",
+            description = "Whether Jetty HttpClient to follow redirects."
+    )
+    boolean follow_redirects() default true;
+
+    @AttributeDefinition(
             name = "Debug Request",
             description = "Debug for detecting any issues with the request execution. Please keep it disabled on production systems."
     )
