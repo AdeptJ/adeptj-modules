@@ -88,5 +88,5 @@ public @interface ApacheHttpClientConfig {
             name = "SLF4J MDC Request Attribute Name",
             description = "The attribute might already been setup by application during initial request processing."
     )
-    String mdc_req_id_attribute_name() default "REQ_ID";
+    String mdc_req_id_attribute_name() default "APACHE_HTTP_CLIENT_REQ_ID";
 }

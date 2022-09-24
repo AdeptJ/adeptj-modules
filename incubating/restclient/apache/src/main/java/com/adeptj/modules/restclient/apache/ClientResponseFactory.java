@@ -5,8 +5,8 @@ import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,10 +16,10 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class ClientResponseFactory {
+class ClientResponseFactory {
 
-    static <R> @NotNull ClientResponse<R> newClientResponse(@NotNull CloseableHttpResponse response,
-                                                            Class<R> responseAs) throws IOException {
+    @NotNull
+    static <R> ClientResponse<R> newClientResponse(@NotNull HttpResponse response, Class<R> responseAs) throws IOException {
         ClientResponse<R> clientResponse = new ClientResponse<>();
         StatusLine statusLine = response.getStatusLine();
         clientResponse.setStatus(statusLine.getStatusCode());
@@ -45,7 +45,6 @@ public class ClientResponseFactory {
             // 5. A custom type is expected, deserialize the HttpEntity to the expected type.
             clientResponse.setContent(ObjectMappers.deserialize(entity.getContent(), responseAs));
         }
-        EntityUtils.consumeQuietly(entity);
         return clientResponse;
     }
 }

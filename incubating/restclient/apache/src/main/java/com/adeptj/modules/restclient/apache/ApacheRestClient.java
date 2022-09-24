@@ -22,6 +22,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -77,21 +78,19 @@ public class ApacheRestClient extends AbstractRestClient {
     protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
         HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
         this.addAuthorizationHeader(apacheRequest);
-        if (this.debugRequest) {
-            String reqId = ApacheRestClientLogger.logRequest(apacheRequest, this.mdcReqIdAttrName);
-            AtomicLong startTime = new AtomicLong(System.nanoTime());
-            try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
-                long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-                ClientResponse<R> resp = ClientResponseFactory.newClientResponse(response, request.getResponseAs());
-                ApacheRestClientLogger.logResponse(reqId, resp, executionTime);
-                return resp;
-            } catch (Exception ex) {
-                LOGGER.error(ex.getMessage(), ex);
-                throw new RestClientException(ex);
+        try {
+            if (this.debugRequest) {
+                String reqId = ApacheRestClientLogger.logRequest(apacheRequest, this.mdcReqIdAttrName);
+                AtomicLong startTime = new AtomicLong(System.nanoTime());
+                try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
+                    long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
+                    ClientResponse<R> cr = ClientResponseFactory.newClientResponse(response, request.getResponseAs());
+                    ApacheRestClientLogger.logResponse(reqId, cr, executionTime);
+                    EntityUtils.consume(response.getEntity());
+                    return cr;
+                }
             }
-        }
-        try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
-            return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
+            return this.httpClient.execute(apacheRequest, new HttpResponseHandler<>(request.getResponseAs()));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
