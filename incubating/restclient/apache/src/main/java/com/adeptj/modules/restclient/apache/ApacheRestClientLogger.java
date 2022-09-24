@@ -11,7 +11,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,8 +18,9 @@ import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import static com.adeptj.modules.restclient.core.RestClientConstants.HEADER_AUTHORIZATION;
 
 public class ApacheRestClientLogger {
 
@@ -38,14 +38,12 @@ public class ApacheRestClientLogger {
     private static final String RESP_FMT
             = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers: {}\n Response Body: {}\n Total Time: {} ms\n\n{}";
 
-    static String logRequest(HttpUriRequest request, String mdcReqIdAttrName) {
+    static void logRequest(String reqId, HttpUriRequest request) {
         String body = getBody(request);
-        String reqId = getReqId(mdcReqIdAttrName);
         LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(),
                 request.getURI(),
-                serializeReqHeaders(request),
+                serializeHeaders(request),
                 StringUtils.isEmpty(body) ? "<<NO BODY>>" : body);
-        return reqId;
     }
 
     static <T> void logResponse(String reqId, ClientResponse<T> response, long executionTime) {
@@ -54,15 +52,6 @@ public class ApacheRestClientLogger {
                 (response.getContent() instanceof String ? response.getContent() : "<<SKIPPED>>"),
                 TimeUnit.NANOSECONDS.toMillis(executionTime),
                 REQUEST_END);
-    }
-
-    private static String getReqId(String mdcReqIdAttrName) {
-        String reqId = MDC.get(mdcReqIdAttrName);
-        // Just in case MDC attribute is not set up by application code earlier.
-        if (reqId == null) {
-            reqId = UUID.randomUUID().toString();
-        }
-        return reqId;
     }
 
     private static String getBody(HttpUriRequest request) {
@@ -84,12 +73,17 @@ public class ApacheRestClientLogger {
         return body;
     }
 
-    private static String serializeReqHeaders(HttpUriRequest request) {
+    private static String serializeHeaders(HttpUriRequest request) {
         Map<String, String> headers = new HashMap<>();
-        Header[] allHeaders = request.getAllHeaders();
-        if (allHeaders != null && allHeaders.length > 0) {
-            for (Header header : allHeaders) {
-                headers.put(header.getName(), header.getValue());
+        Header[] apacheRequestHeaders = request.getAllHeaders();
+        if (apacheRequestHeaders != null && apacheRequestHeaders.length > 0) {
+            for (Header header : apacheRequestHeaders) {
+                // Mask Authorization header.
+                if (HEADER_AUTHORIZATION.equals(header.getName())) {
+                    headers.put(header.getName(), "XXXXXXXXXX");
+                } else {
+                    headers.put(header.getName(), header.getValue());
+                }
             }
         }
         return ObjectMappers.serializePrettyPrint(headers);

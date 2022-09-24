@@ -80,7 +80,8 @@ public class ApacheRestClient extends AbstractRestClient {
         this.addAuthorizationHeader(apacheRequest);
         try {
             if (this.debugRequest) {
-                String reqId = ApacheRestClientLogger.logRequest(apacheRequest, this.mdcReqIdAttrName);
+                String reqId = this.getReqId();
+                ApacheRestClientLogger.logRequest(reqId, apacheRequest);
                 AtomicLong startTime = new AtomicLong(System.nanoTime());
                 try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
                     long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));

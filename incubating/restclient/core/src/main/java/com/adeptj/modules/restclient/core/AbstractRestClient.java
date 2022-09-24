@@ -4,8 +4,10 @@ import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import com.adeptj.modules.restclient.core.util.AntPathMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.adeptj.modules.restclient.core.HttpMethod.DELETE;
@@ -99,4 +101,13 @@ public abstract class AbstractRestClient implements RestClient {
     protected abstract <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request);
 
     protected abstract Logger getLogger();
+
+    protected String getReqId() {
+        String reqId = MDC.get(this.mdcReqIdAttrName);
+        // Just in case MDC attribute is not set up by application code earlier.
+        if (reqId == null) {
+            reqId = UUID.randomUUID().toString();
+        }
+        return reqId;
+    }
 }

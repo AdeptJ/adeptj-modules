@@ -81,17 +81,19 @@ public class JettyRestClient extends AbstractRestClient {
     @Override
     protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
         try {
+            ContentResponse response;
             Request jettyRequest = JettyRequestFactory.newRequest(this.httpClient, request);
             this.addAuthorizationHeader(jettyRequest);
             if (this.debugRequest) {
-                String reqId = JettyRestClientLogger.logRequest(request, jettyRequest, this.mdcReqIdAttrName);
+                String reqId = this.getReqId();
+                JettyRestClientLogger.logRequest(reqId, request, jettyRequest);
                 AtomicLong startTime = new AtomicLong(System.nanoTime());
-                ContentResponse response = jettyRequest.send();
+                response = jettyRequest.send();
                 long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
                 JettyRestClientLogger.logResponse(reqId, response, executionTime);
-                return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
+            } else {
+                response = jettyRequest.send();
             }
-            ContentResponse response = jettyRequest.send();
             return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
