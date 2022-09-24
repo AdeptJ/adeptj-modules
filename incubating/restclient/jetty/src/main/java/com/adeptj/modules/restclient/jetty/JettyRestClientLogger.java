@@ -55,7 +55,7 @@ class JettyRestClientLogger {
 
     static <T, R> String logRequest(ClientRequest<T, R> request, Request jettyRequest, String mdcReqIdAttrName) {
         String reqId = getReqId(mdcReqIdAttrName);
-        LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(), request.getUri(),
+        LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(), request.getURI(),
                 serializeHeaders(jettyRequest.getHeaders()),
                 getBody(request));
         return reqId;

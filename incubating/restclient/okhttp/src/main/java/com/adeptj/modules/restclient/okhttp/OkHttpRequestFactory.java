@@ -74,9 +74,9 @@ class OkHttpRequestFactory {
         }
         Map<String, String> queryParams = request.getQueryParams();
         if (queryParams == null || queryParams.isEmpty()) {
-            builder.url(HttpUrl.get(request.getUri().toString()));
+            builder.url(HttpUrl.get(request.getURI().toString()));
         } else {
-            HttpUrl.Builder urlBuilder = HttpUrl.get(request.getUri().toString()).newBuilder();
+            HttpUrl.Builder urlBuilder = HttpUrl.get(request.getURI().toString()).newBuilder();
             for (Map.Entry<String, String> entry : queryParams.entrySet()) {
                 urlBuilder.addQueryParameter(entry.getKey(), entry.getValue());
             }

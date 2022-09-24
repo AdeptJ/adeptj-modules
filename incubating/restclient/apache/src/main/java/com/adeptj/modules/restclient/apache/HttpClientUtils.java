@@ -22,7 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpClientUtils {
 
-    static <T, R> EntityEnclosingRequest createEntityEnclosingRequest(ClientRequest<T, R> request) {
+    static <T, R> @NotNull EntityEnclosingRequest createEntityEnclosingRequest(@NotNull ClientRequest<T, R> request) {
         EntityEnclosingRequest entityEnclosingRequest = new EntityEnclosingRequest(request.getMethod().toString());
         Map<String, String> formParams = request.getFormParams();
         T body = request.getBody();
@@ -47,7 +47,7 @@ public class HttpClientUtils {
         return pairs;
     }
 
-    public static <T, R> void addHeaders(ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
+    public static <T, R> void addHeaders(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
         Map<String, String> headers = request.getHeaders();
         if (headers != null && !headers.isEmpty()) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -56,14 +56,14 @@ public class HttpClientUtils {
         }
     }
 
-    public static <T, R> void handleUri(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
+    public static <T, R> void addQueryParams(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
         Map<String, String> queryParams = request.getQueryParams();
         if (queryParams == null || queryParams.isEmpty()) {
-            apacheRequest.setURI(request.getUri());
+            apacheRequest.setURI(request.getURI());
             return;
         }
         try {
-            URI uri = new URIBuilder(request.getUri())
+            URI uri = new URIBuilder(request.getURI())
                     .addParameters(HttpClientUtils.createNameValuePairs(queryParams))
                     .build();
             apacheRequest.setURI(uri);

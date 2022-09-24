@@ -59,7 +59,7 @@ public class OkHttpRestClient extends AbstractRestClient {
 
     @Override
     protected @NotNull <T, R> ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
-        String authorizationHeaderValue = this.getAuthorizationHeaderValue(request.getUri().getPath());
+        String authorizationHeaderValue = this.getAuthorizationHeaderValue(request.getURI().getPath());
         Request okHttpRequest = OkHttpRequestFactory.newRequest(request, authorizationHeaderValue);
         try (Response response = this.httpClient.newCall(okHttpRequest).execute()) {
             return ClientResponseFactory.newClientResponse(response, request.getResponseAs());

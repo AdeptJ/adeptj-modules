@@ -26,8 +26,8 @@ public class ApacheRequestFactory {
             default:
                 throw new IllegalStateException("Unsupported HttpMethod!!");
         }
-        HttpClientUtils.handleUri(request, apacheRequest);
         HttpClientUtils.addHeaders(request, apacheRequest);
+        HttpClientUtils.addQueryParams(request, apacheRequest);
         return apacheRequest;
     }
 }

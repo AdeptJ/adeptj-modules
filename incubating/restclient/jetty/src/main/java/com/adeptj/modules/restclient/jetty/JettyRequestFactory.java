@@ -45,7 +45,7 @@ class JettyRequestFactory {
     static <T, R> Request newRequest(@NotNull HttpClient jettyClient, @NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
-        Request jettyRequest = jettyClient.newRequest(request.getUri()).method(method.toString());
+        Request jettyRequest = jettyClient.newRequest(request.getURI()).method(method.toString());
         // 1. Handle timeout
         if (request.getTimeout() > 0) {
             jettyRequest.timeout(request.getTimeout(), TimeUnit.MILLISECONDS);

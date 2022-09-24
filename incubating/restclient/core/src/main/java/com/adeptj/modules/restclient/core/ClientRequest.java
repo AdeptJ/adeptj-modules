@@ -57,7 +57,7 @@ public class ClientRequest<T, R> {
         this.responseAs = responseAs;
     }
 
-    public URI getUri() {
+    public URI getURI() {
         return uri;
     }
 
