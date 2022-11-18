@@ -21,17 +21,16 @@
 package com.adeptj.modules.security.core.internal;
 
 import com.adeptj.modules.security.core.Authenticator;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.context.ServletContextHelper;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardContext;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.osgi.service.servlet.context.ServletContextHelper;
+import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardContext;
 
 import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_NAME;
 import static com.adeptj.modules.security.core.SecurityConstants.SERVLET_CONTEXT_PATH;

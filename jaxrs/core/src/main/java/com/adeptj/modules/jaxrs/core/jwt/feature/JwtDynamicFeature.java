@@ -32,16 +32,16 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.ConstrainedTo;
-import javax.ws.rs.container.DynamicFeature;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.FeatureContext;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ConstrainedTo;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.ext.Provider;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature.FEATURE_NAME;
-import static javax.ws.rs.Priorities.AUTHORIZATION;
-import static javax.ws.rs.RuntimeType.SERVER;
+import static jakarta.ws.rs.Priorities.AUTHORIZATION;
+import static jakarta.ws.rs.RuntimeType.SERVER;
 
 /**
  * A {@link DynamicFeature} that enables the {@link JwtClaimsIntrospectionFilter} for the configured JAX-RS filterMapping.

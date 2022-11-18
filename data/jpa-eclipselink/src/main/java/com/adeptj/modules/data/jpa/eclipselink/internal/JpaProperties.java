@@ -43,7 +43,7 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTI
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
 
 /**
- * Utility methods for {@link javax.persistence.EntityManagerFactory}.
+ * Utility methods for {@link jakarta.persistence.EntityManagerFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

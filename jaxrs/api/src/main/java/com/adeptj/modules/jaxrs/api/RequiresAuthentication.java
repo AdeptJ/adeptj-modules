@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.api;
 
-import javax.ws.rs.NameBinding;
+import jakarta.ws.rs.NameBinding;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

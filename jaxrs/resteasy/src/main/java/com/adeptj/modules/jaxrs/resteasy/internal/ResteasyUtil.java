@@ -25,7 +25,7 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.ServiceReference;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.KEY_PROVIDER_NAME;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.KEY_RESOURCE_NAME;

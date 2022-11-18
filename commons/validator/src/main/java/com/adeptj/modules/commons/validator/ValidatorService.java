@@ -22,11 +22,11 @@ package com.adeptj.modules.commons.validator;
 
 import org.osgi.annotation.versioning.ProviderType;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableType;
-import javax.validation.executable.ValidateOnExecution;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableType;
+import jakarta.validation.executable.ValidateOnExecution;
 import java.util.Set;
 
 /**
@@ -42,7 +42,7 @@ public interface ValidatorService {
      *
      * @param instance the object to be validated.
      * @param <T>      type of the object to be validated
-     * @throws javax.validation.ConstraintViolationException when object being validated failed validation.
+     * @throws jakarta.validation.ConstraintViolationException when object being validated failed validation.
      */
     <T> void validate(T instance);
 
@@ -53,7 +53,7 @@ public interface ValidatorService {
      * @param property the property of the instance passed which is to be validated.
      * @param <T>      type of the object to be validated
      * @return set of ConstraintViolation
-     * @throws javax.validation.ConstraintViolationException when object being validated failed validation.
+     * @throws jakarta.validation.ConstraintViolationException when object being validated failed validation.
      * @since 1.0.2.Final
      */
     <T> Set<ConstraintViolation<T>> validateProperty(T instance, String property);
@@ -64,7 +64,7 @@ public interface ValidatorService {
      * @param instance the object to be validated.
      * @param <T>      type of the object to be validated
      * @return set of ConstraintViolation
-     * @throws javax.validation.ConstraintViolationException when object being validated failed validation.
+     * @throws jakarta.validation.ConstraintViolationException when object being validated failed validation.
      * @since 1.0.1.Final
      */
     <T> Set<ConstraintViolation<T>> getConstraintViolations(T instance);

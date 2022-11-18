@@ -1,12 +1,12 @@
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
-import com.adeptj.modules.commons.utils.JavaxJsonUtil;
+import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 
-import javax.annotation.Priority;
-import javax.json.JsonWriterFactory;
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.json.JsonWriterFactory;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 import static com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonWriterFactoryContextResolver.PRIORITY;
 
@@ -24,6 +24,6 @@ public class JsonWriterFactoryContextResolver implements ContextResolver<JsonWri
 
     @Override
     public JsonWriterFactory getContext(Class<?> type) {
-        return type == JsonWriterFactory.class ? JavaxJsonUtil.getJsonWriterFactory() : null;
+        return type == JsonWriterFactory.class ? JakartaJsonUtil.getJsonWriterFactory() : null;
     }
 }

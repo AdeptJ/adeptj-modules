@@ -23,7 +23,7 @@ package com.adeptj.modules.jaxrs.core.jwt.resource;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import static javax.ws.rs.core.NewCookie.DEFAULT_MAX_AGE;
+import static jakarta.ws.rs.core.NewCookie.DEFAULT_MAX_AGE;
 
 /**
  * Configuration for jwt cookie

@@ -20,13 +20,13 @@
 
 package com.adeptj.modules.jaxrs.resteasy.contextresolver;
 
-import com.adeptj.modules.commons.utils.JavaxJsonUtil;
+import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 
-import javax.annotation.Priority;
-import javax.json.bind.Jsonb;
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.json.bind.Jsonb;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 import static com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver.PRIORITY;
 
@@ -45,6 +45,6 @@ public class JsonbContextResolver implements ContextResolver<Jsonb> {
     @Override
     public Jsonb getContext(Class<?> type) {
         // type check not needed because Resteasy will call this method for serializing arbitrary objects.
-        return JavaxJsonUtil.getJsonb();
+        return JakartaJsonUtil.getJsonb();
     }
 }

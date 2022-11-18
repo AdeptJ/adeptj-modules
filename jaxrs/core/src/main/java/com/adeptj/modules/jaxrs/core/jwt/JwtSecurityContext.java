@@ -23,7 +23,7 @@ package com.adeptj.modules.jaxrs.core.jwt;
 import com.adeptj.modules.jaxrs.core.JwtPrincipal;
 import com.adeptj.modules.security.jwt.JwtClaims;
 
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.SecurityContext;
 import java.util.Collection;
 
 import static com.adeptj.modules.jaxrs.api.JaxRSConstants.AUTH_SCHEME_TOKEN;

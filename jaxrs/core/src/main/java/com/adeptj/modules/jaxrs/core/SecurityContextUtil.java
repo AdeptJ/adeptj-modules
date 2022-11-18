@@ -23,12 +23,12 @@ package com.adeptj.modules.jaxrs.core;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
 /**
- * Utilities for JAX-RS {@link javax.ws.rs.core.SecurityContext}.
+ * Utilities for JAX-RS {@link jakarta.ws.rs.core.SecurityContext}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

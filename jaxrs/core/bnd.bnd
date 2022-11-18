@@ -28,22 +28,7 @@ Export-Package: com.adeptj.modules.jaxrs.core,\
                 com.adeptj.modules.jaxrs.core.jwt,\
                 !com.adeptj.modules.jaxrs.core.jwt.feature,\
                 !com.adeptj.modules.jaxrs.core.jwt.filter, \
-                !com.adeptj.modules.jaxrs.core.jwt.resource, \
-
-Import-Package: \
-  javax.annotation;\
-  javax.annotation.sql;\
-  javax.annotation.security,\
-  javax.servlet;\
-  javax.servlet.http;\
-  javax.servlet.descriptor;\
-  javax.servlet.annotation,\
-  com.sun.el.parser;\
-  com.sun.el.lang;\
-  com.sun.el.stream;\
-  com.sun.el.util;\
-  com.sun.el,\
-  *
+                !com.adeptj.modules.jaxrs.core.jwt.resource
   
 Bundle-Name: ${project.name}
 

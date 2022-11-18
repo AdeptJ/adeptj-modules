@@ -39,7 +39,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skipTests>true</skipTests>
         <skipITs>true</skipITs>
-        <jakarta.servlet-api.override.version>4.0.4</jakarta.servlet-api.override.version>
+        <jakarta.servlet-api.override.version>5.0.0</jakarta.servlet-api.override.version>
         <adeptj.console.url>http://localhost:8080/system/console</adeptj.console.url>
         <adeptj.auth.url>http://localhost:8080/admin/auth/j_security_check</adeptj.auth.url>
         <adeptj.user>admin</adeptj.user>

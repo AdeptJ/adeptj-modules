@@ -33,8 +33,8 @@ import com.adeptj.modules.data.jpa.query.QueryParam;
 import com.adeptj.modules.data.jpa.query.QueryType;
 import org.osgi.annotation.versioning.ConsumerType;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;

@@ -23,10 +23,10 @@ package com.adeptj.modules.jaxrs.core.jwt.filter;
 import com.adeptj.modules.jaxrs.core.SecurityContextUtil;
 import com.adeptj.modules.jaxrs.api.JwtClaimsIntrospector;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Response;
 
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * Default implementation of {@link JwtClaimsIntrospector}.

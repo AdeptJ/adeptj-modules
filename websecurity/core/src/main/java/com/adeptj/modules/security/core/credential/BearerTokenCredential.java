@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import static com.adeptj.modules.security.core.SecurityConstants.AUTH_SCHEME_BEARER;
 import static com.adeptj.modules.security.core.SecurityConstants.HEADER_AUTHORIZATION;

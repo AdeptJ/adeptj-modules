@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.data.jpa;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * This is a functional interface and can therefore be used as the assignment target for a lambda expression or method reference.

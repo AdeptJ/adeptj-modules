@@ -20,7 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
-import javax.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerRequestFilter;
 
 /**
  * Interface helping in exposing {@link JwtClaimsIntrospectionFilter} as a service in OSGi service registry.

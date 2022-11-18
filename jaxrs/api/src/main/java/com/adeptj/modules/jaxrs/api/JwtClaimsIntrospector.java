@@ -22,7 +22,7 @@ package com.adeptj.modules.jaxrs.api;
 
 import org.osgi.annotation.versioning.ConsumerType;
 
-import javax.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 /**
  * Service interface for introspecting the JWT claims(Registered as well as public).

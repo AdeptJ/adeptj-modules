@@ -21,7 +21,7 @@
 package com.adeptj.modules.data.jpa.eclipselink.internal;
 
 /**
- * Exception thrown when there is failure bootstrapping {@link javax.persistence.EntityManagerFactory}.
+ * Exception thrown when there is failure bootstrapping {@link jakarta.persistence.EntityManagerFactory}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

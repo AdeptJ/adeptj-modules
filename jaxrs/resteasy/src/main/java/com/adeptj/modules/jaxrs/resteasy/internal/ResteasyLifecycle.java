@@ -42,8 +42,8 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletConfig;
-import javax.ws.rs.container.DynamicFeature;
+import jakarta.servlet.ServletConfig;
+import jakarta.ws.rs.container.DynamicFeature;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 

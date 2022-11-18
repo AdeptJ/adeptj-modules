@@ -18,7 +18,7 @@
 
 # Always Make sure this fragment should be installed before the Host Bundle
 
-Fragment-Host: org.eclipse.persistence.jpa;bundle-version="[2.7,3)"
+Fragment-Host: org.eclipse.persistence.jpa;bundle-version="[4.0,5)"
 
 Bundle-Name: ${project.name}
 

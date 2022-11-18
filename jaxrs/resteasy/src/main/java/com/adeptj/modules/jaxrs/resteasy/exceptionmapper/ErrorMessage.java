@@ -21,7 +21,7 @@ package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 /**
  * A pojo for 500 error info serialization.

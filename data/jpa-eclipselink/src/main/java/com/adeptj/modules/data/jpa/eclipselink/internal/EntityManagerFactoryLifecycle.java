@@ -41,12 +41,12 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.ValidationMode;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.ValidationMode;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
-import static javax.persistence.ValidationMode.NONE;
+import static jakarta.persistence.ValidationMode.NONE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;

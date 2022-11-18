@@ -23,8 +23,8 @@ package com.adeptj.modules.security.core;
 import com.adeptj.modules.security.core.identitystore.CredentialValidationOutcome;
 import org.osgi.annotation.versioning.ProviderType;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Service contract for implementors to authenticate the request.

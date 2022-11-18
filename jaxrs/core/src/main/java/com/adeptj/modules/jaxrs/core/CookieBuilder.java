@@ -22,11 +22,11 @@ package com.adeptj.modules.jaxrs.core;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.NewCookie;
 import java.util.Date;
 import java.util.Objects;
 
-import static javax.ws.rs.core.Cookie.DEFAULT_VERSION;
+import static jakarta.ws.rs.core.Cookie.DEFAULT_VERSION;
 
 /**
  * Builder for JAX-RS cookies.
