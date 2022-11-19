@@ -164,7 +164,8 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>4.0.4</version>
+            <version>${jakarta.servlet4-api.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
