@@ -128,7 +128,7 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.http.whiteboard</artifactId>
+            <artifactId>org.osgi.service.servlet</artifactId>
         </dependency>
 
         <dependency>
