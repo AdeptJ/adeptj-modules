@@ -39,6 +39,7 @@
 Import-Package: !com.github.fge.jsonpatch, \
                 !com.github.fge.jsonpatch.mergepatch, \
                 !org.jboss.weld.proxy, \
+                org.slf4j;version="[1.7,3)", \
                 *
   
 Bundle-Name: ${project.name}

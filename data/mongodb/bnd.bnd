@@ -23,6 +23,9 @@
 -dsannotations: *
 
 -dsannotations-options: version;minimum=1.4.0
+
+Import-Package: org.slf4j;version="[1.7,3)", \
+                *
   
 Bundle-Name: ${project.name}
 
