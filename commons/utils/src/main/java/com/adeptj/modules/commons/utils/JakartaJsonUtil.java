@@ -20,7 +20,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static jakarta.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
- * Provides Jakarta(javax namespace) {@link Jsonb} and other objects from Jakarta Json-P.
+ * Provides Jakarta(jakarta namespace) {@link Jsonb} and other objects from Jakarta Json-P.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
