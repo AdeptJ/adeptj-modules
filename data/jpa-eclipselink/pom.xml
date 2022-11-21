@@ -231,6 +231,13 @@
             <artifactId>junit-jupiter</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-data-jpa-eclipselink-extension</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

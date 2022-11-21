@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
-             version="2.2">
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
 
     <persistence-unit name="AdeptJ_PU_MySQL_EclipseLink" transaction-type="RESOURCE_LOCAL">
 
@@ -13,17 +13,18 @@
         <shared-cache-mode>NONE</shared-cache-mode>
 
         <properties>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url"
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:mysql://localhost:3306/AdeptJ?useSSL=false&amp;allowPublicKeyRetrieval=true"/>
-            <property name="javax.persistence.jdbc.user" value="ut"/>
-            <property name="javax.persistence.jdbc.password" value="EclipseLink@2018"/>
+            <property name="jakarta.persistence.jdbc.user" value="ut"/>
+            <property name="jakarta.persistence.jdbc.password" value="EclipseLink@2018"/>
             <property name="eclipselink.deploy-on-startup" value="true"/>
             <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
             <property name="eclipselink.logging.file" value="jpa.log"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
-            <property name="eclipselink.exception-handler" value="com.adeptj.modules.data.jpa.internal.JpaExceptionHandler"/>
+            <property name="eclipselink.exception-handler"
+                      value="com.adeptj.modules.data.jpa.eclipselink.extension.JpaExceptionHandler"/>
         </properties>
 
     </persistence-unit>
@@ -43,7 +44,8 @@
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
             <property name="eclipselink.logging.file" value="jpa.log"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
-            <property name="eclipselink.exception-handler" value="com.adeptj.modules.data.jpa.internal.JpaExceptionHandler"/>
+            <property name="eclipselink.exception-handler"
+                      value="com.adeptj.modules.data.jpa.eclipselink.extension.JpaExceptionHandler"/>
         </properties>
     </persistence-unit>
 
