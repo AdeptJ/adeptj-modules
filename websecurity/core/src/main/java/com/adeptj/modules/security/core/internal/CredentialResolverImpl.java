@@ -6,7 +6,7 @@ import com.adeptj.modules.security.core.credential.CredentialResolver;
 import com.adeptj.modules.security.core.credential.UsernamePasswordCredential;
 import org.osgi.service.component.annotations.Component;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class CredentialResolverImpl implements CredentialResolver {

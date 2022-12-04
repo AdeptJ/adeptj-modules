@@ -25,9 +25,9 @@ import org.jboss.resteasy.plugins.validation.GeneralValidatorImpl;
 import org.jboss.resteasy.spi.validation.GeneralValidator;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Priority;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 import static com.adeptj.modules.jaxrs.resteasy.contextresolver.ValidatorContextResolver.PRIORITY;
 

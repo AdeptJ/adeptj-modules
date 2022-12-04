@@ -20,21 +20,21 @@
 
 package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 
-import com.adeptj.modules.commons.utils.JavaxJsonUtil;
+import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Priority;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper.PRIORITY;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * An {@link ExceptionMapper} for handling exceptions of type {@link WebApplicationException}.
@@ -74,7 +74,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         }
         Response currentResponse = exception.getResponse();
         StringWriter writer = new StringWriter();
-        JavaxJsonUtil.getJsonGeneratorFactory().createGenerator(writer)
+        JakartaJsonUtil.getJsonGeneratorFactory().createGenerator(writer)
                 .writeStartObject()
                 .write(JSON_KEY_CODE, currentResponse.getStatus())
                 .write(JSON_KEY_MESSAGE, currentResponse.getStatusInfo().getReasonPhrase())

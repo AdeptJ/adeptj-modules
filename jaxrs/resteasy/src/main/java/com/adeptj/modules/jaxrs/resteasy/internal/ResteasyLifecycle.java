@@ -30,6 +30,8 @@ import com.adeptj.modules.jaxrs.resteasy.contextresolver.JsonbContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.contextresolver.ValidatorContextResolver;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper;
 import com.adeptj.modules.jaxrs.resteasy.exceptionmapper.WebApplicationExceptionMapper;
+import jakarta.servlet.ServletConfig;
+import jakarta.ws.rs.container.DynamicFeature;
 import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 import org.jboss.resteasy.spi.Registry;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -42,8 +44,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletConfig;
-import javax.ws.rs.container.DynamicFeature;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 
@@ -87,7 +87,8 @@ public class ResteasyLifecycle {
     @Activate
     public ResteasyLifecycle(@Reference ValidatorService validatorService,
                              @Reference(target = SERVICE_FILTER) DynamicFeature dynamicFeature,
-                             BundleContext context, ResteasyConfig config) {
+                             BundleContext context,
+                             ResteasyConfig config) {
         this.validatorService = validatorService;
         this.jwtDynamicFeature = dynamicFeature;
         this.context = context;
@@ -102,24 +103,26 @@ public class ResteasyLifecycle {
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
     void start(ServletConfig servletConfig) {
-        ClassLoaders.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> {
-            try {
-                long startTime = System.nanoTime();
-                LOGGER.info("Bootstrapping JAX-RS Runtime!!");
-                // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
-                ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
-                ResteasyProviderFactory providerFactory = this.initResteasyProviderFactory();
-                this.resteasyDispatcher = new ResteasyDispatcher(servletConfig, providerFactory);
-                this.resteasyDispatcher.init(servletConfig);
-                Registry registry = this.resteasyDispatcher.getDispatcher().getRegistry();
-                this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, registry);
-                this.serviceTracker.open();
-                LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
-            } catch (Exception ex) { // NOSONAR
-                LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
-                throw new ResteasyBootstrapException(ex.getMessage(), ex);
-            }
-        });
+        ClassLoaders.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> this.doStart(servletConfig));
+    }
+
+    private void doStart(ServletConfig cfg) {
+        long startTime = System.nanoTime();
+        LOGGER.info("Bootstrapping JAX-RS Runtime!!");
+        try {
+            // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
+            ResteasyUtil.removeResteasyDeployment(cfg.getServletContext());
+            ResteasyProviderFactory providerFactory = this.initResteasyProviderFactory();
+            this.resteasyDispatcher = new ResteasyDispatcher(cfg, providerFactory);
+            this.resteasyDispatcher.init(cfg);
+            Registry registry = this.resteasyDispatcher.getDispatcher().getRegistry();
+            this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, registry);
+            this.serviceTracker.open();
+            LOGGER.info(JAX_RS_RUNTIME_BOOTSTRAP_MSG, TimeUtil.elapsedMillis(startTime));
+        } catch (Exception ex) { // NOSONAR
+            LOGGER.error("Exception while bootstrapping JAX-RS Runtime!!", ex);
+            throw new ResteasyBootstrapException(ex.getMessage(), ex);
+        }
     }
 
     private ResteasyProviderFactory initResteasyProviderFactory() {

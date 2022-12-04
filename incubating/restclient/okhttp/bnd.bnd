@@ -33,6 +33,7 @@ Import-Package: !android.*, \
                 !dalvik.system.*, \
                 !org.conscrypt.*, \
                 !sun.security.ssl.*, \
+                org.slf4j;version="[1.7,3)", \
                 *
 
 Private-Package: com.adeptj.modules.restclient.okhttp

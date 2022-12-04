@@ -23,14 +23,14 @@ package com.adeptj.modules.jaxrs.resteasy.exceptionmapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Priority;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.resteasy.exceptionmapper.GenericExceptionMapper.PRIORITY;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * A global {@link ExceptionMapper} for handling all uncaught exception types.

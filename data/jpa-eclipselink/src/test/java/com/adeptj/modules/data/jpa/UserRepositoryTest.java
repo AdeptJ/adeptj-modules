@@ -42,7 +42,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +75,7 @@ public class UserRepositoryTest {
         String unitName = "AdeptJ_PU_Postgres_Hibernate";
         repository = new UserRepository();
         Map<String, Object> properties = new HashMap<>();
-        properties.put("javax.persistence.nonJtaDataSource", getDataSource());
+        properties.put("jakarta.persistence.nonJtaDataSource", getDataSource());
         EntityManagerFactory entityManagerFactory = null;
         try {
             entityManagerFactory = new HibernatePersistenceProvider().createEntityManagerFactory(unitName, properties);
@@ -104,7 +104,7 @@ public class UserRepositoryTest {
         String unitName = "AdeptJ_PU_Postgres_EclipseLink";
         repository = new UserRepository();
         Map<String, Object> properties = new HashMap<>();
-        properties.put("javax.persistence.nonJtaDataSource", getDataSource());
+        properties.put("jakarta.persistence.nonJtaDataSource", getDataSource());
         properties.put(SESSION_CUSTOMIZER, new PostgresCustomizer());
         EntityManagerFactory entityManagerFactory = null;
         try {

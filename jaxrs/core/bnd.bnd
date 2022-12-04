@@ -28,23 +28,11 @@ Export-Package: com.adeptj.modules.jaxrs.core,\
                 com.adeptj.modules.jaxrs.core.jwt,\
                 !com.adeptj.modules.jaxrs.core.jwt.feature,\
                 !com.adeptj.modules.jaxrs.core.jwt.filter, \
-                !com.adeptj.modules.jaxrs.core.jwt.resource, \
+                !com.adeptj.modules.jaxrs.core.jwt.resource
 
-Import-Package: \
-  javax.annotation;\
-  javax.annotation.sql;\
-  javax.annotation.security,\
-  javax.servlet;\
-  javax.servlet.http;\
-  javax.servlet.descriptor;\
-  javax.servlet.annotation,\
-  com.sun.el.parser;\
-  com.sun.el.lang;\
-  com.sun.el.stream;\
-  com.sun.el.util;\
-  com.sun.el,\
-  *
-  
+Import-Package: org.slf4j;version="[1.7,3)", \
+                *
+
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ JAX-RS

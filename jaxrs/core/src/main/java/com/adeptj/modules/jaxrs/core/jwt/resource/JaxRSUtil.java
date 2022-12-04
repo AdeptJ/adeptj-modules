@@ -23,10 +23,10 @@ package com.adeptj.modules.jaxrs.core.jwt.resource;
 import com.adeptj.modules.jaxrs.core.CookieBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
 /**
  * Utilities for JAX-RS {@link Response}, {@link NewCookie} etc.

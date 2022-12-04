@@ -33,6 +33,7 @@ Export-Package: com.adeptj.modules.data.jpa, \
                 com.adeptj.modules.data.jpa.exception
 
 Import-Package: org.eclipse.persistence.indirection; resolution:=optional, \
+                org.slf4j;version="[1.7,3)", \
                 *
 
 Bundle-Name: ${project.name}

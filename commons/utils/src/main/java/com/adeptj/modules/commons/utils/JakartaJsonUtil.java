@@ -1,14 +1,14 @@
 package com.adeptj.modules.commons.utils;
 
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonReaderFactory;
-import javax.json.JsonWriterFactory;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.json.bind.JsonbConfig;
-import javax.json.spi.JsonProvider;
-import javax.json.stream.JsonGeneratorFactory;
-import javax.json.stream.JsonParserFactory;
+import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonReaderFactory;
+import jakarta.json.JsonWriterFactory;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.bind.JsonbConfig;
+import jakarta.json.spi.JsonProvider;
+import jakarta.json.stream.JsonGeneratorFactory;
+import jakarta.json.stream.JsonParserFactory;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -17,16 +17,16 @@ import static com.adeptj.modules.commons.utils.Constants.UTF8;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static javax.json.stream.JsonGenerator.PRETTY_PRINTING;
+import static jakarta.json.stream.JsonGenerator.PRETTY_PRINTING;
 
 /**
- * Provides Jakarta(javax namespace) {@link Jsonb} and other objects from Jakarta Json-P.
+ * Provides Jakarta(jakarta namespace) {@link Jsonb} and other objects from Jakarta Json-P.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class JavaxJsonUtil {
+public class JakartaJsonUtil {
 
-    private JavaxJsonUtil() {
+    private JakartaJsonUtil() {
     }
 
     private static final Jsonb JSONB;
@@ -82,28 +82,28 @@ public class JavaxJsonUtil {
     // Serialize methods.
 
     public static <T> String serialize(T object) {
-        return JavaxJsonUtil.getJsonb().toJson(object);
+        return JakartaJsonUtil.getJsonb().toJson(object);
     }
 
     public static <T> byte[] serializeToBytes(T object) {
-        return JavaxJsonUtil.serialize(object).getBytes(UTF_8);
+        return JakartaJsonUtil.serialize(object).getBytes(UTF_8);
     }
 
     // Deserialize methods.
 
     public static <T> T deserialize(byte[] data, Class<T> type) {
-        return JavaxJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
+        return JakartaJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
     }
 
     public static <T> T deserialize(String data, Class<T> type) {
-        return JavaxJsonUtil.getJsonb().fromJson(data, type);
+        return JakartaJsonUtil.getJsonb().fromJson(data, type);
     }
 
     public static <T> T deserialize(byte[] data, Type type) {
-        return JavaxJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
+        return JakartaJsonUtil.getJsonb().fromJson(new ByteArrayInputStream(data), type);
     }
 
     public static <T> T deserialize(String data, Type type) {
-        return JavaxJsonUtil.getJsonb().fromJson(data, type);
+        return JakartaJsonUtil.getJsonb().fromJson(data, type);
     }
 }

@@ -25,10 +25,10 @@ import com.adeptj.modules.jaxrs.api.RequiresAuthentication;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.annotation.Priority;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.ext.Provider;
 
-import static javax.ws.rs.Priorities.AUTHORIZATION;
+import static jakarta.ws.rs.Priorities.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 

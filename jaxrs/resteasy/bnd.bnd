@@ -36,26 +36,11 @@
 # Please see GH issue - https://github.com/bndtools/bnd/issues/4322
 # -fixupmessages: "Classes found in the wrong directory:";is:=ignore
 
-Import-Package: \
-  javax.annotation;\
-  javax.annotation.sql;\
-  javax.annotation.security,\
-  javax.mail,\
-  javax.servlet;\
-  javax.servlet.http;\
-  javax.servlet.descriptor;\
-  javax.servlet.annotation,\
-  com.adeptj.modules.jaxrs.core;\
-  com.adeptj.modules.jaxrs.core.jwt,\
-  com.sun.el.parser;\
-  com.sun.el.lang;\
-  com.sun.el.stream;\
-  com.sun.el.util;\
-  com.sun.el,\
-  !com.github.fge.jsonpatch, \
-  !com.github.fge.jsonpatch.mergepatch, \
-  !org.jboss.weld.proxy, \
-  *
+Import-Package: !com.github.fge.jsonpatch, \
+                !com.github.fge.jsonpatch.mergepatch, \
+                !org.jboss.weld.proxy, \
+                org.slf4j;version="[1.7,3)", \
+                *
   
 Bundle-Name: ${project.name}
 

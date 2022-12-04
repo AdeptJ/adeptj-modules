@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DISPATCHER_SERVLET_PATH;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.VALUE_TRUE;
-import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX;
+import static org.osgi.service.servlet.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_INIT_PARAM_PREFIX;
 
 /**
  * {@link ComponentPropertyType} for RESTEasy's mapping prefix property.
