@@ -39,6 +39,7 @@
         <module>jdbc</module>
         <module>logging</module>
         <module>email</module>
+        <module>restclient</module>
 
     </modules>
 

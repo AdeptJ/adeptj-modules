@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#                                                                             #
+#    Copyright 2016-2022, AdeptJ (http://www.adeptj.com)                      #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,24 +16,34 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-incubating</artifactId>
-    <version>1.0.0</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Incubating :: Builder</name>
-    <description>AdeptJ Modules :: Incubating :: Builder</description>
-    <url>https://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
+package com.adeptj.modules.commons.restclient.core;
 
-    <modules>
+import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ProviderType;
 
-        <module>cayenne</module>
-        <!--module>graphql</module-->
+/**
+ * The RestClient.
+ *
+ * @author Rakesh.Kumar, AdeptJ
+ */
+@ProviderType
+public interface RestClient {
 
-    </modules>
+    <T, R> ClientResponse<R> GET(@NotNull ClientRequest<T, R> request);
 
-</project>
+    <T, R> ClientResponse<R> POST(@NotNull ClientRequest<T, R> request);
+
+    <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request);
+
+    <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request);
+
+    <T, R> ClientResponse<R> executeRequest(@NotNull ClientRequest<T, R> request);
+
+    /**
+     * Provides the internal http client.
+     *
+     * @return the internal http client
+     */
+    <T> T unwrap(@NotNull Class<T> type);
+}

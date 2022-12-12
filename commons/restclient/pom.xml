@@ -22,18 +22,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-incubating</artifactId>
+    <artifactId>adeptj-modules-commons-restclient</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Incubating :: Builder</name>
-    <description>AdeptJ Modules :: Incubating :: Builder</description>
+    <name>AdeptJ Modules :: Commons :: RestClient :: Builder</name>
+    <description>AdeptJ Modules :: Commons :: RestClient :: Builder</description>
     <url>https://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
 
-        <module>cayenne</module>
-        <!--module>graphql</module-->
+        <module>core</module>
+        <module>apache</module>
+        <module>jetty</module>
+        <module>okhttp</module>
 
     </modules>
 
