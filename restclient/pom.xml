@@ -22,23 +22,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-commons</artifactId>
+    <artifactId>adeptj-modules-restclient-builder</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Commons :: Builder</name>
-    <description>AdeptJ Modules :: Commons :: Builder</description>
-    <url>http://www.adeptj.com</url>
+    <name>AdeptJ Modules :: RestClient :: Builder</name>
+    <description>AdeptJ Modules :: RestClient :: Builder</description>
+    <url>https://www.adeptj.com</url>
     <inceptionYear>2016</inceptionYear>
 
     <modules>
 
-        <module>utils</module>
-        <module>cache</module>
-        <module>crypto</module>
-        <module>validator</module>
-        <module>jdbc</module>
-        <module>logging</module>
-        <module>email</module>
+        <module>core</module>
+        <module>apache</module>
+        <module>jetty</module>
+        <module>okhttp</module>
 
     </modules>
 

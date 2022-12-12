@@ -38,6 +38,7 @@
         <module>websecurity</module>
         <module>jaxrs</module>
         <module>data</module>
+        <module>restclient</module>
         <module>incubating</module>
 
     </modules>

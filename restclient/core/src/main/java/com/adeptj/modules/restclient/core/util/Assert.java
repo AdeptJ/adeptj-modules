@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--  
+/*
 ###############################################################################
-#                                                                             # 
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#                                                                             #
+#    Copyright 2016-2022, AdeptJ (http://www.adeptj.com)                      #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,29 +16,34 @@
 #    limitations under the License.                                           #
 #                                                                             #
 ###############################################################################
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.adeptj</groupId>
-    <artifactId>adeptj-modules-commons</artifactId>
-    <version>1.0.0</version>
-    <packaging>pom</packaging>
-    <name>AdeptJ Modules :: Commons :: Builder</name>
-    <description>AdeptJ Modules :: Commons :: Builder</description>
-    <url>http://www.adeptj.com</url>
-    <inceptionYear>2016</inceptionYear>
+*/
+package com.adeptj.modules.restclient.core.util;
 
-    <modules>
+public class Assert {
 
-        <module>utils</module>
-        <module>cache</module>
-        <module>crypto</module>
-        <module>validator</module>
-        <module>jdbc</module>
-        <module>logging</module>
-        <module>email</module>
+    /**
+     * Assert a boolean expression, throwing IllegalArgumentException.
+     *
+     * @param expression a boolean expression
+     * @param message    the exception message to use if the assertion fails
+     * @throws IllegalArgumentException if expression is <code>false</code>
+     */
+    public static void isTrue(boolean expression, String message) {
+        if (!expression) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 
-    </modules>
-
-</project>
+    /**
+     * Assert that an object is not null.
+     *
+     * @param object  the object to check
+     * @param message the exception message to use if the assertion fails
+     * @throws IllegalArgumentException if the object is <code>null</code>
+     */
+    public static void notNull(Object object, String message) {
+        if (object == null) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+}
