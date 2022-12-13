@@ -25,7 +25,7 @@
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules-parent</artifactId>
         <version>1</version>
-        <relativePath>../../../parent/pom.xml</relativePath>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-restclient-okhttp</artifactId>
     <version>1.0.0</version>
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>com.squareup.okio</groupId>
             <artifactId>okio</artifactId>
-            <version>1.17.2</version>
+            <version>1.17.5</version>
         </dependency>
 
         <dependency>
