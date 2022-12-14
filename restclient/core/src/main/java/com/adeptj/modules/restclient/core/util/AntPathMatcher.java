@@ -1,7 +1,7 @@
 package com.adeptj.modules.restclient.core.util;
 
 /**
- * Borrowed(with much appreciation) from https://github.com/azagniotov/ant-style-path-matcher
+ * Borrowed(with much appreciation) from <a href="https://github.com/azagniotov/ant-style-path-matcher">Path Matcher</a>
  * <p>
  * Path matcher implementation for Ant-style path patterns. This implementation matches URLs using the following rules:
  * <p/>

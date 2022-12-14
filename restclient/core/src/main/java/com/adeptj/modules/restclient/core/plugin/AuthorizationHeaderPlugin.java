@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Plugin for injecting the Authorization header in matching request paths.
  * <p>
- * RestClient consumers should implemented this interface if they need seamless injection of Authorization
+ * RestClient consumers should implement this interface if they need seamless injection of Authorization
  * header in matching request paths.
  *
  * @author Rakesh.Kumar, AdeptJ

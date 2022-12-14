@@ -46,7 +46,7 @@ class ClientResponseFactory {
             clientRespHeaders.put(name, headers.get(name));
         }
         clientResponse.setHeaders(clientRespHeaders);
-        // 2. if no clientResponse body is expected then return without setting the content.
+        // 2. if no response body is expected then return without setting the content.
         if (responseAs == void.class || responseAs == Void.class) {
             return clientResponse;
         }

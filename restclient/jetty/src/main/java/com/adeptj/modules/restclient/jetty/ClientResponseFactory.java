@@ -40,7 +40,7 @@ class ClientResponseFactory {
                     .stream()
                     .collect(Collectors.toMap(HttpField::getName, HttpField::getValue)));
         }
-        // 2. if no cr body is expected then return without setting the content.
+        // 2. if no response body is expected then return without setting the content.
         if (responseAs == void.class || responseAs == Void.class) {
             return cr;
         }
@@ -48,10 +48,10 @@ class ClientResponseFactory {
         if (responseAs == byte[].class) {
             cr.setContent(responseAs.cast(response.getContent()));
         } else if (responseAs == String.class) {
-            // 4. A text cr is expected, create a String from the Jetty client cr byte[].
+            // 4. A text response is expected, create a String from the Jetty client response byte[].
             cr.setContent(responseAs.cast(response.getContentAsString()));
         } else {
-            // 5. A custom type is expected, deserialize the Jetty client cr byte[] to the expected type.
+            // 5. A custom type is expected, deserialize the Jetty client response byte[] to the expected type.
             cr.setContent(ObjectMappers.deserialize(response.getContent(), responseAs));
         }
         return cr;

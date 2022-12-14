@@ -76,7 +76,7 @@ public class ApacheRestClientLogger {
     private static String serializeHeaders(HttpUriRequest request) {
         Map<String, String> headers = new HashMap<>();
         Header[] apacheRequestHeaders = request.getAllHeaders();
-        if (apacheRequestHeaders != null && apacheRequestHeaders.length > 0) {
+        if (apacheRequestHeaders != null) {
             for (Header header : apacheRequestHeaders) {
                 // Mask Authorization header.
                 if (HEADER_AUTHORIZATION.equals(header.getName())) {

@@ -30,7 +30,7 @@ class ClientResponseFactory {
             clientResponse.setHeaders(Stream.of(responseHeaders)
                     .collect(Collectors.toMap(Header::getName, Header::getValue)));
         }
-        // 2. if no clientResponse body is expected then return without setting the content.
+        // 2. if no response body is expected then return without setting the content.
         if (responseAs == void.class || responseAs == Void.class) {
             return clientResponse;
         }
