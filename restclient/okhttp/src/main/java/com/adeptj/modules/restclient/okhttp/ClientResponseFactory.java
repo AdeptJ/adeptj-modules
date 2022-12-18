@@ -56,10 +56,10 @@ class ClientResponseFactory {
             if (responseAs == byte[].class) {
                 clientResponse.setContent(responseAs.cast(body.bytes()));
             } else if (responseAs == String.class) {
-                // 4. A text response is expected, create a String from the HttpEntity.
+                // 4. A text response is expected, create a String from the byte[].
                 clientResponse.setContent(responseAs.cast(body.string()));
             } else {
-                // 5. A custom type is expected, deserialize the HttpEntity to the expected type.
+                // 5. A custom type is expected, deserialize the byte[] to the expected type.
                 clientResponse.setContent(ObjectMappers.deserialize(body.bytes(), responseAs));
             }
         }

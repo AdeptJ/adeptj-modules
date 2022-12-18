@@ -24,10 +24,10 @@ import java.util.Map;
 /**
  * The response from {@link RestClient}.
  *
- * @param <T> The type of the response
+ * @param <R> The type of the response
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ClientResponse<T> {
+public class ClientResponse<R> {
 
     private int status;
 
@@ -35,7 +35,7 @@ public class ClientResponse<T> {
 
     private Map<String, String> headers;
 
-    private T content;
+    private R content;
 
     public int getStatus() {
         return status;
@@ -61,11 +61,11 @@ public class ClientResponse<T> {
         this.headers = headers;
     }
 
-    public T getContent() {
+    public R getContent() {
         return content;
     }
 
-    public void setContent(T content) {
+    public void setContent(R content) {
         this.content = content;
     }
 }

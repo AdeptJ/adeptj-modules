@@ -17,11 +17,11 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.okhttp;
+package com.adeptj.modules.restclient.core;
 
-public class OkHttpClientInitializationException extends RuntimeException {
+public class RestClientInitializationException extends RuntimeException {
 
-    public OkHttpClientInitializationException(Throwable cause) {
+    public RestClientInitializationException(Throwable cause) {
         super(cause);
     }
 }

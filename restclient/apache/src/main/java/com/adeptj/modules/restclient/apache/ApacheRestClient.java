@@ -5,6 +5,7 @@ import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
+import com.adeptj.modules.restclient.core.RestClientInitializationException;
 import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.config.RequestConfig;
@@ -64,14 +65,18 @@ public class ApacheRestClient extends AbstractRestClient {
     @Activate
     public ApacheRestClient(@NotNull ApacheHttpClientConfig config) {
         super(config.debug_request(), config.mdc_req_id_attribute_name());
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
-        PoolingHttpClientConnectionManager connectionManager = this.getConnectionManager(config);
-        this.httpClient = this.initHttpClient(connectionManager, config);
-        int idleTimeout = config.idle_timeout();
-        int initialDelay = idleTimeout * 2;
-        HttpClientIdleConnectionEvictor evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager);
-        this.executorService.scheduleAtFixedRate(evictor, initialDelay, idleTimeout, SECONDS);
-        LOGGER.info("Apache HttpClient Started!");
+        try {
+            this.executorService = Executors.newSingleThreadScheduledExecutor();
+            PoolingHttpClientConnectionManager connectionManager = this.getConnectionManager(config);
+            this.httpClient = this.initHttpClient(connectionManager, config);
+            int idleTimeout = config.idle_timeout();
+            int initialDelay = idleTimeout * 2;
+            HttpClientIdleConnectionEvictor evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager);
+            this.executorService.scheduleAtFixedRate(evictor, initialDelay, idleTimeout, SECONDS);
+            LOGGER.info("Apache HttpClient Started!");
+        } catch (Exception ex) {
+            throw new RestClientInitializationException(ex);
+        }
     }
 
     @Override

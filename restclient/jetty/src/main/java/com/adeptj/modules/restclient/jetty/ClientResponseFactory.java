@@ -44,7 +44,7 @@ class ClientResponseFactory {
         if (responseAs == void.class || responseAs == Void.class) {
             return cr;
         }
-        // 3. byte[] is expected - the Jetty client cr is already byte[]
+        // 3. byte[] is expected - the Jetty client response is already byte[]
         if (responseAs == byte[].class) {
             cr.setContent(responseAs.cast(response.getContent()));
         } else if (responseAs == String.class) {

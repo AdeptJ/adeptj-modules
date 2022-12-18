@@ -24,6 +24,7 @@ import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
+import com.adeptj.modules.restclient.core.RestClientInitializationException;
 import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
@@ -57,25 +58,25 @@ public class JettyRestClient extends AbstractRestClient {
     @Activate
     public JettyRestClient(@NotNull JettyHttpClientConfig config) {
         super(config.debug_request(), config.mdc_req_id_attribute_name());
-        this.httpClient = new HttpClient();
-        this.httpClient.setFollowRedirects(config.follow_redirects());
-        this.httpClient.setName(config.name());
-        this.httpClient.setConnectTimeout(config.connect_timeout());
-        this.httpClient.setIdleTimeout(config.idle_timeout());
-        this.httpClient.setMaxConnectionsPerDestination(config.max_connections_per_destination());
-        this.httpClient.setMaxRequestsQueuedPerDestination(config.max_requests_queued_per_destination());
-        this.httpClient.setAddressResolutionTimeout(config.address_resolution_timeout());
-        this.httpClient.setMaxRedirects(config.max_redirects());
-        this.httpClient.setRequestBufferSize(config.request_buffer_size());
-        this.httpClient.setResponseBufferSize(config.response_buffer_size());
-        HttpClientTransportOverHTTP transport = (HttpClientTransportOverHTTP) this.httpClient.getTransport();
-        transport.getClientConnector().setTCPNoDelay(config.tcp_no_delay());
         try {
+            this.httpClient = new HttpClient();
+            this.httpClient.setFollowRedirects(config.follow_redirects());
+            this.httpClient.setName(config.name());
+            this.httpClient.setConnectTimeout(config.connect_timeout());
+            this.httpClient.setIdleTimeout(config.idle_timeout());
+            this.httpClient.setMaxConnectionsPerDestination(config.max_connections_per_destination());
+            this.httpClient.setMaxRequestsQueuedPerDestination(config.max_requests_queued_per_destination());
+            this.httpClient.setAddressResolutionTimeout(config.address_resolution_timeout());
+            this.httpClient.setMaxRedirects(config.max_redirects());
+            this.httpClient.setRequestBufferSize(config.request_buffer_size());
+            this.httpClient.setResponseBufferSize(config.response_buffer_size());
+            HttpClientTransportOverHTTP transport = (HttpClientTransportOverHTTP) this.httpClient.getTransport();
+            transport.getClientConnector().setTCPNoDelay(config.tcp_no_delay());
             this.httpClient.start();
+            LOGGER.info("Jetty HttpClient Started!");
         } catch (Exception ex) {
-            throw new JettyHttpClientInitializationException(ex);
+            throw new RestClientInitializationException(ex);
         }
-        LOGGER.info("Jetty HttpClient Started!");
     }
 
     @Override
