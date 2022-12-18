@@ -16,6 +16,6 @@ public class HttpResponseHandler<T> implements ResponseHandler<ClientResponse<T>
 
     @Override
     public ClientResponse<T> handleResponse(HttpResponse response) throws IOException {
-        return ClientResponseFactory.newClientResponse(response, this.responseAs);
+        return ClientResponseFactory.newResponse(response, this.responseAs);
     }
 }

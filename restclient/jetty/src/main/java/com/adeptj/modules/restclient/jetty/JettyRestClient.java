@@ -89,7 +89,7 @@ public class JettyRestClient extends AbstractRestClient {
             } else {
                 response = jettyRequest.send();
             }
-            return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
+            return ClientResponseFactory.newResponse(response, request.getResponseAs());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);

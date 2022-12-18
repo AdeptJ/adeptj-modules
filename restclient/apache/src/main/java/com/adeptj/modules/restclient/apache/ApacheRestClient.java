@@ -106,7 +106,7 @@ public class ApacheRestClient extends AbstractRestClient {
         AtomicLong startTime = new AtomicLong(System.nanoTime());
         try (CloseableHttpResponse response = this.httpClient.execute(request)) {
             long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-            ClientResponse<R> clientResponse = ClientResponseFactory.newClientResponse(response, clientRequest.getResponseAs());
+            ClientResponse<R> clientResponse = ClientResponseFactory.newResponse(response, clientRequest.getResponseAs());
             ApacheRestClientLogger.logResponse(requestId, clientResponse, executionTime);
             EntityUtils.consumeQuietly(response.getEntity());
             return clientResponse;

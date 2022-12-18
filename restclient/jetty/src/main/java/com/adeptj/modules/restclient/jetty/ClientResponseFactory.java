@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 class ClientResponseFactory {
 
     @NotNull
-    static <R> ClientResponse<R> newClientResponse(@NotNull ContentResponse response, Class<R> responseAs) {
+    static <R> ClientResponse<R> newResponse(@NotNull ContentResponse response, Class<R> responseAs) {
         ClientResponse<R> cr = new ClientResponse<>();
         cr.setStatus(response.getStatus());
         cr.setReason(response.getReason());

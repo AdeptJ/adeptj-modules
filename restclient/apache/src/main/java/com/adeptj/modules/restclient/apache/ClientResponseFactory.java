@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 class ClientResponseFactory {
 
     @NotNull
-    static <R> ClientResponse<R> newClientResponse(@NotNull HttpResponse response, Class<R> responseAs) throws IOException {
+    static <R> ClientResponse<R> newResponse(@NotNull HttpResponse response, Class<R> responseAs) throws IOException {
         ClientResponse<R> clientResponse = new ClientResponse<>();
         StatusLine statusLine = response.getStatusLine();
         clientResponse.setStatus(statusLine.getStatusCode());
