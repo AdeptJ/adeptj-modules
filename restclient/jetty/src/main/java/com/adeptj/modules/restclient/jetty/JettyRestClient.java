@@ -104,12 +104,12 @@ public class JettyRestClient extends AbstractRestClient {
     }
 
     private <T, R> ContentResponse executeRequestDebug(ClientRequest<T, R> cr, Request jettyRequest) throws Exception {
-        String reqId = this.getReqId();
-        JettyRestClientLogger.logRequest(reqId, cr, jettyRequest);
+        String requestId = this.getRequestId();
+        JettyRestClientLogger.logRequest(requestId, cr, jettyRequest);
         AtomicLong startTime = new AtomicLong(System.nanoTime());
         ContentResponse response = jettyRequest.send();
         long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-        JettyRestClientLogger.logResponse(reqId, response, executionTime);
+        JettyRestClientLogger.logResponse(requestId, response, executionTime);
         return response;
     }
 

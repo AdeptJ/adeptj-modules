@@ -99,15 +99,15 @@ public class ApacheRestClient extends AbstractRestClient {
         }
     }
 
-    private <T, R> @NotNull ClientResponse<R> executeRequestDebug(@NotNull ClientRequest<T, R> cr,
-                                                                  HttpUriRequest ar) throws IOException {
-        String reqId = this.getReqId();
-        ApacheRestClientLogger.logRequest(reqId, ar);
+    private <T, R> @NotNull ClientResponse<R> executeRequestDebug(@NotNull ClientRequest<T, R> clientRequest,
+                                                                  HttpUriRequest request) throws IOException {
+        String requestId = this.getRequestId();
+        ApacheRestClientLogger.logRequest(requestId, request);
         AtomicLong startTime = new AtomicLong(System.nanoTime());
-        try (CloseableHttpResponse response = this.httpClient.execute(ar)) {
+        try (CloseableHttpResponse response = this.httpClient.execute(request)) {
             long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-            ClientResponse<R> clientResponse = ClientResponseFactory.newClientResponse(response, cr.getResponseAs());
-            ApacheRestClientLogger.logResponse(reqId, clientResponse, executionTime);
+            ClientResponse<R> clientResponse = ClientResponseFactory.newClientResponse(response, clientRequest.getResponseAs());
+            ApacheRestClientLogger.logResponse(requestId, clientResponse, executionTime);
             EntityUtils.consumeQuietly(response.getEntity());
             return clientResponse;
         }

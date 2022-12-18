@@ -102,7 +102,7 @@ public abstract class AbstractRestClient implements RestClient {
 
     protected abstract Logger getLogger();
 
-    protected String getReqId() {
+    protected String getRequestId() {
         String reqId = MDC.get(this.mdcReqIdAttrName);
         // Just in case MDC attribute is not set up by application code earlier.
         if (reqId == null) {
