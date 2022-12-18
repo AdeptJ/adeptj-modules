@@ -24,4 +24,17 @@ public class RestClientConstants {
     public static final String CONTENT_TYPE_JSON = "application/json";
 
     public static final String HEADER_AUTHORIZATION = "Authorization";
+
+    public static final String REQUEST_START = "<<==================== Request Processing Start ====================>>\n";
+
+    public static final String REQUEST_END = "<<==================== Request Processing Complete ====================>>";
+
+    public static final String RESPONSE_START = "<<==================== Response ====================>>\n";
+
+    public static final String REQ_FMT
+            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers: {}\n Request Body: {}";
+
+    public static final String RESP_FMT
+            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers: {}\n Response Body: {}\n Total Time: {} ms\n\n{}";
+
 }

@@ -78,30 +78,38 @@ public class ApacheRestClient extends AbstractRestClient {
     protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
         HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
         this.addAuthorizationHeader(apacheRequest);
+        ClientResponse<R> response;
         try {
             if (this.debugRequest) {
-                String reqId = this.getReqId();
-                ApacheRestClientLogger.logRequest(reqId, apacheRequest);
-                AtomicLong startTime = new AtomicLong(System.nanoTime());
-                try (CloseableHttpResponse response = this.httpClient.execute(apacheRequest)) {
-                    long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-                    ClientResponse<R> cr = ClientResponseFactory.newClientResponse(response, request.getResponseAs());
-                    ApacheRestClientLogger.logResponse(reqId, cr, executionTime);
-                    EntityUtils.consume(response.getEntity());
-                    return cr;
-                }
+                response = this.executeRequestDebug(request, apacheRequest);
+            } else {
+                response = this.httpClient.execute(apacheRequest, new HttpResponseHandler<>(request.getResponseAs()));
             }
-            return this.httpClient.execute(apacheRequest, new HttpResponseHandler<>(request.getResponseAs()));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new RestClientException(ex);
         }
+        return response;
     }
 
     private void addAuthorizationHeader(@NotNull HttpUriRequest request) {
         String authorizationHeaderValue = this.getAuthorizationHeaderValue(request.getURI().getPath());
         if (StringUtils.isNotEmpty(authorizationHeaderValue)) {
             request.addHeader(AUTHORIZATION, authorizationHeaderValue);
+        }
+    }
+
+    private <T, R> @NotNull ClientResponse<R> executeRequestDebug(@NotNull ClientRequest<T, R> cr,
+                                                                  HttpUriRequest ar) throws IOException {
+        String reqId = this.getReqId();
+        ApacheRestClientLogger.logRequest(reqId, ar);
+        AtomicLong startTime = new AtomicLong(System.nanoTime());
+        try (CloseableHttpResponse response = this.httpClient.execute(ar)) {
+            long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
+            ClientResponse<R> clientResponse = ClientResponseFactory.newClientResponse(response, cr.getResponseAs());
+            ApacheRestClientLogger.logResponse(reqId, clientResponse, executionTime);
+            EntityUtils.consumeQuietly(response.getEntity());
+            return clientResponse;
         }
     }
 

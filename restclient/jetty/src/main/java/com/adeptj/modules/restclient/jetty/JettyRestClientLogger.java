@@ -35,23 +35,16 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.adeptj.modules.restclient.core.RestClientConstants.HEADER_AUTHORIZATION;
+import static com.adeptj.modules.restclient.core.RestClientConstants.REQUEST_END;
+import static com.adeptj.modules.restclient.core.RestClientConstants.REQUEST_START;
+import static com.adeptj.modules.restclient.core.RestClientConstants.REQ_FMT;
+import static com.adeptj.modules.restclient.core.RestClientConstants.RESPONSE_START;
+import static com.adeptj.modules.restclient.core.RestClientConstants.RESP_FMT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 class JettyRestClientLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final String REQUEST_START = "<<==================== Request Processing Start ====================>>\n";
-
-    private static final String REQUEST_END = "<<==================== Request Processing Complete ====================>>";
-
-    private static final String RESPONSE_START = "<<==================== Response ====================>>\n";
-
-    private static final String REQ_FMT
-            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers:\n{}\n Request Body:\n{}";
-
-    private static final String RESP_FMT
-            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers:\n{}\n Response Body:\n{}\n Total Time: {} milliseconds\n\n{}";
 
     static <T, R> void logRequest(String reqId, ClientRequest<T, R> request, Request jettyRequest) {
         LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(), request.getURI(),

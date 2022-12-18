@@ -85,12 +85,7 @@ public class JettyRestClient extends AbstractRestClient {
             Request jettyRequest = JettyRequestFactory.newRequest(this.httpClient, request);
             this.addAuthorizationHeader(jettyRequest);
             if (this.debugRequest) {
-                String reqId = this.getReqId();
-                JettyRestClientLogger.logRequest(reqId, request, jettyRequest);
-                AtomicLong startTime = new AtomicLong(System.nanoTime());
-                response = jettyRequest.send();
-                long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-                JettyRestClientLogger.logResponse(reqId, response, executionTime);
+                response = this.executeRequestDebug(request, jettyRequest);
             } else {
                 response = jettyRequest.send();
             }
@@ -106,6 +101,16 @@ public class JettyRestClient extends AbstractRestClient {
         if (StringUtils.isNotEmpty(authorizationHeaderValue)) {
             request.headers(f -> f.add(AUTHORIZATION, authorizationHeaderValue));
         }
+    }
+
+    private <T, R> ContentResponse executeRequestDebug(ClientRequest<T, R> cr, Request jettyRequest) throws Exception {
+        String reqId = this.getReqId();
+        JettyRestClientLogger.logRequest(reqId, cr, jettyRequest);
+        AtomicLong startTime = new AtomicLong(System.nanoTime());
+        ContentResponse response = jettyRequest.send();
+        long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
+        JettyRestClientLogger.logResponse(reqId, response, executionTime);
+        return response;
     }
 
     @Override

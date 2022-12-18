@@ -21,22 +21,15 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.adeptj.modules.restclient.core.RestClientConstants.HEADER_AUTHORIZATION;
+import static com.adeptj.modules.restclient.core.RestClientConstants.REQUEST_END;
+import static com.adeptj.modules.restclient.core.RestClientConstants.REQUEST_START;
+import static com.adeptj.modules.restclient.core.RestClientConstants.REQ_FMT;
+import static com.adeptj.modules.restclient.core.RestClientConstants.RESPONSE_START;
+import static com.adeptj.modules.restclient.core.RestClientConstants.RESP_FMT;
 
 public class ApacheRestClientLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static final String REQUEST_START = "<<==================== Request Processing Start ====================>>\n";
-
-    private static final String REQUEST_END = "<<==================== Request Processing Complete ====================>>";
-
-    private static final String RESPONSE_START = "<<==================== Response ====================>>\n";
-
-    private static final String REQ_FMT
-            = "\n{}\n Request ID: {}\n Request Method: {}\n Request URI: {}\n Request Headers: {}\n Request Body: {}";
-
-    private static final String RESP_FMT
-            = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers: {}\n Response Body: {}\n Total Time: {} ms\n\n{}";
 
     static void logRequest(String reqId, HttpUriRequest request) {
         String body = getBody(request);
