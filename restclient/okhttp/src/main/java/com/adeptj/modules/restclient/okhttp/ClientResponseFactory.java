@@ -33,8 +33,8 @@ import java.util.Map;
 
 class ClientResponseFactory {
 
-    static <R> @NotNull ClientResponse<R> newClientResponse(@NotNull Response okHttpResponse,
-                                                            Class<R> responseAs) throws IOException {
+    static <R> @NotNull ClientResponse<R> newResponse(@NotNull Response okHttpResponse,
+                                                      Class<R> responseAs) throws IOException {
         ClientResponse<R> clientResponse = new ClientResponse<>();
         StatusLine statusLine = StatusLine.get(okHttpResponse);
         clientResponse.setStatus(statusLine.code);

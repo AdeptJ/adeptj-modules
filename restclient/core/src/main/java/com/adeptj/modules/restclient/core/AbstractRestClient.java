@@ -98,7 +98,7 @@ public abstract class AbstractRestClient implements RestClient {
         }
     }
 
-    protected abstract <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request);
+    protected abstract <T, R> @NotNull ClientResponse<R> doExecuteRequest(@NotNull ClientRequest<T, R> request);
 
     protected abstract Logger getLogger();
 

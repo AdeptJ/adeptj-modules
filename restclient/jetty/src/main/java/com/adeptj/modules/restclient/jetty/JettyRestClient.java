@@ -80,7 +80,7 @@ public class JettyRestClient extends AbstractRestClient {
     }
 
     @Override
-    protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
+    protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(@NotNull ClientRequest<T, R> request) {
         try {
             ContentResponse response;
             Request jettyRequest = JettyRequestFactory.newRequest(this.httpClient, request);

@@ -58,11 +58,11 @@ public class OkHttpRestClient extends AbstractRestClient {
     }
 
     @Override
-    protected @NotNull <T, R> ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
+    protected @NotNull <T, R> ClientResponse<R> doExecuteRequest(@NotNull ClientRequest<T, R> request) {
         String authorizationHeaderValue = this.getAuthorizationHeaderValue(request.getURI().getPath());
         Request okHttpRequest = OkHttpRequestFactory.newRequest(request, authorizationHeaderValue);
         try (Response response = this.httpClient.newCall(okHttpRequest).execute()) {
-            return ClientResponseFactory.newClientResponse(response, request.getResponseAs());
+            return ClientResponseFactory.newResponse(response, request.getResponseAs());
         } catch (Exception e) {
             throw new RestClientException(e);
         }

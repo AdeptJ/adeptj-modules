@@ -50,28 +50,33 @@ class OkHttpRequestFactory {
         T body = request.getBody();
         Map<String, String> formParams = request.getFormParams();
         Request.Builder builder = new Request.Builder();
+        // 1. Handle methods without a body
         if (body == null && (method == HEAD || method == GET || method == OPTIONS || method == DELETE)) {
             builder.method(method.toString(), null);
         } else if (method == POST && formParams != null && !formParams.isEmpty()) {
-            // Handle Form Post - application/x-www-form-urlencoded
+            // 2. Handle Form Post - application/x-www-form-urlencoded
             FormBody.Builder formBuilder = new FormBody.Builder();
             for (Map.Entry<String, String> entry : formParams.entrySet()) {
                 formBuilder.addEncoded(entry.getKey(), entry.getValue());
             }
             builder.post(formBuilder.build());
         } else if (body != null) {
-            String data = ObjectMappers.serialize(body);
-            builder.method(method.toString(), RequestBody.create(JSON, data));
+            // 3. There is a body present, serialize it to a String.
+            String content = ObjectMappers.serialize(body);
+            builder.method(method.toString(), RequestBody.create(JSON, content));
         }
+        // 4. Add the Authorization header.
         if (StringUtils.isNotEmpty(authorizationHeaderValue)) {
             builder.addHeader(HEADER_AUTHORIZATION, authorizationHeaderValue);
         }
+        // 5. Add other headers.
         Map<String, String> headers = request.getHeaders();
         if (headers != null && !headers.isEmpty()) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 builder.addHeader(entry.getKey(), entry.getValue());
             }
         }
+        // 6. Add Query parameters.
         Map<String, String> queryParams = request.getQueryParams();
         if (queryParams == null || queryParams.isEmpty()) {
             builder.url(HttpUrl.get(request.getURI().toString()));

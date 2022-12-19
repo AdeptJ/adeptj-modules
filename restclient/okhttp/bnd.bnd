@@ -26,7 +26,9 @@
 
 -includeresource: okhttp-*.jar;okio-*.jar;lib:=true
 
--exportcontents: !com.adeptj.modules.restclient.okhttp
+-exportcontents: !com.adeptj.modules.restclient.okhttp, \
+                 okhttp3;version="[3.14,4)", \
+                 okio;version="1.17.5"
 
 Import-Package: !android.*, \
                 !com.android.*, \

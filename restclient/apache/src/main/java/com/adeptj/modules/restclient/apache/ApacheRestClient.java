@@ -80,7 +80,7 @@ public class ApacheRestClient extends AbstractRestClient {
     }
 
     @Override
-    protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(ClientRequest<T, R> request) {
+    protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(@NotNull ClientRequest<T, R> request) {
         HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
         this.addAuthorizationHeader(apacheRequest);
         ClientResponse<R> response;
