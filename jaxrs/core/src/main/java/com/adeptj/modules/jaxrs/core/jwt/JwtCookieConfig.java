@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core.jwt.resource;
+package com.adeptj.modules.jaxrs.core;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -30,7 +30,10 @@ import static jakarta.ws.rs.core.NewCookie.DEFAULT_MAX_AGE;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@ObjectClassDefinition(name = "AdeptJ JWT Cookie Configuration", description = "Configuration for JWT cookie")
+@ObjectClassDefinition(
+        name = "AdeptJ JWT Cookie Configuration",
+        description = "Configuration for JWT cookie"
+)
 public @interface JwtCookieConfig {
 
     @AttributeDefinition(
@@ -61,13 +64,13 @@ public @interface JwtCookieConfig {
             name = "JWT Cookie Max-Age",
             description = "Max-Age of JWT cookie in seconds, by default it's a session cookie"
     )
-    int maxAge() default DEFAULT_MAX_AGE;
+    int max_age() default DEFAULT_MAX_AGE;
 
     @AttributeDefinition(
             name = "JWT Cookie Http-Only",
             description = "Whether to make JWT cookie as Http-Only"
     )
-    boolean httpOnly() default true;
+    boolean http_only() default true;
 
     @AttributeDefinition(
             name = "JWT Cookie Secure",

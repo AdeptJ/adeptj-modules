@@ -1,6 +1,5 @@
 package com.adeptj.modules.jaxrs.core;
 
-import com.adeptj.modules.jaxrs.core.jwt.resource.JwtCookieConfig;
 import jakarta.ws.rs.core.NewCookie;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
@@ -35,9 +34,9 @@ public class JwtCookieService {
                 .domain(this.cookieConfig.domain())
                 .path(this.cookieConfig.path())
                 .comment(this.cookieConfig.comment())
-                .maxAge(this.cookieConfig.maxAge())
+                .maxAge(this.cookieConfig.max_age())
                 .secure(this.cookieConfig.secure())
-                .httpOnly(this.cookieConfig.httpOnly())
+                .httpOnly(this.cookieConfig.http_only())
                 .sameSite(NewCookie.SameSite.LAX)
                 .version(DEFAULT_VERSION)
                 .build();
