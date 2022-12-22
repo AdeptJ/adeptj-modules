@@ -18,7 +18,7 @@
 ###############################################################################
 */
 
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.jwt;
 
 import com.adeptj.modules.security.jwt.JwtClaims;
 

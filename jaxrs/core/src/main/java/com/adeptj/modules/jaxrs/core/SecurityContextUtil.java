@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.jaxrs.core;
 
+import com.adeptj.modules.jaxrs.core.jwt.JwtPrincipal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

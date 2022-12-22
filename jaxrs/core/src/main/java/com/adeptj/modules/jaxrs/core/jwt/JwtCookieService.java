@@ -1,4 +1,4 @@
-package com.adeptj.modules.jaxrs.core;
+package com.adeptj.modules.jaxrs.core.jwt;
 
 import jakarta.ws.rs.core.NewCookie;
 import org.jetbrains.annotations.NotNull;

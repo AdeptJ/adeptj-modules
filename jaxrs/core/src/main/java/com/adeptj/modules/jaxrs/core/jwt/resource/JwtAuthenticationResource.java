@@ -24,7 +24,7 @@ import com.adeptj.modules.jaxrs.api.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.api.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.api.JaxRSResource;
 import com.adeptj.modules.jaxrs.api.UsernamePasswordCredential;
-import com.adeptj.modules.jaxrs.core.JwtCookieService;
+import com.adeptj.modules.jaxrs.core.jwt.JwtCookieService;
 import com.adeptj.modules.security.jwt.JwtService;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.ws.rs.Consumes;

@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.jaxrs.core.jwt;
 
-import com.adeptj.modules.jaxrs.core.JwtPrincipal;
 import com.adeptj.modules.security.jwt.JwtClaims;
 
 import jakarta.ws.rs.core.SecurityContext;
