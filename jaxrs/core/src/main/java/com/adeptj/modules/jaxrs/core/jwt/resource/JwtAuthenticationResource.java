@@ -24,18 +24,20 @@ import com.adeptj.modules.jaxrs.api.JaxRSAuthenticationOutcome;
 import com.adeptj.modules.jaxrs.api.JaxRSAuthenticator;
 import com.adeptj.modules.jaxrs.api.JaxRSResource;
 import com.adeptj.modules.jaxrs.api.UsernamePasswordCredential;
-import com.adeptj.modules.jaxrs.core.JwtCookieConfigService;
+import com.adeptj.modules.jaxrs.core.JwtCookieService;
 import com.adeptj.modules.security.jwt.JwtService;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -57,15 +59,15 @@ public class JwtAuthenticationResource {
 
     private final JaxRSAuthenticator authenticator;
 
-    private final JwtCookieConfigService jwtCookieConfigService;
+    private final JwtCookieService jwtCookieService;
 
     @Activate
     public JwtAuthenticationResource(@Reference JwtService jwtService,
                                      @Reference JaxRSAuthenticator authenticator,
-                                     @Reference JwtCookieConfigService jwtCookieConfigService) {
+                                     @Reference JwtCookieService jwtCookieService) {
         this.jwtService = jwtService;
         this.authenticator = authenticator;
-        this.jwtCookieConfigService = jwtCookieConfigService;
+        this.jwtCookieService = jwtCookieService;
     }
 
     /**
@@ -79,15 +81,24 @@ public class JwtAuthenticationResource {
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Response createJwt(@NotEmpty @FormParam(J_USERNAME) String username,
                               @NotEmpty @FormParam(J_PASSWORD) String password) {
+        Response response;
         UsernamePasswordCredential credential = new UsernamePasswordCredential(username, password);
-        JwtCookieConfig cookieConfig = this.jwtCookieConfigService.getJwtCookieConfig();
         try {
             JaxRSAuthenticationOutcome outcome = this.authenticator.authenticate(credential);
-            return outcome == null || outcome.isEmpty()
-                    ? Response.status(UNAUTHORIZED).build()
-                    : JaxRSUtil.createResponseWithJwt(this.jwtService.createJwt(username, outcome), cookieConfig);
+            if (outcome == null || outcome.isEmpty()) {
+                response = Response.status(UNAUTHORIZED).build();
+            } else {
+                String jwt = this.jwtService.createJwt(username, outcome);
+                if (this.jwtCookieService.isJwtCookieEnabled()) {
+                    NewCookie cookie = this.jwtCookieService.createJwtCookie(jwt);
+                    response = Response.ok().cookie(cookie).build();
+                } else {
+                    response = Response.ok().header(AUTHORIZATION, jwt).build();
+                }
+            }
         } finally {
             credential.clear();
         }
+        return response;
     }
 }

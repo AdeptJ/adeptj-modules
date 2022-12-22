@@ -1,15 +1,14 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.api.JaxRSProvider;
-import com.adeptj.modules.jaxrs.core.JwtCookieConfigService;
+import com.adeptj.modules.jaxrs.core.JwtCookieService;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
-import com.adeptj.modules.jaxrs.core.jwt.resource.JwtCookieConfig;
-import com.adeptj.modules.jaxrs.core.jwt.resource.JwtExtractor;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +20,10 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 
+import static com.adeptj.modules.jaxrs.api.JaxRSConstants.AUTH_SCHEME_BEARER_WITH_SPACE;
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.FILTER_NAME;
 import static jakarta.ws.rs.Priorities.AUTHENTICATION;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.osgi.service.component.annotations.ReferenceCardinality.OPTIONAL;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
@@ -49,11 +50,11 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private JwtService jwtService;
 
-    private final JwtCookieConfigService jwtCookieConfigService;
+    private final JwtCookieService jwtCookieService;
 
     @Activate
-    public JwtFilter(@Reference JwtCookieConfigService jwtCookieConfigService) {
-        this.jwtCookieConfigService = jwtCookieConfigService;
+    public JwtFilter(@Reference JwtCookieService jwtCookieService) {
+        this.jwtCookieService = jwtCookieService;
     }
 
     /**
@@ -69,16 +70,15 @@ public class JwtFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        JwtService tokenService = this.jwtService;
-        if (tokenService == null) {
+        JwtService tempJwtService = this.jwtService;
+        if (tempJwtService == null) {
             return;
         }
-        JwtCookieConfig cookieConfig = this.jwtCookieConfigService.getJwtCookieConfig();
-        String jwt = JwtExtractor.extract(requestContext, cookieConfig);
+        String jwt = this.extractJwt(requestContext);
         if (StringUtils.isEmpty(jwt)) {
             return;
         }
-        JwtClaims claims = tokenService.verifyJwt(jwt);
+        JwtClaims claims = tempJwtService.verifyJwt(jwt);
         if (claims == null) {
             return;
         }
@@ -91,6 +91,24 @@ public class JwtFilter implements ContainerRequestFilter {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("JwtSecurityContext initialized and set in ContainerRequestContext!");
         }
+    }
+
+    private String extractJwt(ContainerRequestContext requestContext) {
+        String jwt = null;
+        // if Jwt Cookie is enabled then always extract the Jwt from cookies first.
+        if (this.jwtCookieService.isJwtCookieEnabled()) {
+            Cookie jwtCookie = requestContext.getCookies().get(this.jwtCookieService.getJwtCookieName());
+            if (jwtCookie != null) {
+                jwt = StringUtils.trim(jwtCookie.getValue());
+            }
+        }
+        if (StringUtils.isEmpty(jwt)) { // get from the Authorization header.
+            String bearerToken = requestContext.getHeaderString(AUTHORIZATION);
+            if (StringUtils.startsWith(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE)) {
+                jwt = StringUtils.substring(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE.length()).trim();
+            }
+        }
+        return jwt;
     }
 
     // <<------------------------------------- OSGi Internal  -------------------------------------->>
