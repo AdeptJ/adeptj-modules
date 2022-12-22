@@ -37,6 +37,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <resteasy-tracing-api.version>2.0.0.Final</resteasy-tracing-api.version>
         <asyncutil.version>0.1.0</asyncutil.version>
+        <jandex.version>3.0.5</jandex.version>
     </properties>
 
     <!-- Project Information -->
@@ -212,6 +213,13 @@
             <groupId>com.ibm.async</groupId>
             <artifactId>asyncutil</artifactId>
             <version>${asyncutil.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>jandex</artifactId>
+            <version>${jandex.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
