@@ -20,12 +20,11 @@
 
 package com.adeptj.modules.jaxrs.core.jwt.resource;
 
-import com.adeptj.modules.jaxrs.core.CookieBuilder;
-import org.jetbrains.annotations.NotNull;
-
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import org.jetbrains.annotations.NotNull;
 
+import static jakarta.ws.rs.core.Cookie.DEFAULT_VERSION;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 
 /**
@@ -39,16 +38,14 @@ final class JaxRSUtil {
     private JaxRSUtil() {
     }
 
-    static Response createResponseWithJwt(String jwt) {
-        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
+    static Response createResponseWithJwt(String jwt, JwtCookieConfig cookieConfig) {
         return (cookieConfig != null && cookieConfig.enabled())
                 ? Response.ok().cookie(newJwtCookie(jwt, cookieConfig)).build()
                 : Response.ok().header(AUTHORIZATION, jwt).build();
     }
 
     private static NewCookie newJwtCookie(String jwt, @NotNull JwtCookieConfig cookieConfig) {
-        return CookieBuilder.builder()
-                .name(cookieConfig.name())
+        return new NewCookie.Builder(cookieConfig.name())
                 .value(jwt)
                 .domain(cookieConfig.domain())
                 .path(cookieConfig.path())
@@ -56,7 +53,8 @@ final class JaxRSUtil {
                 .maxAge(cookieConfig.maxAge())
                 .secure(cookieConfig.secure())
                 .httpOnly(cookieConfig.httpOnly())
-                .build()
-                .getCookie();
+                .sameSite(NewCookie.SameSite.LAX)
+                .version(DEFAULT_VERSION)
+                .build();
     }
 }

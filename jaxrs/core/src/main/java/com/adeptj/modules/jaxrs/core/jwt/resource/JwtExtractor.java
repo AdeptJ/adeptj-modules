@@ -50,10 +50,9 @@ public final class JwtExtractor {
     private JwtExtractor() {
     }
 
-    public static String extract(ContainerRequestContext requestContext) {
+    public static String extract(ContainerRequestContext requestContext, JwtCookieConfig cookieConfig) {
         String jwt = null;
         // if JwtCookieConfig is enabled then always extract the Jwt from cookies first.
-        JwtCookieConfig cookieConfig = JwtCookieConfigHolder.getInstance().getJwtCookieConfig();
         if (cookieConfig != null && cookieConfig.enabled()) {
             Cookie jwtCookie = requestContext.getCookies().get(cookieConfig.name());
             if (jwtCookie != null) {

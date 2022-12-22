@@ -1,21 +1,24 @@
 package com.adeptj.modules.jaxrs.core.jwt.filter;
 
 import com.adeptj.modules.jaxrs.api.JaxRSProvider;
+import com.adeptj.modules.jaxrs.core.JwtCookieConfigService;
 import com.adeptj.modules.jaxrs.core.jwt.JwtSecurityContext;
+import com.adeptj.modules.jaxrs.core.jwt.resource.JwtCookieConfig;
 import com.adeptj.modules.jaxrs.core.jwt.resource.JwtExtractor;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtService;
-import org.apache.commons.lang3.StringUtils;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
+import org.apache.commons.lang3.StringUtils;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.core.jwt.filter.JwtFilter.FILTER_NAME;
@@ -46,6 +49,13 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private JwtService jwtService;
 
+    private final JwtCookieConfigService jwtCookieConfigService;
+
+    @Activate
+    public JwtFilter(@Reference JwtCookieConfigService jwtCookieConfigService) {
+        this.jwtCookieConfigService = jwtCookieConfigService;
+    }
+
     /**
      * Following steps are executed inside this method.
      * <p>
@@ -63,7 +73,8 @@ public class JwtFilter implements ContainerRequestFilter {
         if (tokenService == null) {
             return;
         }
-        String jwt = JwtExtractor.extract(requestContext);
+        JwtCookieConfig cookieConfig = this.jwtCookieConfigService.getJwtCookieConfig();
+        String jwt = JwtExtractor.extract(requestContext, cookieConfig);
         if (StringUtils.isEmpty(jwt)) {
             return;
         }
