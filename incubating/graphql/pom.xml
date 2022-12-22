@@ -6,7 +6,7 @@
     <parent>
         <artifactId>adeptj-modules-parent</artifactId>
         <groupId>com.adeptj</groupId>
-        <version>1</version>
+        <version>2</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
