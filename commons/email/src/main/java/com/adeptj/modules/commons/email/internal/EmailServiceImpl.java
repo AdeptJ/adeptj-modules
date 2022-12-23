@@ -3,6 +3,7 @@ package com.adeptj.modules.commons.email.internal;
 import com.adeptj.modules.commons.email.EmailException;
 import com.adeptj.modules.commons.email.EmailInfo;
 import com.adeptj.modules.commons.email.EmailService;
+import com.adeptj.modules.commons.email.EmailType;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.PasswordAuthentication;
@@ -10,7 +11,6 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
@@ -22,7 +22,10 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Properties;
-import java.util.function.Supplier;
+
+import static com.adeptj.modules.commons.email.EmailType.HTML;
+import static com.adeptj.modules.commons.email.EmailType.MULTIPART;
+import static com.adeptj.modules.commons.email.EmailType.SIMPLE;
 
 @Designate(ocd = EmailConfig.class)
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
@@ -41,38 +44,17 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
 
     @Override
     public void sendSimpleEmail(@NotNull EmailInfo emailInfo) {
-        try {
-            Message message = this.getMessage(emailInfo);
-            message.setText(emailInfo.getMessage());
-            Transport.send(message);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new EmailException(ex);
-        }
+        this.doSendEmail(emailInfo, SIMPLE);
     }
 
     @Override
     public void sendHtmlEmail(@NotNull EmailInfo emailInfo) {
-        try {
-            Message message = this.getMessage(emailInfo);
-            message.setContent(emailInfo.getMessage(), TEXT_HTML);
-            Transport.send(message);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new EmailException(ex);
-        }
+        this.doSendEmail(emailInfo, HTML);
     }
 
     @Override
-    public void sendMultipartEmail(@NotNull EmailInfo emailInfo, @NotNull Supplier<MimeMultipart> supplier) {
-        try {
-            Message message = this.getMessage(emailInfo);
-            message.setContent(supplier.get());
-            Transport.send(message);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new EmailException(ex);
-        }
+    public void sendMultipartEmail(@NotNull EmailInfo emailInfo) {
+        this.doSendEmail(emailInfo, MULTIPART);
     }
 
     @Override
@@ -80,17 +62,29 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
         return new PasswordAuthentication(this.config.email_username(), this.config.email_password());
     }
 
-    private @NotNull Message getMessage(@NotNull EmailInfo emailInfo) throws Exception {
-        Message message = new MimeMessage(this.getSession());
-        if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
-            message.setFrom(new InternetAddress(this.config.email_from_address()));
-        } else {
-            message.setFrom(new InternetAddress(emailInfo.getFromAddress()));
+    private void doSendEmail(@NotNull EmailInfo emailInfo, EmailType emailType) {
+        try {
+            Message message = new MimeMessage(this.getSession());
+            if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
+                message.setFrom(new InternetAddress(this.config.email_from_address()));
+            } else {
+                message.setFrom(new InternetAddress(emailInfo.getFromAddress()));
+            }
+            String recipients = String.join(",", emailInfo.getToAddresses());
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
+            message.setSubject(emailInfo.getSubject());
+            if (emailType == SIMPLE) {
+                message.setText(emailInfo.getMessage());
+            } else if (emailType == HTML) {
+                message.setContent(emailInfo.getMessage(), TEXT_HTML);
+            } else if (emailType == MULTIPART) {
+                message.setContent(emailInfo.getMultipart());
+            }
+            Transport.send(message);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new EmailException(ex);
         }
-        String recipients = String.join(",", emailInfo.getToAddresses());
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
-        message.setSubject(emailInfo.getSubject());
-        return message;
     }
 
     private @NotNull Session getSession() {
