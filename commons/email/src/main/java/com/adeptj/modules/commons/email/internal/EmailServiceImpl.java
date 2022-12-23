@@ -41,17 +41,38 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
 
     @Override
     public void sendSimpleEmail(@NotNull EmailInfo emailInfo) {
-        this.sendEmail(emailInfo, false, null);
+        try {
+            Message message = this.getMessage(emailInfo);
+            message.setText(emailInfo.getMessage());
+            Transport.send(message);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new EmailException(ex);
+        }
     }
 
     @Override
     public void sendHtmlEmail(@NotNull EmailInfo emailInfo) {
-        this.sendEmail(emailInfo, true, null);
+        try {
+            Message message = this.getMessage(emailInfo);
+            message.setContent(emailInfo.getMessage(), TEXT_HTML);
+            Transport.send(message);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new EmailException(ex);
+        }
     }
 
     @Override
-    public void sentMultipartEmail(@NotNull EmailInfo emailInfo, @NotNull Supplier<MimeMultipart> supplier) {
-        this.sendEmail(emailInfo, false, supplier.get());
+    public void sendMultipartEmail(@NotNull EmailInfo emailInfo, @NotNull Supplier<MimeMultipart> supplier) {
+        try {
+            Message message = this.getMessage(emailInfo);
+            message.setContent(supplier.get());
+            Transport.send(message);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new EmailException(ex);
+        }
     }
 
     @Override
@@ -59,32 +80,17 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
         return new PasswordAuthentication(this.config.email_username(), this.config.email_password());
     }
 
-    private void sendEmail(@NotNull EmailInfo emailInfo, boolean htmlEmail, MimeMultipart multipart) {
-        try {
-            Session session = this.getSession();
-            Message message = new MimeMessage(session);
-            if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
-                message.setFrom(new InternetAddress(this.config.email_from_address()));
-            } else {
-                message.setFrom(new InternetAddress(emailInfo.getFromAddress()));
-            }
-            message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(String.join(",", emailInfo.getToAddresses())));
-            message.setSubject(emailInfo.getSubject());
-            if (multipart == null) {
-                if (htmlEmail) {
-                    message.setContent(emailInfo.getMessage(), TEXT_HTML);
-                } else {
-                    message.setText(emailInfo.getMessage());
-                }
-            } else {
-                message.setContent(multipart);
-            }
-            Transport.send(message);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            throw new EmailException(ex);
+    private @NotNull Message getMessage(@NotNull EmailInfo emailInfo) throws Exception {
+        Message message = new MimeMessage(this.getSession());
+        if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
+            message.setFrom(new InternetAddress(this.config.email_from_address()));
+        } else {
+            message.setFrom(new InternetAddress(emailInfo.getFromAddress()));
         }
+        String recipients = String.join(",", emailInfo.getToAddresses());
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
+        message.setSubject(emailInfo.getSubject());
+        return message;
     }
 
     private @NotNull Session getSession() {

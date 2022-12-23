@@ -38,5 +38,5 @@ public interface EmailService {
 
     void sendHtmlEmail(@NotNull EmailInfo emailInfo);
 
-    void sentMultipartEmail(@NotNull EmailInfo emailInfo, @NotNull Supplier<MimeMultipart> supplier);
+    void sendMultipartEmail(@NotNull EmailInfo emailInfo, @NotNull Supplier<MimeMultipart> supplier);
 }
