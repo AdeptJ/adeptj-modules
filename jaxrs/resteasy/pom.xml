@@ -37,7 +37,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <resteasy-tracing-api.version>2.0.0.Final</resteasy-tracing-api.version>
         <asyncutil.version>0.1.0</asyncutil.version>
+        <weld-api.version>5.0.SP3</weld-api.version>
         <jandex.version>3.0.5</jandex.version>
+        <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
     </properties>
 
     <!-- Project Information -->
@@ -208,11 +210,16 @@
         </dependency>
 
         <!-- This dependency was introduced in RestEasy v4.5.5-->
-
         <dependency>
             <groupId>com.ibm.async</groupId>
             <artifactId>asyncutil</artifactId>
             <version>${asyncutil.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-api</artifactId>
+            <version>${weld-api.version}</version>
         </dependency>
 
         <dependency>
@@ -222,46 +229,30 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- BND was showing warnings when this dependency was not included.-->
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-annotations</artifactId>
+            <version>${jboss-logging-annotations.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-core</artifactId>
             <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>jakarta.activation</groupId>
-                    <artifactId>jakarta.activation-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.annotation</groupId>
-                    <artifactId>jakarta.annotation-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.servlet</groupId>
-                    <artifactId>jakarta.servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.validation</groupId>
-                    <artifactId>jakarta.validation-api</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>jakarta.xml.bind</groupId>
                     <artifactId>jakarta.xml.bind-api</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.eclipse.angus</groupId>
+                    <artifactId>angus-activation</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core-spi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                    <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.reactivestreams</groupId>
-                    <artifactId>reactive-streams</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -272,36 +263,12 @@
             <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>jakarta.annotation</groupId>
-                    <artifactId>jakarta.annotation-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.validation</groupId>
-                    <artifactId>jakarta.validation-api</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>jakarta.xml.bind</groupId>
                     <artifactId>jakarta.xml.bind-api</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                    <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.reactivestreams</groupId>
-                    <artifactId>reactive-streams</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -313,40 +280,8 @@
             <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>jakarta.enterprise</groupId>
-                    <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.interceptor</groupId>
-                    <artifactId>jakarta.interceptor-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.servlet</groupId>
-                    <artifactId>jakarta.servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.validation</groupId>
-                    <artifactId>jakarta.validation-api</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core-spi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                    <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -374,18 +309,6 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core-spi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-cdi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-jaxb-provider</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
                     <artifactId>resteasy-jackson2-provider</artifactId>
                 </exclusion>
             </exclusions>
@@ -397,20 +320,8 @@
             <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>jakarta.json</groupId>
-                    <artifactId>jakarta.json-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.servlet</groupId>
-                    <artifactId>jakarta.servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core-spi</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.resteasy</groupId>
@@ -425,28 +336,16 @@
             <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>jakarta.json.bind</groupId>
-                    <artifactId>jakarta.json.bind-api</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.eclipse</groupId>
                     <artifactId>yasson</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.glassfish</groupId>
-                    <artifactId>jakarta.json</artifactId>
+                    <groupId>org.eclipse.parsson</groupId>
+                    <artifactId>parsson</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core-spi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.resteasy</groupId>
@@ -461,24 +360,56 @@
             <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
+                    <groupId>com.sun.istack</groupId>
+                    <artifactId>istack-commons-runtime</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.istack</groupId>
+                    <artifactId>istack-commons-tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind.external</groupId>
+                    <artifactId>relaxng-datatype</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.xml.bind.external</groupId>
+                    <artifactId>rngom</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>jakarta.xml.bind</groupId>
                     <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>codemodel</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-jxc</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.glassfish.jaxb</groupId>
                     <artifactId>jaxb-runtime</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>txw2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-xjc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>xsom</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core-spi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -489,12 +420,12 @@
             <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>com.sun.mail</groupId>
-                    <artifactId>jakarta.mail</artifactId>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>jakarta.servlet</groupId>
-                    <artifactId>jakarta.servlet-api</artifactId>
+                    <groupId>jakarta.mail</groupId>
+                    <artifactId>jakarta.mail-api</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.james</groupId>
@@ -505,20 +436,12 @@
                     <artifactId>apache-mime4j-storage</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.eclipse.angus</groupId>
+                    <artifactId>angus-mail</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core-spi</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>resteasy-jaxb-provider</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -534,15 +457,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.jboss.logging</groupId>
-                    <artifactId>jboss-logging-annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.logging</groupId>
                     <artifactId>jboss-logging-processor</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
-                    <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -27,20 +27,19 @@
 -dsannotations-options: version;minimum=1.4.0
 
 # Copy RESTEasy dependencies to the root folder of the target JAR and add them to the bundle classpath
--includeresource: resteasy-*.jar;asyncutil*.jar;lib:=true
+-includeresource: resteasy-*.jar;weld-api-*.jar;asyncutil*.jar;lib:=true
 
 -exportcontents: com.adeptj.modules.jaxrs.resteasy, \
                  !com.adeptj.modules.jaxrs.resteasy.internal, \
+                 com.ibm.asyncutil.*;version="0.1.0", \
+                 org.jboss.resteasy.*;version="6.2.2", \
+                 org.jboss.weld.*;version="5.0", \
                  *
 # Strange error started appearing with smallrye common dependency update to v1.9.0.
 # Please see GH issue - https://github.com/bndtools/bnd/issues/4322
 # -fixupmessages: "Classes found in the wrong directory:";is:=ignore
 
-Import-Package: !com.github.fge.jsonpatch, \
-                !com.github.fge.jsonpatch.mergepatch, \
-                !org.jboss.weld.proxy, \
-                org.slf4j;version="[1.7,3)", \
-                org.jboss.jandex;version="[3.0,4)", \
+Import-Package: org.slf4j;version="[1.7,3)", \
                 *
   
 Bundle-Name: ${project.name}
