@@ -16,16 +16,20 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.adeptj.modules.commons.email.EmailType.HTML;
 import static com.adeptj.modules.commons.email.EmailType.MULTIPART;
 import static com.adeptj.modules.commons.email.EmailType.SIMPLE;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 @Designate(ocd = EmailConfig.class)
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
@@ -37,24 +41,27 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
 
     private final EmailConfig config;
 
+    private final ExecutorService emailExecutorService;
+
     @Activate
     public EmailServiceImpl(@NotNull EmailConfig config) {
         this.config = config;
+        this.emailExecutorService = Executors.newFixedThreadPool(config.thread_pool_size());
     }
 
     @Override
     public void sendSimpleEmail(@NotNull EmailInfo emailInfo) {
-        this.doSendEmail(emailInfo, SIMPLE);
+        this.emailExecutorService.execute(() -> this.doSendEmail(emailInfo, SIMPLE));
     }
 
     @Override
     public void sendHtmlEmail(@NotNull EmailInfo emailInfo) {
-        this.doSendEmail(emailInfo, HTML);
+        this.emailExecutorService.execute(() -> this.doSendEmail(emailInfo, HTML));
     }
 
     @Override
     public void sendMultipartEmail(@NotNull EmailInfo emailInfo) {
-        this.doSendEmail(emailInfo, MULTIPART);
+        this.emailExecutorService.execute(() -> this.doSendEmail(emailInfo, MULTIPART));
     }
 
     @Override
@@ -63,6 +70,7 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
     }
 
     private void doSendEmail(@NotNull EmailInfo emailInfo, EmailType emailType) {
+        long startTime = System.nanoTime();
         try {
             Message message = new MimeMessage(this.getSession());
             if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
@@ -85,6 +93,8 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
             LOGGER.error(ex.getMessage(), ex);
             throw new EmailException(ex);
         }
+        long endTime = NANOSECONDS.toMillis(System.nanoTime() - startTime);
+        LOGGER.info("Send email took: {} ms!", endTime);
     }
 
     private @NotNull Session getSession() {
@@ -95,5 +105,12 @@ public class EmailServiceImpl extends Authenticator implements EmailService {
         props.put("mail.smtp.port", this.config.smtp_port());
         props.put("mail.debug", this.config.debug());
         return Session.getInstance(props, this);
+    }
+
+    // <<------------------------------------------ OSGi Internal  ------------------------------------------->>
+
+    @Deactivate
+    protected void stop() {
+        this.emailExecutorService.shutdown();
     }
 }
