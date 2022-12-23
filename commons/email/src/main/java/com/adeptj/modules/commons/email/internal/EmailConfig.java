@@ -30,4 +30,7 @@ public @interface EmailConfig {
 
     @AttributeDefinition(name = "SMTP Password", description = "SMTP password", type = PASSWORD)
     String email_password();
+
+    @AttributeDefinition(name = "SMTP Mail Debug", description = "Debug SMTP email")
+    boolean debug();
 }

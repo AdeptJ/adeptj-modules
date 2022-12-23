@@ -4,8 +4,6 @@ import java.util.Set;
 
 public class EmailInfo {
 
-    private EmailType emailType;
-
     private String subject;
 
     private String message;
@@ -13,14 +11,6 @@ public class EmailInfo {
     private String fromAddress;
 
     private Set<String> toAddresses;
-
-    public EmailType getEmailType() {
-        return emailType;
-    }
-
-    public void setEmailType(EmailType emailType) {
-        this.emailType = emailType;
-    }
 
     public String getSubject() {
         return subject;

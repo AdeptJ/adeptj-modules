@@ -20,7 +20,11 @@
 
 package com.adeptj.modules.commons.email;
 
+import jakarta.mail.internet.MimeMultipart;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ProviderType;
+
+import java.util.function.Supplier;
 
 /**
  * Service interface for sending emails using Java mails/Apache commons email APIs.
@@ -30,5 +34,9 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface EmailService {
 
-    void sendEmail(EmailType emailType, EmailInfo emailInfo);
+    void sendSimpleEmail(@NotNull EmailInfo emailInfo);
+
+    void sendHtmlEmail(@NotNull EmailInfo emailInfo);
+
+    void sentMultipartEmail(@NotNull EmailInfo emailInfo, @NotNull Supplier<MimeMultipart> supplier);
 }

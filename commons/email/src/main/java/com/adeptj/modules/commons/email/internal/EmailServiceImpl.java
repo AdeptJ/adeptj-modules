@@ -1,14 +1,17 @@
 package com.adeptj.modules.commons.email.internal;
 
+import com.adeptj.modules.commons.email.EmailException;
 import com.adeptj.modules.commons.email.EmailInfo;
 import com.adeptj.modules.commons.email.EmailService;
-import com.adeptj.modules.commons.email.EmailType;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.mail.Email;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
-import org.apache.commons.mail.MultiPartEmail;
-import org.apache.commons.mail.SimpleEmail;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -18,12 +21,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Properties;
+import java.util.function.Supplier;
 
 @Designate(ocd = EmailConfig.class)
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class EmailServiceImpl implements EmailService {
+public class EmailServiceImpl extends Authenticator implements EmailService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String TEXT_HTML = "text/html; charset=utf-8";
 
     private final EmailConfig config;
 
@@ -33,50 +40,60 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmail(@NotNull EmailType emailType, @NotNull EmailInfo emailInfo) {
-        switch (emailType) {
-            case SIMPLE:
-                this.doSendEmail(new SimpleEmail(), emailInfo);
-                break;
-            case HTML:
-                this.sendHtmlEmail(emailInfo);
-                break;
-            case MULTIPART:
-                this.sendMultipartEmail(emailInfo);
-                break;
-            default:
-                // noop
-        }
+    public void sendSimpleEmail(@NotNull EmailInfo emailInfo) {
+        this.sendEmail(emailInfo, false, null);
     }
 
-    private void sendHtmlEmail(@NotNull EmailInfo emailInfo) {
-        HtmlEmail email = new HtmlEmail();
-        this.doSendEmail(email, emailInfo);
+    @Override
+    public void sendHtmlEmail(@NotNull EmailInfo emailInfo) {
+        this.sendEmail(emailInfo, true, null);
     }
 
-    private void sendMultipartEmail(@NotNull EmailInfo emailInfo) {
-        MultiPartEmail email = new MultiPartEmail();
-        this.doSendEmail(email, emailInfo);
+    @Override
+    public void sentMultipartEmail(@NotNull EmailInfo emailInfo, @NotNull Supplier<MimeMultipart> supplier) {
+        this.sendEmail(emailInfo, false, supplier.get());
     }
 
-    private void doSendEmail(@NotNull Email email, @NotNull EmailInfo emailInfo) {
+    @Override
+    protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(this.config.email_username(), this.config.email_password());
+    }
+
+    private void sendEmail(@NotNull EmailInfo emailInfo, boolean htmlEmail, MimeMultipart multipart) {
         try {
-            email.setHostName(this.config.smtp_host());
-            email.setSmtpPort(this.config.smtp_port());
-            email.setAuthentication(this.config.email_username(), this.config.email_password());
-            email.setStartTLSEnabled(true);
+            Session session = this.getSession();
+            Message message = new MimeMessage(session);
             if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
-                email.setFrom(this.config.email_from_address());
+                message.setFrom(new InternetAddress(this.config.email_from_address()));
             } else {
-                email.setFrom(emailInfo.getFromAddress());
+                message.setFrom(new InternetAddress(emailInfo.getFromAddress()));
             }
-            email.setSubject(emailInfo.getSubject());
-            email.setMsg(emailInfo.getMessage());
-            email.addTo(emailInfo.getToAddresses().toArray(new String[0]));
-            email.send();
-        } catch (EmailException ex) {
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(String.join(",", emailInfo.getToAddresses())));
+            message.setSubject(emailInfo.getSubject());
+            if (multipart == null) {
+                if (htmlEmail) {
+                    message.setContent(emailInfo.getMessage(), TEXT_HTML);
+                } else {
+                    message.setText(emailInfo.getMessage());
+                }
+            } else {
+                message.setContent(multipart);
+            }
+            Transport.send(message);
+        } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
-            throw new com.adeptj.modules.commons.email.EmailException(ex);
+            throw new EmailException(ex);
         }
+    }
+
+    private @NotNull Session getSession() {
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", this.config.smtp_host());
+        props.put("mail.smtp.port", this.config.smtp_port());
+        props.put("mail.debug", this.config.debug());
+        return Session.getInstance(props, this);
     }
 }
