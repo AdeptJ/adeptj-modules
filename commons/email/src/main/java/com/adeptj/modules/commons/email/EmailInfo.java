@@ -5,10 +5,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 public class EmailInfo {
 
     private final EmailType emailType;
@@ -29,10 +25,7 @@ public class EmailInfo {
         Validate.isTrue(ArrayUtils.isNotEmpty(toAddresses), "toAddresses can't be null or empty!");
         this.emailType = emailType;
         this.subject = subject;
-        // remove duplicates.
-        Set<String> addresses = new HashSet<>();
-        Collections.addAll(addresses, toAddresses);
-        this.toAddresses = addresses.toArray(new String[0]);
+        this.toAddresses = toAddresses;
     }
 
     public EmailType getEmailType() {

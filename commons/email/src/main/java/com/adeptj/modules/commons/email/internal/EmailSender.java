@@ -15,6 +15,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.adeptj.modules.commons.email.Constants.DEFAULT_PROTOCOL;
 import static com.adeptj.modules.commons.email.Constants.DELIM_COMMA;
@@ -56,8 +59,11 @@ public class EmailSender implements Runnable {
         try {
             Message message = new MimeMessage(this.session);
             message.setFrom(new InternetAddress(this.emailInfo.getFromAddress()));
-            String recipients = String.join(DELIM_COMMA, this.emailInfo.getToAddresses());
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
+            Set<String> addresses = new HashSet<>();
+            Collections.addAll(addresses, this.emailInfo.getToAddresses());
+            String[] toAddresses = addresses.toArray(new String[0]);
+            InternetAddress[] recipients = InternetAddress.parse(String.join(DELIM_COMMA, toAddresses));
+            message.setRecipients(Message.RecipientType.TO, recipients);
             message.setSubject(this.emailInfo.getSubject());
             EmailType emailType = this.emailInfo.getEmailType();
             if (emailType == SIMPLE) {
