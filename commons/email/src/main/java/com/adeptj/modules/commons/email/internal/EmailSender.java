@@ -36,7 +36,15 @@ public class EmailSender implements Runnable {
 
     private final Session session;
 
-    public EmailSender(@NotNull EmailInfo emailInfo, @NotNull String defaultFromAddress, @NotNull Session session) {
+    private final String host;
+
+    private final int port;
+
+    private final String username;
+
+    private final String password;
+
+    public EmailSender(@NotNull EmailInfo emailInfo, @NotNull EmailConfig config, @NotNull Session session) {
         EmailType emailType = emailInfo.getEmailType();
         if (emailType == SIMPLE || emailType == HTML) {
             Validate.isTrue(StringUtils.isNotEmpty(emailInfo.getMessage()), "message can't be null!!");
@@ -44,10 +52,14 @@ public class EmailSender implements Runnable {
             Validate.isTrue(emailInfo.getMultipart() != null, "MimeMultipart can't be null!");
         }
         if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
-            emailInfo.setFromAddress(defaultFromAddress);
+            emailInfo.setFromAddress(config.default_from_address());
         }
         this.emailInfo = emailInfo;
         this.session = session;
+        this.host = config.smtp_host();
+        this.port = config.smtp_port();
+        this.username = config.username();
+        this.password = config.password();
     }
 
     @Override
@@ -62,7 +74,7 @@ public class EmailSender implements Runnable {
             MimeMessage message = this.getMessage();
             long start = System.nanoTime();
             try (Transport transport = this.session.getTransport(DEFAULT_PROTOCOL)) {
-                transport.connect();
+                transport.connect(this.host, this.port, this.username, this.password);
                 if (LOGGER.isDebugEnabled()) {
                     long end = NANOSECONDS.toMillis(System.nanoTime() - start);
                     LOGGER.debug("Transport.connect() took: {} ms!", end);
