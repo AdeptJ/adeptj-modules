@@ -24,16 +24,14 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * Service interface for sending emails using Java mails/Apache commons email APIs.
+ * Service interface for sending emails using Jakarta mail APIs.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @ProviderType
 public interface EmailService {
 
-    void sendSimpleEmail(@NotNull EmailInfo emailInfo);
+    void sendEmail(@NotNull EmailInfo emailInfo);
 
-    void sendHtmlEmail(@NotNull EmailInfo emailInfo);
-
-    void sendMultipartEmail(@NotNull EmailInfo emailInfo);
+    void sendEmailAsync(@NotNull EmailInfo emailInfo);
 }

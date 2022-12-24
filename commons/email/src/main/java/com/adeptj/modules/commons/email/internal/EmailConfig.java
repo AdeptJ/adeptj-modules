@@ -22,14 +22,14 @@ public @interface EmailConfig {
     @AttributeDefinition(name = "SMTP Port", description = "Port of the SMTP host")
     int smtp_port();
 
-    @AttributeDefinition(name = "Email From Address", description = "Email from address")
-    String email_from_address();
+    @AttributeDefinition(name = "Email Default From Address", description = "Email default from address")
+    String default_from_address();
 
     @AttributeDefinition(name = "SMTP Username", description = "SMTP username")
-    String email_username();
+    String username();
 
     @AttributeDefinition(name = "SMTP Password", description = "SMTP password", type = PASSWORD)
-    String email_password();
+    String password();
 
     @AttributeDefinition(name = "SMTP Mail Debug", description = "Debug SMTP email")
     boolean debug();
