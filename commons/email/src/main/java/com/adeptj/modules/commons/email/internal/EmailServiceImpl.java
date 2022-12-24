@@ -13,6 +13,8 @@ import org.osgi.service.metatype.annotations.Designate;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Designate(ocd = EmailConfig.class)
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
@@ -24,10 +26,13 @@ public class EmailServiceImpl implements EmailService {
 
     private Session session;
 
+    private final Lock lock;
+
     @Activate
     public EmailServiceImpl(@NotNull EmailConfig config) {
         this.config = config;
         this.emailExecutorService = Executors.newFixedThreadPool(config.thread_pool_size());
+        this.lock = new ReentrantLock();
     }
 
     @Override
@@ -41,12 +46,17 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private Session getSession() {
-        if (this.session == null) {
-            Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.debug", Boolean.toString(this.config.debug()));
-            this.session = Session.getInstance(props);
+        this.lock.lock();
+        try {
+            if (this.session == null) {
+                Properties props = new Properties();
+                props.put("mail.smtp.auth", "true");
+                props.put("mail.smtp.starttls.enable", "true");
+                props.put("mail.debug", Boolean.toString(this.config.debug()));
+                this.session = Session.getInstance(props);
+            }
+        } finally {
+            this.lock.unlock();
         }
         return this.session;
     }
