@@ -22,6 +22,7 @@ import java.util.Set;
 
 import static com.adeptj.modules.commons.email.Constants.DEFAULT_PROTOCOL;
 import static com.adeptj.modules.commons.email.Constants.DELIM_COMMA;
+import static com.adeptj.modules.commons.email.Constants.HEADER_MESSAGE_ID;
 import static com.adeptj.modules.commons.email.Constants.TEXT_HTML;
 import static com.adeptj.modules.commons.email.EmailType.HTML;
 import static com.adeptj.modules.commons.email.EmailType.MULTIPART;
@@ -68,7 +69,8 @@ public class EmailSender implements Runnable {
     }
 
     public void send() {
-        LOGGER.info("Sending email with Message-ID: {}", this.emailInfo.getMessageId());
+        String messageId = this.emailInfo.getMessageId();
+        LOGGER.info("Sending email with Message-ID: {}", messageId);
         long startTime = System.nanoTime();
         try {
             MimeMessage message = this.getMessage();
@@ -82,17 +84,18 @@ public class EmailSender implements Runnable {
                 transport.sendMessage(message, message.getAllRecipients());
             }
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            String msg = String.format("Exception while sending email with Message-ID: %s", messageId);
+            LOGGER.error(msg, ex);
             throw new EmailException(ex);
         }
         long endTime = NANOSECONDS.toMillis(System.nanoTime() - startTime);
-        LOGGER.info("Email with Message-ID: {} sent in {} ms!", this.emailInfo.getMessageId(), endTime);
+        LOGGER.info("Email with Message-ID: {} sent in {} ms!", messageId, endTime);
     }
 
     @NotNull
     private MimeMessage getMessage() throws MessagingException {
         MimeMessage message = new MimeMessage(this.session);
-        message.addHeader("Message-ID", this.emailInfo.getMessageId());
+        message.addHeader(HEADER_MESSAGE_ID, this.emailInfo.getMessageId());
         message.setSubject(this.emailInfo.getSubject());
         message.setFrom(new InternetAddress(this.emailInfo.getFromAddress()));
         String[] toAddresses = this.emailInfo.getToAddresses();

@@ -6,5 +6,7 @@ public class Constants {
 
     public static final String DEFAULT_PROTOCOL = "smtp";
 
+    public static final String HEADER_MESSAGE_ID = "Message-ID";
+
     public static final String DELIM_COMMA = ",";
 }
