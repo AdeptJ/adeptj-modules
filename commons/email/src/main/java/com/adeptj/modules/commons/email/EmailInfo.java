@@ -5,6 +5,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
+import java.util.UUID;
+
 public class EmailInfo {
 
     private final EmailType emailType;
@@ -19,6 +21,8 @@ public class EmailInfo {
 
     private MimeMultipart multipart;
 
+    private String messageId;
+
     public EmailInfo(EmailType emailType, String subject, String... toAddresses) {
         Validate.isTrue(emailType != null, "EmailType can't be null!!");
         Validate.isTrue(StringUtils.isNotEmpty(subject), "subject can't be null!!");
@@ -26,6 +30,7 @@ public class EmailInfo {
         this.emailType = emailType;
         this.subject = subject;
         this.toAddresses = toAddresses;
+        this.messageId = UUID.randomUUID().toString();
     }
 
     public EmailType getEmailType() {
@@ -62,5 +67,13 @@ public class EmailInfo {
 
     public void setMultipart(MimeMultipart multipart) {
         this.multipart = multipart;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 }

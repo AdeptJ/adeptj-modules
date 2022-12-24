@@ -4,6 +4,7 @@ import com.adeptj.modules.commons.email.EmailException;
 import com.adeptj.modules.commons.email.EmailInfo;
 import com.adeptj.modules.commons.email.EmailType;
 import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
@@ -55,33 +56,17 @@ public class EmailSender implements Runnable {
     }
 
     public void send() {
+        LOGGER.info("Sending email with Message-ID: {}", this.emailInfo.getMessageId());
         long startTime = System.nanoTime();
         try {
-            Message message = new MimeMessage(this.session);
-            message.setFrom(new InternetAddress(this.emailInfo.getFromAddress()));
-            String[] toAddresses = this.emailInfo.getToAddresses();
-            if (toAddresses.length == 1) {
-                message.setRecipient(Message.RecipientType.TO, new InternetAddress(toAddresses[0]));
-            } else {
-                Set<String> addresses = new HashSet<>();
-                Collections.addAll(addresses, this.emailInfo.getToAddresses());
-                String recipients = String.join(DELIM_COMMA, addresses.toArray(new String[0]));
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
-            }
-            message.setSubject(this.emailInfo.getSubject());
-            EmailType emailType = this.emailInfo.getEmailType();
-            if (emailType == SIMPLE) {
-                message.setText(this.emailInfo.getMessage());
-            } else if (emailType == HTML) {
-                message.setContent(this.emailInfo.getMessage(), TEXT_HTML);
-            } else if (emailType == MULTIPART) {
-                message.setContent(this.emailInfo.getMultipart());
-            }
+            MimeMessage message = this.getMessage();
             long start = System.nanoTime();
             try (Transport transport = this.session.getTransport(DEFAULT_PROTOCOL)) {
                 transport.connect();
-                long end = NANOSECONDS.toMillis(System.nanoTime() - start);
-                LOGGER.info("Transport.connect() took: {} ms!", end);
+                if (LOGGER.isDebugEnabled()) {
+                    long end = NANOSECONDS.toMillis(System.nanoTime() - start);
+                    LOGGER.debug("Transport.connect() took: {} ms!", end);
+                }
                 transport.sendMessage(message, message.getAllRecipients());
             }
         } catch (Exception ex) {
@@ -89,6 +74,32 @@ public class EmailSender implements Runnable {
             throw new EmailException(ex);
         }
         long endTime = NANOSECONDS.toMillis(System.nanoTime() - startTime);
-        LOGGER.info("Send email took: {} ms!", endTime);
+        LOGGER.info("Email with Message-ID: {} sent in {} ms!", this.emailInfo.getMessageId(), endTime);
+    }
+
+    @NotNull
+    private MimeMessage getMessage() throws MessagingException {
+        MimeMessage message = new MimeMessage(this.session);
+        message.addHeader("Message-ID", this.emailInfo.getMessageId());
+        message.setSubject(this.emailInfo.getSubject());
+        message.setFrom(new InternetAddress(this.emailInfo.getFromAddress()));
+        String[] toAddresses = this.emailInfo.getToAddresses();
+        if (toAddresses.length == 1) {
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(toAddresses[0]));
+        } else {
+            Set<String> addressSet = new HashSet<>();
+            Collections.addAll(addressSet, toAddresses);
+            String recipients = String.join(DELIM_COMMA, addressSet.toArray(new String[0]));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
+        }
+        EmailType emailType = this.emailInfo.getEmailType();
+        if (emailType == SIMPLE) {
+            message.setText(this.emailInfo.getMessage());
+        } else if (emailType == HTML) {
+            message.setContent(this.emailInfo.getMessage(), TEXT_HTML);
+        } else if (emailType == MULTIPART) {
+            message.setContent(this.emailInfo.getMultipart());
+        }
+        return message;
     }
 }
