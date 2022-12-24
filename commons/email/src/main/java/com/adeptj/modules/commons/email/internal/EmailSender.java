@@ -59,11 +59,15 @@ public class EmailSender implements Runnable {
         try {
             Message message = new MimeMessage(this.session);
             message.setFrom(new InternetAddress(this.emailInfo.getFromAddress()));
-            Set<String> addresses = new HashSet<>();
-            Collections.addAll(addresses, this.emailInfo.getToAddresses());
-            String[] toAddresses = addresses.toArray(new String[0]);
-            InternetAddress[] recipients = InternetAddress.parse(String.join(DELIM_COMMA, toAddresses));
-            message.setRecipients(Message.RecipientType.TO, recipients);
+            String[] toAddresses = this.emailInfo.getToAddresses();
+            if (toAddresses.length == 1) {
+                message.setRecipient(Message.RecipientType.TO, new InternetAddress(toAddresses[0]));
+            } else {
+                Set<String> addresses = new HashSet<>();
+                Collections.addAll(addresses, this.emailInfo.getToAddresses());
+                String recipients = String.join(DELIM_COMMA, addresses.toArray(new String[0]));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
+            }
             message.setSubject(this.emailInfo.getSubject());
             EmailType emailType = this.emailInfo.getEmailType();
             if (emailType == SIMPLE) {
