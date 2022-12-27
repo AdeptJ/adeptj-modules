@@ -39,7 +39,6 @@
         <asyncutil.version>0.1.0</asyncutil.version>
         <weld-api.version>5.0.SP3</weld-api.version>
         <jandex.version>3.0.5</jandex.version>
-        <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
     </properties>
 
     <!-- Project Information -->
@@ -234,24 +233,6 @@
             <artifactId>jboss-logging</artifactId>
             <version>${jboss-logging.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jboss.logmanager</groupId>
-                    <artifactId>jboss-logmanager</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- BND was showing warnings when this dependency was not included.-->
