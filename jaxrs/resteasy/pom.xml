@@ -39,6 +39,7 @@
         <asyncutil.version>0.1.0</asyncutil.version>
         <weld-api.version>5.0.SP3</weld-api.version>
         <jandex.version>3.0.5</jandex.version>
+        <jboss-logging-annotations.version>2.2.1.Final</jboss-logging-annotations.version>
     </properties>
 
     <!-- Project Information -->
@@ -231,8 +232,6 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>${jboss-logging.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- BND was showing warnings when this dependency was not included.-->
