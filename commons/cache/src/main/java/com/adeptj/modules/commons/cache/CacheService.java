@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.cache;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -42,9 +43,16 @@ public interface CacheService {
     <K, V> @Nullable Cache<K, V> getCache(String cacheName);
 
     /**
-     * Evict all the {@link Cache} resolved against the given names.
+     * Clears the {@link Cache} instance resolved against the given name.
+     *
+     * @param cacheName The cache name.
+     */
+    void clearCache(String cacheName);
+
+    /**
+     * Clears all the {@link Cache} instances resolved against the given names.
      *
      * @param cacheNames The cache names.
      */
-    void evictCaches(String... cacheNames);
+    void clearCaches(@NotNull Iterable<String> cacheNames);
 }

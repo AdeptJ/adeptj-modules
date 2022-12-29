@@ -24,13 +24,8 @@ import com.adeptj.modules.commons.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.lang.invoke.MethodHandles;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -40,8 +35,6 @@ import java.util.function.Function;
  */
 public final class CaffeineCache<K, V> implements Cache<K, V> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private final String cacheName;
 
     private final com.github.benmanes.caffeine.cache.Cache<@NotNull K, @NotNull V> caffeineCache;
@@ -49,72 +42,77 @@ public final class CaffeineCache<K, V> implements Cache<K, V> {
     CaffeineCache(String cacheName, String cacheSpec) {
         this.cacheName = cacheName;
         this.caffeineCache = Caffeine.from(cacheSpec).build();
-        LOGGER.info("CaffeineCache ({}:{}) initialized!!", cacheName, cacheSpec);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return this.cacheName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public V get(K key, Function<? super K, ? extends V> mappingFunction) {
-        return this.caffeineCache.get(key, mappingFunction);
+    public V get(K key, Function<? super K, ? extends V> valueLoader) {
+        return this.caffeineCache.get(key, valueLoader);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public @Nullable V getIfPresent(K key) {
         return this.caffeineCache.getIfPresent(key);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public @NotNull Map<K, V> getAllPresent(Iterable<K> keys) {
         return this.caffeineCache.getAllPresent(keys);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public @NotNull Map<K, V> getAll() {
         return this.caffeineCache.asMap();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void put(K key, V value) {
         this.caffeineCache.put(key, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void remove(K key) {
+    public void evict(K key) {
         this.caffeineCache.invalidate(key);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void remove(Iterable<K> keys) {
+    public void evictMany(Iterable<K> keys) {
         this.caffeineCache.invalidateAll(keys);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void evict() {
-        try {
-            this.caffeineCache.invalidateAll();
-            LOGGER.info("CaffeineCache ({}) evicted!!", this.getName());
-        } catch (Exception ex) { // NOSONAR
-            LOGGER.error(ex.getMessage(), ex);
-        }
-    }
-
-    @Override
-    public long size() {
-        this.caffeineCache.cleanUp();
-        return this.caffeineCache.estimatedSize();
-    }
-
-    @Override
-    public @NotNull Set<K> keys() {
-        return this.caffeineCache.asMap().keySet();
-    }
-
-    @Override
-    public @NotNull Collection<V> values() {
-        return this.caffeineCache.asMap().values();
+    public void clear() {
+        this.caffeineCache.invalidateAll();
     }
 }

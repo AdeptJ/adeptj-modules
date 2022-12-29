@@ -20,9 +20,9 @@
 
 package com.adeptj.modules.commons.cache;
 
-import java.util.Collection;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -39,25 +39,65 @@ public interface Cache<K, V> {
      */
     String getName();
 
-    V get(K key, Function<? super K, ? extends V> mappingFunction);
+    /**
+     * Return the value to which this cache maps the specified key, obtaining that value from valueLoader if necessary.
+     * This method provides a simple substitute for the conventional "if cached, return; otherwise create, cache and return" pattern.
+     *
+     * @param key         the key whose associated value is to be returned
+     * @param valueLoader loads the value against the given key.
+     * @return the value to which this cache maps the specified key
+     */
+    V get(K key, Function<? super K, ? extends V> valueLoader);
 
+    /**
+     * Perform an actual lookup in the underlying cache.
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the value for the key, or null if none
+     */
+    @Nullable
     V getIfPresent(K key);
 
+    /**
+     * Gets all the mappings of key value pairs found in cache against the keys passed.
+     *
+     * @param keys the keys to be found in cache
+     * @return the mappings of key value pairs found in cache.
+     */
     Map<K, V> getAllPresent(Iterable<K> keys);
 
+    /**
+     * Gets all the mappings of key value pairs found in cache.
+     *
+     * @return the mappings of key value pairs found in cache.
+     */
     Map<K, V> getAll();
 
+    /**
+     * Associate the specified value with the specified key in this cache.
+     * If the cache previously contained a mapping for this key, the old value is replaced by the specified value.
+     *
+     * @param key   the key with which the specified value is to be associated
+     * @param value the value to be associated with the specified key
+     */
     void put(K key, V value);
 
-    void remove(K key);
+    /**
+     * Evict the mapping for this key from this cache if it is present.
+     *
+     * @param key the key to be evicted.
+     */
+    void evict(K key);
 
-    void remove(Iterable<K> keys);
+    /**
+     * Evict the mapping for given keys from this cache if it is present.
+     *
+     * @param keys the keys to be evicted.
+     */
+    void evictMany(Iterable<K> keys);
 
-    void evict();
-
-    long size();
-
-    Set<K> keys();
-
-    Collection<V> values();
+    /**
+     * Clear the cache through removing all mappings.
+     */
+    void clear();
 }

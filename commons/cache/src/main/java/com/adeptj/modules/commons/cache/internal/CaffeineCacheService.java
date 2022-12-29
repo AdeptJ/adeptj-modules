@@ -23,7 +23,6 @@ package com.adeptj.modules.commons.cache.internal;
 import com.adeptj.modules.commons.cache.Cache;
 import com.adeptj.modules.commons.cache.CacheService;
 import com.adeptj.modules.commons.cache.CacheUtil;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Stream;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -78,20 +76,33 @@ public class CaffeineCacheService implements CacheService {
      * {@inheritDoc}
      */
     @Override
-    public void evictCaches(String... cacheNames) {
-        if (ArrayUtils.isNotEmpty(cacheNames)) {
-            Stream.of(cacheNames).forEach(cacheName -> CacheUtil.nullSafeEvict(this.getCache(cacheName)));
+    public void clearCache(String cacheName) {
+        Cache<?, ?> cache = this.getCache(cacheName);
+        if (cache == null) {
+            LOGGER.warn("Nothing to clear as Cache({}) doesn't exist!!", cacheName);
+            return;
         }
+        cache.clear();
+        LOGGER.info("Cache({}) cleared successfully!!", cache.getName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearCaches(@NotNull Iterable<String> cacheNames) {
+        cacheNames.forEach(this::clearCache);
     }
 
     // <<------------------------------------------- OSGi Internal ------------------------------------------->>
 
     /**
-     * First evict all the caches and then clears the {@link #caches} map.
+     * First clear all mappings in the Caffeine caches and then clears the {@link #caches} map.
      */
     @Deactivate
     protected void stop() {
-        this.caches.values().forEach(Cache::evict);
+        LOGGER.info("CacheService is being stopped, it will clear all the Cache instances.");
+        this.clearCaches(this.caches.keySet());
         this.caches.clear();
     }
 
@@ -101,9 +112,12 @@ public class CaffeineCacheService implements CacheService {
         LOGGER.info("Binding CaffeineCacheConfigFactory with pid - {}", pid);
         String cacheName = CacheUtil.getCacheName(properties);
         if (this.caches.containsKey(cacheName)) {
-            throw new CaffeineCacheConfigFactoryBindException(String.format("Cache:(%s) already exists!!", cacheName));
+            String msg = "Cache(%s) already exists, please rename this. The factory pid for this config is (%s).";
+            throw new CaffeineCacheConfigFactoryBindException(String.format(msg, cacheName, pid));
         }
-        this.caches.put(cacheName, new CaffeineCache<>(cacheName, CacheUtil.getCacheSpec(properties)));
+        String cacheSpec = CacheUtil.getCacheSpec(properties);
+        this.caches.put(cacheName, new CaffeineCache<>(cacheName, cacheSpec));
+        LOGGER.info("CaffeineCache ({}:{}) initialized!!", cacheName, cacheSpec);
         this.configPids.add(pid);
     }
 
@@ -111,7 +125,7 @@ public class CaffeineCacheService implements CacheService {
         String pid = CacheUtil.getServicePid(properties);
         LOGGER.info("Unbinding CaffeineCacheConfigFactory with pid - {}", pid);
         if (this.configPids.remove(pid)) {
-            CacheUtil.nullSafeEvict(this.caches.remove(CacheUtil.getCacheName(properties)));
+            CacheUtil.nullSafeClear(this.caches.remove(CacheUtil.getCacheName(properties)));
         }
     }
 }

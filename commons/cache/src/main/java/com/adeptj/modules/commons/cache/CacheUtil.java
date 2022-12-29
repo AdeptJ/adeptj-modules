@@ -55,9 +55,9 @@ public final class CacheUtil {
         return (String) properties.get(SERVICE_PID);
     }
 
-    public static void nullSafeEvict(Cache<?, ?> cache) {
+    public static void nullSafeClear(Cache<?, ?> cache) {
         if (cache != null) {
-            cache.evict();
+            cache.clear();
         }
     }
 }
