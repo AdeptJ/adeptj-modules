@@ -110,10 +110,10 @@ public class CaffeineCacheService implements CacheService {
     protected void bindCaffeineCacheConfigFactory(@NotNull Map<String, Object> properties) {
         String pid = CacheUtil.getServicePid(properties);
         LOGGER.info("Binding CaffeineCacheConfigFactory with pid - {}", pid);
-        String cacheName = CacheUtil.getCacheName(properties);
+        String cacheName = StringUtils.trim(CacheUtil.getCacheName(properties));
         if (this.caches.containsKey(cacheName)) {
             String msg = "Cache(%s) already exists, please consider using a unique name." +
-                    " To identify the config in Felix WebConsole the factory pid is (%s).";
+                    " The factory pid to identify the config in Felix WebConsole - (%s).";
             throw new CaffeineCacheConfigFactoryBindException(String.format(msg, cacheName, pid));
         }
         String cacheSpec = CacheUtil.getCacheSpec(properties);
