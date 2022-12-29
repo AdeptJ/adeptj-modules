@@ -112,7 +112,8 @@ public class CaffeineCacheService implements CacheService {
         LOGGER.info("Binding CaffeineCacheConfigFactory with pid - {}", pid);
         String cacheName = CacheUtil.getCacheName(properties);
         if (this.caches.containsKey(cacheName)) {
-            String msg = "Cache(%s) already exists, please rename this. The factory pid for this config is (%s).";
+            String msg = "Cache(%s) already exists, please consider using a unique name." +
+                    " To identify the config in Felix WebConsole the factory pid is (%s).";
             throw new CaffeineCacheConfigFactoryBindException(String.format(msg, cacheName, pid));
         }
         String cacheSpec = CacheUtil.getCacheSpec(properties);
