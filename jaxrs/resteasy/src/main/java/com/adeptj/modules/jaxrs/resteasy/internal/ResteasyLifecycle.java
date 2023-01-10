@@ -102,19 +102,19 @@ public class ResteasyLifecycle {
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
-    void start(ServletConfig servletConfig) {
+    public void start(ServletConfig servletConfig) {
         ClassLoaders.executeUnderContextClassLoader(this.getClass().getClassLoader(), () -> this.doStart(servletConfig));
     }
 
-    private void doStart(ServletConfig cfg) {
+    private void doStart(ServletConfig servletConfig) {
         long startTime = System.nanoTime();
         LOGGER.info("Bootstrapping JAX-RS Runtime!!");
         try {
             // Remove previous ResteasyDeployment from ServletContext attributes, just in case there is any.
-            ResteasyUtil.removeResteasyDeployment(cfg.getServletContext());
+            ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
             ResteasyProviderFactory providerFactory = this.initResteasyProviderFactory();
-            this.resteasyDispatcher = new ResteasyDispatcher(cfg, providerFactory);
-            this.resteasyDispatcher.init(cfg);
+            this.resteasyDispatcher = new ResteasyDispatcher(servletConfig, providerFactory);
+            this.resteasyDispatcher.init(servletConfig);
             Registry registry = this.resteasyDispatcher.getDispatcher().getRegistry();
             this.serviceTracker = new CompositeServiceTracker<>(this.context, providerFactory, registry);
             this.serviceTracker.open();
@@ -156,7 +156,7 @@ public class ResteasyLifecycle {
      *
      * @param servletConfig the {@link ServletConfig} provided by OSGi HttpService.
      */
-    void stop(@NotNull ServletConfig servletConfig) {
+    public void stop(@NotNull ServletConfig servletConfig) {
         OSGiUtil.closeQuietly(this.serviceTracker);
         this.resteasyDispatcher.destroy();
         ResteasyUtil.removeResteasyDeployment(servletConfig.getServletContext());
@@ -168,7 +168,7 @@ public class ResteasyLifecycle {
      *
      * @return {@link ResteasyDispatcher}
      */
-    ResteasyDispatcher getResteasyDispatcher() {
+    public ResteasyDispatcher getResteasyDispatcher() {
         return resteasyDispatcher;
     }
 }
