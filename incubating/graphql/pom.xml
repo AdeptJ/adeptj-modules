@@ -146,7 +146,7 @@
         <dependency>
             <groupId>com.graphql-java-kickstart</groupId>
             <artifactId>graphql-java-kickstart</artifactId>
-            <version>13.0.0</version>
+            <version>15.0.0</version>
         </dependency>
 
         <dependency>
