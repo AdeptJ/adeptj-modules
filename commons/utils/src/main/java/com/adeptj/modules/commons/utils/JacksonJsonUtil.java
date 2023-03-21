@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,8 @@ public class JacksonJsonUtil {
             .enable(INDENT_OUTPUT)
             .disable(WRITE_DATES_AS_TIMESTAMPS)
             .setSerializationInclusion(NON_NULL)
-            .setDefaultPropertyInclusion(NON_DEFAULT);
+            .setDefaultPropertyInclusion(NON_DEFAULT)
+            .registerModule(new BlackbirdModule());
 
     public static ObjectMapper objectMapper() {
         return OBJECT_MAPPER;
