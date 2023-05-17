@@ -32,7 +32,7 @@
 -exportcontents: com.adeptj.modules.jaxrs.resteasy, \
                  !com.adeptj.modules.jaxrs.resteasy.internal, \
                  com.ibm.asyncutil.*;version="0.1.0", \
-                 org.jboss.resteasy.*;version="6.2.2", \
+                 org.jboss.resteasy.*;version="6.2.4", \
                  org.jboss.weld.*;version="5.0", \
                  *
 # Strange error started appearing with smallrye common dependency update to v1.9.0.
