@@ -48,6 +48,9 @@ public class ClientRequest<T, R> {
 
     private Map<String, String> formParams;
 
+    /**
+     * The JSON body, which will be serialized to String if not already a String.
+     */
     private T body;
 
     private ClientRequest(URI uri, Class<R> responseAs) {
@@ -147,6 +150,14 @@ public class ClientRequest<T, R> {
             return this;
         }
 
+        public Builder<T, R> headers(Map<String, String> reqHeaders) {
+            if (this.headers == null) {
+                this.headers = new HashMap<>();
+            }
+            this.headers.putAll(reqHeaders);
+            return this;
+        }
+
         public Builder<T, R> queryParam(String name, String value) {
             if (this.queryParams == null) {
                 this.queryParams = new HashMap<>();
@@ -155,11 +166,27 @@ public class ClientRequest<T, R> {
             return this;
         }
 
+        public Builder<T, R> queryParams(Map<String, String> params) {
+            if (this.queryParams == null) {
+                this.queryParams = new HashMap<>();
+            }
+            this.queryParams.putAll(params);
+            return this;
+        }
+
         public Builder<T, R> formParam(String name, String value) {
             if (this.formParams == null) {
                 this.formParams = new HashMap<>();
             }
             this.formParams.put(name, value);
+            return this;
+        }
+
+        public Builder<T, R> formParams(Map<String, String> params) {
+            if (this.formParams == null) {
+                this.formParams = new HashMap<>();
+            }
+            this.formParams.putAll(params);
             return this;
         }
 

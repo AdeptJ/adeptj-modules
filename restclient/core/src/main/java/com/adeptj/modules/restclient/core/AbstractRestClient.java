@@ -107,6 +107,7 @@ public abstract class AbstractRestClient implements RestClient {
         // Just in case MDC attribute is not set up by application code earlier.
         if (reqId == null) {
             reqId = UUID.randomUUID().toString();
+            MDC.put(this.mdcReqIdAttrName, reqId);
         }
         return reqId;
     }
