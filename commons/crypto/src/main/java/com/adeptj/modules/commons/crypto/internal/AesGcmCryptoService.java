@@ -20,6 +20,7 @@
 
 package com.adeptj.modules.commons.crypto.internal;
 
+import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.crypto.CryptoUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -79,11 +80,13 @@ public class AesGcmCryptoService implements CryptoService {
 
     @Override
     public String encrypt(String plainText) {
-        Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
         byte[] encryptedBytes = null;
         try {
+            Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
             encryptedBytes = this.encryptor.encrypt(Utf8.encode(plainText));
             return new String(Hex.encode(encryptedBytes));
+        } catch (Exception ex) {
+            throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipe(encryptedBytes);
         }
@@ -91,13 +94,15 @@ public class AesGcmCryptoService implements CryptoService {
 
     @Override
     public String decrypt(String cipherText) {
-        Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
         byte[] decoded = null;
         byte[] decryptedBytes = null;
         try {
+            Validate.isTrue(StringUtils.isNotEmpty(cipherText), "cipherText can't be null!!");
             decoded = Hex.decode(cipherText);
             decryptedBytes = this.encryptor.decrypt(decoded);
             return Utf8.decode(decryptedBytes);
+        } catch (Exception ex) {
+            throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(decoded, decryptedBytes);
         }
