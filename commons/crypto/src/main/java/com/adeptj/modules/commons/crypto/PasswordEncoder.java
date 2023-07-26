@@ -30,15 +30,11 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface PasswordEncoder {
 
-    String encode(char[] rawPassword);
+    String encode(String rawPassword);
 
     String encode(byte[] rawPassword);
 
-    byte[] encodeToBytes(byte[] rawPassword);
-
-    boolean matches(char[] rawPassword, char[] encodedPassword);
-
-    boolean matches(byte[] rawPassword, byte[] encodedPassword);
-
     boolean matches(String rawPassword, String encodedPassword);
+
+    boolean matches(byte[] rawPassword, String encodedPassword);
 }

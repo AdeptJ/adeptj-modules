@@ -20,7 +20,6 @@
 
 package com.adeptj.modules.commons.crypto.internal;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
 import com.adeptj.modules.commons.utils.RandomGenerators;
 import org.apache.commons.lang3.ArrayUtils;
@@ -30,9 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.metatype.annotations.Designate;
-
-import static at.favre.lib.crypto.bcrypt.BCrypt.Version.VERSION_2A;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 /**
  * Service implementation for encoding/matching passwords using BCrypt.
@@ -51,40 +48,30 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
     }
 
     @Override
-    public String encode(char[] rawPassword) {
-        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
-        return BCrypt.with(RandomGenerators.getSecureRandom()).hashToString(this.exponentialCost, rawPassword);
+    public String encode(String rawPassword) {
+        Validate.isTrue(StringUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        String salt = BCrypt.gensalt(this.exponentialCost, RandomGenerators.getSecureRandom());
+        return BCrypt.hashpw(rawPassword, salt);
     }
 
     @Override
     public String encode(byte[] rawPassword) {
-        return new String(this.encodeToBytes(rawPassword), UTF_8);
-    }
-
-    @Override
-    public byte[] encodeToBytes(byte[] rawPassword) {
         Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
-        return BCrypt.with(RandomGenerators.getSecureRandom()).hash(this.exponentialCost, rawPassword);
-    }
-
-    @Override
-    public boolean matches(char[] rawPassword, char[] encodedPassword) {
-        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
-        Validate.isTrue(ArrayUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
-        return BCrypt.verifyer(VERSION_2A).verifyStrict(rawPassword, encodedPassword).verified;
-    }
-
-    @Override
-    public boolean matches(byte[] rawPassword, byte[] encodedPassword) {
-        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
-        Validate.isTrue(ArrayUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
-        return BCrypt.verifyer(VERSION_2A).verifyStrict(rawPassword, encodedPassword).verified;
+        String salt = BCrypt.gensalt(this.exponentialCost, RandomGenerators.getSecureRandom());
+        return BCrypt.hashpw(rawPassword, salt);
     }
 
     @Override
     public boolean matches(String rawPassword, String encodedPassword) {
         Validate.isTrue(StringUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
         Validate.isTrue(StringUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
-        return this.matches(rawPassword.toCharArray(), encodedPassword.toCharArray());
+        return BCrypt.checkpw(rawPassword, encodedPassword);
+    }
+
+    @Override
+    public boolean matches(byte[] rawPassword, String encodedPassword) {
+        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        Validate.isTrue(StringUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
+        return BCrypt.checkpw(rawPassword, encodedPassword);
     }
 }
