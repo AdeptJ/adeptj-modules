@@ -150,16 +150,6 @@
         </dependency>
 
         <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bytes</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>at.favre.lib</groupId>
-            <artifactId>bcrypt</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.adeptj</groupId>
             <artifactId>adeptj-modules-commons-utils</artifactId>
         </dependency>
@@ -172,11 +162,6 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.webconsole</artifactId>
         </dependency>
 
         <dependency>

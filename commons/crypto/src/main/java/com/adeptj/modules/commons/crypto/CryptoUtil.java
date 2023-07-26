@@ -25,7 +25,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
 /**
@@ -53,13 +54,15 @@ public class CryptoUtil {
         }
     }
 
-    public static byte[] newSecretKeyBytes(String algorithm,
-                                           char[] password,
-                                           byte[] salt,
-                                           int iterations,
-                                           int keyLength) throws GeneralSecurityException {
-        return SecretKeyFactory.getInstance(algorithm)
-                .generateSecret(new PBEKeySpec(password, salt, iterations, keyLength))
-                .getEncoded();
+    public static SecretKey createPBESecretKey(String algorithm, char[] password, byte[] salt, int iterations, int keyLength) {
+        try {
+            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithm);
+            PBEKeySpec keySpec = new PBEKeySpec(password, salt, iterations, keyLength);
+            return secretKeyFactory.generateSecret(keySpec);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalArgumentException("Not a valid encryption algorithm", ex);
+        } catch (InvalidKeySpecException ex) {
+            throw new IllegalArgumentException("Not a valid secret key", ex);
+        }
     }
 }
