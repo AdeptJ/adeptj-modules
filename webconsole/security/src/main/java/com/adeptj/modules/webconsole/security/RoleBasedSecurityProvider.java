@@ -48,8 +48,18 @@ import static javax.servlet.http.HttpServletResponse.SC_FOUND;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = WebConsoleSecurityConfig.class)
-@Component(immediate = true, service = WebConsoleSecurityProvider.class)
+@Component(
+        immediate = true,
+        service = WebConsoleSecurityProvider.class,
+        property = {
+                RoleBasedSecurityProvider.PN_SECURITY_PROVIDER_ID + "=" + RoleBasedSecurityProvider.SECURITY_PROVIDER_ID
+        }
+)
 public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
+
+    static final String PN_SECURITY_PROVIDER_ID = "webconsole.security.provider.id";
+
+    static final String SECURITY_PROVIDER_ID = "adeptj-webconsole-security-provider";
 
     private static final String HEADER_LOC = "Location";
 
