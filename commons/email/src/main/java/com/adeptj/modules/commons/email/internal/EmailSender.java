@@ -50,7 +50,7 @@ public class EmailSender implements Runnable {
         if (emailType == SIMPLE || emailType == HTML) {
             Validate.isTrue(StringUtils.isNotEmpty(emailInfo.getMessage()), "message can't be null!!");
         } else if (emailType == MULTIPART) {
-            Validate.isTrue(emailInfo.getMultipart() != null, "MimeMultipart can't be null!");
+            Validate.isTrue((emailInfo.getMultipart() != null), "MimeMultipart can't be null!");
         }
         if (StringUtils.isEmpty(emailInfo.getFromAddress())) {
             emailInfo.setFromAddress(config.default_from_address());
@@ -73,16 +73,7 @@ public class EmailSender implements Runnable {
         LOGGER.info("Sending email with Message-ID: {}", messageId);
         long startTime = System.nanoTime();
         try {
-            MimeMessage message = this.getMessage();
-            long start = System.nanoTime();
-            try (Transport transport = this.session.getTransport(DEFAULT_PROTOCOL)) {
-                transport.connect(this.host, this.port, this.username, this.password);
-                if (LOGGER.isDebugEnabled()) {
-                    long end = NANOSECONDS.toMillis(System.nanoTime() - start);
-                    LOGGER.debug("Transport.connect() took: {} ms!", end);
-                }
-                transport.sendMessage(message, message.getAllRecipients());
-            }
+            this.doSend();
         } catch (Exception ex) {
             String msg = String.format("Exception while sending email with Message-ID: %s", messageId);
             LOGGER.error(msg, ex);
@@ -92,29 +83,60 @@ public class EmailSender implements Runnable {
         LOGGER.info("Email with Message-ID: {} sent in {} ms!", messageId, endTime);
     }
 
+    private void doSend() throws MessagingException {
+        long start = System.nanoTime();
+        try (Transport transport = this.session.getTransport(DEFAULT_PROTOCOL)) {
+            transport.connect(this.host, this.port, this.username, this.password);
+            if (LOGGER.isDebugEnabled()) {
+                long end = NANOSECONDS.toMillis(System.nanoTime() - start);
+                LOGGER.debug("Transport.connect() took: {} ms!", end);
+            }
+            MimeMessage message = this.getMessage();
+            transport.sendMessage(message, message.getAllRecipients());
+        }
+    }
+
     @NotNull
     private MimeMessage getMessage() throws MessagingException {
         MimeMessage message = new MimeMessage(this.session);
         message.addHeader(HEADER_MESSAGE_ID, this.emailInfo.getMessageId());
         message.setSubject(this.emailInfo.getSubject());
         message.setFrom(new InternetAddress(this.emailInfo.getFromAddress()));
-        String[] toAddresses = this.emailInfo.getToAddresses();
-        if (toAddresses.length == 1) {
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(toAddresses[0]));
-        } else {
-            Set<String> addressSet = new HashSet<>();
-            Collections.addAll(addressSet, toAddresses);
-            String recipients = String.join(DELIM_COMMA, addressSet.toArray(new String[0]));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
-        }
-        EmailType emailType = this.emailInfo.getEmailType();
-        if (emailType == SIMPLE) {
-            message.setText(this.emailInfo.getMessage());
-        } else if (emailType == HTML) {
-            message.setContent(this.emailInfo.getMessage(), TEXT_HTML);
-        } else if (emailType == MULTIPART) {
-            message.setContent(this.emailInfo.getMultipart());
-        }
+        this.handleAddresses(message, Message.RecipientType.TO, this.emailInfo.getToAddresses());
+        this.handleAddresses(message, Message.RecipientType.CC, this.emailInfo.getCcAddresses());
+        this.handleAddresses(message, Message.RecipientType.BCC, this.emailInfo.getBccAddresses());
+        this.sentEmailContent(message);
         return message;
+    }
+
+    private void handleAddresses(MimeMessage message,
+                                 Message.RecipientType type, String[] addresses) throws MessagingException {
+        if (addresses == null || addresses.length == 0) {
+            LOGGER.error("No address(es) provided in [{}] address field.", type);
+            return;
+        }
+        if (addresses.length == 1) {
+            message.setRecipient(type, new InternetAddress(addresses[0]));
+        } else {
+            // Deduplicate the addresses.
+            Set<String> addressSet = new HashSet<>();
+            Collections.addAll(addressSet, addresses);
+            String recipients = String.join(DELIM_COMMA, addressSet.toArray(new String[0]));
+            message.setRecipients(type, recipients);
+        }
+    }
+
+    private void sentEmailContent(MimeMessage message) throws MessagingException {
+        switch (this.emailInfo.getEmailType()) {
+            case SIMPLE:
+                message.setText(this.emailInfo.getMessage());
+                break;
+            case HTML:
+                message.setContent(this.emailInfo.getMessage(), TEXT_HTML);
+                break;
+            case MULTIPART:
+                message.setContent(this.emailInfo.getMultipart());
+                break;
+        }
     }
 }

@@ -15,6 +15,10 @@ public class EmailInfo {
 
     private final String[] toAddresses;
 
+    private String[] ccAddresses;
+
+    private String[] bccAddresses;
+
     private String message;
 
     private String fromAddress;
@@ -24,7 +28,7 @@ public class EmailInfo {
     private String messageId;
 
     public EmailInfo(EmailType emailType, String subject, String... toAddresses) {
-        Validate.isTrue(emailType != null, "EmailType can't be null!!");
+        Validate.isTrue((emailType != null), "EmailType can't be null!!");
         Validate.isTrue(StringUtils.isNotEmpty(subject), "subject can't be null!!");
         Validate.isTrue(ArrayUtils.isNotEmpty(toAddresses), "toAddresses can't be null or empty!");
         this.emailType = emailType;
@@ -45,20 +49,36 @@ public class EmailInfo {
         return toAddresses;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public String getFromAddress() {
         return fromAddress;
     }
 
     public void setFromAddress(String fromAddress) {
         this.fromAddress = fromAddress;
+    }
+
+    public String[] getCcAddresses() {
+        return ccAddresses;
+    }
+
+    public void setCcAddresses(String... ccAddresses) {
+        this.ccAddresses = ccAddresses;
+    }
+
+    public String[] getBccAddresses() {
+        return bccAddresses;
+    }
+
+    public void setBccAddresses(String... bccAddresses) {
+        this.bccAddresses = bccAddresses;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public MimeMultipart getMultipart() {
