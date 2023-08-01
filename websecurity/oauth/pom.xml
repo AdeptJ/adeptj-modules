@@ -145,6 +145,16 @@
         </dependency>
 
         <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adeptj</groupId>
+            <artifactId>adeptj-modules-jaxrs-api</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.scribejava</groupId>
             <artifactId>scribejava-apis</artifactId>
             <version>${scribejava.version}</version>
