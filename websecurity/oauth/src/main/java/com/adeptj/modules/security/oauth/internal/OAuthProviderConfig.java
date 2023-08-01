@@ -14,7 +14,7 @@ public @interface OAuthProviderConfig {
 
     @AttributeDefinition(
             name = "OAuth2 Provider",
-            description = "Oauth2 provider such as GitHub, Google et.",
+            description = "Oauth2 provider such as GitHub, Google etc.",
             options = {
                     @Option(label = "GitHub", value = "github"),
                     @Option(label = "Google", value = "google"),
@@ -23,16 +23,16 @@ public @interface OAuthProviderConfig {
             })
     String provider();
 
-    @AttributeDefinition(name = "API Key", description = "OAuth2 API Key.")
+    @AttributeDefinition(name = "OAuth2 API Key", description = "OAuth2 API Key.")
     String api_key();
 
-    @AttributeDefinition(name = "API Secret", description = "OAuth2 API Secret.", type = PASSWORD)
+    @AttributeDefinition(name = "OAuth2 API Secret", description = "OAuth2 API Secret.", type = PASSWORD)
     String api_secret();
 
-    @AttributeDefinition(name = "Scope", description = "OAuth2 Scope")
-    String[] scope();
+    @AttributeDefinition(name = "OAuth2 Scopes", description = "Scopes configured in the OAuth2 provider.")
+    String[] scopes();
 
-    @AttributeDefinition(name = "OAuth Callback", description = "OAuth2 callback url.")
+    @AttributeDefinition(name = "OAuth2 Callback", description = "OAuth2 callback url.")
     String callback() default "http://localhost:8080/oauth2/callback";
 
     // name hint non-editable property

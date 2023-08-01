@@ -7,6 +7,12 @@ import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * OAuthProvider.
@@ -23,7 +29,7 @@ public class OAuthProvider {
 
     private final String callback;
 
-    private OAuth20Service service;
+    private String scope;
 
     private OAuthProvider(OAuthProviderType providerType, String apiKey, String apiSecret, String callback) {
         this.providerType = providerType;
@@ -48,10 +54,21 @@ public class OAuthProvider {
         return callback;
     }
 
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
     public OAuth20Service getService() {
         ServiceBuilder builder = new ServiceBuilder(this.apiKey)
                 .apiSecret(this.apiSecret)
                 .callback(this.callback + "/" + this.providerType.toString());
+        if (StringUtils.isNotEmpty(this.scope)) {
+            builder.withScope(this.scope);
+        }
         DefaultApi20 api = null;
         switch (this.providerType) {
             case GITHUB:
@@ -88,8 +105,11 @@ public class OAuthProvider {
 
         private String callback;
 
+        private Set<String> scopes;
+
         public Builder(String providerName) {
             this.providerType = OAuthProviderType.from(providerName);
+            Validate.isTrue((this.providerType != null), String.format("Unknown provider(%s)", providerName));
         }
 
         public Builder apiKey(String apiKey) {
@@ -107,8 +127,22 @@ public class OAuthProvider {
             return this;
         }
 
+        public Builder scopes(String... scopes) {
+            if (scopes != null && scopes.length > 0) {
+                if (this.scopes == null) {
+                    this.scopes = new HashSet<>();
+                }
+                Collections.addAll(this.scopes, scopes);
+            }
+            return this;
+        }
+
         public OAuthProvider build() {
-            return new OAuthProvider(this.providerType, this.apiKey, this.apiSecret, this.callback);
+            OAuthProvider provider = new OAuthProvider(this.providerType, this.apiKey, this.apiSecret, this.callback);
+            if (this.scopes != null && !this.scopes.isEmpty()) {
+                provider.setScope(String.join(" ", this.scopes));
+            }
+            return provider;
         }
     }
 

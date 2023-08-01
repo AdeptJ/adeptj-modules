@@ -9,8 +9,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,8 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 @Path("/oauth2/authorization")
 @Component(service = OAuthAuthorizationRequestResource.class)
 public class OAuthAuthorizationRequestResource extends BaseOAuthResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final List<OAuthProviderService> providers;
 
@@ -37,7 +42,8 @@ public class OAuthAuthorizationRequestResource extends BaseOAuthResource {
         OAuthProviderService providerService = this.resolveOAuthProviderService(provider, tempProviders);
         try (OAuth20Service service = providerService.getOAuthProvider().getService()) {
             String authorizationUrl = service.getAuthorizationUrl();
-            return Response.status(Response.Status.FOUND).location(URI.create(authorizationUrl)).build();
+            LOGGER.info("Redirecting to {} authorization url - {}", provider, authorizationUrl);
+            return Response.seeOther(URI.create(authorizationUrl)).build();
         }
     }
 

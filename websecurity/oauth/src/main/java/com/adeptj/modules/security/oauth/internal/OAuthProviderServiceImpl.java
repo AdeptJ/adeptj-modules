@@ -42,6 +42,7 @@ public class OAuthProviderServiceImpl implements OAuthProviderService {
                 .apiKey(this.config.api_key())
                 .apiSecret(this.config.api_secret())
                 .callback(this.config.callback())
+                .scopes(this.config.scopes())
                 .build();
     }
 

@@ -29,9 +29,9 @@ public enum OAuthProviderType {
     }
 
     public static OAuthProviderType from(String providerName) {
-        for (OAuthProviderType OAuthProviderType : OAuthProviderType.values()) {
-            if (StringUtils.equals(providerName, OAuthProviderType.toString())) {
-                return OAuthProviderType;
+        for (OAuthProviderType providerType : OAuthProviderType.values()) {
+            if (StringUtils.equals(providerName, providerType.toString())) {
+                return providerType;
             }
         }
         return null;
