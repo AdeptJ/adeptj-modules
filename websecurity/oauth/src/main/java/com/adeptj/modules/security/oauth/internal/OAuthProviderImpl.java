@@ -11,9 +11,6 @@ import com.github.scribejava.apis.LinkedInApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.OAuthRequest;
-import com.github.scribejava.core.model.Response;
-import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -97,7 +94,7 @@ public class OAuthProviderImpl implements OAuthProvider {
         }
     }
 
-    void setScope(String... scopes) {
+    void setScope(String[] scopes) {
         if (scopes != null && scopes.length > 0) {
             this.scope = String.join(" ", scopes);
         }
@@ -112,7 +109,7 @@ public class OAuthProviderImpl implements OAuthProvider {
                 .apiSecret(this.apiSecret)
                 .callback(this.callback);
         if (StringUtils.isNotEmpty(this.scope)) {
-            builder.withScope(this.scope);
+            builder.defaultScope(this.scope);
         }
         if (this.debug) {
             builder.debug();
