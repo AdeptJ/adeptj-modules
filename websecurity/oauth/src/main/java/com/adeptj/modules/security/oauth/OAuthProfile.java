@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * OAuthProfile.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 public class OAuthProfile extends HashMap<String, String> {
 

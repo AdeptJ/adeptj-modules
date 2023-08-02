@@ -1,5 +1,7 @@
 package com.adeptj.modules.security.oauth;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * OAuthProviderService.
  *
@@ -7,5 +9,6 @@ package com.adeptj.modules.security.oauth;
  */
 public interface OAuthProviderService {
 
-    OAuthProvider getOAuthProvider();
+    @NotNull
+    OAuthProvider getProvider(String providerName);
 }

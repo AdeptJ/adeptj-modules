@@ -3,9 +3,9 @@ package com.adeptj.modules.security.oauth;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Provider.
+ * OAuthProviderType.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 public enum OAuthProviderType {
 

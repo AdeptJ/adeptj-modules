@@ -116,6 +116,11 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.framework</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.component.annotations</artifactId>
         </dependency>
 
@@ -166,6 +171,11 @@
             <artifactId>scribejava-core</artifactId>
             <version>${scribejava.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
         </dependency>
 
     </dependencies>
