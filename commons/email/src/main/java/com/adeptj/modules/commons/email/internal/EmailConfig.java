@@ -26,10 +26,10 @@ public @interface EmailConfig {
     String default_from_address();
 
     @AttributeDefinition(name = "SMTP Username", description = "SMTP username")
-    String username();
+    String smtp_username();
 
     @AttributeDefinition(name = "SMTP Password", description = "SMTP password", type = PASSWORD)
-    String password();
+    String smtp_password();
 
     @AttributeDefinition(name = "SMTP Mail Debug", description = "Debug SMTP email")
     boolean debug();

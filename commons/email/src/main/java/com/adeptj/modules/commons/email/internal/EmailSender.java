@@ -59,8 +59,8 @@ public class EmailSender implements Runnable {
         this.session = session;
         this.host = config.smtp_host();
         this.port = config.smtp_port();
-        this.username = config.username();
-        this.password = config.password();
+        this.username = config.smtp_username();
+        this.password = config.smtp_password();
     }
 
     @Override
