@@ -53,12 +53,6 @@ public @interface LoggerConfig {
             })
     String logger_level() default "INFO";
 
-    @AttributeDefinition(
-            name = "Logger Additivity",
-            description = "%logger.additivity.desc"
-    )
-    boolean logger_additivity();
-
     // name hint non-editable property
     String webconsole_configurationFactory_nameHint() default
             "Logger ({" + "logger.names" + "}" + ": " + "{" + "logger.level" + "})"; // NOSONAR
