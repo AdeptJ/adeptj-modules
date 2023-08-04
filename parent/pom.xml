@@ -40,14 +40,6 @@
         <skipTests>true</skipTests>
         <skipITs>true</skipITs>
         <jakarta.servlet4-api.version>4.0.4</jakarta.servlet4-api.version>
-        <!-- AdeptJ Maven Plugin properties start -->
-        <adeptj.base.url>http://localhost:8080</adeptj.base.url>
-        <adeptj.console.url>/system/console</adeptj.console.url>
-        <adeptj.auth.url>/admin/auth/j_security_check</adeptj.auth.url>
-        <adeptj.logout.url>/admin/logout</adeptj.logout.url>
-        <adeptj.user>admin</adeptj.user>
-        <adeptj.password>admin</adeptj.password>
-        <!-- AdeptJ Maven Plugin properties end -->
     </properties>
 
     <!-- Project Information -->
@@ -163,6 +155,14 @@
                     <groupId>com.adeptj</groupId>
                     <artifactId>adeptj-maven-plugin</artifactId>
                     <version>${adeptj-maven-plugin.version}</version>
+                    <configuration>
+                        <baseUrl>http://localhost:8080</baseUrl>
+                        <consoleUrl>/system/console</consoleUrl>
+                        <authUrl>/admin/auth/j_security_check</authUrl>
+                        <logoutUrl>/admin/logout</logoutUrl>
+                        <user>admin</user>
+                        <password>admin</password>
+                    </configuration>
                 </plugin>
 
             </plugins>
