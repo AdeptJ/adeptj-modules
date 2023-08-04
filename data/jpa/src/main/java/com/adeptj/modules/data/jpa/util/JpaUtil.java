@@ -86,11 +86,9 @@ public final class JpaUtil {
     public static void bindQueryParams(Query query, QueryParam... params) {
         if (ArrayUtils.isNotEmpty(params)) {
             for (QueryParam param : params) {
-                if (param instanceof NamedParam) {
-                    NamedParam namedParam = (NamedParam) param;
+                if (param instanceof NamedParam namedParam) {
                     query.setParameter(namedParam.getName(), namedParam.getValue());
-                } else if (param instanceof PositionalParam) {
-                    PositionalParam positionalParam = (PositionalParam) param;
+                } else if (param instanceof PositionalParam positionalParam) {
                     query.setParameter(positionalParam.getPosition(), positionalParam.getValue());
                 }
             }

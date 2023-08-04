@@ -49,11 +49,9 @@ public class ApacheRestClientLogger {
 
     private static String getBody(HttpUriRequest request) {
         String body = null;
-        if (request instanceof HttpEntityEnclosingRequest) {
-            HttpEntityEnclosingRequest enclosingRequest = (HttpEntityEnclosingRequest) request;
+        if (request instanceof HttpEntityEnclosingRequest enclosingRequest) {
             HttpEntity entity = enclosingRequest.getEntity();
-            if (entity instanceof StringEntity) {
-                StringEntity strEntity = (StringEntity) entity;
+            if (entity instanceof StringEntity strEntity) {
                 try {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     IOUtils.copy(strEntity.getContent(), out);

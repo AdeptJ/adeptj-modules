@@ -66,8 +66,8 @@ public class JpaActivator implements BundleActivator {
                 return;
             }
             Object defaultLog = field.get(null);
-            if (defaultLog instanceof SessionLog) {
-                ((SessionLog) defaultLog).setSession(null);
+            if (defaultLog instanceof SessionLog sessionLog) {
+                sessionLog.setSession(null);
                 field.set(null, null);
             }
         } catch (IllegalAccessException ex) {

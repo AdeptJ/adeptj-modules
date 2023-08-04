@@ -21,11 +21,11 @@
 package com.adeptj.modules.jaxrs.core;
 
 import com.adeptj.modules.jaxrs.core.jwt.JwtPrincipal;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.SecurityContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
 /**
@@ -40,8 +40,7 @@ public final class SecurityContextUtil {
     }
 
     public static @Nullable JwtPrincipal getJwtPrincipal(@NotNull SecurityContext securityContext) {
-        Principal principal = securityContext.getUserPrincipal();
-        return principal instanceof JwtPrincipal ? (JwtPrincipal) principal : null;
+        return (securityContext.getUserPrincipal() instanceof JwtPrincipal jwtPrincipal) ? jwtPrincipal : null;
     }
 
     public static boolean isUserPrincipalNullOrJwtExpired(@NotNull ContainerRequestContext requestContext) {

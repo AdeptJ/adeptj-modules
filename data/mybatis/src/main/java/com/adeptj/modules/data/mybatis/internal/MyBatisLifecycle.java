@@ -93,18 +93,16 @@ public class MyBatisLifecycle {
 
     @Reference(service = MyBatisRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindMyBatisRepository(MyBatisRepository<?, ?> repository) {
-        if (!(repository instanceof AbstractMyBatisRepository)) {
+        if (!(repository instanceof AbstractMyBatisRepository<?, ?> myBatisRepository)) {
             throw new MyBatisRepositoryBindException("The repository instance must extend AbstractMyBatisRepository!");
         }
         LOGGER.info("Binding MyBatisRepository {}", repository);
-        AbstractMyBatisRepository<?, ?> myBatisRepository = (AbstractMyBatisRepository<?, ?>) repository;
         myBatisRepository.setSessionFactory(this.sessionFactory);
     }
 
     protected void unbindMyBatisRepository(MyBatisRepository<?, ?> repository) {
-        if (repository instanceof AbstractMyBatisRepository) {
+        if (repository instanceof AbstractMyBatisRepository<?, ?> myBatisRepository) {
             LOGGER.info("Unbinding MyBatisRepository {}", repository);
-            AbstractMyBatisRepository<?, ?> myBatisRepository = (AbstractMyBatisRepository<?, ?>) repository;
             myBatisRepository.setSessionFactory(null);
         }
     }

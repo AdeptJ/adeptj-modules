@@ -49,8 +49,7 @@ public class CayenneLifeCycle {
 
     @Reference(service = CayenneRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindCayenneRepository(CayenneRepository<?> repository) {
-        if (repository instanceof AbstractCayenneRepository) {
-            AbstractCayenneRepository<?> cayenneRepository = (AbstractCayenneRepository<?>) repository;
+        if (repository instanceof AbstractCayenneRepository<?> cayenneRepository) {
             cayenneRepository.setCayenne(this.cayenne);
             MyRepository myRepository = (MyRepository) cayenneRepository;
             List<Users> all = myRepository.getAllUsers();
@@ -80,8 +79,7 @@ public class CayenneLifeCycle {
 
     protected void unbindCayenneRepository(CayenneRepository<?> repository) {
         // Let's do an explicit type check to avoid a CCE.
-        if (repository instanceof AbstractCayenneRepository) {
-            AbstractCayenneRepository<?> cayenneRepository = (AbstractCayenneRepository<?>) repository;
+        if (repository instanceof AbstractCayenneRepository<?> cayenneRepository) {
             cayenneRepository.setCayenne(null);
         }
     }

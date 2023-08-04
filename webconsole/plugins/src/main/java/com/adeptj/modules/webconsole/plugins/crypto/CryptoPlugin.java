@@ -104,10 +104,10 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         for (Iterator<String> iterator = properties.keys().asIterator(); iterator.hasNext(); ) {
             String key = iterator.next();
             Object value = properties.get(key);
-            if (value instanceof String) {
-                this.handleProperty(properties, pid, key, (String) value);
-            } else if (value instanceof String[]) {
-                this.handleMultiValueProperty(pid, key, (String[]) value);
+            if (value instanceof String val) {
+                this.handleProperty(properties, pid, key, val);
+            } else if (value instanceof String[] values) {
+                this.handleMultiValueProperty(pid, key, values);
             }
         }
     }
@@ -179,8 +179,7 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
     @SuppressWarnings("unchecked")
     private void populateVariableResolver(HttpServletRequest req, String plainText, String cipherText) {
         VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
-        if (vr instanceof DefaultVariableResolver) {
-            DefaultVariableResolver dvr = (DefaultVariableResolver) vr;
+        if (vr instanceof DefaultVariableResolver dvr) {
             dvr.put(KEY_PLAIN_TEXT, plainText);
             dvr.put(KEY_CIPHER_TEXT, cipherText);
         }

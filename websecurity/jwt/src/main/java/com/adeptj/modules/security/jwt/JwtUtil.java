@@ -49,8 +49,8 @@ public final class JwtUtil {
     public static void assertClaims(Map<String, Object> claims) {
         Assert.notEmpty(claims, "Claims map can't be null or empty!!");
         claims.forEach((claim, value) -> {
-            if (value instanceof String) {
-                Assert.hasText((String) value, String.format("%s can't be blank!!", claim));
+            if (value instanceof String val) {
+                Assert.hasText(val, String.format("%s can't be blank!!", claim));
             } else {
                 Assert.notNull(value, String.format("%s can't be null!!", claim));
             }

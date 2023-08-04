@@ -64,8 +64,8 @@ public class ObjectMappers {
         if (object instanceof String) {
             return (String) object;
         }
-        if (object instanceof byte[]) {
-            return new String((byte[]) object, UTF_8);
+        if (object instanceof byte[] bytes) {
+            return new String(bytes, UTF_8);
         }
         try {
             return getWriter().writeValueAsString(object);

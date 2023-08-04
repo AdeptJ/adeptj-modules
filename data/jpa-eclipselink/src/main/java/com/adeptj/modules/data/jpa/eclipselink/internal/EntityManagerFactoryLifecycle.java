@@ -137,7 +137,8 @@ public class EntityManagerFactoryLifecycle {
         // This is needed because the fragment bundle [adeptj-modules-data-jpa-eclipselink-extension] update will
         // fire bundle wiring update and this component will be disposed of, at this moment AbstractSessionLog is still
         // holding the SLF4JLogger instance as a static field and that can cause a memory leak due to the holding of
-        // old class and instance. When this component is disposed of due to normal configurations or bundle  update
+        // old class and instance.
+        // When this component is disposed of due to normal configurations or bundle  update
         // then also remove the SLF4JLogger instance from AbstractSessionLog, because a new one will be created when
         // this component is being activated again and EclipseLink is going to create a new EntityManagerFactory.
         JpaActivator.disposeEclipseLinkSingletonLog();
@@ -148,19 +149,17 @@ public class EntityManagerFactoryLifecycle {
 
     @Reference(service = JpaRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindJpaRepository(JpaRepository<?, ?> repository) {
-        if (!(repository instanceof AbstractJpaRepository)) {
+        if (!(repository instanceof AbstractJpaRepository<?, ?> jpaRepository)) {
             throw new JpaRepositoryBindException("The repository instance must extend AbstractJpaRepository!");
         }
         LOGGER.info("Binding JpaRepository: {} to persistence unit: [{}]", repository, this.unitName);
-        AbstractJpaRepository<?, ?> jpaRepository = (AbstractJpaRepository<?, ?>) repository;
         jpaRepository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
     }
 
     protected void unbindJpaRepository(JpaRepository<?, ?> repository) {
         // Let's do an explicit type check to avoid a CCE.
-        if (repository instanceof AbstractJpaRepository) {
+        if (repository instanceof AbstractJpaRepository<?, ?> jpaRepository) {
             LOGGER.info("Unbinding JpaRepository: {} from persistence unit: [{}]", repository, this.unitName);
-            AbstractJpaRepository<?, ?> jpaRepository = (AbstractJpaRepository<?, ?>) repository;
             jpaRepository.setEntityManagerFactory(null);
         }
     }

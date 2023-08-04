@@ -89,7 +89,7 @@ public class MongoClientLifecycle implements MongoClientProvider {
     @Reference(service = MongoRepository.class, target = SERVICE_FILTER, cardinality = MULTIPLE, policy = DYNAMIC)
     protected <T> void bindMongoRepository(@NotNull MongoRepository<T> repository, @NotNull Map<String, Object> properties) {
         // We are not interested in any of the MongoRepository impl which is not a subclass of AbstractMongoRepository.
-        if (!(repository instanceof AbstractMongoRepository)) {
+        if (!(repository instanceof AbstractMongoRepository<T> mongoRepository)) {
             throw new MongoRepositoryBindException("The repository instance must extend AbstractMongoRepository!");
         }
         String databaseName = (String) properties.get(KEY_DB_NAME);
@@ -101,7 +101,6 @@ public class MongoClientLifecycle implements MongoClientProvider {
             throw new MongoRepositoryBindException(message);
         }
         LOGGER.info("Binding MongoRepository [{}]", repository);
-        AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
         Class<T> documentClass = mongoRepository.getDocumentClass();
         LOGGER.info("Initializing JacksonMongoCollection for type [{}]", documentClass.getName());
         JacksonMongoCollection<T> mongoCollection = this.mongoCollectionBuilder
@@ -112,9 +111,8 @@ public class MongoClientLifecycle implements MongoClientProvider {
 
     protected <T> void unbindMongoRepository(@NotNull MongoRepository<T> repository) {
         // Let's do an explicit type check to avoid a CCE.
-        if (repository instanceof AbstractMongoRepository) {
+        if (repository instanceof AbstractMongoRepository<T> mongoRepository) {
             LOGGER.info("Unbinding MongoRepository [{}]", repository);
-            AbstractMongoRepository<T> mongoRepository = (AbstractMongoRepository<T>) repository;
             mongoRepository.setMongoCollection(null);
             mongoRepository.setMongoClient(null);
         }
