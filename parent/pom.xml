@@ -39,16 +39,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skipTests>true</skipTests>
         <skipITs>true</skipITs>
-        
         <!-- AdeptJ Maven Plugin properties start -->
         <adeptj.base.url>http://localhost:8080</adeptj.base.url>
         <adeptj.console.url>/system/console</adeptj.console.url>
-        <adeptj.auth.url>/admin/auth/j_security_check</adeptj.auth.url>
+        <adeptj.login.url>/admin/auth/j_security_check</adeptj.login.url>
         <adeptj.logout.url>/admin/logout</adeptj.logout.url>
         <adeptj.user>admin</adeptj.user>
         <adeptj.password>admin</adeptj.password>
         <!-- AdeptJ Maven Plugin properties end -->
-
         <jakarta.servlet4-api.version>4.0.4</jakarta.servlet4-api.version>
     </properties>
 
