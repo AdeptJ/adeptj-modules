@@ -1,4 +1,6 @@
-<a href="https://www.apache.org/licenses/LICENSE-2.0">
+<p>
+
+  <a href="https://www.apache.org/licenses/LICENSE-2.0">
    <img src="https://img.shields.io/badge/license-Apache%202-blue.svg">  
   </a>
 
@@ -30,12 +32,14 @@
      <img src="https://img.shields.io/badge/twitter-AdeptJ-f08d1c.svg?style=social&style=flat"> 
   </a>
 
-**AdeptJ  Modules**
+</p>
 
+**AdeptJ Modules**
 
 **Sponsors**:
 
-The AdeptJ Team uses the [IntelliJ Idea Ultimate](https://www.jetbrains.com/idea/) when working on the AdeptJ Modules project.
+The AdeptJ Team uses the [IntelliJ Idea Ultimate](https://www.jetbrains.com/idea/) when working on the AdeptJ Modules
+project.
 
 Many thanks to JetBrains for generously sponsoring our Open Source projects with an all products license!
 
