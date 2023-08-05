@@ -11,11 +11,11 @@ public final class Constants {
 
     public static final String CFG_KEY_PROVIDER_NAME = "provider.name";
 
-    public static final String CFG_KEY_API_KEY = "api.key";
+    public static final String CFG_KEY_CLIENT_ID = "client.id";
 
-    public static final String CFG_KEY_API_SECRET = "api.secret";
+    public static final String CFG_KEY_CLIENT_SECRET = "client.secret";
 
-    public static final String CFG_KEY_CALLBACK = "callback";
+    public static final String CFG_KEY_REDIRECT_URI = "redirect.uri";
 
     public static final String CFG_KEY_SCOPES = "scopes";
 

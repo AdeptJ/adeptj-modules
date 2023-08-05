@@ -28,25 +28,25 @@ public class OAuthProviderImpl implements OAuthProvider {
 
     private final OAuthProviderType providerType;
 
-    private final String apiKey;
+    private final String clientId;
 
-    private final String apiSecret;
+    private final String clientSecret;
 
-    private final String callback;
+    private final String redirectUri;
 
     private String scope;
 
     private boolean debug;
 
-    public OAuthProviderImpl(String providerName, String apiKey, String apiSecret, String callback) {
+    public OAuthProviderImpl(String providerName, String clientId, String clientSecret, String redirectUri) {
         this.providerType = OAuthProviderType.from(providerName);
         Validate.isTrue((this.providerType != null), String.format("Unknown provider(%s)", providerName));
-        Validate.isTrue(StringUtils.isNotEmpty(apiKey), "apiKey can't be null!");
-        Validate.isTrue(StringUtils.isNotEmpty(apiSecret), "apiSecret can't be null!");
-        Validate.isTrue(StringUtils.isNotEmpty(callback), "callback can't be null!");
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
-        this.callback = callback + "/" + this.providerType;
+        Validate.isTrue(StringUtils.isNotEmpty(clientId), "clientId can't be null!");
+        Validate.isTrue(StringUtils.isNotEmpty(clientSecret), "clientSecret can't be null!");
+        Validate.isTrue(StringUtils.isNotEmpty(redirectUri), "redirectUri can't be null!");
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.redirectUri = redirectUri + "/" + this.providerType;
     }
 
     @Override
@@ -105,9 +105,9 @@ public class OAuthProviderImpl implements OAuthProvider {
     }
 
     private OAuth20Service getService() {
-        ServiceBuilder builder = new ServiceBuilder(this.apiKey)
-                .apiSecret(this.apiSecret)
-                .callback(this.callback);
+        ServiceBuilder builder = new ServiceBuilder(this.clientId)
+                .apiSecret(this.clientSecret)
+                .callback(this.redirectUri);
         if (StringUtils.isNotEmpty(this.scope)) {
             builder.defaultScope(this.scope);
         }
@@ -118,25 +118,16 @@ public class OAuthProviderImpl implements OAuthProvider {
     }
 
     private DefaultApi20 getApi() {
-        DefaultApi20 api = null;
-        switch (this.providerType) {
-            case GOOGLE:
-                api = GoogleApi20.instance();
-                break;
-            case FACEBOOK:
-                api = FacebookApi.instance();
-                break;
-            case GITHUB:
-                api = GitHubApi.instance();
-                break;
-            case LINKEDIN:
-                api = LinkedInApi20.instance();
-        }
-        return api;
+        return switch (this.providerType) {
+            case GOOGLE -> GoogleApi20.instance();
+            case FACEBOOK -> FacebookApi.instance();
+            case GITHUB -> GitHubApi.instance();
+            case LINKEDIN -> LinkedInApi20.instance();
+        };
     }
 
     @Override
     public String toString() {
-        return "OAuthProvider [name=" + this.providerType + ", callback=" + this.callback + "]";
+        return "OAuthProvider [name=" + this.providerType + ", redirectUri=" + this.redirectUri + "]";
     }
 }

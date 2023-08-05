@@ -19,12 +19,12 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 
 /**
- * OAuthCallbackResource
+ * The JAX-RS resource for handling OAuth callback with authorization code.
  *
  * @author Rakesh Kumar, AdeptJ
  */
-@JaxRSResource(name = "oauth2-callback")
-@Path("/oauth2/callback/{provider-name}")
+@JaxRSResource(name = "OAuthCallbackResource")
+@Path("/oauth/callback/{provider}")
 @Component(service = OAuthCallbackResource.class)
 public class OAuthCallbackResource {
 
@@ -42,7 +42,7 @@ public class OAuthCallbackResource {
     }
 
     @GET
-    public Response handleCallback(@PathParam("provider-name") String providerName, @QueryParam("code") String code) {
+    public Response handleCallback(@PathParam("provider") String providerName, @QueryParam("code") String code) {
         LOGGER.info("Handling callback from ({})", providerName);
         OAuthAccessToken accessToken = this.providerService.getProvider(providerName).getAccessToken(code);
         String targetLocation = this.accessTokenConsumer.consume(accessToken);

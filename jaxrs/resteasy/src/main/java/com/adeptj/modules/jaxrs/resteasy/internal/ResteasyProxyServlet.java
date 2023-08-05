@@ -33,6 +33,7 @@ import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletNa
 import org.osgi.service.servlet.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 
 import java.io.IOException;
+import java.io.Serial;
 
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_DISPATCHER_SERVLET_PATH;
 import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTEASY_PROXY_SERVLET_NAME;
@@ -53,7 +54,8 @@ import static com.adeptj.modules.jaxrs.resteasy.internal.ResteasyConstants.RESTE
 @Component(service = Servlet.class)
 public class ResteasyProxyServlet extends HttpServlet {
 
-    private static final long serialVersionUID = -4415966373465265279L;
+    @Serial
+    private static final long serialVersionUID = 7073410901294524850L;
 
     /**
      * Service is statically injected so that this servlet doesn't get initialized until the reference

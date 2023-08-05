@@ -28,17 +28,20 @@ public @interface OAuthProviderConfig {
             })
     String provider_name();
 
-    @AttributeDefinition(name = "OAuth2 API Key", description = "OAuth2 API Key.")
-    String api_key();
+    @AttributeDefinition(name = "OAuth2 Client Id", description = "Client id from OAuth2 provider.")
+    String client_id();
 
-    @AttributeDefinition(name = "OAuth2 API Secret", description = "OAuth2 API Secret.", type = PASSWORD)
-    String api_secret();
+    @AttributeDefinition(name = "OAuth2 Client Secret", description = "Client secret from OAuth2 provider.", type = PASSWORD)
+    String client_secret();
+
+    @AttributeDefinition(
+            name = "OAuth2 Redirect URI",
+            description = "A callback url where authorization code will be sent by the OAuth2 provider."
+    )
+    String redirect_uri() default "http://localhost:8080/oauth/callback";
 
     @AttributeDefinition(name = "OAuth2 Scopes", description = "Scopes configured in the OAuth2 provider.")
     String[] scopes();
-
-    @AttributeDefinition(name = "OAuth2 Callback", description = "OAuth2 callback url.")
-    String callback() default "http://localhost:8080/oauth2/callback";
 
     @AttributeDefinition(name = "Debug OAuth2 Request", description = "Whether to debug the OAuth2 request.")
     boolean debug_oauth2_request();

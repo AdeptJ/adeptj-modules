@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_API_KEY;
-import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_API_SECRET;
-import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_CALLBACK;
+import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_CLIENT_ID;
+import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_CLIENT_SECRET;
 import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_DEBUG_OAUTH2_REQ;
 import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_PROVIDER_NAME;
+import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_REDIRECT_URI;
 import static com.adeptj.modules.security.oauth.Constants.CFG_KEY_SCOPES;
 import static org.osgi.framework.Constants.SERVICE_PID;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -70,12 +70,12 @@ public class OAuthProviderServiceImpl implements OAuthProviderService {
                     " The factory pid to identify this config in Felix WebConsole - ({}).", providerName, pid);
         } else {
             LOGGER.info("Binding OAuthProviderConfigFactory({}) with pid - {}", providerName, pid);
-            String apiKey = (String) properties.get(CFG_KEY_API_KEY);
-            String apiSecret = (String) properties.get(CFG_KEY_API_SECRET);
-            String callback = (String) properties.get(CFG_KEY_CALLBACK);
+            String clientId = (String) properties.get(CFG_KEY_CLIENT_ID);
+            String clientSecret = (String) properties.get(CFG_KEY_CLIENT_SECRET);
+            String redirectUri = (String) properties.get(CFG_KEY_REDIRECT_URI);
             String[] scopes = (String[]) properties.get(CFG_KEY_SCOPES);
             boolean debug = Boolean.TRUE.equals(properties.get(CFG_KEY_DEBUG_OAUTH2_REQ));
-            OAuthProviderImpl provider = new OAuthProviderImpl(providerName, apiKey, apiSecret, callback);
+            OAuthProviderImpl provider = new OAuthProviderImpl(providerName, clientId, clientSecret, redirectUri);
             provider.setScope(scopes);
             provider.setDebug(debug);
             this.providers.put(providerName, provider);

@@ -3,8 +3,8 @@ package com.adeptj.modules.security.jwt;
 import com.adeptj.modules.commons.utils.JakartaJsonUtil;
 import io.jsonwebtoken.io.SerializationException;
 import io.jsonwebtoken.io.Serializer;
-
 import jakarta.json.bind.JsonbException;
+
 import java.util.Map;
 
 /**

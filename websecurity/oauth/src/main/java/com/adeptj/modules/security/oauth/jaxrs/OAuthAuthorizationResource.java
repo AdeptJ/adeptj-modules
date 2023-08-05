@@ -16,26 +16,26 @@ import java.lang.invoke.MethodHandles;
 import java.net.URI;
 
 /**
- * OAuthAuthorizationRequestResource
+ * The JAX-RS resource for handling OAuth authorization.
  *
  * @author Rakesh Kumar, AdeptJ
  */
-@JaxRSResource(name = "oauth2-authorization")
-@Path("/oauth2/authorization/{provider-name}")
-@Component(service = OAuthAuthorizationRequestResource.class)
-public class OAuthAuthorizationRequestResource {
+@JaxRSResource(name = "OAuthAuthorizationResource")
+@Path("/oauth/authorize/{provider}")
+@Component(service = OAuthAuthorizationResource.class)
+public class OAuthAuthorizationResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final OAuthProviderService providerService;
 
     @Activate
-    public OAuthAuthorizationRequestResource(@Reference OAuthProviderService providerService) {
+    public OAuthAuthorizationResource(@Reference OAuthProviderService providerService) {
         this.providerService = providerService;
     }
 
     @GET
-    public Response redirectToAuthorizationUrl(@PathParam("provider-name") String providerName) {
+    public Response redirectToAuthorizationUrl(@PathParam("provider") String providerName) {
         String authorizationUrl = this.providerService.getProvider(providerName).getAuthorizationUrl();
         LOGGER.info("Redirecting to ({}) authorization url!", providerName);
         return Response.seeOther(URI.create(authorizationUrl)).build();

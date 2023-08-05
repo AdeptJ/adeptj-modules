@@ -29,9 +29,6 @@ import org.jboss.resteasy.spi.ResteasyDeployment;
  */
 final class ResteasyConstants {
 
-    private ResteasyConstants() {
-    }
-
     static final String RESTEASY_PROXY_SERVLET_NAME = "AdeptJ RESTEasy ProxyServlet";
 
     static final String RESTEASY_DISPATCHER_SERVLET_PATH = "/";
@@ -45,4 +42,7 @@ final class ResteasyConstants {
     static final String VALUE_TRUE = "true";
 
     static final String RESTEASY_DEPLOYMENT = ResteasyDeployment.class.getName();
+
+    private ResteasyConstants() {
+    }
 }

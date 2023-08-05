@@ -34,6 +34,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -50,7 +51,8 @@ import java.lang.invoke.MethodHandles;
  */
 public class ResteasyDispatcher extends HttpServlet30Dispatcher {
 
-    private static final long serialVersionUID = 983150981041495057L;
+    @Serial
+    private static final long serialVersionUID = -1461441619805911991L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
