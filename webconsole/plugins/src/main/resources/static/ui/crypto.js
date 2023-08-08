@@ -1,1 +1,1 @@
-new ClipboardJS('.copy-button');
+let clipboardJS = new ClipboardJS('.copy-button');

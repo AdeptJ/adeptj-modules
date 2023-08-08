@@ -23,10 +23,10 @@ import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.HttpMethod;
 import com.adeptj.modules.restclient.core.util.Assert;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
+import org.eclipse.jetty.client.FormRequestContent;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.FormRequestContent;
-import org.eclipse.jetty.client.util.StringRequestContent;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.util.Fields;
 import org.eclipse.jetty.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -34,11 +34,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.adeptj.modules.restclient.core.HttpMethod.OPTIONS;
-import static com.adeptj.modules.restclient.core.RestClientConstants.CONTENT_TYPE_JSON;
 import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.HEAD;
+import static com.adeptj.modules.restclient.core.HttpMethod.OPTIONS;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
+import static com.adeptj.modules.restclient.core.RestClientConstants.CONTENT_TYPE_JSON;
 
 class JettyRequestFactory {
 

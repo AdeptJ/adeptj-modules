@@ -21,7 +21,7 @@ package com.adeptj.modules.restclient.jetty;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.http.HttpField;
 import org.jetbrains.annotations.NotNull;
 
