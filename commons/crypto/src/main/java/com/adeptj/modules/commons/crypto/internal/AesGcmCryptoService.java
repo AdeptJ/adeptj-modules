@@ -84,7 +84,7 @@ public class AesGcmCryptoService implements CryptoService {
         try {
             Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
             encryptedBytes = this.encryptor.encrypt(Utf8.encode(plainText));
-            return new String(Hex.encode(encryptedBytes));
+            return String.valueOf(Hex.encode(encryptedBytes));
         } catch (Exception ex) {
             throw new CryptoException(ex);
         } finally {
