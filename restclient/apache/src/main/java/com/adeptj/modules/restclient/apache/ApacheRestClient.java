@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -115,6 +116,8 @@ public class ApacheRestClient extends AbstractRestClient {
             ApacheRestClientLogger.logResponse(requestId, clientResponse, executionTime);
             EntityUtils.consumeQuietly(response.getEntity());
             return clientResponse;
+        } finally {
+            MDC.remove(this.mdcReqIdAttrName);
         }
     }
 

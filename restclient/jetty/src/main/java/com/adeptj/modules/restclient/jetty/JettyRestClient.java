@@ -39,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.atomic.AtomicLong;
@@ -105,13 +106,17 @@ public class JettyRestClient extends AbstractRestClient {
     }
 
     private <T, R> ContentResponse executeRequestDebug(ClientRequest<T, R> cr, Request jettyRequest) throws Exception {
-        String requestId = this.getRequestId();
-        JettyRestClientLogger.logRequest(requestId, cr, jettyRequest);
-        AtomicLong startTime = new AtomicLong(System.nanoTime());
-        ContentResponse response = jettyRequest.send();
-        long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-        JettyRestClientLogger.logResponse(requestId, response, executionTime);
-        return response;
+        try {
+            String requestId = this.getRequestId();
+            JettyRestClientLogger.logRequest(requestId, cr, jettyRequest);
+            AtomicLong startTime = new AtomicLong(System.nanoTime());
+            ContentResponse response = jettyRequest.send();
+            long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
+            JettyRestClientLogger.logResponse(requestId, response, executionTime);
+            return response;
+        } finally {
+            MDC.remove(this.mdcReqIdAttrName);
+        }
     }
 
     @Override

@@ -3,13 +3,13 @@ package com.adeptj.modules.data.mybatis.internal;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import static com.adeptj.modules.data.mybatis.api.MyBatisInfoProvider.DEFAULT_MYBATIS_CONFIG;
-
 @ObjectClassDefinition(
         name = "AdeptJ MyBatis Configuration",
         description = "AdeptJ MyBatis Configuration"
 )
 public @interface MyBatisConfig {
+
+    String DEFAULT_MYBATIS_CONFIG = "META-INF/mybatis-config.xml";
 
     String DEFAULT_ENV_ID = "development";
 
@@ -18,12 +18,6 @@ public @interface MyBatisConfig {
             description = "Location of the MyBatis config xml file"
     )
     String config_xml_location() default DEFAULT_MYBATIS_CONFIG;
-
-    @AttributeDefinition(
-            name = "Override Provider MyBatis Config XML Location",
-            description = "Whether to override the MyBatis config xml location provided by MyBatisInfoProvider"
-    )
-    boolean override_provider_config_xml_location();
 
     @AttributeDefinition(
             name = "Disable MyBatis XML Configuration",
@@ -36,4 +30,10 @@ public @interface MyBatisConfig {
             description = "MyBatis symbolic environment identifier"
     )
     String environment_id() default DEFAULT_ENV_ID;
+
+    @AttributeDefinition(
+            name = "MyBatis Properties",
+            description = "Extra MyBatis Properties(key=value) format"
+    )
+    String[] mybatis_properties();
 }

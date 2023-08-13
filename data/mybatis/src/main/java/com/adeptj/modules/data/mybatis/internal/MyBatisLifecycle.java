@@ -1,12 +1,10 @@
 package com.adeptj.modules.data.mybatis.internal;
 
 import com.adeptj.modules.commons.jdbc.DataSourceService;
-import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.commons.utils.CollectionUtil;
 import com.adeptj.modules.data.mybatis.api.AbstractMyBatisRepository;
 import com.adeptj.modules.data.mybatis.api.MyBatisInfoProvider;
 import com.adeptj.modules.data.mybatis.api.MyBatisRepository;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Environment;
@@ -45,7 +43,7 @@ public class MyBatisLifecycle {
     public MyBatisLifecycle(@NotNull @Reference MyBatisInfoProvider provider,
                             @NotNull @Reference DataSourceService dataSourceService, @NotNull MyBatisConfig config) {
         Configuration configuration = this.getConfiguration(provider, config);
-        this.addMappers(provider.getMappers(), configuration);
+        this.addMappersFromMyBatisInfoProvider(provider.getMappers(), configuration);
         Environment environment = new Environment.Builder(config.environment_id())
                 .dataSource(dataSourceService.getDataSource())
                 .transactionFactory(new JdbcTransactionFactory())
@@ -58,26 +56,25 @@ public class MyBatisLifecycle {
     private Configuration getConfiguration(MyBatisInfoProvider provider, @NotNull MyBatisConfig config) {
         if (config.disable_xml_configuration()) {
             LOGGER.info("MyBatis xml based configuration disabled, creating Configuration via constructor!");
-            return new Configuration();
+            return new Configuration(); // This is with minimal defaults.
         }
-        return ClassLoaders.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
-            String configXmlLocation = provider.getConfigXmlLocation();
-            if (StringUtils.isEmpty(configXmlLocation) || config.override_provider_config_xml_location()) {
-                configXmlLocation = config.config_xml_location();
-            }
-            LOGGER.info("Parsing mybatis config xml from location [{}]", configXmlLocation);
-            try (InputStream stream = Resources.getResourceAsStream(configXmlLocation)) {
-                Configuration configuration = new XMLConfigBuilder(stream, config.environment_id()).parse();
-                LOGGER.info("Initialized mybatis Configuration [{}]", configuration);
-                return configuration;
-            } catch (IOException ex) {
-                LOGGER.error(ex.getMessage(), ex);
-                throw new MyBatisBootstrapException(ex);
-            }
-        });
+        String configXmlLocation = config.config_xml_location();
+        Configuration configuration = null;
+        LOGGER.info("Parsing mybatis config xml from location [{}]", configXmlLocation);
+        try (InputStream stream = Resources.getResourceAsStream(provider.getClass().getClassLoader(), configXmlLocation)) {
+            configuration = new XMLConfigBuilder(stream, config.environment_id()).parse();
+            LOGGER.info("Initialized mybatis Configuration [{}]", configuration);
+        } catch (IOException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        if (configuration == null) {
+            LOGGER.warn("MyBatis xml could not be loaded, creating Configuration via constructor!");
+            configuration = new Configuration(); // This is with minimal defaults.
+        }
+        return configuration;
     }
 
-    private void addMappers(Collection<Class<?>> mappers, Configuration configuration) {
+    private void addMappersFromMyBatisInfoProvider(Collection<Class<?>> mappers, Configuration configuration) {
         if (CollectionUtil.isNotEmpty(mappers)) {
             for (Class<?> mapper : mappers) {
                 if (configuration.hasMapper(mapper)) {
