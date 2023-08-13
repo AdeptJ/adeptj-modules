@@ -32,7 +32,6 @@ import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_DATAB
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_CREATE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_ONLY;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NONE;
 import static org.eclipse.persistence.logging.SessionLog.CACHE;
 import static org.eclipse.persistence.logging.SessionLog.CONNECTION;
@@ -84,12 +83,6 @@ public @interface EntityManagerFactoryConfig {
     // Common Constants
 
     String JPA_TRANSACTION_TYPE = "RESOURCE_LOCAL";
-
-    @AttributeDefinition(
-            name = "Persistence XML Location",
-            description = "Location of the persistence.xml file"
-    )
-    String persistence_xml_location() default ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 
     @AttributeDefinition(
             name = "Deploy on Startup",

@@ -22,10 +22,4 @@ public @interface MyBatisConfig {
             description = "MyBatis symbolic environment identifier"
     )
     String environment_id() default DEFAULT_ENV_ID;
-
-    @AttributeDefinition(
-            name = "MyBatis Properties",
-            description = "Extra MyBatis Properties(key=value) format"
-    )
-    String[] mybatis_properties();
 }

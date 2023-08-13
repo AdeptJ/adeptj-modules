@@ -48,6 +48,8 @@ import java.util.Map;
 
 import static jakarta.persistence.ValidationMode.NONE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -117,6 +119,7 @@ public class EntityManagerFactoryLifecycle {
             if (validationMode != NONE) {
                 properties.put(VALIDATOR_FACTORY, validatorService.getValidatorFactory());
             }
+            properties.put(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT);
             properties.put(CLASSLOADER, provider.getClass().getClassLoader());
             this.entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(this.unitName, properties);
             Validate.validState((this.entityManagerFactory != null), EMF_NULL_EX_MSG);

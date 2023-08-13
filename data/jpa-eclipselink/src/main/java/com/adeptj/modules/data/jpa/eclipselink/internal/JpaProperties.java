@@ -63,7 +63,6 @@ final class JpaProperties {
                 .filter(StringUtils::isNotEmpty)
                 .forEach(logger -> properties.put(logger, config.logging_level()));
         properties.put(TRANSACTION_TYPE, config.persistence_unit_transaction_type());
-        properties.put(ECLIPSELINK_PERSISTENCE_XML, config.persistence_xml_location());
         properties.put(SHARED_CACHE_MODE, config.shared_cache_mode());
         properties.put(VALIDATION_MODE, config.validation_mode());
         if (config.use_exception_handler()) {
