@@ -9,15 +9,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 )
 public @interface MyBatisConfig {
 
-    String DEFAULT_MYBATIS_CONFIG = "META-INF/mybatis-config.xml";
-
     String DEFAULT_ENV_ID = "development";
-
-    @AttributeDefinition(
-            name = "MyBatis Config XML Location",
-            description = "Location of the MyBatis config xml file"
-    )
-    String config_xml_location() default DEFAULT_MYBATIS_CONFIG;
 
     @AttributeDefinition(
             name = "Disable MyBatis XML Configuration",

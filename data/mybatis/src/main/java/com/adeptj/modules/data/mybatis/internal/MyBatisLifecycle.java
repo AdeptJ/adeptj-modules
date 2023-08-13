@@ -1,6 +1,7 @@
 package com.adeptj.modules.data.mybatis.internal;
 
 import com.adeptj.modules.commons.jdbc.DataSourceService;
+import com.adeptj.modules.commons.utils.ClassLoaders;
 import com.adeptj.modules.commons.utils.CollectionUtil;
 import com.adeptj.modules.data.mybatis.api.AbstractMyBatisRepository;
 import com.adeptj.modules.data.mybatis.api.MyBatisInfoProvider;
@@ -37,39 +38,46 @@ public class MyBatisLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final String MYBATIS_CONFIG_XML_PATH = "META-INF/mybatis-config.xml";
+
     private final SqlSessionFactory sessionFactory;
 
     @Activate
     public MyBatisLifecycle(@NotNull @Reference MyBatisInfoProvider provider,
                             @NotNull @Reference DataSourceService dataSourceService, @NotNull MyBatisConfig config) {
-        Configuration configuration = this.getConfiguration(provider, config);
+        Configuration configuration = this.initConfiguration(provider, dataSourceService, config);
+        this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+        LOGGER.info("MyBatis SqlSessionFactory initialized!");
+    }
+
+    private Configuration initConfiguration(@NotNull MyBatisInfoProvider provider,
+                                            @NotNull DataSourceService dataSourceService, @NotNull MyBatisConfig config) {
+        Configuration configuration = this.doInitConfiguration(provider, config);
         this.addMappersFromMyBatisInfoProvider(provider.getMappers(), configuration);
         Environment environment = new Environment.Builder(config.environment_id())
                 .dataSource(dataSourceService.getDataSource())
                 .transactionFactory(new JdbcTransactionFactory())
                 .build();
         configuration.setEnvironment(environment);
-        this.sessionFactory = new SqlSessionFactoryBuilder().build(configuration);
-        LOGGER.info("MyBatis SqlSessionFactory initialized!");
+        LOGGER.info("Initialized mybatis Configuration [{}]", configuration);
+        return configuration;
     }
 
-    private Configuration getConfiguration(MyBatisInfoProvider provider, @NotNull MyBatisConfig config) {
+    private Configuration doInitConfiguration(@NotNull MyBatisInfoProvider provider, @NotNull MyBatisConfig config) {
+        Configuration configuration;
         if (config.disable_xml_configuration()) {
             LOGGER.info("MyBatis xml based configuration disabled, creating Configuration via constructor!");
-            return new Configuration(); // This is with minimal defaults.
-        }
-        String configXmlLocation = config.config_xml_location();
-        Configuration configuration = null;
-        LOGGER.info("Parsing mybatis config xml from location [{}]", configXmlLocation);
-        try (InputStream stream = Resources.getResourceAsStream(provider.getClass().getClassLoader(), configXmlLocation)) {
-            configuration = new XMLConfigBuilder(stream, config.environment_id()).parse();
-            LOGGER.info("Initialized mybatis Configuration [{}]", configuration);
-        } catch (IOException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
-        if (configuration == null) {
-            LOGGER.warn("MyBatis xml could not be loaded, creating Configuration via constructor!");
             configuration = new Configuration(); // This is with minimal defaults.
+        } else {
+            LOGGER.info("Parsing mybatis config xml [{}]", MYBATIS_CONFIG_XML_PATH);
+            configuration = ClassLoaders.executeUnderContextClassLoader(provider.getClass().getClassLoader(), () -> {
+                try (InputStream stream = Resources.getResourceAsStream(MYBATIS_CONFIG_XML_PATH)) {
+                    return new XMLConfigBuilder(stream, config.environment_id()).parse();
+                } catch (IOException ex) {
+                    LOGGER.error(ex.getMessage(), ex);
+                    throw new MyBatisBootstrapException(ex);
+                }
+            });
         }
         return configuration;
     }
