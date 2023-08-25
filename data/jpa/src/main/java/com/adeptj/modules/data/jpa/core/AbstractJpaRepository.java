@@ -38,13 +38,6 @@ import com.adeptj.modules.data.jpa.query.QueryType;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
 import com.adeptj.modules.data.jpa.util.Predicates;
 import com.adeptj.modules.data.jpa.util.Transactions;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.jetbrains.annotations.NotNull;
-import org.osgi.annotation.versioning.ConsumerType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
@@ -58,6 +51,13 @@ import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
+import org.osgi.annotation.versioning.ConsumerType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -360,7 +360,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
                     .map(root::get)
                     .collect(Collectors.toList());
             return em.createQuery(cq.multiselect(selections)
-                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
+                            .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -517,10 +517,10 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaQuery<C> cq = cb.createQuery(criteria.getConstructorClass());
             Root<T> root = cq.from(criteria.getEntity());
             return em.createQuery(cq.select(cb.construct(criteria.getConstructorClass(), criteria.getSelections()
-                    .stream()
-                    .map(root::get)
-                    .toArray(Selection[]::new)))
-                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
+                                    .stream()
+                                    .map(root::get)
+                                    .toArray(Selection[]::new)))
+                            .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
                     .getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -589,20 +589,15 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         Validate.isTrue(type != null, "QueryType can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            switch (type) {
-                case JPA:
-                    return (Long) em.createQuery(query).getSingleResult();
-                case NATIVE:
-                    return (Long) em.createNativeQuery(query).getSingleResult();
-                default:
-                    LOGGER.warn("Unknown QueryType!!");
-            }
+            return switch (type) {
+                case JPA -> (Long) em.createQuery(query).getSingleResult();
+                case NATIVE -> (Long) em.createNativeQuery(query).getSingleResult();
+            };
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
             JpaUtil.closeEntityManager(em);
         }
-        return 0L;
     }
 
     /**
