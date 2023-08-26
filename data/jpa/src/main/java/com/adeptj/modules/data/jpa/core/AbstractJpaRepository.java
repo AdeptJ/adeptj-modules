@@ -71,9 +71,9 @@ import java.util.stream.Stream;
 import static jakarta.persistence.ParameterMode.OUT;
 
 /**
- * Abstract implementation of {@link JpaRepository} based on EclipseLink JPA Reference Implementation.
+ * Abstract implementation of {@link JpaRepository}.
  * <p>
- * The consumer should subclass this and registered with the OSGi service registry.
+ * The consumer should subclass this and register with the OSGi service registry.
  * <p>
  * The EntityManagerFactoryLifecycle will bind to the {@link JpaRepository} implementations as and when they
  * become available and set an active {@link EntityManagerFactory} instance to the {@link AbstractJpaRepository}.
@@ -139,18 +139,21 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
 
     @Override
     public void batchInsert(List<T> entities, int batchSize) {
-        Validate.noNullElements(entities);
+        Validate.isTrue((entities != null && !entities.isEmpty()), "Entity list is null or empty!!");
         Validate.isTrue(batchSize > 1, "batchSize should be greater than 1!!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             this.beginTransaction(em);
             for (int i = 0; i < entities.size(); i++) {
-                if (i > 0 && (i % batchSize == 0)) {
-                    this.commitTransaction(em);
-                    em.clear();
-                    this.beginTransaction(em);
+                T entity = entities.get(i);
+                if (entity != null) {
+                    if (i > 0 && (i % batchSize == 0)) {
+                        this.commitTransaction(em);
+                        em.clear();
+                        this.beginTransaction(em);
+                    }
+                    em.persist(entity);
                 }
-                em.persist(entities.get(i));
             }
             this.commitTransaction(em);
         } catch (Exception ex) { // NOSONAR
@@ -303,10 +306,11 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     private Query getCriteriaQuery(EntityManager em, BaseCriteria<T> criteria) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         Query query = null;
-        if (criteria instanceof UpdateCriteria) {
-            CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
-            Root<T> root = cu.from(criteria.getEntity());
-            cu.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+        if (criteria instanceof UpdateCriteria<T> updateCriteria) {
+            CriteriaUpdate<T> cu = cb.createCriteriaUpdate(updateCriteria.getEntity());
+            updateCriteria.getUpdateAttributes().forEach(cu::set);
+            Root<T> root = cu.from(updateCriteria.getEntity());
+            cu.where(Predicates.using(cb, root, updateCriteria.getCriteriaAttributes()));
             query = em.createQuery(cu);
         } else if (criteria instanceof DeleteCriteria) {
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
