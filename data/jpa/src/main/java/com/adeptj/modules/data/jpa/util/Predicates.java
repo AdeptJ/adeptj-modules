@@ -20,11 +20,11 @@
 
 package com.adeptj.modules.data.jpa.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 /**
@@ -37,7 +37,8 @@ public final class Predicates {
     private Predicates() {
     }
 
-    public static <T> Predicate[] using(CriteriaBuilder cb, Root<T> root,
+    public static <T> Predicate[] using(CriteriaBuilder cb,
+                                        Root<T> root,
                                         @NotNull Map<String, Object> criteriaAttributes) {
         return criteriaAttributes.entrySet()
                 .stream()

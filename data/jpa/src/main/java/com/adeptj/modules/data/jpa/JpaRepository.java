@@ -31,10 +31,10 @@ import com.adeptj.modules.data.jpa.query.InParam;
 import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
 import com.adeptj.modules.data.jpa.query.QueryType;
-import org.osgi.annotation.versioning.ConsumerType;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
+import org.osgi.annotation.versioning.ConsumerType;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;
@@ -151,6 +151,10 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      */
     List<Tuple> findByTupleCriteria(TupleCriteria<T> criteria);
 
+    <E> List<E> getColumnValues(String entityAttributeName, Class<E> entityAttributeType, Class<T> entity);
+
+    List<Object[]> getMultiColumnValues(Class<T> entity, String... entityAttributeNames);
+
     /**
      * Finds the given JPA entity using the named JPA query.
      *
@@ -167,7 +171,7 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      * Note: Should never be called for large number of rows as you don't want millions of row in memory.
      *
      * @param entity the JPA entity class object
-     * @return All of the rows(Entity instances)
+     * @return All the rows(Entity instances)
      */
     List<T> findAll(Class<T> entity);
 
@@ -205,6 +209,16 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      * @return List of entity found by criteria
      */
     List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values);
+
+    /**
+     * Find the given entity using SQL IN operator by applying negation
+     *
+     * @param entity        the JPA entity class object
+     * @param attributeName entity attribute against which IN has to be applied
+     * @param values        values on which IN has to be applied
+     * @return List of entity found by criteria
+     */
+    List<T> findByINOperatorNegation(Class<T> entity, String attributeName, List<Object> values);
 
     /**
      * Finds the entity using given native query and project in the given result class.

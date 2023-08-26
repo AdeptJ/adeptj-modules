@@ -23,6 +23,7 @@ package com.adeptj.modules.data.jpa.core;
 import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.JpaCallback;
 import com.adeptj.modules.data.jpa.JpaRepository;
+import com.adeptj.modules.data.jpa.criteria.BaseCriteria;
 import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
 import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
@@ -44,11 +45,12 @@ import jakarta.persistence.Query;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +66,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static jakarta.persistence.ParameterMode.OUT;
 
@@ -188,26 +191,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public int updateByCriteria(UpdateCriteria<T> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
-            criteria.getUpdateAttributes().forEach(cu::set);
-            Root<T> root = cu.from(criteria.getEntity());
-            Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
-            Query query = em.createQuery(cu.where(predicates));
-            this.beginTransaction(em);
-            int rowsUpdated = query.executeUpdate();
-            this.commitTransaction(em);
-            LOGGER.debug("No. of rows updated: {}", rowsUpdated);
-            return rowsUpdated;
-        } catch (Exception ex) { // NOSONAR
-            Transactions.markRollback(em);
-            throw new JpaException(ex);
-        } finally {
-            Transactions.rollback(em);
-            JpaUtil.closeEntityManager(em);
-        }
+        int rowsUpdated = this.executeCriteriaQuery(criteria);
+        LOGGER.debug("No. of rows updated: {}", rowsUpdated);
+        return rowsUpdated;
     }
 
     // <---------------------------------------------- Delete ---------------------------------------------->>
@@ -265,25 +251,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public int deleteByCriteria(DeleteCriteria<T> criteria) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
-            Root<T> root = cd.from(criteria.getEntity());
-            Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
-            Query query = em.createQuery(cd.where(predicates));
-            this.beginTransaction(em);
-            int rowsDeleted = query.executeUpdate();
-            this.commitTransaction(em);
-            LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
-            return rowsDeleted;
-        } catch (Exception ex) { // NOSONAR
-            Transactions.markRollback(em);
-            throw new JpaException(ex);
-        } finally {
-            Transactions.rollback(em);
-            JpaUtil.closeEntityManager(em);
-        }
+        int rowsDeleted = this.executeCriteriaQuery(criteria);
+        LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
+        return rowsDeleted;
     }
 
     /**
@@ -307,6 +277,44 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             Transactions.rollback(em);
             JpaUtil.closeEntityManager(em);
         }
+    }
+
+    private int executeCriteriaQuery(BaseCriteria<T> criteria) {
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            Query criteriaQuery = this.getCriteriaQuery(em, criteria);
+            if (criteriaQuery == null) { // This should never happen.
+                LOGGER.warn("Could not create criteria query!!");
+                return 0;
+            }
+            this.beginTransaction(em);
+            int rowsAffected = criteriaQuery.executeUpdate();
+            this.commitTransaction(em);
+            return rowsAffected;
+        } catch (Exception ex) { // NOSONAR
+            Transactions.markRollback(em);
+            throw new JpaException(ex);
+        } finally {
+            Transactions.rollback(em);
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    private Query getCriteriaQuery(EntityManager em, BaseCriteria<T> criteria) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        Query query = null;
+        if (criteria instanceof UpdateCriteria) {
+            CriteriaUpdate<T> cu = cb.createCriteriaUpdate(criteria.getEntity());
+            Root<T> root = cu.from(criteria.getEntity());
+            cu.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            query = em.createQuery(cu);
+        } else if (criteria instanceof DeleteCriteria) {
+            CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
+            Root<T> root = cd.from(criteria.getEntity());
+            cd.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            query = em.createQuery(cd);
+        }
+        return query;
     }
 
     // <---------------------------------------------- Find ---------------------------------------------->>
@@ -336,8 +344,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
-            Predicate[] predicates = Predicates.using(cb, root, criteria.getCriteriaAttributes());
-            return em.createQuery(cq.where(predicates)).getResultList();
+            cq.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -359,9 +367,44 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
                     .stream()
                     .map(root::get)
                     .collect(Collectors.toList());
-            return em.createQuery(cq.multiselect(selections)
-                            .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
-                    .getResultList();
+            cq.multiselect(selections)
+                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            return em.createQuery(cq).getResultList();
+        } catch (Exception ex) { // NOSONAR
+            throw new JpaException(ex);
+        } finally {
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @Override
+    public <E> List<E> getColumnValues(String entityAttributeName, Class<E> entityAttributeType, Class<T> entity) {
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<E> cq = cb.createQuery(entityAttributeType);
+            Root<T> root = cq.from(entity);
+            cq.select(root.get(entityAttributeName));
+            return em.createQuery(cq).getResultList();
+        } catch (Exception ex) { // NOSONAR
+            throw new JpaException(ex);
+        } finally {
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @Override
+    public List<Object[]> getMultiColumnValues(Class<T> entity, String... entityAttributeNames) {
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+            Root<T> root = cq.from(entity);
+            Selection<?>[] selections = Stream.of(entityAttributeNames)
+                    .map(root::get)
+                    .toArray(Selection[]::new);
+            cq.select(cb.array(selections));
+            return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -394,7 +437,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
-            return em.createQuery(cq.select(cq.from(entity))).getResultList();
+            Root<T> root = cq.from(entity);
+            cq.select(root);
+            return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -410,7 +455,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
-            return em.createQuery(cq.select(cq.from(entity)))
+            Root<T> root = cq.from(entity);
+            cq.select(root);
+            return em.createQuery(cq)
                     .setFirstResult(startPos)
                     .setMaxResults(maxResult)
                     .getResultList();
@@ -447,8 +494,26 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             Root<T> root = cq.from(entity);
-            Predicate predicate = root.get(attributeName).in(values);
-            return em.createQuery(cq.select(root).where(predicate)).getResultList();
+            cq.select(root);
+            cq.where(root.get(attributeName).in(values));
+            return em.createQuery(cq).getResultList();
+        } catch (Exception ex) { // NOSONAR
+            throw new JpaException(ex);
+        } finally {
+            JpaUtil.closeEntityManager(em);
+        }
+    }
+
+    @Override
+    public List<T> findByINOperatorNegation(Class<T> entity, String attributeName, List<Object> values) {
+        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(entity);
+            Root<T> root = cq.from(entity);
+            cq.select(root);
+            cq.where(cb.not(root.get(attributeName).in(values)));
+            return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -516,12 +581,14 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<C> cq = cb.createQuery(criteria.getConstructorClass());
             Root<T> root = cq.from(criteria.getEntity());
-            return em.createQuery(cq.select(cb.construct(criteria.getConstructorClass(), criteria.getSelections()
-                                    .stream()
-                                    .map(root::get)
-                                    .toArray(Selection[]::new)))
-                            .where(Predicates.using(cb, root, criteria.getCriteriaAttributes())))
-                    .getResultList();
+            Selection<?>[] selections = criteria.getSelections()
+                    .stream()
+                    .map(root::get)
+                    .toArray(Selection[]::new);
+            CompoundSelection<C> compoundSelection = cb.construct(criteria.getConstructorClass(), selections);
+            cq.select(compoundSelection);
+            cq.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -572,7 +639,10 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-            return em.createQuery(cq.select(cb.count(cq.from(entity)))).getSingleResult();
+            Root<T> root = cq.from(entity);
+            Expression<Long> expression = cb.count(root);
+            cq.select(expression);
+            return em.createQuery(cq).getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
