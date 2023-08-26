@@ -21,6 +21,7 @@ package com.adeptj.modules.data.jpa.eclipselink.internal;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.osgi.annotation.bundle.Header;
 import org.osgi.framework.BundleActivator;
@@ -70,8 +71,10 @@ public class JpaActivator implements BundleActivator {
                 sessionLog.setSession(null);
                 field.set(null, null);
             }
-        } catch (IllegalAccessException ex) {
+        } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
+            // Just a fallback, this will at least remove the SLF4JLogger instance.
+            AbstractSessionLog.setLog(new DefaultSessionLog());
         }
     }
 }

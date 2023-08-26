@@ -39,7 +39,7 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class EntityManagerFactoryWrapper implements EntityManagerFactory {
+class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
     private final EntityManagerFactory entityManagerFactory;
 

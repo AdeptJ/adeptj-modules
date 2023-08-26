@@ -28,6 +28,8 @@ import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.PersistenceInfoProvider;
 import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.ValidationMode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -41,8 +43,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.ValidationMode;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
@@ -152,11 +152,12 @@ public class EntityManagerFactoryLifecycle {
 
     @Reference(service = JpaRepository.class, cardinality = MULTIPLE, policy = DYNAMIC)
     protected void bindJpaRepository(JpaRepository<?, ?> repository) {
-        if (!(repository instanceof AbstractJpaRepository<?, ?> jpaRepository)) {
+        if (repository instanceof AbstractJpaRepository<?, ?> jpaRepository) {
+            LOGGER.info("Binding JpaRepository: {} to persistence unit: [{}]", repository, this.unitName);
+            jpaRepository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
+        } else {
             throw new JpaRepositoryBindException("The repository instance must extend AbstractJpaRepository!");
         }
-        LOGGER.info("Binding JpaRepository: {} to persistence unit: [{}]", repository, this.unitName);
-        jpaRepository.setEntityManagerFactory(new EntityManagerFactoryWrapper(this.entityManagerFactory));
     }
 
     protected void unbindJpaRepository(JpaRepository<?, ?> repository) {
