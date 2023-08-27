@@ -46,6 +46,7 @@ import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
@@ -366,11 +367,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<T> root = cq.from(criteria.getEntity());
-            List<Selection<?>> selections = criteria.getSelections()
-                    .stream()
-                    .map(selection -> root.get(selection).alias(selection))
-                    .collect(Collectors.toList());
-            cq.multiselect(selections);
+            cq.multiselect(this.getTupleSelections(criteria, root));
             cq.where(Predicates.from(cb, root, criteria));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
@@ -378,6 +375,20 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         } finally {
             JpaUtil.closeEntityManager(em);
         }
+    }
+
+    @NotNull
+    private List<Selection<?>> getTupleSelections(TupleCriteria<T> criteria, Root<T> root) {
+        return criteria.getSelections()
+                .stream()
+                .map(selection -> {
+                    Path<?> path = root.get(selection.getAttributeName());
+                    if (StringUtils.isNotEmpty(selection.getAlias())) {
+                        path.alias(selection.getAlias());
+                    }
+                    return path;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -405,9 +416,9 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
             Root<T> root = cq.from(entity);
-            Selection<?>[] selections = Stream.of(attributeNames)
+            Path<?>[] selections = Stream.of(attributeNames)
                     .map(root::get)
-                    .toArray(Selection[]::new);
+                    .toArray(Path[]::new);
             cq.select(cb.array(selections));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR

@@ -228,26 +228,17 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByTupleCriteriaUsingPosition() {
+    public void testFindByTupleCriteria() {
         List<Tuple> tuples = repository.findByTupleCriteria(TupleCriteria.builder(User.class)
-                .addSelections("firstName", "lastName")
+                .addSelection("firstName", "fname")
+                .addSelection("contact", "mobile")
                 .addCriteriaAttribute("contact", "1234567891")
                 .build());
         tuples.forEach(tuple -> {
-            LOGGER.info("FirstName: {}", tuple.get(0));
-            LOGGER.info("FirstName: {}", tuple.get(0));
-        });
-    }
-
-    @Test
-    public void testFindByTupleCriteriaUsingAlias() {
-        List<Tuple> tuples = repository.findByTupleCriteria(TupleCriteria.builder(User.class)
-                .addSelections("firstName", "lastName")
-                .addCriteriaAttribute("contact", "1234567891")
-                .build());
-        tuples.forEach(tuple -> {
-            LOGGER.info("FirstName: {}", tuple.get("firstName"));
-            LOGGER.info("FirstName: {}", tuple.get("lastName"));
+            LOGGER.info("FirstName by position: {}", tuple.get(0));
+            LOGGER.info("Contact by position: {}", tuple.get(1));
+            LOGGER.info("FirstName by alias: {}", tuple.get("fname"));
+            LOGGER.info("Contact by alias: {}", tuple.get("mobile"));
         });
     }
 

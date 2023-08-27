@@ -21,10 +21,11 @@
 package com.adeptj.modules.data.jpa.criteria;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +37,35 @@ import java.util.Map;
  */
 public class TupleCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
-    private List<String> selections;
+    private List<TupleSelection> selections;
 
     private TupleCriteria(Class<T> entity) {
         super(entity);
     }
 
-    public List<String> getSelections() {
+    public List<TupleSelection> getSelections() {
         return selections;
+    }
+
+    public static class TupleSelection {
+
+        private final String attributeName;
+
+        private final String alias;
+
+        public TupleSelection(String attributeName, String alias) {
+            Validate.isTrue(StringUtils.isNotEmpty(attributeName), "attributeName string can't be null!");
+            this.attributeName = attributeName;
+            this.alias = alias;
+        }
+
+        public String getAttributeName() {
+            return attributeName;
+        }
+
+        public String getAlias() {
+            return alias;
+        }
     }
 
     public static <T extends BaseEntity> @NotNull Builder<T> builder(Class<T> entity) {
@@ -59,7 +81,7 @@ public class TupleCriteria<T extends BaseEntity> extends BaseCriteria<T> {
 
         private Map<String, Object> criteriaAttributes;
 
-        private List<String> selections;
+        private List<TupleSelection> selections;
 
         private Builder(Class<T> entity) {
             this.entity = entity;
@@ -73,19 +95,11 @@ public class TupleCriteria<T extends BaseEntity> extends BaseCriteria<T> {
             return this;
         }
 
-        public Builder<T> addSelection(String attributeName) {
+        public Builder<T> addSelection(String attributeName, String alias) {
             if (this.selections == null) {
                 this.selections = new ArrayList<>();
             }
-            this.selections.add(attributeName);
-            return this;
-        }
-
-        public Builder<T> addSelections(String... attributeNames) {
-            if (this.selections == null) {
-                this.selections = new ArrayList<>();
-            }
-            this.selections.addAll(Arrays.asList(attributeNames));
+            this.selections.add(new TupleSelection(attributeName, alias));
             return this;
         }
 
