@@ -28,7 +28,10 @@ import java.util.Arrays;
  * EclipseLink logger bridge over SLF4J.
  * <p>
  * Borrowed (with much appreciation) from EclipseLink's org.eclipse.persistence.logging.slf4j.SLF4JLogger.
- * EclipseLink's SLF4JLogger class is not exported by the containing bundle which results in {@link ClassNotFoundException}.
+ * <p>
+ * EclipseLink's SLF4JLogger class is not exported by the containing bundle and that results in a
+ * {@link ClassNotFoundException} when EclipseLink tries to initialize the EntityManagerFactory with the
+ * eclipselink.logging.logger property having the fully qualified class name of this class as value.
  *
  * @author Jaro Kuruc  - Initial API and implementation.
  * @author Tomas Kraus - EclipseLink 2.7 integration.
