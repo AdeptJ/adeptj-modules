@@ -36,6 +36,7 @@ import jakarta.persistence.Tuple;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -127,10 +128,10 @@ public class UserRepositoryTest {
     @Test
     public void testInsert() {
         User usr = new User();
-        usr.setContact("1234567893");
-        usr.setFirstName("John4");
-        usr.setLastName("Doe4");
-        usr.setEmail("john.doe4@johndoe.com");
+        usr.setContact("6560084680");
+        usr.setFirstName("John");
+        usr.setLastName("Doe");
+        usr.setEmail("john.doe@johndoe.com");
         Address address1 = new Address();
         address1.setCity("Gurugram");
         address1.setState("Haryana");
@@ -149,19 +150,19 @@ public class UserRepositoryTest {
     @Test
     public void testBatchInsert() {
         List<User> users = new ArrayList<>();
-        for (int i = 51; i < 101; i++) {
+        for (int i = 101; i < 201; i++) {
             User usr = new User();
-            usr.setContact("1234567893" + (i + 50));
-            usr.setFirstName("John" + i);
-            usr.setLastName("Doe" + 1);
-            usr.setEmail(i + "john.doe@johndoe.com");
+            usr.setContact("1234567" + i);
+            usr.setFirstName("John_" + i);
+            usr.setLastName("Doe_" + i);
+            usr.setEmail("john.doe+" + i + "@johndoe.com");
             users.add(usr);
         }
-        this.repository.batchInsert(users, 5);
+        this.repository.batchInsert(users, 20);
     }
 
     @Test
-    public void testExecuteInTransaction() {
+    public void testDoWithEntityManagerInTransaction() {
         User user = this.repository.doWithEntityManager(em -> {
             User usr = new User();
             usr.setContact("12345678915");
@@ -175,15 +176,28 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testUpdate() {
+    public void testUpdateWithValidId() {
         User user = new User();
-        user.setId(7L);
+        user.setId(506L);
         user.setContact("1234567890");
         user.setFirstName("John_Updated_Again_");
         user.setLastName("Doe_Updated");
         user.setEmail("john.doe1@johndoe.com");
         user = this.repository.update(user);
         LOGGER.info("User's Contact No is: {}", user.getContact());
+    }
+
+    @Test
+    public void testUpdateWithNoId() {
+        IllegalStateException thrown = Assertions.assertThrows(IllegalStateException.class, () -> {
+            User user = new User();
+            user.setContact("1234567890");
+            user.setFirstName("John_Updated_Again_Again");
+            user.setLastName("Doe_Updated_Again");
+            user.setEmail("u_john.doe1@johndoe.com");
+            this.repository.update(user);
+        });
+        Assertions.assertEquals("Entity is not a detached entity, not merging it.", thrown.getMessage());
     }
 
     @Test

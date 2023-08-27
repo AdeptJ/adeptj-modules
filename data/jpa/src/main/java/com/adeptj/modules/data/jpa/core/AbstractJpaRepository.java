@@ -169,6 +169,11 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     @Override
     public T update(T entity) {
         Validate.isTrue(entity != null, "Entity can't be null!");
+        Validate.validState((this.entityManagerFactory != null), "EntityManagerFactory can't be null!!");
+        Object id = this.entityManagerFactory.getPersistenceUnitUtil().getIdentifier(entity);
+        if (id == null) {
+            throw new IllegalStateException("Entity is not a detached entity, not merging it.");
+        }
         T updated;
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
@@ -205,15 +210,14 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            // This should happen in a single transaction therefore start the transaction right away.
-            this.beginTransaction(em);
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
                 LOGGER.warn("Entity couldn't be deleted because it doesn't exists in DB: [{}]", entity);
             } else {
+                this.beginTransaction(em);
                 em.remove(entityToDelete);
+                this.commitTransaction(em);
             }
-            this.commitTransaction(em);
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
             throw new JpaException(ex);

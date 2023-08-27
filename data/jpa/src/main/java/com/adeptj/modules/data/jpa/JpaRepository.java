@@ -66,10 +66,11 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
     void batchInsert(List<T> entities, int batchSize);
 
     /**
-     * Updates the given JPA entity in DB.
+     * Updates the given JPA entity in DB if it is a detached entity and throws exception if it is a new entity.
      *
      * @param entity the JPA entity instance
      * @return Updated JPA entity instance
+     * @throws IllegalStateException if is not a detached entity.
      */
     T update(T entity);
 
