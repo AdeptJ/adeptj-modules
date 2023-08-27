@@ -30,13 +30,14 @@ import com.adeptj.modules.data.jpa.entity.User;
 import com.adeptj.modules.data.jpa.query.InParam;
 import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
+import com.adeptj.modules.data.jpa.util.JpaUtil;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Tuple;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -64,48 +65,53 @@ public class UserRepositoryTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static UserRepository repository;
+    private UserRepository repository;
+
+    private static EntityManagerFactory entityManagerFactory;
 
     static {
         System.setProperty(SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING, "true");
     }
 
-    //@BeforeAll
-    public static void initHibernateEntityManagerFactoryPostgres() {
+    @BeforeAll
+    public static void setup() {
+        initEclipseLinkEntityManagerFactoryMySQL();
+    }
+
+    @AfterAll
+    public static void destroy() {
+        JpaUtil.closeEntityManagerFactory(entityManagerFactory);
+    }
+
+    @BeforeEach
+    public void setupRepository() {
+        this.repository = new UserRepository();
+        this.repository.setEntityManagerFactory(entityManagerFactory);
+    }
+
+    private static void initHibernateEntityManagerFactoryPostgres() {
         String unitName = "AdeptJ_PU_Postgres_Hibernate";
-        repository = new UserRepository();
         Map<String, Object> properties = new HashMap<>();
         properties.put("jakarta.persistence.nonJtaDataSource", getDataSource());
-        EntityManagerFactory entityManagerFactory =
-                new HibernatePersistenceProvider().createEntityManagerFactory(unitName, properties);
-        repository.setEntityManagerFactory(entityManagerFactory);
+        entityManagerFactory = new HibernatePersistenceProvider().createEntityManagerFactory(unitName, properties);
         LOGGER.info("EntityManagerFactory created!!");
     }
 
-    @BeforeAll
-    public static void initEclipseLinkEntityManagerFactoryMySQL() {
+    private static void initEclipseLinkEntityManagerFactoryMySQL() {
         String unitName = "AdeptJ_PU_MySQL_EclipseLink";
-        repository = new UserRepository();
-        EntityManagerFactory entityManagerFactory =
-                new PersistenceProvider().createEntityManagerFactory(unitName, new HashMap<>());
-        repository.setEntityManagerFactory(entityManagerFactory);
+        entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, new HashMap<>());
         LOGGER.info("EntityManagerFactory created!!");
     }
 
-    //@BeforeAll
-    public static void initEclipseLinkEntityManagerFactoryPostgres() {
+    private static void initEclipseLinkEntityManagerFactoryPostgres() {
         String unitName = "AdeptJ_PU_Postgres_EclipseLink";
-        repository = new UserRepository();
         Map<String, Object> properties = new HashMap<>();
         properties.put("jakarta.persistence.nonJtaDataSource", getDataSource());
         properties.put(SESSION_CUSTOMIZER, new PostgresCustomizer());
-        EntityManagerFactory entityManagerFactory =
-                new PersistenceProvider().createEntityManagerFactory(unitName, properties);
-        repository.setEntityManagerFactory(entityManagerFactory);
+        entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, properties);
         LOGGER.info("EntityManagerFactory created!!");
     }
 
-    @NotNull
     private static PGSimpleDataSource getDataSource() {
         PGSimpleDataSource ds = new MyPGSimpleDataSource(false);
         ds.setServerNames(null);
@@ -116,10 +122,7 @@ public class UserRepositoryTest {
         return ds;
     }
 
-    @AfterAll
-    public static void destroy() {
-        repository.closeEntityManagerFactory();
-    }
+    // ------------------------------------------------ Test cases ------------------------------------------------
 
     @Test
     public void testInsert() {
@@ -139,7 +142,7 @@ public class UserRepositoryTest {
         address2.setCountry("India");
         address2.setPin("110018");
         usr.setAddresses(List.of(address1, address2));
-        User user = repository.insert(usr);
+        User user = this.repository.insert(usr);
         LOGGER.info("User ID: {}", user.getId());
     }
 
@@ -154,12 +157,12 @@ public class UserRepositoryTest {
             usr.setEmail(i + "john.doe@johndoe.com");
             users.add(usr);
         }
-        repository.batchInsert(users, 5);
+        this.repository.batchInsert(users, 5);
     }
 
     @Test
     public void testExecuteInTransaction() {
-        User user = repository.doWithEntityManager(em -> {
+        User user = this.repository.doWithEntityManager(em -> {
             User usr = new User();
             usr.setContact("12345678915");
             usr.setFirstName("John");
@@ -179,13 +182,13 @@ public class UserRepositoryTest {
         user.setFirstName("John_Updated_Again_");
         user.setLastName("Doe_Updated");
         user.setEmail("john.doe1@johndoe.com");
-        user = repository.update(user);
+        user = this.repository.update(user);
         LOGGER.info("User's Contact No is: {}", user.getContact());
     }
 
     @Test
     public void testUpdateByCriteria() {
-        int rowsUpdated = repository.updateByCriteria(UpdateCriteria.builder(User.class)
+        int rowsUpdated = this.repository.updateByCriteria(UpdateCriteria.builder(User.class)
                 .addCriteriaAttribute("firstName", "John")
                 .addUpdateAttribute("contact", "1234567891")
                 .build());
@@ -194,12 +197,12 @@ public class UserRepositoryTest {
 
     @Test
     public void testDelete() {
-        repository.delete(User.class, 19L);
+        this.repository.delete(User.class, 19L);
     }
 
     @Test
     public void testDeleteByCriteria() {
-        int rows = repository.deleteByCriteria(DeleteCriteria.builder(User.class)
+        int rows = this.repository.deleteByCriteria(DeleteCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567890")
                 .build());
         LOGGER.info("Rows deleted: {}", rows);
@@ -207,14 +210,14 @@ public class UserRepositoryTest {
 
     @Test
     public void testDeleteByJpaNamedQuery() {
-        int rows = repository.deleteByJpaNamedQuery("User.DeleteUserByContact.JPA",
+        int rows = this.repository.deleteByJpaNamedQuery("User.DeleteUserByContact.JPA",
                 new PositionalParam(1, "1234567890"));
         LOGGER.info("Rows deleted: {}", rows);
     }
 
     @Test
     public void testFindByCriteria() {
-        List<User> users = repository.findByCriteria(ReadCriteria.builder(User.class)
+        List<User> users = this.repository.findByCriteria(ReadCriteria.builder(User.class)
                 .addCriteriaAttribute("contact", "1234567893")
                 .build());
         users.get(0).getAddresses().forEach(address -> LOGGER.info(address.toString()));
@@ -223,13 +226,13 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindById() {
-        User user = repository.findById(User.class, 9L);
+        User user = this.repository.findById(User.class, 9L);
         user.getAddresses().forEach(address -> LOGGER.info(address.toString()));
     }
 
     @Test
     public void testFindByTupleCriteria() {
-        List<Tuple> tuples = repository.findByTupleCriteria(TupleCriteria.builder(User.class)
+        List<Tuple> tuples = this.repository.findByTupleCriteria(TupleCriteria.builder(User.class)
                 .addSelection("firstName", "fname")
                 .addSelection("contact", "mobile")
                 .addCriteriaAttribute("contact", "1234567891")
@@ -244,14 +247,14 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindByNamedQueryAsString() {
-        repository.findByNamedQuery(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
+        this.repository.findByNamedQuery(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
                         new PositionalParam(1, "1234567891"))
                 .forEach(firstName -> LOGGER.info("FirstName: {}", firstName));
     }
 
     @Test
     public void testFindByNamedQueryAsUser() {
-        repository.findByNamedQuery(User.class, "User.findUserByContact.JPA",
+        this.repository.findByNamedQuery(User.class, "User.findUserByContact.JPA",
                         new PositionalParam(1, "1234567891"))
                 .forEach(user -> {
                     LOGGER.info("FirstName: {}", user.getFirstName());
@@ -261,7 +264,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindByNamedQueryAsObjectArray_1() {
-        repository.findByNamedQuery(Object[].class, "User.findUserByContact.NATIVE",
+        this.repository.findByNamedQuery(Object[].class, "User.findUserByContact.NATIVE",
                         new PositionalParam(1, "1234567891"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);
@@ -271,7 +274,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindByNamedQueryAsObjectArray_2() {
-        repository.findByNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray",
+        this.repository.findByNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray",
                         new PositionalParam(1, "1234567891"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);
@@ -281,7 +284,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindByNamedQueryWithDTOProjection() {
-        repository.findByNamedQuery(UserDTO.class, "User.DtoProjection",
+        this.repository.findByNamedQuery(UserDTO.class, "User.DtoProjection",
                         new PositionalParam(1, "1234567891"))
                 .forEach(user -> {
                     LOGGER.info("User ID: {}", user.getId());
@@ -292,7 +295,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindByCriteriaWithDTOProjection() {
-        List<UserDTO> list = repository.findByCriteriaWithDTOProjection(ConstructorCriteria.builder(User.class, UserDTO.class)
+        List<UserDTO> list = this.repository.findByCriteriaWithDTOProjection(ConstructorCriteria.builder(User.class, UserDTO.class)
                 .addSelections("id", "firstName", "lastName", "email")
                 .addCriteriaAttribute("contact", "1234567891")
                 .build());
@@ -306,7 +309,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindAll() {
-        List<User> users = repository.findAllUsers();
+        List<User> users = this.repository.findAllUsers();
         users.forEach(user -> {
             LOGGER.info("FirstName: {}", user.getFirstName());
             LOGGER.info("LastName: {}", user.getLastName());
@@ -315,13 +318,13 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindAttributeValuesByCriteria() {
-        List<String> emails = repository.findAttributeValuesByCriteria(User.class, "email", String.class);
+        List<String> emails = this.repository.findAttributeValuesByCriteria(User.class, "email", String.class);
         emails.forEach(email -> LOGGER.info("Email: {}", email));
     }
 
     @Test
     public void testFindMultiAttributeValuesByCriteria() {
-        List<Object[]> values = repository.findMultiAttributeValuesByCriteria(User.class, "id", "email");
+        List<Object[]> values = this.repository.findMultiAttributeValuesByCriteria(User.class, "id", "email");
         values.forEach(objectArray -> {
             LOGGER.info("Id: {}", objectArray[0]);
             LOGGER.info("Email: {}", objectArray[1]);
@@ -331,7 +334,7 @@ public class UserRepositoryTest {
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
     public void testFindByINOperator(boolean negation) {
-        List<User> users = repository.findByINOperator(User.class, "id",
+        List<User> users = this.repository.findByINOperator(User.class, "id",
                 List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
                 negation);
         users.forEach(user -> {
@@ -345,7 +348,7 @@ public class UserRepositoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSqlResultSetMappingUsingEntityMapping() {
-        List<User> users = repository.doWithEntityManager(em ->
+        List<User> users = this.repository.doWithEntityManager(em ->
                 em.createNativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1",
                                 "User.findUserByContact.EntityMapping")
                         .setParameter(1, "John")
@@ -361,7 +364,7 @@ public class UserRepositoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSqlResultSetMappingUsingConstructorMapping() {
-        List<UserDTO> users = repository.doWithEntityManager(em ->
+        List<UserDTO> users = this.repository.doWithEntityManager(em ->
                 em.createNativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1",
                                 "User.findUserByContact.ConstructorMapping")
                         .setParameter(1, "John")
@@ -376,32 +379,32 @@ public class UserRepositoryTest {
 
     @Test
     public void testCountByCriteria() {
-        Long count = repository.countByCriteria(User.class);
+        Long count = this.repository.countByCriteria(User.class);
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByNamedJpaQuery() {
-        Long count = repository.countByNamedQuery("Count.NamedJpaQuery");
+        Long count = this.repository.countByNamedQuery("Count.NamedJpaQuery");
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testCountByNamedNativeQuery() {
-        Long count = repository.countByNamedQuery("Count.NamedNativeQuery");
+        Long count = this.repository.countByNamedQuery("Count.NamedNativeQuery");
         LOGGER.info("Count: {}", count);
     }
 
     @Test
     public void testFindSingleResultByNamedJpaQuery_1() {
-        User user = repository.findSingleResultByNamedQuery(User.class, "User.ScalarResult.NamedJpaQuery_1",
+        User user = this.repository.findSingleResultByNamedQuery(User.class, "User.ScalarResult.NamedJpaQuery_1",
                 new PositionalParam(1, 8L));
         LOGGER.info("User: {}", user);
     }
 
     @Test
     public void testFindSingleResultByNamedJpaQuery_2() {
-        Object[] data = repository.findSingleResultByNamedQuery(Object[].class, "User.ScalarResult.NamedJpaQuery_2",
+        Object[] data = this.repository.findSingleResultByNamedQuery(Object[].class, "User.ScalarResult.NamedJpaQuery_2",
                 new PositionalParam(1, 8L));
         for (Object o : data) {
             LOGGER.info("{}", o);
@@ -410,26 +413,26 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindSingleResultByNamedNativeQuery() {
-        String email = repository.findSingleResultByNamedQuery(String.class, "User.ScalarResult.NamedNativeQuery",
+        String email = this.repository.findSingleResultByNamedQuery(String.class, "User.ScalarResult.NamedNativeQuery",
                 new PositionalParam(1, 8L));
         LOGGER.info("User email: {}", email);
     }
 
     @Test
     public void testFindByNamedStoredProcedure() {
-        List<User> users = repository.findByNamedStoredProcedure("allUsers");
+        List<User> users = this.repository.findByNamedStoredProcedure("allUsers");
         users.forEach(user -> LOGGER.info("Users: {}", user.getEmail()));
     }
 
     @Test
     public void testFindByStoredProcedure() {
-        List<User> users = repository.findByStoredProcedure(User.class, "fetchAllUsers");
+        List<User> users = this.repository.findByStoredProcedure(User.class, "fetchAllUsers");
         users.forEach(user -> LOGGER.info("Users: {}", user.getEmail()));
     }
 
     @Test
     public void testExecuteNamedStoredProcedure() {
-        Object result = repository.executeNamedStoredProcedure("calculateSum",
+        Object result = this.repository.executeNamedStoredProcedure("calculateSum",
                 List.of(new InParam("n1", 1, Integer.class),
                         new InParam("n2", 1653, Integer.class)), "result");
         LOGGER.info("Result: {}", result);
@@ -437,7 +440,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testExecuteStoredProcedure() {
-        Object result = repository.executeStoredProcedure("adeptj_sum",
+        Object result = this.repository.executeStoredProcedure("adeptj_sum",
                 List.of(new InParam("n1", 1, Integer.class),
                         new InParam("n2", 1653, Integer.class)), new OutParam("result", Integer.class));
         LOGGER.info("Result: {}", result);
