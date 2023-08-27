@@ -31,6 +31,7 @@ import com.adeptj.modules.data.jpa.entity.Address;
 import com.adeptj.modules.data.jpa.entity.User;
 import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
+import jakarta.persistence.EntityManagerFactory;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,6 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.EntityManagerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,7 +170,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testExecuteInTransaction() {
-        User user = repository.executeCallbackInTransaction(em -> {
+        User user = repository.doWithEntityManager(em -> {
             User usr = new User();
             usr.setContact("12345678915");
             usr.setFirstName("John");
@@ -178,7 +178,7 @@ public class UserRepositoryTest {
             usr.setEmail("john.doe15@johndoe.com");
             em.persist(usr);
             return usr;
-        });
+        }, true);
         LOGGER.info("User ID: {}", user.getId());
     }
 
@@ -243,9 +243,9 @@ public class UserRepositoryTest {
     @Test
     public void testFindByTupleCriteria() {
         repository.findByTupleCriteria(TupleCriteria.builder(User.class)
-                .addSelections("firstName", "lastName")
-                .addCriteriaAttribute("contact", "1234567892")
-                .build())
+                        .addSelections("firstName", "lastName")
+                        .addCriteriaAttribute("contact", "1234567892")
+                        .build())
                 .forEach(tuple -> {
                     LOGGER.info("FirstName: {}", tuple.get(0));
                     LOGGER.info("FirstName: {}", tuple.get(1));
@@ -255,7 +255,7 @@ public class UserRepositoryTest {
     @Test
     public void testFindByNamedQueryAsUser() {
         repository.findByNamedQuery(User.class, "User.findUserByContact.JPA.User",
-                new PositionalParam(1, "1234567895"))
+                        new PositionalParam(1, "1234567895"))
                 .forEach(user -> {
                     LOGGER.info("FirstName: {}", user.getFirstName());
                     LOGGER.info("LastName: {}", user.getLastName());
@@ -265,30 +265,11 @@ public class UserRepositoryTest {
     @Test
     public void testFindByNamedQueryAsObjectArray() {
         repository.findByNamedQuery(Object[].class, "User.findUserByContact.NATIVE",
-                new PositionalParam(1, "1234567892"))
+                        new PositionalParam(1, "1234567892"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);
                     LOGGER.info("LastName: {}", objectArray[1]);
                 });
-    }
-
-    @Test
-    public void testFindPaginatedRecords() {
-        Long count = repository.countByCriteria(User.class);
-        LOGGER.info("Total no of users: {}", count);
-        int pageSize = count.intValue() / 3;
-        this.paginate(0, pageSize);
-        this.paginate(pageSize, pageSize);
-        this.paginate(pageSize * 2, pageSize);
-    }
-
-    private void paginate(int startPos, int pageSize) {
-        List<User> users = repository.findWithPagination(User.class, startPos, pageSize);
-        users.forEach(user -> {
-            LOGGER.info("FirstName: {}", user.getFirstName());
-            LOGGER.info("LastName: {}", user.getLastName());
-
-        });
     }
 
     @Test
@@ -344,7 +325,7 @@ public class UserRepositoryTest {
         String jpaQuery = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) " +
                 "FROM User u WHERE u.contact = ?1";
         repository.findByJpaQueryWithDTOProjection(UserDTO.class, jpaQuery,
-                new PositionalParam(1, "1234567892"))
+                        new PositionalParam(1, "1234567892"))
                 .forEach(user -> {
                     LOGGER.info("User ID: {}", user.getId());
                     LOGGER.info("FirstName: {}", user.getFirstName());

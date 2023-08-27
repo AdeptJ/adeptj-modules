@@ -37,7 +37,6 @@ import org.osgi.annotation.versioning.ConsumerType;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -151,7 +150,7 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      */
     List<Tuple> findByTupleCriteria(TupleCriteria<T> criteria);
 
-    <E> List<E> getColumnValues(String entityAttributeName, Class<E> entityAttributeType, Class<T> entity);
+    <E> List<E> getColumnValues(Class<T> entity, String entityAttributeName, Class<E> entityAttributeType);
 
     List<Object[]> getMultiColumnValues(Class<T> entity, String... entityAttributeNames);
 
@@ -176,21 +175,6 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
     List<T> findAll(Class<T> entity);
 
     /**
-     * Finds all entities of given type. Helpful wherever pagination is required.
-     * <p>
-     * Note: Should never be called for large number of rows.
-     * <p>
-     * First the no. of records can be checked using {@link JpaRepository#countByCriteria(Class)} method
-     * and then the pagination query can be fired.
-     *
-     * @param entity    the JPA entity class object
-     * @param startPos  position of the first result
-     * @param maxResult maximum number of results to retrieve
-     * @return All of the rows(Entity instances)
-     */
-    List<T> findWithPagination(Class<T> entity, int startPos, int maxResult);
-
-    /**
      * Finds the entity instances of given type using query specified in JPQL format.
      *
      * @param crudDTO DTO holding the JPA entity class object.
@@ -206,19 +190,10 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      * @param entity        the JPA entity class object
      * @param attributeName entity attribute against which IN has to be applied
      * @param values        values on which IN has to be applied
+     * @param negation      apply negation (NOT IN)
      * @return List of entity found by criteria
      */
-    List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values);
-
-    /**
-     * Find the given entity using SQL IN operator by applying negation
-     *
-     * @param entity        the JPA entity class object
-     * @param attributeName entity attribute against which IN has to be applied
-     * @param values        values on which IN has to be applied
-     * @return List of entity found by criteria
-     */
-    List<T> findByINOperatorNegation(Class<T> entity, String attributeName, List<Object> values);
+    List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values, boolean negation);
 
     /**
      * Finds the entity using given native query and project in the given result class.
@@ -315,24 +290,6 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
     Long countByNamedQuery(String name);
 
     /**
-     * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager without a transaction.
-     *
-     * @param action callback object that specifies the JPA action
-     * @param <E>    the result type
-     * @return a result object returned by the action, or null
-     */
-    <E> E executeCallback(JpaCallback<E> action);
-
-    /**
-     * Execute the {@link JpaCallback} action specified by the given action object within an EntityManager in a transaction.
-     *
-     * @param action callback object that specifies the JPA action
-     * @param <E>    the result type
-     * @return a result object returned by the action, or null
-     */
-    <E> E executeCallbackInTransaction(JpaCallback<E> action);
-
-    /**
      * Use the {@link Function} for any specific operation on {@link EntityManager}.
      *
      * @param function    the function which takes {@link EntityManager} as argument.
@@ -341,14 +298,6 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      * @return a result object returned by the action, or null
      */
     <E> E doWithEntityManager(Function<EntityManager, E> function, boolean requiresTxn);
-
-    /**
-     * Use the {@link Consumer} for any specific operation on {@link EntityManager}.
-     *
-     * @param consumer    the consumer which takes {@link EntityManager} as argument.
-     * @param requiresTxn whether an entity transaction is needed
-     */
-    void doWithEntityManager(Consumer<EntityManager> consumer, boolean requiresTxn);
 
     // <<------------------------ StoredProcedure Support ------------------------>>
 

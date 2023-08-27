@@ -21,7 +21,6 @@
 package com.adeptj.modules.data.jpa.core;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
-import com.adeptj.modules.data.jpa.JpaCallback;
 import com.adeptj.modules.data.jpa.JpaRepository;
 import com.adeptj.modules.data.jpa.criteria.BaseCriteria;
 import com.adeptj.modules.data.jpa.criteria.ConstructorCriteria;
@@ -45,12 +44,12 @@ import jakarta.persistence.Query;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +62,6 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -121,7 +119,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public T insert(T entity) {
-        Validate.notNull(entity, "Entity can't be null!");
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             this.beginTransaction(em);
@@ -172,7 +170,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public T update(T entity) {
-        Validate.notNull(entity, "Entity can't be null!");
+        Validate.isTrue(entity != null, "Entity can't be null!");
         T updated;
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
@@ -206,6 +204,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public void delete(Class<T> entity, ID primaryKey) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             // This should happen in a single transaction therefore start the transaction right away.
@@ -264,9 +263,11 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public int deleteAll(Class<T> entity) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            CriteriaDelete<T> cd = em.getCriteriaBuilder().createCriteriaDelete(entity);
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaDelete<T> cd = cb.createCriteriaDelete(entity);
             Query query = em.createQuery(cd);
             this.beginTransaction(em);
             int rowsDeleted = query.executeUpdate();
@@ -328,6 +329,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public T findById(Class<T> entity, ID primaryKey) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             return em.find(entity, primaryKey);
@@ -382,7 +384,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     }
 
     @Override
-    public <E> List<E> getColumnValues(String entityAttributeName, Class<E> entityAttributeType, Class<T> entity) {
+    public <E> List<E> getColumnValues(Class<T> entity, String entityAttributeName, Class<E> entityAttributeType) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -399,6 +402,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
 
     @Override
     public List<Object[]> getMultiColumnValues(Class<T> entity, String... entityAttributeNames) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -421,6 +425,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public <E> List<E> findByNamedQuery(Class<E> resultClass, String name, QueryParam... params) {
+        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<E> query = em.createNamedQuery(name, resultClass);
@@ -438,33 +443,13 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public List<T> findAll(Class<T> entity) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
             Root<T> root = cq.from(entity);
             cq.select(root);
             return em.createQuery(cq).getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<T> findWithPagination(Class<T> entity, int startPos, int maxResult) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
-            Root<T> root = cq.from(entity);
-            cq.select(root);
-            return em.createQuery(cq)
-                    .setFirstResult(startPos)
-                    .setMaxResults(maxResult)
-                    .getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -493,30 +478,20 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entity);
-            Root<T> root = cq.from(entity);
-            cq.select(root);
-            cq.where(root.get(attributeName).in(values));
-            return em.createQuery(cq).getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    @Override
-    public List<T> findByINOperatorNegation(Class<T> entity, String attributeName, List<Object> values) {
+    public List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values, boolean negation) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entity);
             Root<T> root = cq.from(entity);
             cq.select(root);
-            cq.where(cb.not(root.get(attributeName).in(values)));
+            Predicate restriction = root.get(attributeName).in(values);
+            if (negation) {
+                cq.where(cb.not(restriction));
+            } else {
+                cq.where(restriction);
+            }
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -528,6 +503,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     @SuppressWarnings("unchecked")
     @Override
     public List<T> findByNativeQuery(Class<T> resultClass, String nativeQuery, QueryParam... params) {
+        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNativeQuery(nativeQuery, resultClass);
@@ -546,6 +522,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     @SuppressWarnings("unchecked")
     @Override
     public List<T> findByNativeQuery(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
+        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
+        Validate.isTrue(mappingDTO != null, "ResultSetMappingDTO can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
@@ -563,6 +541,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public <E> List<E> findByJpaQueryWithDTOProjection(Class<E> resultClass, String jpaQuery, QueryParam... params) {
+        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<E> typedQuery = em.createQuery(jpaQuery, resultClass);
@@ -580,6 +559,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public <C> List<C> findByCriteriaWithDTOProjection(ConstructorCriteria<T, C> criteria) {
+        Validate.isTrue(criteria != null, "ConstructorCriteria can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -589,8 +569,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
                     .stream()
                     .map(root::get)
                     .toArray(Selection[]::new);
-            CompoundSelection<C> compoundSelection = cb.construct(criteria.getConstructorClass(), selections);
-            cq.select(compoundSelection);
+            cq.select(cb.construct(criteria.getConstructorClass(), selections));
             cq.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
@@ -605,6 +584,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public <E> E findSingleResultByJpaQuery(Class<E> resultClass, String query, QueryParam... params) {
+        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             TypedQuery<E> typedQuery = em.createQuery(query, resultClass);
@@ -639,6 +619,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      */
     @Override
     public Long countByCriteria(Class<T> entity) {
+        Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -694,43 +675,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public <E> E executeCallback(JpaCallback<E> action) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            return action.doInJpa(em);
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <E> E executeCallbackInTransaction(JpaCallback<E> action) {
-        E result;
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            this.beginTransaction(em);
-            result = action.doInJpa(em);
-            this.commitTransaction(em);
-        } catch (Exception ex) { // NOSONAR
-            Transactions.markRollback(em);
-            throw new JpaException(ex);
-        } finally {
-            Transactions.rollback(em);
-            JpaUtil.closeEntityManager(em);
-        }
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public <E> E doWithEntityManager(Function<EntityManager, E> function, boolean requiresTxn) {
+        Validate.isTrue(function != null, "Function can't be null!");
         E result;
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
@@ -749,29 +695,6 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             JpaUtil.closeEntityManager(em);
         }
         return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void doWithEntityManager(Consumer<EntityManager> consumer, boolean requiresTxn) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            if (requiresTxn) {
-                this.beginTransaction(em);
-                consumer.accept(em);
-                this.commitTransaction(em);
-            } else {
-                consumer.accept(em);
-            }
-        } catch (Exception ex) { // NOSONAR
-            Transactions.markRollback(em);
-            throw new JpaException(ex);
-        } finally {
-            Transactions.rollback(em);
-            JpaUtil.closeEntityManager(em);
-        }
     }
 
     // <---------------------------------------- Stored Procedures ---------------------------------------->>

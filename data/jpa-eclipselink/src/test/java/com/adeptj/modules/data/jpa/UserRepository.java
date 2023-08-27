@@ -38,6 +38,8 @@ public class UserRepository extends AbstractJpaRepository<User, Long> {
     }
 
     List<User> findAllUsers() {
-        return super.executeCallback(em -> em.createQuery("Select u from User u", User.class).getResultList());
+        return super.doWithEntityManager(em -> em.createQuery("Select u from User u", User.class)
+                        .getResultList(),
+                false);
     }
 }
