@@ -25,13 +25,13 @@ import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
 import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
-import com.adeptj.modules.data.jpa.dto.CrudDTO;
-import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.entity.Address;
 import com.adeptj.modules.data.jpa.entity.User;
-import com.adeptj.modules.data.jpa.query.NamedParam;
+import com.adeptj.modules.data.jpa.query.InParam;
+import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Tuple;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +39,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +52,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.adeptj.modules.data.jpa.JpaConstants.SYS_PROP_ENABLE_EXCEPTION_HANDLER_LOGGING;
-import static com.adeptj.modules.data.jpa.query.QueryType.JPA;
-import static com.adeptj.modules.data.jpa.query.QueryType.NATIVE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.SESSION_CUSTOMIZER;
 
 /**
@@ -76,42 +76,31 @@ public class UserRepositoryTest {
         repository = new UserRepository();
         Map<String, Object> properties = new HashMap<>();
         properties.put("jakarta.persistence.nonJtaDataSource", getDataSource());
-        EntityManagerFactory entityManagerFactory = null;
-        try {
-            entityManagerFactory = new HibernatePersistenceProvider().createEntityManagerFactory(unitName, properties);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
-        repository.setEntityManagerFactory(entityManagerFactory);
-        LOGGER.info("EntityManagerFactory created!!");
-    }
-
-    public static void initEclipseLinkEntityManagerFactoryMySQL() {
-        String unitName = "AdeptJ_PU_MySQL_EclipseLink";
-        repository = new UserRepository();
-        EntityManagerFactory entityManagerFactory = null;
-        try {
-            entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, new HashMap<>());
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
+        EntityManagerFactory entityManagerFactory =
+                new HibernatePersistenceProvider().createEntityManagerFactory(unitName, properties);
         repository.setEntityManagerFactory(entityManagerFactory);
         LOGGER.info("EntityManagerFactory created!!");
     }
 
     @BeforeAll
+    public static void initEclipseLinkEntityManagerFactoryMySQL() {
+        String unitName = "AdeptJ_PU_MySQL_EclipseLink";
+        repository = new UserRepository();
+        EntityManagerFactory entityManagerFactory =
+                new PersistenceProvider().createEntityManagerFactory(unitName, new HashMap<>());
+        repository.setEntityManagerFactory(entityManagerFactory);
+        LOGGER.info("EntityManagerFactory created!!");
+    }
+
+    //@BeforeAll
     public static void initEclipseLinkEntityManagerFactoryPostgres() {
         String unitName = "AdeptJ_PU_Postgres_EclipseLink";
         repository = new UserRepository();
         Map<String, Object> properties = new HashMap<>();
         properties.put("jakarta.persistence.nonJtaDataSource", getDataSource());
         properties.put(SESSION_CUSTOMIZER, new PostgresCustomizer());
-        EntityManagerFactory entityManagerFactory = null;
-        try {
-            entityManagerFactory = new PersistenceProvider().createEntityManagerFactory(unitName, properties);
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
+        EntityManagerFactory entityManagerFactory =
+                new PersistenceProvider().createEntityManagerFactory(unitName, properties);
         repository.setEntityManagerFactory(entityManagerFactory);
         LOGGER.info("EntityManagerFactory created!!");
     }
@@ -218,10 +207,8 @@ public class UserRepositoryTest {
 
     @Test
     public void testDeleteByJpaNamedQuery() {
-        int rows = repository.deleteByJpaNamedQuery(CrudDTO.builder(User.class)
-                .namedQueryName("User.deleteUserByContact.JPA")
-                .queryParam(new PositionalParam(1, "1234567890"))
-                .build());
+        int rows = repository.deleteByJpaNamedQuery("User.deleteUserByContact.JPA",
+                new PositionalParam(1, "1234567890"));
         LOGGER.info("Rows deleted: {}", rows);
     }
 
@@ -241,21 +228,33 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByTupleCriteria() {
-        repository.findByTupleCriteria(TupleCriteria.builder(User.class)
-                        .addSelections("firstName", "lastName")
-                        .addCriteriaAttribute("contact", "1234567892")
-                        .build())
-                .forEach(tuple -> {
-                    LOGGER.info("FirstName: {}", tuple.get(0));
-                    LOGGER.info("FirstName: {}", tuple.get(1));
-                });
+    public void testFindByTupleCriteriaUsingPosition() {
+        List<Tuple> tuples = repository.findByTupleCriteria(TupleCriteria.builder(User.class)
+                .addSelections("firstName", "lastName")
+                .addCriteriaAttribute("contact", "1234567891")
+                .build());
+        tuples.forEach(tuple -> {
+            LOGGER.info("FirstName: {}", tuple.get(0));
+            LOGGER.info("FirstName: {}", tuple.get(0));
+        });
+    }
+
+    @Test
+    public void testFindByTupleCriteriaUsingAlias() {
+        List<Tuple> tuples = repository.findByTupleCriteria(TupleCriteria.builder(User.class)
+                .addSelections("firstName", "lastName")
+                .addCriteriaAttribute("contact", "1234567891")
+                .build());
+        tuples.forEach(tuple -> {
+            LOGGER.info("FirstName: {}", tuple.get("firstName"));
+            LOGGER.info("FirstName: {}", tuple.get("lastName"));
+        });
     }
 
     @Test
     public void testFindByNamedQueryAsUser() {
-        repository.findByNamedQuery(User.class, "User.findUserByContact.JPA.User",
-                        new PositionalParam(1, "1234567895"))
+        repository.findByNamedQuery(User.class, "User.findUserByContact.JPA",
+                        new PositionalParam(1, "1234567891"))
                 .forEach(user -> {
                     LOGGER.info("FirstName: {}", user.getFirstName());
                     LOGGER.info("LastName: {}", user.getLastName());
@@ -265,7 +264,7 @@ public class UserRepositoryTest {
     @Test
     public void testFindByNamedQueryAsObjectArray() {
         repository.findByNamedQuery(Object[].class, "User.findUserByContact.NATIVE",
-                        new PositionalParam(1, "1234567892"))
+                        new PositionalParam(1, "1234567891"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);
                     LOGGER.info("LastName: {}", objectArray[1]);
@@ -273,15 +272,27 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByJpaQuery() {
-        List<User> users = repository.findByJpaQuery(CrudDTO.builder(User.class)
-                .jpaQuery("SELECT u FROM  User u WHERE u.firstName = :firstName and u.contact = :contact")
-                .queryParams(new NamedParam("firstName", "John3"),
-                        new NamedParam("contact", "1234567892"))
+    public void testFindByNamedQueryWithDTOProjection() {
+        repository.findByNamedQuery(UserDTO.class, "User.DtoProjection",
+                        new PositionalParam(1, "1234567891"))
+                .forEach(user -> {
+                    LOGGER.info("User ID: {}", user.getId());
+                    LOGGER.info("FirstName: {}", user.getFirstName());
+                    LOGGER.info("LastName: {}", user.getLastName());
+                });
+    }
+
+    @Test
+    public void testFindByCriteriaWithDTOProjection() {
+        List<UserDTO> list = repository.findByCriteriaWithDTOProjection(ConstructorCriteria.builder(User.class, UserDTO.class)
+                .addSelections("id", "firstName", "lastName", "email")
+                .addCriteriaAttribute("contact", "1234567891")
                 .build());
-        users.forEach(user -> {
-            LOGGER.info("FirstName: {}", user.getFirstName());
-            LOGGER.info("LastName: {}", user.getLastName());
+        list.forEach(dto -> {
+            LOGGER.info("User ID: {}", dto.getId());
+            LOGGER.info("FirstName: {}", dto.getFirstName());
+            LOGGER.info("LastName: {}", dto.getLastName());
+            LOGGER.info("Email: {}", dto.getEmail());
         });
     }
 
@@ -295,67 +306,69 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByNativeQuery() {
-        List<User> users = repository.findByNativeQuery(User.class,
-                "SELECT u.ID, u.FIRST_NAME, u.LAST_NAME FROM Users u WHERE MOBILE_NO = ?1",
-                new PositionalParam(1, "1234567892"));
+    public void testFindAttributeValuesByCriteria() {
+        List<String> emails = repository.findAttributeValuesByCriteria(User.class, "email", String.class);
+        emails.forEach(email -> LOGGER.info("Email: {}", email));
+    }
+
+    @Test
+    public void testFindMultiAttributeValuesByCriteria() {
+        List<Object[]> values = repository.findMultiAttributeValuesByCriteria(User.class, "id", "email");
+        values.forEach(objectArray -> {
+            LOGGER.info("Id: {}", objectArray[0]);
+            LOGGER.info("Email: {}", objectArray[1]);
+        });
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void testFindByINOperator(boolean negation) {
+        List<User> users = repository.findByINOperator(User.class, "id",
+                List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                negation);
         users.forEach(user -> {
-            System.out.printf("User ID: %s", user.getId());
+            LOGGER.info("Id: {}", user.getId());
             LOGGER.info("FirstName: {}", user.getFirstName());
             LOGGER.info("LastName: {}", user.getLastName());
+            LOGGER.info("Email: {}", user.getEmail());
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void testFindAndMapResultSet() {
-        List<User> users = repository.findByNativeQuery(User.class, ResultSetMappingDTO.builder()
-                .nativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1")
-                .resultSetMapping("User.findUserByContact.EntityMapping")
-                .queryParam(new PositionalParam(1, "John"))
-                .build());
+    public void testSqlResultSetMappingUsingEntityMapping() {
+        List<User> users = repository.doWithEntityManager(em ->
+                em.createNativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1",
+                                "User.findUserByContact.EntityMapping")
+                        .setParameter(1, "John")
+                        .getResultList(), false);
         users.forEach(user -> {
-            System.out.printf("User ID: %s", user.getId());
+            LOGGER.info("User ID: {}", user.getId());
             LOGGER.info("FirstName: {}", user.getFirstName());
             LOGGER.info("LastName: {}", user.getLastName());
+            LOGGER.info("Email: {}", user.getEmail());
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSqlResultSetMappingUsingConstructorMapping() {
+        List<UserDTO> users = repository.doWithEntityManager(em ->
+                em.createNativeQuery("SELECT * FROM  Users u WHERE FIRST_NAME = ?1",
+                                "User.findUserByContact.ConstructorMapping")
+                        .setParameter(1, "John")
+                        .getResultList(), false);
+        users.forEach(user -> {
+            LOGGER.info("User ID: {}", user.getId());
+            LOGGER.info("FirstName: {}", user.getFirstName());
+            LOGGER.info("LastName: {}", user.getLastName());
+            LOGGER.info("Email: {}", user.getEmail());
         });
     }
 
     @Test
-    public void testFindAndMapConstructorByQuery() {
-        String jpaQuery = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) " +
-                "FROM User u WHERE u.contact = ?1";
-        repository.findByJpaQueryWithDTOProjection(UserDTO.class, jpaQuery,
-                        new PositionalParam(1, "1234567892"))
-                .forEach(user -> {
-                    LOGGER.info("User ID: {}", user.getId());
-                    LOGGER.info("FirstName: {}", user.getFirstName());
-                    LOGGER.info("LastName: {}", user.getLastName());
-                });
-    }
-
-    @Test
-    public void testFindAndMapConstructorByCriteria() {
-        List<UserDTO> list = repository.findByCriteriaWithDTOProjection(ConstructorCriteria.builder(User.class, UserDTO.class)
-                .addSelections("id", "firstName", "lastName", "email")
-                .addCriteriaAttribute("contact", "1234567892")
-                .build());
-        list.forEach(dto -> {
-            LOGGER.info("User ID: {}", dto.getId());
-            LOGGER.info("FirstName: {}", dto.getFirstName());
-            LOGGER.info("LastName: {}", dto.getLastName());
-            LOGGER.info("Email: {}", dto.getEmail());
-        });
-    }
-
-    @Test
-    public void testCountByNativeQuery() {
-        Long count = repository.countByQuery("SELECT count(ID) FROM USERS", NATIVE);
-        LOGGER.info("Count: {}", count);
-    }
-
-    @Test
-    public void testCountByJpaQuery() {
-        Long count = repository.countByQuery("SELECT count(u.id) FROM User u", JPA);
+    public void testCountByCriteria() {
+        Long count = repository.countByCriteria(User.class);
         LOGGER.info("Count: {}", count);
     }
 
@@ -372,36 +385,53 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindSingleResultByJpaQuery() {
-        String query = "SELECT u.email FROM User u where u.id= ?1";
-        String user = repository.findSingleResultByJpaQuery(String.class, query,
+    public void testFindSingleResultByNamedJpaQuery_1() {
+        User user = repository.findSingleResultByNamedQuery(User.class, "User.ScalarResult.NamedJpaQuery_1",
                 new PositionalParam(1, 8L));
         LOGGER.info("User: {}", user);
     }
 
     @Test
-    public void testFindSingleResultByNamedJpaQuery() {
-        User user = repository.findSingleResultByNamedQuery(User.class, "User.ScalarResult.NamedJpaQuery",
+    public void testFindSingleResultByNamedJpaQuery_2() {
+        Object[] data = repository.findSingleResultByNamedQuery(Object[].class, "User.ScalarResult.NamedJpaQuery_2",
                 new PositionalParam(1, 8L));
-        LOGGER.info("User: {}", user);
+        for (Object o : data) {
+            LOGGER.info("{}", o);
+        }
     }
 
     @Test
     public void testFindSingleResultByNamedNativeQuery() {
-        String user = repository.findSingleResultByNamedQuery(String.class, "User.ScalarResult.NamedNativeQuery",
+        String email = repository.findSingleResultByNamedQuery(String.class, "User.ScalarResult.NamedNativeQuery",
                 new PositionalParam(1, 8L));
-        LOGGER.info("User: {}", user);
+        LOGGER.info("User email: {}", email);
     }
 
     @Test
-    public void testNamedStoredProcedure() {
+    public void testFindByNamedStoredProcedure() {
         List<User> users = repository.findByNamedStoredProcedure("allUsers");
         users.forEach(user -> LOGGER.info("Users: {}", user.getEmail()));
     }
 
     @Test
-    public void testStoredProcedure() {
+    public void testFindByStoredProcedure() {
         List<User> users = repository.findByStoredProcedure(User.class, "fetchAllUsers");
         users.forEach(user -> LOGGER.info("Users: {}", user.getEmail()));
+    }
+
+    @Test
+    public void testExecuteNamedStoredProcedure() {
+        Object result = repository.executeNamedStoredProcedure("calculateSum",
+                List.of(new InParam("n1", 1, Integer.class),
+                        new InParam("n2", 1653, Integer.class)), "result");
+        LOGGER.info("Result: {}", result);
+    }
+
+    @Test
+    public void testExecuteStoredProcedure() {
+        Object result = repository.executeStoredProcedure("adeptj_sum",
+                List.of(new InParam("n1", 1, Integer.class),
+                        new InParam("n2", 1653, Integer.class)), new OutParam("result", Integer.class));
+        LOGGER.info("Result: {}", result);
     }
 }

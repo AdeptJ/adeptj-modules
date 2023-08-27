@@ -17,9 +17,9 @@
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:mysql://localhost:3306/AdeptJ?useSSL=false&amp;allowPublicKeyRetrieval=true"/>
             <property name="jakarta.persistence.jdbc.user" value="ut"/>
-            <property name="jakarta.persistence.jdbc.password" value="EclipseLink@2018"/>
+            <property name="jakarta.persistence.jdbc.password" value="EclipseLink@2023"/>
             <property name="eclipselink.deploy-on-startup" value="true"/>
-            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+            <property name="eclipselink.ddl-generation" value="none"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database"/>
             <property name="eclipselink.logging.file" value="jpa.log"/>
             <property name="eclipselink.logging.level" value="FINEST"/>

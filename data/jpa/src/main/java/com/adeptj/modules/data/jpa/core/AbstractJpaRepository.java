@@ -28,13 +28,10 @@ import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
 import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
-import com.adeptj.modules.data.jpa.dto.CrudDTO;
-import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.exception.JpaException;
 import com.adeptj.modules.data.jpa.query.InParam;
 import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
-import com.adeptj.modules.data.jpa.query.QueryType;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
 import com.adeptj.modules.data.jpa.util.Predicates;
 import com.adeptj.modules.data.jpa.util.Transactions;
@@ -229,11 +226,11 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public int deleteByJpaNamedQuery(CrudDTO<T> crudDTO) {
+    public int deleteByJpaNamedQuery(String name, QueryParam... params) {
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
-            TypedQuery<T> query = em.createNamedQuery(crudDTO.getNamedQueryName(), crudDTO.getEntity());
-            JpaUtil.bindQueryParams(query, crudDTO.getQueryParams());
+            Query query = em.createNamedQuery(name);
+            JpaUtil.bindQueryParams(query, params);
             this.beginTransaction(em);
             int rowsDeleted = query.executeUpdate();
             this.commitTransaction(em);
@@ -311,12 +308,12 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaUpdate<T> cu = cb.createCriteriaUpdate(updateCriteria.getEntity());
             updateCriteria.getUpdateAttributes().forEach(cu::set);
             Root<T> root = cu.from(updateCriteria.getEntity());
-            cu.where(Predicates.using(cb, root, updateCriteria.getCriteriaAttributes()));
+            cu.where(Predicates.from(cb, root, updateCriteria));
             query = em.createQuery(cu);
         } else if (criteria instanceof DeleteCriteria) {
             CriteriaDelete<T> cd = cb.createCriteriaDelete(criteria.getEntity());
             Root<T> root = cd.from(criteria.getEntity());
-            cd.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            cd.where(Predicates.from(cb, root, criteria));
             query = em.createQuery(cd);
         }
         return query;
@@ -350,7 +347,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(criteria.getEntity());
             Root<T> root = cq.from(criteria.getEntity());
-            cq.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            cq.where(Predicates.from(cb, root, criteria));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -371,10 +368,10 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             Root<T> root = cq.from(criteria.getEntity());
             List<Selection<?>> selections = criteria.getSelections()
                     .stream()
-                    .map(root::get)
+                    .map(selection -> root.get(selection).alias(selection))
                     .collect(Collectors.toList());
-            cq.multiselect(selections)
-                    .where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            cq.multiselect(selections);
+            cq.where(Predicates.from(cb, root, criteria));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -384,14 +381,14 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     }
 
     @Override
-    public <E> List<E> getColumnValues(Class<T> entity, String entityAttributeName, Class<E> entityAttributeType) {
+    public <E> List<E> findAttributeValuesByCriteria(Class<T> entity, String attributeName, Class<E> attributeType) {
         Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<E> cq = cb.createQuery(entityAttributeType);
+            CriteriaQuery<E> cq = cb.createQuery(attributeType);
             Root<T> root = cq.from(entity);
-            cq.select(root.get(entityAttributeName));
+            cq.select(root.get(attributeName));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
@@ -401,14 +398,14 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     }
 
     @Override
-    public List<Object[]> getMultiColumnValues(Class<T> entity, String... entityAttributeNames) {
+    public List<Object[]> findMultiAttributeValuesByCriteria(Class<T> entity, String... attributeNames) {
         Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
             Root<T> root = cq.from(entity);
-            Selection<?>[] selections = Stream.of(entityAttributeNames)
+            Selection<?>[] selections = Stream.of(attributeNames)
                     .map(root::get)
                     .toArray(Selection[]::new);
             cq.select(cb.array(selections));
@@ -461,23 +458,6 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
      * {@inheritDoc}
      */
     @Override
-    public List<T> findByJpaQuery(CrudDTO<T> crudDTO) {
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            TypedQuery<T> query = em.createQuery(crudDTO.getJpaQuery(), crudDTO.getEntity());
-            JpaUtil.bindQueryParams(query, crudDTO.getQueryParams());
-            return query.getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values, boolean negation) {
         Validate.isTrue(entity != null, "Entity can't be null!");
         EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
@@ -493,60 +473,6 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
                 cq.where(restriction);
             }
             return em.createQuery(cq).getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<T> findByNativeQuery(Class<T> resultClass, String nativeQuery, QueryParam... params) {
-        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            Query query = em.createNativeQuery(nativeQuery, resultClass);
-            JpaUtil.bindQueryParams(query, params);
-            return query.getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<T> findByNativeQuery(Class<T> resultClass, ResultSetMappingDTO mappingDTO) {
-        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
-        Validate.isTrue(mappingDTO != null, "ResultSetMappingDTO can't be null!");
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            Query query = em.createNativeQuery(mappingDTO.getNativeQuery(), mappingDTO.getResultSetMapping());
-            JpaUtil.bindQueryParams(query, mappingDTO.getQueryParams());
-            return query.getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <E> List<E> findByJpaQueryWithDTOProjection(Class<E> resultClass, String jpaQuery, QueryParam... params) {
-        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            TypedQuery<E> typedQuery = em.createQuery(jpaQuery, resultClass);
-            JpaUtil.bindQueryParams(typedQuery, params);
-            return typedQuery.getResultList();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -570,26 +496,8 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
                     .map(root::get)
                     .toArray(Selection[]::new);
             cq.select(cb.construct(criteria.getConstructorClass(), selections));
-            cq.where(Predicates.using(cb, root, criteria.getCriteriaAttributes()));
+            cq.where(Predicates.from(cb, root, criteria));
             return em.createQuery(cq).getResultList();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <E> E findSingleResultByJpaQuery(Class<E> resultClass, String query, QueryParam... params) {
-        Validate.isTrue(resultClass != null, "resultClass argument can't be null!");
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            TypedQuery<E> typedQuery = em.createQuery(query, resultClass);
-            JpaUtil.bindQueryParams(typedQuery, params);
-            return typedQuery.getSingleResult();
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {
@@ -628,26 +536,6 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             Expression<Long> expression = cb.count(root);
             cq.select(expression);
             return em.createQuery(cq).getSingleResult();
-        } catch (Exception ex) { // NOSONAR
-            throw new JpaException(ex);
-        } finally {
-            JpaUtil.closeEntityManager(em);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Long countByQuery(String query, QueryType type) {
-        Validate.isTrue(StringUtils.isNotEmpty(query), "Query string can't be null!");
-        Validate.isTrue(type != null, "QueryType can't be null!");
-        EntityManager em = JpaUtil.createEntityManager(this.entityManagerFactory);
-        try {
-            return switch (type) {
-                case JPA -> (Long) em.createQuery(query).getSingleResult();
-                case NATIVE -> (Long) em.createNativeQuery(query).getSingleResult();
-            };
         } catch (Exception ex) { // NOSONAR
             throw new JpaException(ex);
         } finally {

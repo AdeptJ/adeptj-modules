@@ -25,12 +25,9 @@ import com.adeptj.modules.data.jpa.criteria.DeleteCriteria;
 import com.adeptj.modules.data.jpa.criteria.ReadCriteria;
 import com.adeptj.modules.data.jpa.criteria.TupleCriteria;
 import com.adeptj.modules.data.jpa.criteria.UpdateCriteria;
-import com.adeptj.modules.data.jpa.dto.CrudDTO;
-import com.adeptj.modules.data.jpa.dto.ResultSetMappingDTO;
 import com.adeptj.modules.data.jpa.query.InParam;
 import com.adeptj.modules.data.jpa.query.OutParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
-import com.adeptj.modules.data.jpa.query.QueryType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import org.osgi.annotation.versioning.ConsumerType;
@@ -87,7 +84,7 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
     int updateByCriteria(UpdateCriteria<T> criteria);
 
     /**
-     * Deletes the given JPA entity begin DB.
+     * Deletes the given JPA entity from DB.
      *
      * @param entity     the JPA entity instance
      * @param primaryKey the primary key of the JPA entity
@@ -95,13 +92,13 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
     void delete(Class<T> entity, ID primaryKey);
 
     /**
-     * Deletes the given JPA entity using the CrudDTO attributes.
+     * Deletes the rows from DB by executing the JPA named query.
      *
-     * @param crudDTO DTO holding the JPA entity class object, name of the declared named query
-     *                and parameters to set for ?index in the query a.k.a positional parameters
+     * @param name   The name of a query defined in metadata.
+     * @param params And list of parameters to bind to query parameters (named or positional)
      * @return returns how many rows were deleted
      */
-    int deleteByJpaNamedQuery(CrudDTO<T> crudDTO);
+    int deleteByJpaNamedQuery(String name, QueryParam... params);
 
     /**
      * Deletes the given JPA entity using Criteria API.
@@ -150,9 +147,29 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      */
     List<Tuple> findByTupleCriteria(TupleCriteria<T> criteria);
 
-    <E> List<E> getColumnValues(Class<T> entity, String entityAttributeName, Class<E> entityAttributeType);
+    /**
+     * Finds all the values of the entity attribute(DB column).
+     * <p>
+     * Note: Should never be called for large number of rows as you may not want all of them in memory.
+     *
+     * @param entity        the JPA entity class object.
+     * @param attributeName the name of the attribute present in the JPA entity.
+     * @param attributeType the Java type of the attribute present in the JPA entity.
+     * @param <E>           the result Java type.
+     * @return all the rows of the selected DB column.
+     */
+    <E> List<E> findAttributeValuesByCriteria(Class<T> entity, String attributeName, Class<E> attributeType);
 
-    List<Object[]> getMultiColumnValues(Class<T> entity, String... entityAttributeNames);
+    /**
+     * Finds all the values of the entity attributes(DB columns).
+     * <p>
+     * Note: Should never be called for large number of rows as you may not want all of them in memory.
+     *
+     * @param entity         the JPA entity class object.
+     * @param attributeNames the names of the attributes present in the JPA entity.
+     * @return all the rows of the selected DB columns.
+     */
+    List<Object[]> findMultiAttributeValuesByCriteria(Class<T> entity, String... attributeNames);
 
     /**
      * Finds the given JPA entity using the named JPA query.
@@ -167,7 +184,7 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
     /**
      * Finds all entities of given type.
      * <p>
-     * Note: Should never be called for large number of rows as you don't want millions of row in memory.
+     * Note: Should never be called for large number of rows as you may not want all of them in memory.
      *
      * @param entity the JPA entity class object
      * @return All the rows(Entity instances)
@@ -175,59 +192,15 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
     List<T> findAll(Class<T> entity);
 
     /**
-     * Finds the entity instances of given type using query specified in JPQL format.
-     *
-     * @param crudDTO DTO holding the JPA entity class object.
-     *                The query in JPQL format
-     *                The list of parameters to bind to query parameters (named or positional)
-     * @return List of entity found by JPA query(JPQL format) execution
-     */
-    List<T> findByJpaQuery(CrudDTO<T> crudDTO);
-
-    /**
      * Find the given entity using SQL IN operator
      *
      * @param entity        the JPA entity class object
      * @param attributeName entity attribute against which IN has to be applied
      * @param values        values on which IN has to be applied
-     * @param negation      apply negation (NOT IN)
+     * @param negation      apply negation (NOT IN) if this argument is true
      * @return List of entity found by criteria
      */
     List<T> findByINOperator(Class<T> entity, String attributeName, List<Object> values, boolean negation);
-
-    /**
-     * Finds the entity using given native query and project in the given result class.
-     * <p>
-     * Note: Use only if the names and the types of the query result match to the entity properties.
-     *
-     * @param resultClass the type of the query result, basically an entity class.
-     * @param nativeQuery the native query string
-     * @param params      List of parameters to bind to query parameters (named or positional)
-     * @return List of entity found by query execution
-     */
-    List<T> findByNativeQuery(Class<T> resultClass, String nativeQuery, QueryParam... params);
-
-    /**
-     * Finds the entity using given named native query and project in the given result class.
-     *
-     * @param resultClass the type of the query result, basically an entity class.
-     * @param mappingDTO  DTO containing the native query, resultSetMapping and
-     *                    List of parameters to bind to query parameters (named or positional)
-     * @return List of entity found by query execution
-     */
-    List<T> findByNativeQuery(Class<T> resultClass, ResultSetMappingDTO mappingDTO);
-
-    /**
-     * First find the entity using the given Jpa query and then Map the result to the constructor
-     * of type specified as resultClass.
-     *
-     * @param resultClass the type of the Constructor being mapped
-     * @param jpaQuery    query in JPQL format (JPA SELECT NEW syntax)
-     * @param params      List of parameters to bind to query parameters (named or positional)
-     * @param <E>         Type of returned instance
-     * @return List of instances of type as resultClass
-     */
-    <E> List<E> findByJpaQueryWithDTOProjection(Class<E> resultClass, String jpaQuery, QueryParam... params);
 
     /**
      * First find the entity using the Jpa criteria and then Map the result to the constructor
@@ -241,17 +214,6 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      * @return List of instances of type specified by type parameter C
      */
     <C> List<C> findByCriteriaWithDTOProjection(ConstructorCriteria<T, C> criteria);
-
-    /**
-     * Gets the single result against the JPA query.
-     *
-     * @param <E>         as the type of returned instance
-     * @param resultClass the type of the query result
-     * @param jpaQuery    the query string
-     * @param params      List of parameters to bind to query parameters (named or positional)
-     * @return a singular result begin query execution
-     */
-    <E> E findSingleResultByJpaQuery(Class<E> resultClass, String jpaQuery, QueryParam... params);
 
     /**
      * Gets the single result against the named query.
@@ -271,15 +233,6 @@ public interface JpaRepository<T extends BaseEntity, ID extends Serializable> {
      * @return count of no. of rows of given JPA entity
      */
     Long countByCriteria(Class<T> entity);
-
-    /**
-     * Count the no. of rows of given JPA entity.
-     *
-     * @param query the query string
-     * @param type  type of the JPA or native query
-     * @return count of no. of rows of given JPA entity
-     */
-    Long countByQuery(String query, QueryType type);
 
     /**
      * Count the no. of rows of given JPA entity.

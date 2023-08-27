@@ -22,7 +22,6 @@ package com.adeptj.modules.data.jpa.entity;
 
 import com.adeptj.modules.data.jpa.BaseEntity;
 import com.adeptj.modules.data.jpa.UserDTO;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.ColumnResult;
 import jakarta.persistence.ConstructorResult;
@@ -33,12 +32,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedNativeQueries;
 import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedStoredProcedureQueries;
 import jakarta.persistence.NamedStoredProcedureQuery;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.ParameterMode;
 import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
+import jakarta.persistence.StoredProcedureParameter;
 import jakarta.persistence.Table;
+
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
@@ -51,54 +57,91 @@ import static jakarta.persistence.FetchType.LAZY;
  */
 @Entity
 @Table(schema = "AdeptJ", name = "USERS")
-@NamedQuery(name = "User.findUserFirstNameByContact.JPA.Scalar",
-        query = "SELECT u.firstName FROM User u WHERE u.contact = ?1")
-@NamedQuery(name = "User.findUserCountsByContact.JPA.Scalar",
-        query = "SELECT count(u) from User u")
-@NamedQuery(name = "User.findUserByContact.JPA.User",
-        query = "SELECT u FROM User u WHERE u.contact = ?1")
-@NamedQuery(name = "User.findUserByContact.JPA.ObjectArray",
-        query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.contact = ?1")
-@NamedQuery(name = "User.deleteUserByContact.JPA",
-        query = "DELETE FROM User u WHERE u.contact = ?1")
-@NamedQuery(name = "Count.NamedJpaQuery", query = "SELECT count(u.id) FROM User u")
-@NamedNativeQuery(name = "User.ScalarResult.NamedNativeQuery", query = "SELECT u.EMAIL FROM Users u where u.ID= ?1")
-@NamedQuery(name = "User.ScalarResult.NamedJpaQuery", query = "SELECT u FROM User u where u.id= ?1")
-@NamedNativeQuery(name = "User.findUserByContact.NATIVE",
-        query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM Users u WHERE MOBILE_NO = ?1")
-@NamedNativeQuery(name = "Count.NamedNativeQuery", query = "SELECT count(ID) FROM adeptj.USERS")
-@SqlResultSetMapping(
-        name = "User.findUserByContact.EntityMapping",
-        entities = {
-                @EntityResult(
-                        entityClass = User.class,
-                        fields = {
-                                @FieldResult(name = "id", column = "ID"),
-                                @FieldResult(name = "firstName", column = "FIRST_NAME"),
-                                @FieldResult(name = "lastName", column = "LAST_NAME"),
-                                @FieldResult(name = "email", column = "EMAIL"),
-                                @FieldResult(name = "contact", column = "MOBILE_NO"),
-                        })
+@NamedQueries(
+        {
+                @NamedQuery(name = "User.findUserFirstNameByContact.JPA.Scalar",
+                        query = "SELECT u.firstName FROM User u WHERE u.contact = ?1"),
+                @NamedQuery(name = "User.findUserCountsByContact.JPA.Scalar", query = "SELECT count(u) from User u"),
+                @NamedQuery(name = "User.findUserByContact.JPA", query = "SELECT u FROM User u WHERE u.contact = ?1"),
+                @NamedQuery(name = "User.findUserByContact.JPA.ObjectArray",
+                        query = "SELECT u.firstName, u.lastName FROM  User u WHERE u.contact = ?1"),
+                @NamedQuery(name = "User.deleteUserByContact.JPA", query = "DELETE FROM User u WHERE u.contact = ?1"),
+                @NamedQuery(name = "Count.NamedJpaQuery", query = "SELECT count(u.id) FROM User u"),
+                @NamedQuery(name = "User.ScalarResult.NamedJpaQuery_1", query = "SELECT u FROM User u where u.id= ?1"),
+                @NamedQuery(name = "User.ScalarResult.NamedJpaQuery_2", query = "SELECT u.id, u.email FROM User u where u.id= ?1"),
+                @NamedQuery(name = "User.DtoProjection",
+                        query = "SELECT NEW com.adeptj.modules.data.jpa.UserDTO(u.id, u.firstName, u.lastName, u.email) FROM User u WHERE u.contact = ?1")
+
         }
 )
-@SqlResultSetMapping(
-        name = "User.findUserByContact.ConstructorMapping",
-        classes = {
-                @ConstructorResult(
-                        targetClass = UserDTO.class,
-                        columns = {
-                                @ColumnResult(name = "ID"),
-                                @ColumnResult(name = "FIRST_NAME"),
-                                @ColumnResult(name = "LAST_NAME"),
-                                @ColumnResult(name = "EMAIL"),
-                                @ColumnResult(name = "MOBILE_NO"),
-                        })
+@NamedNativeQueries(
+        {
+                @NamedNativeQuery(name = "User.ScalarResult.NamedNativeQuery",
+                        query = "SELECT u.EMAIL FROM Users u where u.ID= ?1"),
+                @NamedNativeQuery(name = "User.findUserByContact.NATIVE",
+                        query = "SELECT u.FIRST_NAME, u.LAST_NAME FROM Users u WHERE MOBILE_NO = ?1"),
+                @NamedNativeQuery(name = "Count.NamedNativeQuery", query = "SELECT count(ID) FROM adeptj.USERS")
         }
 )
-@NamedStoredProcedureQuery(
-        name = "allUsers",
-        procedureName = "fetchAllUsers",
-        resultClasses = User.class
+@SqlResultSetMappings(
+        {
+                @SqlResultSetMapping(
+                        name = "User.findUserByContact.EntityMapping",
+                        entities = {
+                                @EntityResult(
+                                        entityClass = User.class,
+                                        fields = {
+                                                @FieldResult(name = "id", column = "ID"),
+                                                @FieldResult(name = "firstName", column = "FIRST_NAME"),
+                                                @FieldResult(name = "lastName", column = "LAST_NAME"),
+                                                @FieldResult(name = "email", column = "EMAIL"),
+                                                @FieldResult(name = "contact", column = "MOBILE_NO"),
+                                        })
+                        }
+                ),
+                @SqlResultSetMapping(
+                        name = "User.findUserByContact.ConstructorMapping",
+                        classes = {
+                                @ConstructorResult(
+                                        targetClass = UserDTO.class,
+                                        columns = {
+                                                @ColumnResult(name = "ID"),
+                                                @ColumnResult(name = "FIRST_NAME"),
+                                                @ColumnResult(name = "LAST_NAME"),
+                                                @ColumnResult(name = "EMAIL"),
+                                        })
+                        }
+                )
+        }
+)
+@NamedStoredProcedureQueries(
+        {
+                @NamedStoredProcedureQuery(
+                        name = "allUsers",
+                        procedureName = "fetchAllUsers",
+                        resultClasses = User.class
+                ),
+                @NamedStoredProcedureQuery(
+                        name = "calculateSum",
+                        procedureName = "adeptj_sum",
+                        parameters = {
+                                @StoredProcedureParameter(
+                                        name = "n1",
+                                        type = Integer.class
+                                ),
+                                @StoredProcedureParameter(
+                                        name = "n2",
+                                        type = Integer.class
+                                ),
+                                @StoredProcedureParameter(
+                                        name = "result",
+                                        mode = ParameterMode.OUT,
+                                        type = Integer.class
+                                )
+                        },
+                        resultClasses = Integer.class
+                )
+        }
 )
 public class User implements BaseEntity {
 

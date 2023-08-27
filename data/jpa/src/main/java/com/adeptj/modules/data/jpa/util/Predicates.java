@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.data.jpa.util;
 
+import com.adeptj.modules.data.jpa.BaseEntity;
+import com.adeptj.modules.data.jpa.criteria.BaseCriteria;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -34,13 +36,20 @@ import java.util.Map;
  */
 public final class Predicates {
 
+    private static final Predicate[] NO_RESTRICTIONS = new Predicate[0];
+
     private Predicates() {
     }
 
-    public static <T> Predicate[] using(CriteriaBuilder cb,
-                                        Root<T> root,
-                                        @NotNull Map<String, Object> criteriaAttributes) {
-        return criteriaAttributes.entrySet()
+    public static <T extends BaseEntity> Predicate[] from(@NotNull CriteriaBuilder cb,
+                                                          @NotNull Root<T> root,
+                                                          @NotNull BaseCriteria<T> criteria) {
+        Map<String, Object> criteriaAttributes = criteria.getCriteriaAttributes();
+        if (criteriaAttributes == null || criteriaAttributes.isEmpty()) {
+            return NO_RESTRICTIONS;
+        }
+        return criteriaAttributes
+                .entrySet()
                 .stream()
                 .map(entry -> cb.equal(root.get(entry.getKey()), entry.getValue()))
                 .toArray(Predicate[]::new);

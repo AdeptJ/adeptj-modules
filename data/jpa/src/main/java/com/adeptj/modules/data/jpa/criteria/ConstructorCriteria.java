@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Criteria object holding arguments for JpaCrudRepository findByCriteriaAndMapConstructor* methods.
+ * Criteria object holding arguments for JPQL DTO projection
+ * see method JpaCrudRepository#findByCriteriaWithDTOProjection for the implementation details.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
