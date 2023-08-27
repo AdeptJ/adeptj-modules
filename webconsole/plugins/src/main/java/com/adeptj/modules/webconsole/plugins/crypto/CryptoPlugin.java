@@ -44,6 +44,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serial;
 import java.lang.invoke.MethodHandles;
 import java.util.Dictionary;
 import java.util.Iterator;
@@ -63,6 +64,7 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 @Component(service = {Servlet.class, ConfigurationPlugin.class})
 public class CryptoPlugin extends AbstractWebConsolePlugin implements ConfigurationPlugin {
 
+    @Serial
     private static final long serialVersionUID = 282533706713570062L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
