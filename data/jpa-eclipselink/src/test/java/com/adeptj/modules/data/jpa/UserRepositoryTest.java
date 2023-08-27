@@ -207,7 +207,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testDeleteByJpaNamedQuery() {
-        int rows = repository.deleteByJpaNamedQuery("User.deleteUserByContact.JPA",
+        int rows = repository.deleteByJpaNamedQuery("User.DeleteUserByContact.JPA",
                 new PositionalParam(1, "1234567890"));
         LOGGER.info("Rows deleted: {}", rows);
     }
@@ -243,6 +243,13 @@ public class UserRepositoryTest {
     }
 
     @Test
+    public void testFindByNamedQueryAsString() {
+        repository.findByNamedQuery(String.class, "User.findUserFirstNameByContact.JPA.Scalar",
+                        new PositionalParam(1, "1234567891"))
+                .forEach(firstName -> LOGGER.info("FirstName: {}", firstName));
+    }
+
+    @Test
     public void testFindByNamedQueryAsUser() {
         repository.findByNamedQuery(User.class, "User.findUserByContact.JPA",
                         new PositionalParam(1, "1234567891"))
@@ -253,8 +260,18 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testFindByNamedQueryAsObjectArray() {
+    public void testFindByNamedQueryAsObjectArray_1() {
         repository.findByNamedQuery(Object[].class, "User.findUserByContact.NATIVE",
+                        new PositionalParam(1, "1234567891"))
+                .forEach(objectArray -> {
+                    LOGGER.info("FirstName: {}", objectArray[0]);
+                    LOGGER.info("LastName: {}", objectArray[1]);
+                });
+    }
+
+    @Test
+    public void testFindByNamedQueryAsObjectArray_2() {
+        repository.findByNamedQuery(Object[].class, "User.findUserByContact.JPA.ObjectArray",
                         new PositionalParam(1, "1234567891"))
                 .forEach(objectArray -> {
                     LOGGER.info("FirstName: {}", objectArray[0]);

@@ -24,15 +24,14 @@ import com.adeptj.modules.data.jpa.query.InParam;
 import com.adeptj.modules.data.jpa.query.NamedParam;
 import com.adeptj.modules.data.jpa.query.PositionalParam;
 import com.adeptj.modules.data.jpa.query.QueryParam;
-import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.invoke.MethodHandles;
 
 import static jakarta.persistence.ParameterMode.IN;
@@ -84,31 +83,37 @@ public final class JpaUtil {
      * @param params query bind parameters, either an array of {@link NamedParam} or a {@link PositionalParam}
      */
     public static void bindQueryParams(Query query, QueryParam... params) {
-        if (ArrayUtils.isNotEmpty(params)) {
-            for (QueryParam param : params) {
-                if (param instanceof NamedParam namedParam) {
-                    query.setParameter(namedParam.getName(), namedParam.getValue());
-                } else if (param instanceof PositionalParam positionalParam) {
-                    query.setParameter(positionalParam.getPosition(), positionalParam.getValue());
-                }
+        if (params == null) {
+            LOGGER.warn("QueryParam array is null!!");
+            return;
+        }
+        for (QueryParam param : params) {
+            if (param instanceof NamedParam namedParam) {
+                query.setParameter(namedParam.getName(), namedParam.getValue());
+            } else if (param instanceof PositionalParam positionalParam) {
+                query.setParameter(positionalParam.getPosition(), positionalParam.getValue());
             }
         }
     }
 
     public static void bindStoredProcedureInParams(StoredProcedureQuery query, InParam... params) {
-        if (ArrayUtils.isNotEmpty(params)) {
-            for (InParam param : params) {
-                query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
-                        .setParameter(param.getName(), param.getValue());
-            }
+        if (params == null) {
+            LOGGER.warn("InParam array is null!!");
+            return;
+        }
+        for (InParam param : params) {
+            query.registerStoredProcedureParameter(param.getName(), param.getType(), IN)
+                    .setParameter(param.getName(), param.getValue());
         }
     }
 
     public static void bindNamedStoredProcedureInParams(StoredProcedureQuery query, InParam... params) {
-        if (ArrayUtils.isNotEmpty(params)) {
-            for (InParam param : params) {
-                query.setParameter(param.getName(), param.getValue());
-            }
+        if (params == null) {
+            LOGGER.warn("InParam array is null!!");
+            return;
+        }
+        for (InParam param : params) {
+            query.setParameter(param.getName(), param.getValue());
         }
     }
 }

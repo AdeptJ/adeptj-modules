@@ -378,7 +378,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     }
 
     @NotNull
-    private List<Selection<?>> getTupleSelections(TupleCriteria<T> criteria, Root<T> root) {
+    private List<Selection<?>> getTupleSelections(@NotNull TupleCriteria<T> criteria, Root<T> root) {
         return criteria.getSelections()
                 .stream()
                 .map(selection -> {
