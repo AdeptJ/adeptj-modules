@@ -20,8 +20,6 @@
 
 package com.adeptj.modules.data.jpa.eclipselink.internal;
 
-import org.jetbrains.annotations.NotNull;
-
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -31,11 +29,13 @@ import jakarta.persistence.Query;
 import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Metamodel;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 /**
- * A simple wrapper for {@link EntityManagerFactory}, this way {@link EntityManagerFactory} object isn't directly
- * exposed which prevents the possibility of closing a managed {@link EntityManagerFactory} by consumer.
+ * A simple wrapper for {@link EntityManagerFactory}, this way EntityManagerFactory object isn't directly
+ * exposed which prevents the possibility of closing a managed EntityManagerFactory by consumer.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
