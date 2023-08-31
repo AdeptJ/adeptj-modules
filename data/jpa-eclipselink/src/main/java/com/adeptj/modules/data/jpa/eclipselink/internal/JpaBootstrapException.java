@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.data.jpa.eclipselink.internal;
 
+import java.io.Serial;
+
 /**
  * Exception thrown when there is failure bootstrapping {@link jakarta.persistence.EntityManagerFactory}.
  *
@@ -27,6 +29,7 @@ package com.adeptj.modules.data.jpa.eclipselink.internal;
  */
 class JpaBootstrapException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 4572809035305367737L;
 
     JpaBootstrapException(String message) {

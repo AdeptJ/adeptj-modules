@@ -53,23 +53,24 @@ public class JpaActivator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) {
-        disposeEclipseLinkSingletonLog();
+        unsetEclipseLinkSessionLog();
     }
 
-    static void disposeEclipseLinkSingletonLog() {
+    static void unsetEclipseLinkSessionLog() {
         // We have no other way to set the defaultLog field to null, this will prevent a potential memory leak because
         // AbstractSessionLog is still holding the SLF4JLogger instance as a static field and there is no need
         // of SLF4JLogger if this bundle or EntityManagerFactoryLifecycle is going to be stopped.
         try {
-            Field field = FieldUtils.getDeclaredField(AbstractSessionLog.class, FIELD_DEFAULT_LOG, true);
-            if (field == null) {
-                LOGGER.warn("Field defaultLog is not found in EclipseLink AbstractSessionLog!!");
+            Field defaultLogField = FieldUtils.getDeclaredField(AbstractSessionLog.class, FIELD_DEFAULT_LOG,
+                    true);
+            if (defaultLogField == null) {
+                LOGGER.error("Field defaultLog is not found in EclipseLink AbstractSessionLog!!");
                 return;
             }
-            Object defaultLog = field.get(null);
+            Object defaultLog = defaultLogField.get(null);
             if (defaultLog instanceof SessionLog sessionLog) {
                 sessionLog.setSession(null);
-                field.set(null, null);
+                defaultLogField.set(null, null);
             }
         } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);

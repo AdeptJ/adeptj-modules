@@ -123,7 +123,7 @@ public @interface EntityManagerFactoryConfig {
             name = "Transaction Type",
             description = "JPA Transaction Type(JTA is not supported at this moment!)",
             options = {
-                    @Option(label = "RESOURCE_LOCAL", value = "RESOURCE_LOCAL"),
+                    @Option(label = "RESOURCE_LOCAL", value = JPA_TRANSACTION_TYPE),
                     @Option(label = "JTA", value = "JTA")
             })
     String persistence_unit_transaction_type() default JPA_TRANSACTION_TYPE;

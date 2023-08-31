@@ -35,7 +35,7 @@ import java.util.Map;
 
 /**
  * A simple wrapper for {@link EntityManagerFactory}, this way EntityManagerFactory object isn't directly
- * exposed which prevents the possibility of closing a managed EntityManagerFactory by consumer.
+ * exposed, which prevents the possibility of closing a managed EntityManagerFactory by consumer.
  *
  * @author Rakesh.Kumar, AdeptJ
  */

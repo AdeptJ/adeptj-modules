@@ -30,6 +30,7 @@ import com.adeptj.modules.data.jpa.core.AbstractJpaRepository;
 import com.adeptj.modules.data.jpa.util.JpaUtil;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.ValidationMode;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.persistence.jpa.PersistenceProvider;
@@ -44,13 +45,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
+import static com.adeptj.modules.commons.utils.Constants.EQ;
 import static jakarta.persistence.ValidationMode.NONE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.CLASSLOADER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DEPLOY_ON_STARTUP;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.EXCEPTION_HANDLER_CLASS;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LOGGER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_PARAMETERS;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.NON_JTA_DATASOURCE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SESSION_CUSTOMIZER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.SHARED_CACHE_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.TRANSACTION_TYPE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATION_MODE;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.VALIDATOR_FACTORY;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -109,7 +124,7 @@ public class EntityManagerFactoryLifecycle {
         }
         LOGGER.info("Creating EntityManagerFactory for PersistenceUnit: [{}]", this.unitName);
         try {
-            Map<String, Object> properties = JpaProperties.create(config);
+            Map<String, Object> properties = this.toJpaProperties(config);
             Map<String, Object> providerProperties = provider.getPersistenceUnitProperties();
             if (MapUtil.isNotEmpty(providerProperties)) {
                 properties.putAll(providerProperties);
@@ -131,6 +146,35 @@ public class EntityManagerFactoryLifecycle {
         }
     }
 
+    @NotNull
+    private Map<String, Object> toJpaProperties(@NotNull EntityManagerFactoryConfig config) {
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(DDL_GENERATION, config.ddl_generation());
+        properties.put(DDL_GENERATION_MODE, config.ddl_generation_output_mode());
+        properties.put(SESSION_CUSTOMIZER, new QueryRetryCustomizer(config.query_retry_attempt_count()));
+        properties.put(DEPLOY_ON_STARTUP, config.deploy_on_startup());
+        properties.put(LOGGING_LEVEL, config.logging_level());
+        properties.put(LOGGING_LOGGER, config.eclipselink_slf4j_logger_fqcn());
+        properties.put(LOGGING_PARAMETERS, Boolean.toString(config.log_query_parameters()));
+        // Add all loggers
+        Stream.of(config.eclipselink_loggers())
+                .filter(StringUtils::isNotEmpty)
+                .forEach(logger -> properties.put(logger, config.logging_level()));
+        properties.put(TRANSACTION_TYPE, config.persistence_unit_transaction_type());
+        properties.put(SHARED_CACHE_MODE, config.shared_cache_mode());
+        properties.put(VALIDATION_MODE, config.validation_mode());
+        if (config.use_exception_handler()) {
+            properties.put(EXCEPTION_HANDLER_CLASS, config.exception_handler_fqcn());
+        }
+        // Extra properties are in [key=value] format.
+        Stream.of(config.jpa_properties())
+                .filter(StringUtils::isNotEmpty)
+                .map(row -> row.split(EQ))
+                .filter(parts -> ArrayUtils.getLength(parts) == 2)
+                .forEach(parts -> properties.put(parts[0].trim(), parts[1].trim()));
+        return properties;
+    }
+
     // <<------------------------------------------ OSGi Internal  ------------------------------------------->>
 
     @Deactivate
@@ -144,7 +188,7 @@ public class EntityManagerFactoryLifecycle {
         // When this component is disposed of due to normal configurations or bundle  update
         // then also remove the SLF4JLogger instance from AbstractSessionLog, because a new one will be created when
         // this component is being activated again and EclipseLink is going to create a new EntityManagerFactory.
-        JpaActivator.disposeEclipseLinkSingletonLog();
+        JpaActivator.unsetEclipseLinkSessionLog();
         LOGGER.info(EMF_CLOSED_MSG, this.unitName, TimeUtil.elapsedMillis(startTime));
     }
 
