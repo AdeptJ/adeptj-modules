@@ -25,7 +25,6 @@ import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
 import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -156,7 +155,7 @@ public class CryptoPlugin extends AbstractServlet implements ConfigurationPlugin
     @Override
     public void renderContent(@NotNull HttpServletRequest req, HttpServletResponse res) throws IOException {
         // Put the default values in RequestVariableResolver while rendering the form (a GET request).
-        // But when this method is called via a doGet call after the form submission (a POST request)
+        // But when this method is called via a doGet call after the form submission (in doPost method below)
         // then the request method is still POST, so population with empty values will not happen.
         if (GET.equals(req.getMethod())) {
             this.populateVariableResolver(req, EMPTY, EMPTY);
@@ -167,7 +166,7 @@ public class CryptoPlugin extends AbstractServlet implements ConfigurationPlugin
     // << -------------------------------------- From HttpServlet -------------------------------------->>
 
     @Override
-    protected void doPost(@NotNull HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(@NotNull HttpServletRequest req, HttpServletResponse resp) {
         String plainText = req.getParameter(KEY_PLAIN_TEXT);
         String cipherText = EMPTY;
         if (StringUtils.isNotEmpty(plainText)) {
@@ -182,7 +181,11 @@ public class CryptoPlugin extends AbstractServlet implements ConfigurationPlugin
 
     private void populateVariableResolver(HttpServletRequest req, String plainText, String cipherText) {
         RequestVariableResolver vr = this.getVariableResolver(req);
-        vr.put(KEY_PLAIN_TEXT, plainText);
-        vr.put(KEY_CIPHER_TEXT, cipherText);
+        if (vr == null) {
+            LOGGER.warn("Cannot set plainText and cipherText attributes as the RequestVariableResolver is null!");
+        } else {
+            vr.put(KEY_PLAIN_TEXT, plainText);
+            vr.put(KEY_CIPHER_TEXT, cipherText);
+        }
     }
 }

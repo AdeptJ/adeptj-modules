@@ -1,0 +1,30 @@
+<script type="text/javascript" src="/crypto-plugin/lib/clipboard.min.js"></script>
+<script type="text/javascript" src="/crypto-plugin/ui/crypto.js"></script>
+<p class="statline ui-state-highlight">${encoder.highlight.note}</p>
+<form method="post" action="${pluginRoot}">
+    <table class="nicetable ui-widget">
+        <tbody>
+        <tr>
+            <th colspan="3" class="ui-widget-header">${encoder.provide.plain.text}</th>
+        </tr>
+        <tr>
+            <td>${encoder.plain.text}</td>
+            <td style="width:100%;">
+                <input style="width:100%;" type="password" name="plainText" value="${plainText}"
+                       class="ui-state-default ui-corner-all inputText">
+            </td>
+            <td><input type="submit" value="${encoder.submit.button}" class="ui-state-default ui-corner-all"></td>
+        </tr>
+        <tr>
+            <td>${encoder.encoded.text}</td>
+            <td style="width:100%;">
+                <input id="cipher" style="width:100%;" type="text" value="${encodedText}" readonly=""
+                       class="ui-state-default ui-corner-all inputText">
+            </td>
+            <td>
+                <input type="button" value="Copy" class="copy-button" data-clipboard-action="copy" data-clipboard-target="#cipher">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
