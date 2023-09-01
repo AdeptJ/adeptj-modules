@@ -20,10 +20,12 @@
 
 package com.adeptj.modules.webconsole.security;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.webconsole.WebConsoleSecurityProvider;
-import org.apache.felix.webconsole.WebConsoleSecurityProvider3;
+import org.apache.felix.webconsole.spi.SecurityProvider;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.jetbrains.annotations.NotNull;
@@ -32,30 +34,28 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.metatype.annotations.Designate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.stream.Stream;
 
+import static jakarta.servlet.http.HttpServletResponse.SC_FOUND;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static javax.servlet.http.HttpServletResponse.SC_FOUND;
 
 /**
- * Felix {@link WebConsoleSecurityProvider} implementation which matches the roles set in request with the configured ones.
+ * Felix {@link SecurityProvider} implementation which matches the roles set in request with the configured ones.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = WebConsoleSecurityConfig.class)
 @Component(
         immediate = true,
-        service = WebConsoleSecurityProvider.class,
+        service = SecurityProvider.class,
         property = {
                 RoleBasedSecurityProvider.PN_SECURITY_PROVIDER_ID + "=" + RoleBasedSecurityProvider.SECURITY_PROVIDER_ID
         }
 )
-public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
+public class RoleBasedSecurityProvider implements SecurityProvider {
 
     static final String PN_SECURITY_PROVIDER_ID = "webconsole.security.provider.id";
 
@@ -69,23 +69,14 @@ public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
 
     private String logoutURI;
 
-    // <------------------------ WebConsoleSecurityProvider2 ---------------------------->
-
-    /**
-     * Role [OSGiAdmin] is already set by Undertow SecurityHandler.
-     */
-    @Override
-    public boolean authenticate(HttpServletRequest request, HttpServletResponse response) {
-        // store in a local var as it might be updated by the modified method, see the update method in this class.
-        String[] tempRoles = this.roles;
-        return Stream.of(tempRoles).anyMatch(request::isUserInRole);
-    }
-
-    // <------------------------ WebConsoleSecurityProvider3 ---------------------------->
-
     /**
      * {@inheritDoc}
      */
+    @Override
+    public boolean authorize(Object user, String role) {
+        return true;
+    }
+
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         // store in a local var as it might be updated by the modified method, see the update method in this class.
@@ -98,22 +89,14 @@ public class RoleBasedSecurityProvider implements WebConsoleSecurityProvider3 {
         response.setHeader(HEADER_LOC, tempLogoutURI);
     }
 
-    // <<----------------- Below two methods from WebConsoleSecurityProvider never get called --------------->>
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Object authenticate(String username, String password) {
-        return (Principal) () -> ADMIN;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean authorize(Object user, String role) {
-        return true;
+    public Object authenticate(HttpServletRequest request, HttpServletResponse response) {
+        // store in a local var as it might be updated by the modified method, see the update method in this class.
+        String[] tempRoles = this.roles;
+        if (Stream.of(tempRoles).anyMatch(request::isUserInRole)) {
+            return (Principal) () -> ADMIN;
+        }
+        return null;
     }
 
     // <<------------------------------------------- OSGi Internal ------------------------------------------>>

@@ -24,11 +24,13 @@ import com.adeptj.modules.commons.crypto.CryptoService;
 import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
 import com.adeptj.modules.commons.utils.annotation.ConfigurationPluginProperties;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.webconsole.AbstractWebConsolePlugin;
-import org.apache.felix.webconsole.DefaultVariableResolver;
-import org.apache.felix.webconsole.VariableResolver;
-import org.apache.felix.webconsole.WebConsoleUtil;
+import org.apache.felix.webconsole.servlet.AbstractServlet;
+import org.apache.felix.webconsole.servlet.RequestVariableResolver;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationPlugin;
@@ -39,10 +41,6 @@ import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serial;
 import java.lang.invoke.MethodHandles;
@@ -62,7 +60,7 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 @WebConsolePlugin(label = CryptoPlugin.PLUGIN_LABEL_VALUE, title = CryptoPlugin.PLUGIN_TITLE_VALUE)
 @ConfigPluginId(CryptoPlugin.PLUGIN_ID)
 @Component(service = {Servlet.class, ConfigurationPlugin.class})
-public class CryptoPlugin extends AbstractWebConsolePlugin implements ConfigurationPlugin {
+public class CryptoPlugin extends AbstractServlet implements ConfigurationPlugin {
 
     @Serial
     private static final long serialVersionUID = 282533706713570062L;
@@ -139,21 +137,25 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         }
     }
 
-    // << ---------------------------------- From AbstractWebConsolePlugin ---------------------------------->>
-
-    @Override
-    public String getLabel() {
-        return PLUGIN_LABEL_VALUE;
+    private String decrypt(String cipherText) {
+        String plainText = null;
+        try {
+            cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX).trim();
+            if (StringUtils.isNotEmpty(cipherText)) {
+                plainText = this.cryptoService.decrypt(cipherText);
+            }
+        } catch (CryptoException ex) {
+            plainText = cipherText;
+            LOGGER.error(ex.getMessage(), ex);
+        }
+        return plainText;
     }
 
-    @Override
-    public String getTitle() {
-        return PLUGIN_TITLE_VALUE;
-    }
+    // << ---------------------------------- From AbstractServlet ---------------------------------->>
 
     @Override
-    protected void renderContent(@NotNull HttpServletRequest req, HttpServletResponse res) throws IOException {
-        // Put the default values in DefaultVariableResolver while rendering the form (a GET request).
+    public void renderContent(@NotNull HttpServletRequest req, HttpServletResponse res) throws IOException {
+        // Put the default values in RequestVariableResolver while rendering the form (a GET request).
         // But when this method is called via a doGet call after the form submission (a POST request)
         // then the request method is still POST, so population with empty values will not happen.
         if (GET.equals(req.getMethod())) {
@@ -161,6 +163,8 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
         }
         res.getWriter().print(super.readTemplateFile(CRYPTO_HTML_LOCATION));
     }
+
+    // << -------------------------------------- From HttpServlet -------------------------------------->>
 
     @Override
     protected void doPost(@NotNull HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -174,30 +178,11 @@ public class CryptoPlugin extends AbstractWebConsolePlugin implements Configurat
             }
         }
         this.populateVariableResolver(req, plainText, cipherText);
-        // re-render the form again with populated data in DefaultVariableResolver.
-        super.doGet(req, resp);
     }
 
-    @SuppressWarnings("unchecked")
     private void populateVariableResolver(HttpServletRequest req, String plainText, String cipherText) {
-        VariableResolver vr = WebConsoleUtil.getVariableResolver(req);
-        if (vr instanceof DefaultVariableResolver dvr) {
-            dvr.put(KEY_PLAIN_TEXT, plainText);
-            dvr.put(KEY_CIPHER_TEXT, cipherText);
-        }
-    }
-
-    private String decrypt(String cipherText) {
-        String plainText = null;
-        try {
-            cipherText = StringUtils.substringAfter(cipherText, ENCRYPTION_PREFIX).trim();
-            if (StringUtils.isNotEmpty(cipherText)) {
-                plainText = this.cryptoService.decrypt(cipherText);
-            }
-        } catch (CryptoException ex) {
-            plainText = cipherText;
-            LOGGER.error(ex.getMessage(), ex);
-        }
-        return plainText;
+        RequestVariableResolver vr = this.getVariableResolver(req);
+        vr.put(KEY_PLAIN_TEXT, plainText);
+        vr.put(KEY_CIPHER_TEXT, cipherText);
     }
 }

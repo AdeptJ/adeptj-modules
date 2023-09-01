@@ -77,7 +77,7 @@ public final class JpaUtil {
     }
 
     /**
-     * This method binds the the query parameters to the given JPA {@link Query} or {@link TypedQuery}.
+     * This method binds the query parameters to the given JPA {@link Query} or {@link TypedQuery}.
      *
      * @param query  the JPA {@link Query} or {@link TypedQuery}
      * @param params query bind parameters, either an array of {@link NamedParam} or a {@link PositionalParam}

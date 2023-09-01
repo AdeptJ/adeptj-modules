@@ -137,8 +137,6 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>${jakarta.servlet4-api.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
