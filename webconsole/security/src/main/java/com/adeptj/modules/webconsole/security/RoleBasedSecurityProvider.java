@@ -24,7 +24,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.webconsole.WebConsoleSecurityProvider;
 import org.apache.felix.webconsole.spi.SecurityProvider;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
@@ -32,7 +31,9 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import java.security.Principal;
 import java.util.Arrays;
@@ -41,25 +42,16 @@ import java.util.stream.Stream;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_FOUND;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
  * Felix {@link SecurityProvider} implementation which matches the roles set in request with the configured ones.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = WebConsoleSecurityConfig.class)
-@Component(
-        immediate = true,
-        service = SecurityProvider.class,
-        property = {
-                RoleBasedSecurityProvider.PN_SECURITY_PROVIDER_ID + "=" + RoleBasedSecurityProvider.SECURITY_PROVIDER_ID
-        }
-)
+@Designate(ocd = RoleBasedSecurityProvider.WebConsoleSecurityConfig.class)
+@Component(service = SecurityProvider.class, immediate = true)
 public class RoleBasedSecurityProvider implements SecurityProvider {
-
-    static final String PN_SECURITY_PROVIDER_ID = "webconsole.security.provider.id";
-
-    static final String SECURITY_PROVIDER_ID = "adeptj-webconsole-security-provider";
 
     private static final String HEADER_LOC = "Location";
 
@@ -74,7 +66,8 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
      */
     @Override
     public boolean authorize(Object user, String role) {
-        return true;
+        String[] tempRoles = this.roles;
+        return Stream.of(tempRoles).anyMatch(r -> StringUtils.equals(r, role));
     }
 
     @Override
@@ -116,4 +109,57 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
         }
     }
 
+    /**
+     * Configuration will be used by WebConsoleSecurityProvider for auth purpose.
+     *
+     * @author Rakesh.Kumar, AdeptJ
+     */
+    @ObjectClassDefinition(
+            name = "AdeptJ OSGi WebConsole Security Configuration",
+            description = "Roles, Admin password will be configured by this service."
+    )
+    public @interface WebConsoleSecurityConfig {
+
+        int CARDINALITY = 100;
+
+        String ROLE_OSGI_ADMIN = "OSGiAdmin";
+
+        String DEFAULT_LOGOUT_URI = "/admin/logout";
+
+        String DEFAULT_CREDENTIALS_STORE = "credentials.dat";
+
+        String DEFAULT_ADMIN_CREDENTIALS_H2_MAP_NAME = "adminCredentials";
+
+        @AttributeDefinition(
+                name = "WebConsole Security Roles",
+                description = "Security roles required by WebConsoleSecurityProvider for auth purpose.",
+                cardinality = CARDINALITY
+        )
+        String[] roles() default {ROLE_OSGI_ADMIN,};
+
+        @AttributeDefinition(
+                name = "WebConsole Post Logout URI",
+                description = "URI where user will be redirected after logout."
+        )
+        String logout_uri() default DEFAULT_LOGOUT_URI;
+
+        @AttributeDefinition(
+                name = "WebConsole Admin Credentials Store Name",
+                description = "Credentials store name for AdeptJ OSGi WebConsole admin."
+        )
+        String credentials_store_name() default DEFAULT_CREDENTIALS_STORE;
+
+        @AttributeDefinition(
+                name = "WebConsole Admin Credentials Map Name",
+                description = "Admin credentials map name in the AdeptJ OSGi WebConsole Password Store."
+        )
+        String credentials_map_name() default DEFAULT_ADMIN_CREDENTIALS_H2_MAP_NAME;
+
+        @AttributeDefinition(
+                name = "WebConsole Admin Password",
+                description = "Admin Password for AdeptJ OSGi WebConsole Admin.",
+                type = PASSWORD
+        )
+        String admin_password();
+    }
 }

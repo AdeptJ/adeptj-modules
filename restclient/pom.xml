@@ -35,7 +35,6 @@
         <module>core</module>
         <module>apache</module>
         <module>jetty</module>
-        <module>okhttp</module>
 
     </modules>
 
