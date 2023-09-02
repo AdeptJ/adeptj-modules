@@ -33,7 +33,7 @@
     <modules>
 
         <module>cayenne</module>
-        <!--module>graphql</module-->
+        <module>graphql</module>
 
     </modules>
 

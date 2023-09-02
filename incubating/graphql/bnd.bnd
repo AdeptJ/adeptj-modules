@@ -24,9 +24,15 @@
 
 -dsannotations-options: version;minimum=1.4.0
 
+-includeresource: graphql-java-*.jar;lib:=true
+
 Export-Package:  com.adeptj.modules.graphql
 
 Import-Package: org.slf4j;version="[1.7,3)", \
+                !com.google.errorprone.annotations.*, \
+                !javax.annotation.*, \
+                !lombok.*, \
+                !org.checkerframework.*, \
                 *
 
 Bundle-Name: ${project.name}

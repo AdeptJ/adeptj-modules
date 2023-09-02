@@ -15,7 +15,7 @@ import java.io.IOException;
 import static graphql.kickstart.servlet.HttpRequestHandler.STATUS_BAD_REQUEST;
 
 @HttpWhiteboardServletName("AdeptJ GraphQL Proxy Servlet")
-@HttpWhiteboardServletPattern("/graphql")
+@HttpWhiteboardServletPattern("/graphql/*")
 @Component(service = Servlet.class)
 public class GraphQLProxyServlet extends HttpServlet {
 

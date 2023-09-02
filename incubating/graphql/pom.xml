@@ -19,7 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-dataloader.version>3.2.0</java-dataloader.version>
-        <graphql-java.version>20.2</graphql-java.version>
+        <graphql-java.version>21.0</graphql-java.version>
         <graphql-java-kickstart.version>15.0.0</graphql-java-kickstart.version>
         <graphql-java-servlet.version>15.0.0</graphql-java-servlet.version>
     </properties>
@@ -135,12 +135,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.9.1</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.graphql-java</groupId>
             <artifactId>java-dataloader</artifactId>
             <version>${java-dataloader.version}</version>
@@ -151,21 +145,18 @@
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java</artifactId>
             <version>${graphql-java.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.graphql-java-kickstart</groupId>
             <artifactId>graphql-java-kickstart</artifactId>
             <version>${graphql-java-kickstart.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.graphql-java-kickstart</groupId>
             <artifactId>graphql-java-servlet</artifactId>
             <version>${graphql-java-servlet.version}</version>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>
