@@ -22,6 +22,8 @@ package com.adeptj.modules.commons.jdbc.internal;
 
 import com.adeptj.modules.commons.jdbc.DataSourceService;
 
+import java.io.Serial;
+
 /**
  * Thrown from {@link DataSourceService} when the DataSource is being configured in start method.
  *
@@ -29,6 +31,7 @@ import com.adeptj.modules.commons.jdbc.DataSourceService;
  */
 class DataSourceConfigurationException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -4649854107775357466L;
 
     DataSourceConfigurationException(Throwable ex) {

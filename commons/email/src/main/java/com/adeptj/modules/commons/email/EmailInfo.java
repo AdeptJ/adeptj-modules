@@ -61,32 +61,16 @@ public class EmailInfo {
         return ccAddresses;
     }
 
-    public void setCcAddresses(String... ccAddresses) {
-        this.ccAddresses = ccAddresses;
-    }
-
     public String[] getBccAddresses() {
         return bccAddresses;
-    }
-
-    public void setBccAddresses(String... bccAddresses) {
-        this.bccAddresses = bccAddresses;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public MimeMultipart getMultipart() {
         return multipart;
-    }
-
-    public void setMultipart(MimeMultipart multipart) {
-        this.multipart = multipart;
     }
 
     public String getMessageId() {
@@ -95,5 +79,82 @@ public class EmailInfo {
 
     public void setMessageId(String messageId) {
         this.messageId = messageId;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private EmailType emailType;
+
+        private String subject;
+
+        private String[] toAddresses;
+
+        private String[] ccAddresses;
+
+        private String[] bccAddresses;
+
+        private String message;
+
+        private String fromAddress;
+
+        private MimeMultipart multipart;
+
+        public Builder emailType(EmailType emailType) {
+            this.emailType = emailType;
+            return this;
+        }
+
+        public Builder subject(String subject) {
+            this.subject = subject;
+            return this;
+        }
+
+        public Builder addToAddresses(String... toAddresses) {
+            this.toAddresses = toAddresses;
+            return this;
+        }
+
+        public Builder addCcAddresses(String... ccAddresses) {
+            this.ccAddresses = ccAddresses;
+            return this;
+        }
+
+        public Builder addBccAddresses(String... bccAddresses) {
+            this.bccAddresses = bccAddresses;
+            return this;
+        }
+
+        public Builder message(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Builder fromAddress(String fromAddress) {
+            this.fromAddress = fromAddress;
+            return this;
+        }
+
+        public Builder multipart(MimeMultipart multipart) {
+            this.multipart = multipart;
+            return this;
+        }
+
+        public EmailInfo build() {
+            EmailInfo emailInfo = new EmailInfo(this.emailType, this.subject, this.toAddresses);
+            emailInfo.ccAddresses = this.ccAddresses;
+            emailInfo.bccAddresses = this.bccAddresses;
+            emailInfo.message = this.message;
+            emailInfo.fromAddress = this.fromAddress;
+            emailInfo.multipart = this.multipart;
+            return emailInfo;
+        }
+    }
+
+    public enum EmailType {
+        SIMPLE,HTML,MULTIPART
     }
 }

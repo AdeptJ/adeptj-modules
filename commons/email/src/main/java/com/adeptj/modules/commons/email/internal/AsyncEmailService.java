@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Designate(ocd = EmailConfig.class)
 @Component(configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class EmailServiceImpl implements EmailService {
+public class AsyncEmailService implements EmailService {
 
     private final EmailConfig config;
 
@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
     private final Lock lock;
 
     @Activate
-    public EmailServiceImpl(@NotNull EmailConfig config) {
+    public AsyncEmailService(@NotNull EmailConfig config) {
         this.config = config;
         this.emailExecutorService = Executors.newFixedThreadPool(config.thread_pool_size());
         this.lock = new ReentrantLock();
@@ -37,11 +37,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendEmail(@NotNull EmailInfo emailInfo) {
-        new EmailSender(emailInfo, this.config, this.getSession()).send();
-    }
-
-    @Override
-    public void sendEmailAsync(@NotNull EmailInfo emailInfo) {
         this.emailExecutorService.execute(new EmailSender(emailInfo, this.config, this.getSession()));
     }
 

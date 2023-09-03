@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Simple implementation of OSGi {@link LogListener} which logs the given {@link LogEntry} to underlying logging
  * framework with the help of SLF4J.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 public class LogEntryConsumer implements LogListener {
 
@@ -44,19 +44,16 @@ public class LogEntryConsumer implements LogListener {
     @Override
     public void logged(@NotNull LogEntry entry) {
         switch (entry.getLogLevel()) {
-            case ERROR:
-                LOGGER.error(entry.getMessage(), entry.getException());
-                break;
-            case WARN:
-                LOGGER.warn(entry.getMessage());
-                break;
-            case DEBUG:
+            case ERROR -> LOGGER.error(entry.getMessage(), entry.getException());
+            case WARN -> LOGGER.warn(entry.getMessage());
+            case DEBUG -> {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug(entry.toString());
                 }
-                break;
-            default:
+            }
+            default -> {
                 // do nothing, we are not interested in other log levels.
+            }
         }
     }
 }

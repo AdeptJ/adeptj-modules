@@ -34,7 +34,7 @@ import org.osgi.service.log.LogReaderService;
  * The registered {@link LogListener} accepts the {@link LogEntry} which contains information such as human-readable
  * message, exception etc.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 @Component(immediate = true)
 public class LogListenerManager {

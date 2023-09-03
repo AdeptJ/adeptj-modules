@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  *
  * @author Rakesh.Kumar, AdeptJ.
  */
-public class DataSourceWrapper implements DataSource {
+class DataSourceWrapper implements DataSource {
 
     private final DataSource dataSource;
 

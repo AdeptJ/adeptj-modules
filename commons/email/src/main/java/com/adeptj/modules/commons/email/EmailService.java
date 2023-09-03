@@ -31,7 +31,10 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface EmailService {
 
+    /**
+     * Send email asynchronously.
+     *
+     * @param emailInfo the {@link EmailInfo} object containing required information for sending email.
+     */
     void sendEmail(@NotNull EmailInfo emailInfo);
-
-    void sendEmailAsync(@NotNull EmailInfo emailInfo);
 }

@@ -8,7 +8,7 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 /**
  * AdeptJ EmailService Config.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 @ObjectClassDefinition(
         name = "AdeptJ EmailService Configuration",

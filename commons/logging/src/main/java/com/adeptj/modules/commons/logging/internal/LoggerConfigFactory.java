@@ -20,7 +20,10 @@
 package com.adeptj.modules.commons.logging.internal;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.osgi.service.metatype.annotations.Option;
 
 import static com.adeptj.modules.commons.logging.internal.LoggerConfigFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -28,11 +31,46 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 /**
  * Factory for creating Logger configurations.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
-@Designate(ocd = LoggerConfig.class, factory = true)
+@Designate(ocd = LoggerConfigFactory.LoggerConfig.class, factory = true)
 @Component(service = LoggerConfigFactory.class, name = PID, configurationPolicy = REQUIRE)
 public class LoggerConfigFactory {
 
     static final String PID = "com.adeptj.modules.commons.logging.LoggerConfig.factory";
+
+    /**
+     * Configuration for Loggers.
+     *
+     * @author Rakesh.Kumar, AdeptJ
+     */
+    @ObjectClassDefinition(
+            name = "AdeptJ Logger Configuration Factory",
+            description = "Factory for creating AdeptJ Logger Configurations.",
+            localization = "OSGI-INF/l10n/metatype"
+    )
+    public @interface LoggerConfig {
+
+        @AttributeDefinition(
+                name = "Logger Names",
+                description = "%logger.names.desc"
+        )
+        String[] logger_names();
+
+        @AttributeDefinition(
+                name = "Logger Level",
+                description = "The logger level as defined in SLF4J log levels.",
+                options = {
+                        @Option(label = "Error", value = "ERROR"),
+                        @Option(label = "Warn", value = "WARN"),
+                        @Option(label = "Info", value = "INFO"),
+                        @Option(label = "Debug", value = "DEBUG"),
+                        @Option(label = "Trace", value = "TRACE")
+                })
+        String logger_level() default "INFO";
+
+        // name hint non-editable property
+        String webconsole_configurationFactory_nameHint() default
+                "Logger ({" + "logger.names" + "}" + ": " + "{" + "logger.level" + "})"; // NOSONAR
+    }
 }

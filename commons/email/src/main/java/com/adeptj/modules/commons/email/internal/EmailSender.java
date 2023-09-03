@@ -2,7 +2,6 @@ package com.adeptj.modules.commons.email.internal;
 
 import com.adeptj.modules.commons.email.EmailException;
 import com.adeptj.modules.commons.email.EmailInfo;
-import com.adeptj.modules.commons.email.EmailType;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
@@ -24,12 +23,12 @@ import static com.adeptj.modules.commons.email.Constants.DEFAULT_PROTOCOL;
 import static com.adeptj.modules.commons.email.Constants.DELIM_COMMA;
 import static com.adeptj.modules.commons.email.Constants.HEADER_MESSAGE_ID;
 import static com.adeptj.modules.commons.email.Constants.TEXT_HTML;
-import static com.adeptj.modules.commons.email.EmailType.HTML;
-import static com.adeptj.modules.commons.email.EmailType.MULTIPART;
-import static com.adeptj.modules.commons.email.EmailType.SIMPLE;
+import static com.adeptj.modules.commons.email.EmailInfo.EmailType.HTML;
+import static com.adeptj.modules.commons.email.EmailInfo.EmailType.MULTIPART;
+import static com.adeptj.modules.commons.email.EmailInfo.EmailType.SIMPLE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
-public class EmailSender implements Runnable {
+class EmailSender implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -45,8 +44,8 @@ public class EmailSender implements Runnable {
 
     private final String password;
 
-    public EmailSender(@NotNull EmailInfo emailInfo, @NotNull EmailConfig config, @NotNull Session session) {
-        EmailType emailType = emailInfo.getEmailType();
+    EmailSender(@NotNull EmailInfo emailInfo, @NotNull EmailConfig config, @NotNull Session session) {
+        EmailInfo.EmailType emailType = emailInfo.getEmailType();
         if (emailType == SIMPLE || emailType == HTML) {
             Validate.isTrue(StringUtils.isNotEmpty(emailInfo.getMessage()), "message can't be null!!");
         } else if (emailType == MULTIPART) {
@@ -105,7 +104,7 @@ public class EmailSender implements Runnable {
         this.handleAddresses(message, Message.RecipientType.TO, this.emailInfo.getToAddresses());
         this.handleAddresses(message, Message.RecipientType.CC, this.emailInfo.getCcAddresses());
         this.handleAddresses(message, Message.RecipientType.BCC, this.emailInfo.getBccAddresses());
-        this.sentEmailContent(message);
+        this.setEmailContent(message);
         return message;
     }
 
@@ -126,17 +125,11 @@ public class EmailSender implements Runnable {
         }
     }
 
-    private void sentEmailContent(MimeMessage message) throws MessagingException {
+    private void setEmailContent(MimeMessage message) throws MessagingException {
         switch (this.emailInfo.getEmailType()) {
-            case SIMPLE:
-                message.setText(this.emailInfo.getMessage());
-                break;
-            case HTML:
-                message.setContent(this.emailInfo.getMessage(), TEXT_HTML);
-                break;
-            case MULTIPART:
-                message.setContent(this.emailInfo.getMultipart());
-                break;
+            case SIMPLE -> message.setText(this.emailInfo.getMessage());
+            case HTML -> message.setContent(this.emailInfo.getMessage(), TEXT_HTML);
+            case MULTIPART -> message.setContent(this.emailInfo.getMultipart());
         }
     }
 }
