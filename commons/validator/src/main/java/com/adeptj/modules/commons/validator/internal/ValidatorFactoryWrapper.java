@@ -34,7 +34,7 @@ import jakarta.validation.ValidatorFactory;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public class ValidatorFactoryWrapper implements ValidatorFactory {
+class ValidatorFactoryWrapper implements ValidatorFactory {
 
     private final ValidatorFactory delegate;
 

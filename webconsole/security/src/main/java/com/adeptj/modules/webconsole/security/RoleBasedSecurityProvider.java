@@ -70,6 +70,22 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
         return Stream.of(tempRoles).anyMatch(r -> StringUtils.equals(r, role));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object authenticate(HttpServletRequest request, HttpServletResponse response) {
+        // store in a local var as it might be updated by the modified method, see the update method in this class.
+        String[] tempRoles = this.roles;
+        if (Stream.of(tempRoles).anyMatch(request::isUserInRole)) {
+            return (Principal) () -> ADMIN;
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         // store in a local var as it might be updated by the modified method, see the update method in this class.
@@ -80,16 +96,6 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
         // AdminServlet will take care of Session invalidation later.
         response.setStatus(SC_FOUND);
         response.setHeader(HEADER_LOC, tempLogoutURI);
-    }
-
-    @Override
-    public Object authenticate(HttpServletRequest request, HttpServletResponse response) {
-        // store in a local var as it might be updated by the modified method, see the update method in this class.
-        String[] tempRoles = this.roles;
-        if (Stream.of(tempRoles).anyMatch(request::isUserInRole)) {
-            return (Principal) () -> ADMIN;
-        }
-        return null;
     }
 
     // <<------------------------------------------- OSGi Internal ------------------------------------------>>

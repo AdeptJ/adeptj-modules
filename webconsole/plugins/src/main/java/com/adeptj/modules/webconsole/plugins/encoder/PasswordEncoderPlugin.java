@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.webconsole.plugins.crypto;
+package com.adeptj.modules.webconsole.plugins.encoder;
 
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
