@@ -9,23 +9,12 @@ import org.jetbrains.annotations.NotNull;
 public class ApacheRequestFactory {
 
     static <T, R> HttpUriRequest newRequest(@NotNull ClientRequest<T, R> request) {
-        HttpRequestBase apacheRequest;
         HttpMethod method = request.getMethod();
-        switch (method) {
-            case HEAD:
-            case GET:
-            case OPTIONS:
-                apacheRequest = new NonEntityEnclosingRequest(method.toString());
-                break;
-            case POST:
-            case PUT:
-            case PATCH:
-            case DELETE: // Sometimes DELETE has a payload.
-                apacheRequest = HttpClientUtils.createEntityEnclosingRequest(request);
-                break;
-            default:
-                throw new IllegalStateException("Unsupported HttpMethod!!");
-        }
+        HttpRequestBase apacheRequest = switch (method) {
+            case HEAD, GET, OPTIONS -> new NonEntityEnclosingRequest(method.toString());
+            case POST, PUT, PATCH, DELETE -> HttpClientUtils.createEntityEnclosingRequest(request);
+            default -> throw new IllegalStateException("Unsupported HttpMethod!!");
+        };
         HttpClientUtils.addHeaders(request, apacheRequest);
         HttpClientUtils.addQueryParams(request, apacheRequest);
         return apacheRequest;
