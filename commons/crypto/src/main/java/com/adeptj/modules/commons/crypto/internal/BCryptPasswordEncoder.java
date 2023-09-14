@@ -26,9 +26,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.metatype.annotations.Designate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 /**
@@ -36,15 +36,19 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = PasswordEncoderConfig.class)
 @Component
 public class BCryptPasswordEncoder implements PasswordEncoder {
 
     private final int exponentialCost;
 
     @Activate
-    public BCryptPasswordEncoder(@NotNull PasswordEncoderConfig config) {
-        this.exponentialCost = config.exponential_cost();
+    public BCryptPasswordEncoder(@NotNull BundleContext context) {
+        String cost = context.getProperty("bcrypt.exponential.cost");
+        Validate.validState(StringUtils.isNotEmpty(cost),
+                "OSGi framework property [bcrypt.exponential.cost] can't be null or empty!!");
+        this.exponentialCost = Integer.parseInt(cost);
+        Validate.validState((this.exponentialCost >= 4 && this.exponentialCost <= 31),
+                "OSGi framework property [bcrypt.exponential.cost] should be between [4] and [31]");
     }
 
     @Override

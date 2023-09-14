@@ -42,6 +42,7 @@ import java.util.stream.Stream;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_FOUND;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.felix.webconsole.spi.SecurityProvider.PROPERTY_ID;
 import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
 
 /**
@@ -50,7 +51,13 @@ import static org.osgi.service.metatype.annotations.AttributeType.PASSWORD;
  * @author Rakesh.Kumar, AdeptJ
  */
 @Designate(ocd = RoleBasedSecurityProvider.WebConsoleSecurityConfig.class)
-@Component(service = SecurityProvider.class, immediate = true)
+@Component(
+        service = SecurityProvider.class,
+        immediate = true,
+        property = {
+                PROPERTY_ID + "=" + "AdeptJ WebConsole SecurityProvider"
+        }
+)
 public class RoleBasedSecurityProvider implements SecurityProvider {
 
     private static final String HEADER_LOC = "Location";
