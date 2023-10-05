@@ -24,15 +24,16 @@ import com.adeptj.modules.commons.utils.RandomGenerators;
 import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtKeyInitializationException;
 import com.adeptj.modules.security.jwt.JwtKeys;
-import com.adeptj.modules.security.jwt.JwtSerializer;
 import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
 import com.adeptj.modules.security.jwt.JwtVerifier;
 import com.adeptj.modules.security.jwt.RsaSigningKeyInfo;
 import com.adeptj.modules.security.jwt.RsaVerificationKeyInfo;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Serializer;
+import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import io.jsonwebtoken.lang.Assert;
+import io.jsonwebtoken.security.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
@@ -51,8 +52,6 @@ import java.util.Map;
 
 import static io.jsonwebtoken.Claims.ID;
 import static io.jsonwebtoken.Claims.ISSUER;
-import static io.jsonwebtoken.Header.JWT_TYPE;
-import static io.jsonwebtoken.Header.TYPE;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -67,6 +66,10 @@ public class JwtServiceImpl implements JwtService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final String JWT_TYPE = "JWT";
+
+    private static final String TYPE = "typ";
+
     private final String defaultIssuer;
 
     private final String[] mandatoryClaims;
@@ -79,19 +82,21 @@ public class JwtServiceImpl implements JwtService {
 
     private final JwtVerifier jwtVerifier;
 
+    private final Serializer<Map<String, ?>> serializer;
+
     @Activate
     public JwtServiceImpl(@NotNull JwtConfig config) {
         this.defaultIssuer = config.default_issuer();
         this.expirationDuration = Duration.of(config.expiration_time(), MINUTES);
         this.mandatoryClaims = config.mandatory_claims();
         try {
-            this.algorithm = SignatureAlgorithm.forName(config.signature_algorithm());
-            LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", this.algorithm.getJcaName());
+            this.algorithm = JwtKeys.getSignatureAlgorithm(config.signature_algorithm());
             RsaSigningKeyInfo signingKeyInfo = new RsaSigningKeyInfo(this.algorithm, config.private_key());
             signingKeyInfo.setPrivateKeyPassword(config.private_key_password());
             this.signingKey = JwtKeys.createSigningKey(signingKeyInfo);
             Key verificationKey = JwtKeys.createVerificationKey(new RsaVerificationKeyInfo(this.algorithm, config.public_key()));
             this.jwtVerifier = new JwtVerifier(verificationKey, config.log_jwt_verification_exception_trace());
+            this.serializer = new JacksonSerializer<>();
         } catch (SignatureException | JwtKeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
@@ -107,15 +112,17 @@ public class JwtServiceImpl implements JwtService {
         JwtUtil.assertClaims(claims);
         Instant now = Instant.now();
         return Jwts.builder()
-                .setHeaderParam(TYPE, JWT_TYPE)
-                .setSubject(subject)
-                .setClaims(claims) // passed claims map can override the subject claim.
-                .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(this.expirationDuration)))
-                .setId(claims.containsKey(ID) ? claims.get(ID).toString() : RandomGenerators.uuidString())
-                .setIssuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
+                .header()
+                .add(TYPE, JWT_TYPE)
+                .and()
+                .subject(subject)
+                .claims(claims) // passed claims map can override the subject claim.
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plus(this.expirationDuration)))
+                .id(claims.containsKey(ID) ? claims.get(ID).toString() : RandomGenerators.uuidString())
+                .issuer(claims.containsKey(ISSUER) ? (String) claims.get(ISSUER) : this.defaultIssuer)
                 .signWith(this.signingKey, this.algorithm)
-                .serializeToJsonWith(new JwtSerializer())
+                .json(this.serializer)
                 .compact();
     }
 
@@ -126,10 +133,12 @@ public class JwtServiceImpl implements JwtService {
     public String createJwt(Map<String, Object> claims) {
         JwtUtil.assertClaims(claims, this.mandatoryClaims);
         return Jwts.builder()
-                .setHeaderParam(TYPE, JWT_TYPE)
-                .setClaims(claims)
+                .header()
+                .add(TYPE, JWT_TYPE)
+                .and()
+                .claims(claims)
                 .signWith(this.signingKey, this.algorithm)
-                .serializeToJsonWith(new JwtSerializer())
+                .json(this.serializer)
                 .compact();
     }
 

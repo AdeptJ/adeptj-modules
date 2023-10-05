@@ -1,10 +1,9 @@
 package com.adeptj.modules.security.jwt;
 
-import com.adeptj.modules.commons.utils.JakartaJsonUtil;
+import io.jsonwebtoken.io.AbstractDeserializer;
 import io.jsonwebtoken.io.DeserializationException;
-import io.jsonwebtoken.io.Deserializer;
-import jakarta.json.bind.JsonbException;
 
+import java.io.Reader;
 import java.util.Map;
 
 /**
@@ -12,15 +11,10 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JwtDeserializer implements Deserializer<Map<String, ?>> {
+public final class JwtDeserializer extends AbstractDeserializer<Map<String, ?>> {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, ?> deserialize(byte[] bytes) {
-        try {
-            return JakartaJsonUtil.deserialize(bytes, Map.class);
-        } catch (JsonbException ex) {
-            throw new DeserializationException(ex.getMessage(), ex);
-        }
+    public Map<String, ?> doDeserialize(Reader reader) throws DeserializationException {
+        return null;
     }
 }

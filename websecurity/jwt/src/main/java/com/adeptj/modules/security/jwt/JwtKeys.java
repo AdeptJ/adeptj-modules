@@ -20,7 +20,9 @@
 
 package com.adeptj.modules.security.jwt;
 
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.lang.Assert;
+import io.jsonwebtoken.security.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -78,12 +80,25 @@ public final class JwtKeys {
     private JwtKeys() {
     }
 
+    public static SignatureAlgorithm getSignatureAlgorithm(@NotNull String alg) {
+        SignatureAlgorithm algorithm = null;
+        if (StringUtils.equals(alg, "RS256")) {
+            algorithm = Jwts.SIG.RS256;
+        } else if (StringUtils.equals(alg, "RS384")) {
+            algorithm = Jwts.SIG.RS384;
+        } else if (StringUtils.equals(alg, "RS512")) {
+            algorithm = Jwts.SIG.RS512;
+        }
+        LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm);
+        return algorithm;
+    }
+
     public static PrivateKey createSigningKey(@NotNull RsaSigningKeyInfo info) {
         LOGGER.info("Creating RSA signing key!!");
         Assert.isTrue(StringUtils.startsWithAny(info.getPrivateKey(), PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER),
                 INVALID_PRIVATE_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(info.getAlgorithm().getFamilyName());
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             if (StringUtils.startsWith(info.getPrivateKey(), PRIVATE_ENCRYPTED_KEY_HEADER)) {
                 LOGGER.info("Creating PKCS8EncodedKeySpec from private [encrypted] key !!");
                 Assert.hasText(info.getPrivateKeyPassword(), KEYPASS_NULL_MSG);
@@ -108,7 +123,7 @@ public final class JwtKeys {
         LOGGER.info("Creating RSA verification key!!");
         Assert.isTrue(StringUtils.startsWith(info.getPublicKey(), PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(info.getAlgorithm().getFamilyName());
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             byte[] publicKeyData = Base64.getDecoder().decode(info.getPublicKey()
                     .replace(PUB_KEY_HEADER, EMPTY)
                     .replace(PUB_KEY_FOOTER, EMPTY)

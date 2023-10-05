@@ -1,10 +1,8 @@
 package com.adeptj.modules.security.jwt;
 
-import com.adeptj.modules.commons.utils.JakartaJsonUtil;
-import io.jsonwebtoken.io.SerializationException;
-import io.jsonwebtoken.io.Serializer;
-import jakarta.json.bind.JsonbException;
+import io.jsonwebtoken.io.AbstractSerializer;
 
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -12,14 +10,10 @@ import java.util.Map;
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class JwtSerializer implements Serializer<Map<String, ?>> {
+public final class JwtSerializer extends AbstractSerializer<Map<String, ?>> {
 
     @Override
-    public byte[] serialize(Map<String, ?> claims) {
-        try {
-            return JakartaJsonUtil.serializeToBytes(claims);
-        } catch (JsonbException ex) {
-            throw new SerializationException(ex.getMessage(), ex);
-        }
+    protected void doSerialize(Map<String, ?> stringMap, OutputStream out) throws Exception {
+
     }
 }

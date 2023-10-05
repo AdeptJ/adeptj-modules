@@ -157,6 +157,13 @@
             <artifactId>adeptj-modules-commons-utils</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Test dependencies -->
 
         <dependency>

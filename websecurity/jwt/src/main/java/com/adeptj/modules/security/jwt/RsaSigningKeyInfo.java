@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.security.jwt;
 
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.SignatureAlgorithm;
 
 /**
  * Pojo for holding the Jwt Rsa signing key information.

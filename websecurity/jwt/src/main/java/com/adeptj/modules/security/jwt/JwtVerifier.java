@@ -21,14 +21,20 @@ package com.adeptj.modules.security.jwt;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParserBuilder;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Deserializer;
+import io.jsonwebtoken.jackson.io.JacksonDeserializer;
 import io.jsonwebtoken.lang.Assert;
 import org.osgi.annotation.versioning.ConsumerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.SecretKey;
 import java.lang.invoke.MethodHandles;
 import java.security.Key;
+import java.security.PublicKey;
+import java.util.Map;
 
 /**
  * A common class for verifying the Jwt using the key supplied to the constructor.
@@ -44,20 +50,30 @@ public class JwtVerifier {
 
     private final Key verificationKey;
 
+    private final Deserializer<Map<String, ?>> deserializer;
+
     public JwtVerifier(Key verificationKey, boolean logJwtVerificationExceptionTrace) {
-        this.logJwtVerificationExceptionTrace = logJwtVerificationExceptionTrace;
         this.verificationKey = verificationKey;
+        this.logJwtVerificationExceptionTrace = logJwtVerificationExceptionTrace;
+        this.deserializer = new JacksonDeserializer<>();
     }
 
     public JwtClaims verify(String jwt) {
         JwtClaims claims = null;
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");
-            claims = Jwts.parserBuilder()
-                    .setSigningKey(this.verificationKey)
-                    .deserializeJsonWith(new JwtDeserializer())
+            JwtParserBuilder builder = Jwts.parser();
+            if (this.verificationKey instanceof SecretKey secretKey) {
+                builder.verifyWith(secretKey);
+            } else if (this.verificationKey instanceof PublicKey publicKey) {
+                builder.verifyWith(publicKey);
+            } else {
+                throw new IllegalStateException("Unknown verification key!!");
+            }
+            claims = builder.json(this.deserializer)
                     .build()
-                    .parse(jwt, new ClaimsConsumer());
+                    .parse(jwt)
+                    .accept(new ClaimsConsumer());
         } catch (ExpiredJwtException ex) {
             if (this.logJwtVerificationExceptionTrace) {
                 LOGGER.error(ex.getMessage(), ex);

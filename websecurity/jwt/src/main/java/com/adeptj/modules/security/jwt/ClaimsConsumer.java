@@ -23,14 +23,14 @@ package com.adeptj.modules.security.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
-import org.jetbrains.annotations.NotNull;
+import io.jsonwebtoken.SupportedJwtVisitor;
 
 /**
  * Simple implementation of {@link JwtHandlerAdapter} which extracts the {@link Claims} from passes {@link Jws}.
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-public final class ClaimsConsumer extends JwtHandlerAdapter<JwtClaims> {
+public final class ClaimsConsumer extends SupportedJwtVisitor<JwtClaims> {
 
     /**
      * Simply returns the {@link JwtClaims} by composing the Jwt {@link Claims}.
@@ -39,7 +39,7 @@ public final class ClaimsConsumer extends JwtHandlerAdapter<JwtClaims> {
      * @return the {@link JwtClaims}.
      */
     @Override
-    public @NotNull JwtClaims onClaimsJws(@NotNull Jws<Claims> jws) {
-        return new JwtClaims(jws.getBody());
+    public JwtClaims onVerifiedClaims(Jws<Claims> jws) {
+        return new JwtClaims(jws.getPayload());
     }
 }
