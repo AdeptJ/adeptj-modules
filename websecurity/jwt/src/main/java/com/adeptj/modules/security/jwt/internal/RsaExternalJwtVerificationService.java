@@ -25,8 +25,6 @@ import com.adeptj.modules.security.jwt.JwtClaims;
 import com.adeptj.modules.security.jwt.JwtKeyInitializationException;
 import com.adeptj.modules.security.jwt.JwtKeys;
 import com.adeptj.modules.security.jwt.JwtVerifier;
-import com.adeptj.modules.security.jwt.RsaVerificationKeyInfo;
-import io.jsonwebtoken.security.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
@@ -36,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.security.Key;
+import java.security.PublicKey;
 
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
 
@@ -57,8 +55,7 @@ public class RsaExternalJwtVerificationService implements ExternalJwtVerificatio
     @Activate
     public RsaExternalJwtVerificationService(@NotNull RsaExternalJwtConfig config) {
         try {
-            SignatureAlgorithm algorithm = JwtKeys.getSignatureAlgorithm(config.signature_algorithm());
-            Key verificationKey = JwtKeys.createVerificationKey(new RsaVerificationKeyInfo(algorithm, config.public_key()));
+            PublicKey verificationKey = JwtKeys.createVerificationKey(config.public_key());
             this.jwtVerifier = new JwtVerifier(verificationKey, config.log_jwt_verification_exception_trace());
         } catch (SignatureException | JwtKeyInitializationException | IllegalArgumentException ex) {
             LOGGER.error(ex.getMessage(), ex);

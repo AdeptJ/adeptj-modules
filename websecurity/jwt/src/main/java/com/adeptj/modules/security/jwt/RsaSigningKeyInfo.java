@@ -19,8 +19,6 @@
 */
 package com.adeptj.modules.security.jwt;
 
-import io.jsonwebtoken.security.SignatureAlgorithm;
-
 /**
  * Pojo for holding the Jwt Rsa signing key information.
  *
@@ -28,19 +26,12 @@ import io.jsonwebtoken.security.SignatureAlgorithm;
  */
 public class RsaSigningKeyInfo {
 
-    private final SignatureAlgorithm algorithm;
-
     private final String privateKey;
 
     private String privateKeyPassword;
 
-    public RsaSigningKeyInfo(SignatureAlgorithm algorithm, String privateKey) {
-        this.algorithm = algorithm;
+    public RsaSigningKeyInfo(String privateKey) {
         this.privateKey = privateKey;
-    }
-
-    public SignatureAlgorithm getAlgorithm() {
-        return algorithm;
     }
 
     public String getPrivateKey() {

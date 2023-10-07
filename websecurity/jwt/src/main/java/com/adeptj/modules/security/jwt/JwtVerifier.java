@@ -19,9 +19,11 @@
 */
 package com.adeptj.modules.security.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParserBuilder;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Deserializer;
 import io.jsonwebtoken.jackson.io.JacksonDeserializer;
@@ -62,18 +64,8 @@ public class JwtVerifier {
         JwtClaims claims = null;
         try {
             Assert.hasText(jwt, "JWT can't be blank!!");
-            JwtParserBuilder builder = Jwts.parser();
-            if (this.verificationKey instanceof SecretKey secretKey) {
-                builder.verifyWith(secretKey);
-            } else if (this.verificationKey instanceof PublicKey publicKey) {
-                builder.verifyWith(publicKey);
-            } else {
-                throw new IllegalStateException("Unknown verification key!!");
-            }
-            claims = builder.json(this.deserializer)
-                    .build()
-                    .parse(jwt)
-                    .accept(new ClaimsConsumer());
+            Jws<Claims> jws = this.getJwtParser().parseSignedClaims(jwt);
+            claims = new JwtClaims(jws.getPayload());
         } catch (ExpiredJwtException ex) {
             if (this.logJwtVerificationExceptionTrace) {
                 LOGGER.error(ex.getMessage(), ex);
@@ -86,5 +78,23 @@ public class JwtVerifier {
             }
         }
         return claims;
+    }
+
+    private JwtParser getJwtParser() {
+        JwtParser parser;
+        if (this.verificationKey instanceof PublicKey publicKey) { // RSA PublicKey
+            parser = Jwts.parser()
+                    .verifyWith(publicKey)
+                    .json(this.deserializer)
+                    .build();
+        } else if (this.verificationKey instanceof SecretKey secretKey) { // HMAC SecretKey
+            parser = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .json(this.deserializer)
+                    .build();
+        } else {
+            throw new IllegalStateException("Unknown verification key!!");
+        }
+        return parser;
     }
 }

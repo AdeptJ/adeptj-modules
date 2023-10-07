@@ -28,7 +28,6 @@ import com.adeptj.modules.security.jwt.JwtService;
 import com.adeptj.modules.security.jwt.JwtUtil;
 import com.adeptj.modules.security.jwt.JwtVerifier;
 import com.adeptj.modules.security.jwt.RsaSigningKeyInfo;
-import com.adeptj.modules.security.jwt.RsaVerificationKeyInfo;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Serializer;
 import io.jsonwebtoken.jackson.io.JacksonSerializer;
@@ -91,10 +90,10 @@ public class JwtServiceImpl implements JwtService {
         this.mandatoryClaims = config.mandatory_claims();
         try {
             this.algorithm = JwtKeys.getSignatureAlgorithm(config.signature_algorithm());
-            RsaSigningKeyInfo signingKeyInfo = new RsaSigningKeyInfo(this.algorithm, config.private_key());
+            RsaSigningKeyInfo signingKeyInfo = new RsaSigningKeyInfo(config.private_key());
             signingKeyInfo.setPrivateKeyPassword(config.private_key_password());
             this.signingKey = JwtKeys.createSigningKey(signingKeyInfo);
-            Key verificationKey = JwtKeys.createVerificationKey(new RsaVerificationKeyInfo(this.algorithm, config.public_key()));
+            Key verificationKey = JwtKeys.createVerificationKey(config.public_key());
             this.jwtVerifier = new JwtVerifier(verificationKey, config.log_jwt_verification_exception_trace());
             this.serializer = new JacksonSerializer<>();
         } catch (SignatureException | JwtKeyInitializationException | IllegalArgumentException ex) {

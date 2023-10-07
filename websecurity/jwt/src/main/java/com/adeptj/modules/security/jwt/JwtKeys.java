@@ -56,6 +56,8 @@ public final class JwtKeys {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final String ALGO_RSA = "RSA";
+
     private static final String PRIVATE_KEY_HEADER = "-----BEGIN PRIVATE KEY-----";
 
     private static final String PRIVATE_KEY_FOOTER = "-----END PRIVATE KEY-----";
@@ -98,7 +100,7 @@ public final class JwtKeys {
         Assert.isTrue(StringUtils.startsWithAny(info.getPrivateKey(), PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER),
                 INVALID_PRIVATE_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
             if (StringUtils.startsWith(info.getPrivateKey(), PRIVATE_ENCRYPTED_KEY_HEADER)) {
                 LOGGER.info("Creating PKCS8EncodedKeySpec from private [encrypted] key !!");
                 Assert.hasText(info.getPrivateKeyPassword(), KEYPASS_NULL_MSG);
@@ -119,12 +121,12 @@ public final class JwtKeys {
         }
     }
 
-    public static PublicKey createVerificationKey(@NotNull RsaVerificationKeyInfo info) {
+    public static PublicKey createVerificationKey(String rsaPublicKeyText) {
         LOGGER.info("Creating RSA verification key!!");
-        Assert.isTrue(StringUtils.startsWith(info.getPublicKey(), PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
+        Assert.isTrue(StringUtils.startsWith(rsaPublicKeyText, PUB_KEY_HEADER), INVALID_PUBLIC_KEY_MSG);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            byte[] publicKeyData = Base64.getDecoder().decode(info.getPublicKey()
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGO_RSA);
+            byte[] publicKeyData = Base64.getDecoder().decode(rsaPublicKeyText
                     .replace(PUB_KEY_HEADER, EMPTY)
                     .replace(PUB_KEY_FOOTER, EMPTY)
                     .replaceAll(REGEX_SPACE, EMPTY)
