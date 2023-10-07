@@ -20,6 +20,8 @@
 
 package com.adeptj.modules.security.jwt;
 
+import java.io.Serial;
+
 /**
  * Thrown while Jwt signing key creation failed.
  *
@@ -27,6 +29,7 @@ package com.adeptj.modules.security.jwt;
  */
 public final class JwtKeyInitializationException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 3525176439467354181L;
 
     public JwtKeyInitializationException(String message, Throwable cause) {
