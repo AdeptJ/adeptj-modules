@@ -34,6 +34,7 @@ import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.security.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -89,7 +90,7 @@ public class JwtServiceImpl implements JwtService {
         this.expirationDuration = Duration.of(config.expiration_time(), MINUTES);
         this.mandatoryClaims = config.mandatory_claims();
         try {
-            this.algorithm = JwtKeys.getSignatureAlgorithm(config.signature_algorithm());
+            this.algorithm = this.getSignatureAlgorithm(config.signature_algorithm());
             RsaSigningKeyInfo signingKeyInfo = new RsaSigningKeyInfo(config.private_key());
             signingKeyInfo.setPrivateKeyPassword(config.private_key_password());
             this.signingKey = JwtKeys.createSigningKey(signingKeyInfo);
@@ -100,6 +101,19 @@ public class JwtServiceImpl implements JwtService {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
         }
+    }
+
+    private SignatureAlgorithm getSignatureAlgorithm(@NotNull String alg) {
+        SignatureAlgorithm algorithm = null;
+        if (StringUtils.equals(alg, "RS256")) {
+            algorithm = Jwts.SIG.RS256;
+        } else if (StringUtils.equals(alg, "RS384")) {
+            algorithm = Jwts.SIG.RS384;
+        } else if (StringUtils.equals(alg, "RS512")) {
+            algorithm = Jwts.SIG.RS512;
+        }
+        LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm);
+        return algorithm;
     }
 
     /**

@@ -20,9 +20,7 @@
 
 package com.adeptj.modules.security.jwt;
 
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.lang.Assert;
-import io.jsonwebtoken.security.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -82,19 +80,6 @@ public final class JwtKeys {
     private JwtKeys() {
     }
 
-    public static SignatureAlgorithm getSignatureAlgorithm(@NotNull String alg) {
-        SignatureAlgorithm algorithm = null;
-        if (StringUtils.equals(alg, "RS256")) {
-            algorithm = Jwts.SIG.RS256;
-        } else if (StringUtils.equals(alg, "RS384")) {
-            algorithm = Jwts.SIG.RS384;
-        } else if (StringUtils.equals(alg, "RS512")) {
-            algorithm = Jwts.SIG.RS512;
-        }
-        LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm);
-        return algorithm;
-    }
-
     public static PrivateKey createSigningKey(@NotNull RsaSigningKeyInfo info) {
         LOGGER.info("Creating RSA signing key!!");
         Assert.isTrue(StringUtils.startsWithAny(info.getPrivateKey(), PRIVATE_ENCRYPTED_KEY_HEADER, PRIVATE_KEY_HEADER),
@@ -114,7 +99,8 @@ public final class JwtKeys {
                 return keyFactory.generatePrivate(privateKeyInfo.getKeySpec(cipher));
             }
             LOGGER.info("Creating PKCS8EncodedKeySpec from private key !!");
-            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodePrivateKey(info.getPrivateKey(), false)));
+            byte[] keyBytes = decodePrivateKey(info.getPrivateKey(), false);
+            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
         } catch (GeneralSecurityException | IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw new JwtKeyInitializationException(ex.getMessage(), ex);
