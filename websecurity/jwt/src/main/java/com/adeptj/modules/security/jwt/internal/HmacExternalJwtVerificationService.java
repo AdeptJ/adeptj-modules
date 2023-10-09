@@ -28,7 +28,9 @@ import io.jsonwebtoken.security.WeakKeyException;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +45,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = HmacExternalJwtConfig.class)
+@Designate(ocd = HmacExternalJwtVerificationService.HmacExternalJwtConfig.class)
 @ExternalJwsAlgorithm("Hmac")
 @Component(service = ExternalJwtVerificationService.class, configurationPolicy = REQUIRE)
 public class HmacExternalJwtVerificationService implements ExternalJwtVerificationService {
@@ -66,5 +68,29 @@ public class HmacExternalJwtVerificationService implements ExternalJwtVerificati
     @Override
     public JwtClaims verifyJwt(String jwt) {
         return this.jwtVerifier.verify(jwt);
+    }
+
+    /**
+     * OCD for Hmac external Jwt verification service.
+     *
+     * @author Rakesh.Kumar, AdeptJ
+     */
+    @ObjectClassDefinition(
+            name = "AdeptJ Hmac External JWT Service Configuration",
+            description = "Configs for AdeptJ Hmac External JWT Service."
+    )
+    public @interface HmacExternalJwtConfig {
+
+        @AttributeDefinition(
+                name = "Jwt Hmac Key(Verification Key)",
+                description = "Hmac key for JWT verification."
+        )
+        String hmac_key();
+
+        @AttributeDefinition(
+                name = "Log Jwt Verification Exception Trace",
+                description = "Whether to log the Jwt verification exception trace in server logs."
+        )
+        boolean log_jwt_verification_exception_trace();
     }
 }

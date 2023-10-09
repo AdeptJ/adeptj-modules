@@ -29,7 +29,10 @@ import io.jsonwebtoken.security.SignatureException;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.osgi.service.metatype.annotations.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +46,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = RsaExternalJwtConfig.class)
+@Designate(ocd = RsaExternalJwtVerificationService.RsaExternalJwtConfig.class)
 @ExternalJwsAlgorithm("Rsa")
 @Component(service = ExternalJwtVerificationService.class, configurationPolicy = REQUIRE)
 public class RsaExternalJwtVerificationService implements ExternalJwtVerificationService {
@@ -66,5 +69,40 @@ public class RsaExternalJwtVerificationService implements ExternalJwtVerificatio
     @Override
     public JwtClaims verifyJwt(String jwt) {
         return this.jwtVerifier.verify(jwt);
+    }
+
+    /**
+     * OCD for Rsa external Jwt verification service.
+     *
+     * @author Rakesh.Kumar, AdeptJ
+     */
+    @ObjectClassDefinition(
+            name = "AdeptJ Rsa External JWT Service Configuration",
+            description = "Configs for AdeptJ Rsa External JWT Service Configuration"
+    )
+    public @interface RsaExternalJwtConfig {
+
+        @AttributeDefinition(
+                name = "JWT Signature Verification Algorithm",
+                description = "RSA Signature algorithm for external JWT verification.",
+                options = {
+                        @Option(label = "RSA 256", value = "RS256"),
+                        @Option(label = "RSA 384", value = "RS384"),
+                        @Option(label = "RSA 512", value = "RS512"),
+                }
+        )
+        String signature_algorithm();
+
+        @AttributeDefinition(
+                name = "Jwt PublicKey(Verification Key)",
+                description = "PublicKey data (PEM-encoded) for JWT verification."
+        )
+        String public_key();
+
+        @AttributeDefinition(
+                name = "Log Jwt Verification Exception Trace",
+                description = "Whether to log the Jwt verification exception trace in server logs."
+        )
+        boolean log_jwt_verification_exception_trace();
     }
 }
