@@ -6,7 +6,7 @@
     <parent>
         <artifactId>adeptj-modules-parent</artifactId>
         <groupId>com.adeptj</groupId>
-        <version>8</version>
+        <version>9</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-incubating-graphql</artifactId>
