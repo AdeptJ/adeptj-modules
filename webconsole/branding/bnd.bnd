@@ -18,7 +18,7 @@
 
 # Always Make sure this fragment should be installed before the Host Bundle
 
-Fragment-Host: org.apache.felix.webconsole;bundle-version="[4,5)"
+Fragment-Host: org.apache.felix.webconsole;bundle-version="[5,6)"
 
 Bundle-Name: ${project.name}
 
