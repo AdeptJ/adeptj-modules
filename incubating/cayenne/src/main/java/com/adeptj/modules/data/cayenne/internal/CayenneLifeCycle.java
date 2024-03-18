@@ -13,7 +13,10 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -21,6 +24,8 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 @Component
 public class CayenneLifeCycle {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private ServerRuntime cayenne;
 
@@ -34,7 +39,7 @@ public class CayenneLifeCycle {
                     .build();
             ObjectContext context = this.cayenne.newContext();
             List<Users> users = ObjectSelect.query(Users.class).select(context);
-            System.out.println(users);
+            LOGGER.info("{}", users);
         });
     }
 
@@ -53,7 +58,7 @@ public class CayenneLifeCycle {
             cayenneRepository.setCayenne(this.cayenne);
             MyRepository myRepository = (MyRepository) cayenneRepository;
             List<Users> all = myRepository.getAllUsers();
-            all.forEach(System.out::println);
+            all.forEach(u -> LOGGER.info("{}", u));
             List<Users> usersByExpression = myRepository.getAllUsersByExpression();
             if (usersByExpression != null) {
                 usersByExpression.forEach(System.out::println);
@@ -61,18 +66,18 @@ public class CayenneLifeCycle {
             try {
                 Users user = myRepository.createNewUser();
                 if (user != null) {
-                    System.out.println(user);
+                    LOGGER.info("{}", user);
                 }
                 user = myRepository.createUser();
                 if (user != null) {
-                    System.out.println(user);
+                    LOGGER.info("{}", user);
                 }
                 Users usersByExpression1 = myRepository.getUsersByExpression();
                 if (usersByExpression1 != null) {
-                    System.out.println(usersByExpression1);
+                    LOGGER.info("{}", usersByExpression1);
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LOGGER.error(ex.getMessage(), ex);
             }
         }
     }
