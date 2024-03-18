@@ -104,16 +104,16 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private SignatureAlgorithm getSignatureAlgorithm(@NotNull String alg) {
-        SignatureAlgorithm algorithm = null;
+        SignatureAlgorithm signatureAlgorithm = null;
         if (StringUtils.equals(alg, "RS256")) {
-            algorithm = Jwts.SIG.RS256;
+            signatureAlgorithm = Jwts.SIG.RS256;
         } else if (StringUtils.equals(alg, "RS384")) {
-            algorithm = Jwts.SIG.RS384;
+            signatureAlgorithm = Jwts.SIG.RS384;
         } else if (StringUtils.equals(alg, "RS512")) {
-            algorithm = Jwts.SIG.RS512;
+            signatureAlgorithm = Jwts.SIG.RS512;
         }
-        LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", algorithm);
-        return algorithm;
+        LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", signatureAlgorithm);
+        return signatureAlgorithm;
     }
 
     /**

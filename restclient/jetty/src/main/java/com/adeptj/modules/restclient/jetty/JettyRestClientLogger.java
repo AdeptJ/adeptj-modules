@@ -46,6 +46,9 @@ class JettyRestClientLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private JettyRestClientLogger() {
+    }
+
     static <T, R> void logRequest(String reqId, ClientRequest<T, R> request, Request jettyRequest) {
         LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(), request.getURI(),
                 serializeHeaders(jettyRequest.getHeaders()),

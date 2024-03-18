@@ -23,7 +23,7 @@ public abstract class AbstractRestClient implements RestClient {
 
     protected final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
 
-    public AbstractRestClient(boolean debugRequest, String mdcReqIdAttrName) {
+    protected AbstractRestClient(boolean debugRequest, String mdcReqIdAttrName) {
         this.debugRequest = debugRequest;
         this.mdcReqIdAttrName = mdcReqIdAttrName;
         this.authorizationHeaderPlugins = new CopyOnWriteArrayList<>();

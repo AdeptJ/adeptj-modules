@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class ApacheRequestFactory {
 
+    private ApacheRequestFactory() {
+    }
+
     static <T, R> HttpUriRequest newRequest(@NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         HttpRequestBase apacheRequest = switch (method) {

@@ -18,6 +18,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 class ClientResponseFactory {
 
+    private ClientResponseFactory() {
+    }
+
     @NotNull
     static <R> ClientResponse<R> newResponse(@NotNull HttpResponse response, Class<R> responseAs) throws IOException {
         ClientResponse<R> clientResponse = new ClientResponse<>();

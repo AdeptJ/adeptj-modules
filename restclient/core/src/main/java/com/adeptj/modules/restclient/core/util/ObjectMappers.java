@@ -19,6 +19,7 @@
 */
 package com.adeptj.modules.restclient.core.util;
 
+import com.adeptj.modules.restclient.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -70,7 +71,7 @@ public class ObjectMappers {
         try {
             return getWriter().writeValueAsString(object);
         } catch (JsonProcessingException ex) {
-            throw new RuntimeException(ex);
+            throw new JacksonException(ex);
         }
     }
 
@@ -78,7 +79,7 @@ public class ObjectMappers {
         try {
             return getWriter().withDefaultPrettyPrinter().writeValueAsString(object);
         } catch (JsonProcessingException ex) {
-            throw new RuntimeException(ex);
+            throw new JacksonException(ex);
         }
     }
 
@@ -86,7 +87,7 @@ public class ObjectMappers {
         try {
             return getReader(valueType).readValue(bytes);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new JacksonException(ex);
         }
     }
 
@@ -94,7 +95,7 @@ public class ObjectMappers {
         try {
             return getReader(valueType).readValue(stream);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new JacksonException(ex);
         }
     }
 }

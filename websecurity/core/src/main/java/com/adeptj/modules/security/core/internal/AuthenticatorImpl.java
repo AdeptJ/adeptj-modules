@@ -90,7 +90,7 @@ public class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-
+        LOGGER.info("Logging out!");
     }
 
     // <<-------------------------------------- OSGi INTERNAL -------------------------------------->>

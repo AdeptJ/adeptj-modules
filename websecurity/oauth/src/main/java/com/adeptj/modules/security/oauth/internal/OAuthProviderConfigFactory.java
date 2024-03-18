@@ -15,4 +15,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Component(service = OAuthProviderConfigFactory.class, name = PID, configurationPolicy = REQUIRE)
 public class OAuthProviderConfigFactory {
     static final String PID = "com.adeptj.modules.security.oauth.OAuthProviderConfigFactory.factory";
+
+    public OAuthProviderConfigFactory() {
+    }
 }

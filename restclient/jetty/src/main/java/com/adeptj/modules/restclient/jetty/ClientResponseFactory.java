@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 
 class ClientResponseFactory {
 
+    private ClientResponseFactory() {
+    }
+
     @NotNull
     static <R> ClientResponse<R> newResponse(@NotNull ContentResponse response, Class<R> responseAs) {
         ClientResponse<R> cr = new ClientResponse<>();

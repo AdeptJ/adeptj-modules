@@ -22,6 +22,11 @@ package com.adeptj.modules.jaxrs.core.jwt.feature;
 
 import com.adeptj.modules.jaxrs.core.jwt.filter.DynamicJwtClaimsIntrospectionFilter;
 import com.adeptj.modules.jaxrs.core.jwt.filter.JwtClaimsIntrospectionFilter;
+import jakarta.ws.rs.ConstrainedTo;
+import jakarta.ws.rs.container.DynamicFeature;
+import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.FeatureContext;
+import jakarta.ws.rs.ext.Provider;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -32,11 +37,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.ws.rs.ConstrainedTo;
-import jakarta.ws.rs.container.DynamicFeature;
-import jakarta.ws.rs.container.ResourceInfo;
-import jakarta.ws.rs.core.FeatureContext;
-import jakarta.ws.rs.ext.Provider;
 import java.lang.invoke.MethodHandles;
 
 import static com.adeptj.modules.jaxrs.core.jwt.feature.JwtDynamicFeature.FEATURE_NAME;
@@ -107,11 +107,10 @@ public class JwtDynamicFeature implements DynamicFeature {
             String method = resourceInfo.getResourceMethod().getName();
             for (String row : this.filterMapping) {
                 String[] mapping = row.split(EQ);
-                if (ArrayUtils.getLength(mapping) == 2) {
-                    if (resource.equals(mapping[0]) && StringUtils.containsAny(mapping[1], method, ASTERISK)) {
-                        context.register(this.claimsIntrospectionFilter, AUTHORIZATION);
-                        LOGGER.info(FILTER_REG_MSG, resource, method);
-                    }
+                if (ArrayUtils.getLength(mapping) == 2
+                        && resource.equals(mapping[0]) && StringUtils.containsAny(mapping[1], method, ASTERISK)) {
+                    context.register(this.claimsIntrospectionFilter, AUTHORIZATION);
+                    LOGGER.info(FILTER_REG_MSG, resource, method);
                 }
             }
         }

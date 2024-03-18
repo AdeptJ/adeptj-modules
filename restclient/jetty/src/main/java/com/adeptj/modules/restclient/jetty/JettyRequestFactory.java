@@ -42,6 +42,9 @@ import static com.adeptj.modules.restclient.core.RestClientConstants.CONTENT_TYP
 
 class JettyRequestFactory {
 
+    private JettyRequestFactory() {
+    }
+
     static <T, R> Request newRequest(@NotNull HttpClient httpClient, @NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");

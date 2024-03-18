@@ -42,4 +42,9 @@ public class OAuthProfile extends HashMap<String, String> {
     public void addAttribute(String attrKey, String attrVal) {
         this.put(attrKey, attrVal);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
 }
