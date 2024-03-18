@@ -22,6 +22,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpClientUtils {
 
+    private HttpClientUtils() {
+    }
+
     static <T, R> @NotNull EntityEnclosingRequest createEntityEnclosingRequest(@NotNull ClientRequest<T, R> request) {
         EntityEnclosingRequest entityEnclosingRequest = new EntityEnclosingRequest(request.getMethod().toString());
         Map<String, String> formParams = request.getFormParams();
@@ -67,8 +70,8 @@ public class HttpClientUtils {
                     .addParameters(HttpClientUtils.createNameValuePairs(queryParams))
                     .build();
             apacheRequest.setURI(uri);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException(ex); // NOSONAR
         }
     }
 }

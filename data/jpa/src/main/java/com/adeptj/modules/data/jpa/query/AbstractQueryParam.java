@@ -31,7 +31,7 @@ public abstract class AbstractQueryParam implements QueryParam {
 
     private final Object value;
 
-    public AbstractQueryParam(Object value) {
+    protected AbstractQueryParam(Object value) {
         Validate.notNull(value, "Query bind parameter value can't be null!");
         this.value = value;
     }

@@ -34,5 +34,10 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
 @Designate(ocd = CaffeineCacheConfig.class, factory = true)
 @Component(service = CaffeineCacheConfigFactory.class, name = PID, configurationPolicy = REQUIRE)
 public class CaffeineCacheConfigFactory {
+
     static final String PID = "com.adeptj.modules.cache.caffeine.CaffeineCacheConfig.factory";
+
+    public CaffeineCacheConfigFactory() {
+        // Added for Sonar issue.
+    }
 }

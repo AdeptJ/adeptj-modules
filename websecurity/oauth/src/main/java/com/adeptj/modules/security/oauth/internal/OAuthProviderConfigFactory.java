@@ -17,5 +17,6 @@ public class OAuthProviderConfigFactory {
     static final String PID = "com.adeptj.modules.security.oauth.OAuthProviderConfigFactory.factory";
 
     public OAuthProviderConfigFactory() {
+        // Added for SONAR issue.
     }
 }
