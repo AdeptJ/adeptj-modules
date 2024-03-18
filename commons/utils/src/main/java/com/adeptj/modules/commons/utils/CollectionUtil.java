@@ -29,6 +29,9 @@ import java.util.Collection;
  */
 public final class CollectionUtil {
 
+    private CollectionUtil() {
+    }
+
     public static int size(Collection<?> collection) {
         return collection == null ? 0 : collection.size();
     }

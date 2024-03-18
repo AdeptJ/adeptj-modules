@@ -35,14 +35,14 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public @interface CaffeineCacheConfig {
 
     @AttributeDefinition(name = "Cache Name", description = "A meaningful name of the configured cache.")
-    String cache_name();
+    String cache_name(); // NOSONAR
 
     @AttributeDefinition(
             name = "Cache Spec",
             description = "The cache spec literal for configuring Caffeine cache. " +
                     "Please see - https://github.com/ben-manes/caffeine/wiki/Specification"
     )
-    String cache_spec() default "maximumSize=16,expireAfterWrite=3600s";
+    String cache_spec() default "maximumSize=16,expireAfterWrite=3600s"; // NOSONAR
 
     // name hint non-editable property
     String webconsole_configurationFactory_nameHint() default

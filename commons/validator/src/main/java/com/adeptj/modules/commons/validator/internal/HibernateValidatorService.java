@@ -21,6 +21,14 @@
 package com.adeptj.modules.commons.validator.internal;
 
 import com.adeptj.modules.commons.validator.ValidatorService;
+import jakarta.validation.BootstrapConfiguration;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidationException;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.hibernate.validator.HibernateValidator;
@@ -30,14 +38,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.validation.BootstrapConfiguration;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidationException;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.executable.ExecutableType;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
@@ -56,6 +56,8 @@ public class HibernateValidatorService implements ValidatorService {
     private static final String VALIDATOR_FACTORY_INIT_MSG = "HibernateValidator initialized in [{}] ms!!";
 
     private static final String VALIDATOR_FACTORY_NULL_MSG = "javax.validation.ValidatorFactory is null!!";
+
+    private static final String OBJECT_NOT_NULL_MSG = "Object to be validated can't be null!!";
 
     private final ValidatorFactory validatorFactory;
 
@@ -85,7 +87,7 @@ public class HibernateValidatorService implements ValidatorService {
      */
     @Override
     public <T> void validate(T instance) {
-        Validate.notNull(instance, "Object to be validated can't be null!!");
+        Validate.notNull(instance, OBJECT_NOT_NULL_MSG);
         Set<ConstraintViolation<T>> violations = this.getValidator().validate(instance);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
@@ -97,7 +99,7 @@ public class HibernateValidatorService implements ValidatorService {
      */
     @Override
     public <T> Set<ConstraintViolation<T>> validateProperty(T instance, String property) {
-        Validate.notNull(instance, "Object to be validated can't be null!!");
+        Validate.notNull(instance, OBJECT_NOT_NULL_MSG);
         Validate.isTrue(StringUtils.isNotEmpty(property), "property [%s] can't be blank!!", property);
         return this.getValidator().validateProperty(instance, property);
     }
@@ -107,7 +109,7 @@ public class HibernateValidatorService implements ValidatorService {
      */
     @Override
     public <T> Set<ConstraintViolation<T>> getConstraintViolations(T instance) {
-        Validate.notNull(instance, "Object to be validated can't be null!!");
+        Validate.notNull(instance, OBJECT_NOT_NULL_MSG);
         return this.getValidator().validate(instance);
     }
 

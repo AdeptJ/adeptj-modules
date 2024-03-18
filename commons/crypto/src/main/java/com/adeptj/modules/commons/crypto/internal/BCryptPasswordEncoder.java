@@ -39,6 +39,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 @Component
 public class BCryptPasswordEncoder implements PasswordEncoder {
 
+    private static final String RAW_PASSWORD_NOT_NULL_MSG = "rawPassword can't be null!!";
+
     private final int exponentialCost;
 
     @Activate
@@ -53,28 +55,28 @@ public class BCryptPasswordEncoder implements PasswordEncoder {
 
     @Override
     public String encode(String rawPassword) {
-        Validate.isTrue(StringUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        Validate.isTrue(StringUtils.isNotEmpty(rawPassword), RAW_PASSWORD_NOT_NULL_MSG);
         String salt = BCrypt.gensalt(this.exponentialCost, RandomGenerators.getSecureRandom());
         return BCrypt.hashpw(rawPassword, salt);
     }
 
     @Override
     public String encode(byte[] rawPassword) {
-        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), RAW_PASSWORD_NOT_NULL_MSG);
         String salt = BCrypt.gensalt(this.exponentialCost, RandomGenerators.getSecureRandom());
         return BCrypt.hashpw(rawPassword, salt);
     }
 
     @Override
     public boolean matches(String rawPassword, String encodedPassword) {
-        Validate.isTrue(StringUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        Validate.isTrue(StringUtils.isNotEmpty(rawPassword), RAW_PASSWORD_NOT_NULL_MSG);
         Validate.isTrue(StringUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
         return BCrypt.checkpw(rawPassword, encodedPassword);
     }
 
     @Override
     public boolean matches(byte[] rawPassword, String encodedPassword) {
-        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), "rawPassword can't be null!!");
+        Validate.isTrue(ArrayUtils.isNotEmpty(rawPassword), RAW_PASSWORD_NOT_NULL_MSG);
         Validate.isTrue(StringUtils.isNotEmpty(encodedPassword), "encodedPassword can't be null!!");
         return BCrypt.checkpw(rawPassword, encodedPassword);
     }

@@ -195,29 +195,29 @@ public class HikariDataSourceService implements DataSourceService {
                 name = CONN_TIMEOUT,
                 description = "Maximum number of milliseconds that a client will wait for a connection from the pool"
         )
-        long connection_timeout() default DEFAULT_CONN_TIMEOUT; // 30 Seconds
+        long connection_timeout() default DEFAULT_CONN_TIMEOUT;
 
         @AttributeDefinition(
                 name = IDLE_TIMEOUT,
                 description = "Maximum amount of time that a connection is allowed to sit idle in the pool"
         )
-        long idle_timeout() default DEFAULT_IDLE_TIMEOUT; // 10 Minutes
+        long idle_timeout() default DEFAULT_IDLE_TIMEOUT;
 
         @AttributeDefinition(name = MAX_LIFETIME, description = "Maximum lifetime of a connection in the pool")
-        long max_lifetime() default DEFAULT_MAX_LIFETIME; // 30 Minutes
+        long max_lifetime() default DEFAULT_MAX_LIFETIME;
 
         // Configure HikariDataSource as a fixed size pool.
         @AttributeDefinition(
                 name = MIN_IDLE,
                 description = "Minimum number of idle connections that HikariCP tries to maintain in the pool"
         )
-        int minimum_idle() default DEFAULT_MIN_IDLE; // 8 Connections;
+        int minimum_idle() default DEFAULT_MIN_IDLE;
 
         @AttributeDefinition(
                 name = MAX_POOL_SIZE,
                 description = "Maximum size that the pool is allowed to reach, including both idle and in-use connections"
         )
-        int maximum_pool_size() default DEFAULT_MAX_POOL_SIZE; // 8 Connections;
+        int maximum_pool_size() default DEFAULT_MAX_POOL_SIZE;
 
         @AttributeDefinition(
                 name = DATASOURCE_PROPS,

@@ -35,6 +35,9 @@ import static org.osgi.framework.Constants.SERVICE_PID;
  */
 public final class CacheUtil {
 
+    private CacheUtil() {
+    }
+
     private static final String KEY_CACHE_NAME = "cache.name";
 
     private static final String KEY_CACHE_SPEC = "cache.spec";

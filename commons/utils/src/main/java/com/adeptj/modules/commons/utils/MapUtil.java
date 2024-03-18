@@ -29,6 +29,9 @@ import java.util.Map;
  */
 public final class MapUtil {
 
+    private MapUtil() {
+    }
+
     public static int size(Map<?, ?> map) {
         return map == null ? 0 : map.size();
     }

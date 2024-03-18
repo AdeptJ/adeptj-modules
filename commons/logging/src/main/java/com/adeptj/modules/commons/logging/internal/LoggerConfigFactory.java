@@ -55,7 +55,7 @@ public class LoggerConfigFactory {
                 name = "Logger Names",
                 description = "%logger.names.desc"
         )
-        String[] logger_names();
+        String[] logger_names(); // NOSONAR
 
         @AttributeDefinition(
                 name = "Logger Level",
@@ -67,7 +67,7 @@ public class LoggerConfigFactory {
                         @Option(label = "Debug", value = "DEBUG"),
                         @Option(label = "Trace", value = "TRACE")
                 })
-        String logger_level() default "INFO";
+        String logger_level() default "INFO"; // NOSONAR
 
         // name hint non-editable property
         String webconsole_configurationFactory_nameHint() default

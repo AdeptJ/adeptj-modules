@@ -16,6 +16,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class Bytes {
 
+    private Bytes() {
+    }
+
     public static byte[] toByteArray(char[] chars) {
         ByteBuffer buffer = UTF_8.encode(CharBuffer.wrap(chars));
         byte[] bytes = new byte[buffer.limit()];
