@@ -24,11 +24,11 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-parent</artifactId>
-        <version>35</version>
+        <version>36</version>
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-parent</artifactId>
-    <version>9</version>
+    <version>10</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Parent</name>
     <description>Parent for AdeptJ Modules Project</description>
