@@ -15,6 +15,11 @@ import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
 
+/**
+ * Base {@link RestClient}
+ *
+ * @author Rakesh Kumar, AdeptJ
+ */
 public abstract class AbstractRestClient implements RestClient {
 
     protected final boolean debugRequest;
