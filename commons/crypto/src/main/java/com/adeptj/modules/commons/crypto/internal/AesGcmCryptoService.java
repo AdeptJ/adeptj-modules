@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#    Copyright 2016-2024, AdeptJ (http://www.adeptj.com)                      #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,7 +17,6 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.crypto.internal;
 
 import com.adeptj.modules.commons.crypto.CryptoException;
@@ -41,7 +40,7 @@ import javax.crypto.SecretKey;
 /**
  * Service implementation for encrypting/decrypting any text using AES/GCM/NoPadding algo.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 @Component
 public class AesGcmCryptoService implements CryptoService {

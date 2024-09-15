@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#    Copyright 2016-2024, AdeptJ (http://www.adeptj.com)                      #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,7 +17,6 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.crypto;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -32,7 +31,7 @@ import java.util.Arrays;
 /**
  * Utility methods for creating {@link SecretKey}.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 public class CryptoUtil {
 

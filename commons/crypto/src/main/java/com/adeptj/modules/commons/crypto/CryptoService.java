@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#    Copyright 2016-2024, AdeptJ (http://www.adeptj.com)                      #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,7 +17,6 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.crypto;
 
 import org.osgi.annotation.versioning.ProviderType;
@@ -25,7 +24,7 @@ import org.osgi.annotation.versioning.ProviderType;
 /**
  * Service interface for encrypting/decrypting any text using AES/GCM/NoPadding algorithm.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 @ProviderType
 public interface CryptoService {

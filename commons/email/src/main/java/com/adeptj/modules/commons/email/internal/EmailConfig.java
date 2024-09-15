@@ -34,6 +34,15 @@ public @interface EmailConfig {
     @AttributeDefinition(name = "SMTP Mail Debug", description = "Debug SMTP email")
     boolean debug();
 
-    @AttributeDefinition(name = "Email Thread Pool Size", description = "Thread Pool size for send email execution.")
-    int thread_pool_size() default 5;
+    @AttributeDefinition(
+            name = "Email Thread Pool Size",
+            description = "Thread Pool size for send email execution."
+    )
+    int thread_pool_size() default 20;
+
+    @AttributeDefinition(
+            name = "Email Thread Pool Queue Size",
+            description = "Thread Pool queue size for send email execution."
+    )
+    int thread_pool_queue_size() default 1000;
 }

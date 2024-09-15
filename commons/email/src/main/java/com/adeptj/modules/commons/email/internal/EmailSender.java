@@ -67,7 +67,7 @@ class EmailSender implements Runnable {
         this.send();
     }
 
-    public void send() {
+    private void send() {
         String messageId = this.emailInfo.getMessageId();
         LOGGER.info("Sending email with Message-ID: {}", messageId);
         long startTime = System.nanoTime();
