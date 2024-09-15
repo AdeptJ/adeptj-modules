@@ -20,9 +20,9 @@
 
 package com.adeptj.modules.data.jpa.eclipselink.internal;
 
-import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.jetbrains.annotations.NotNull;
 
 /**
