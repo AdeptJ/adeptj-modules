@@ -77,6 +77,11 @@ public class ClientRequest<T, R> {
         this.method = method;
     }
 
+    /**
+     * Timeout in milliseconds.
+     *
+     * @return timeout in milliseconds.
+     */
     public long getTimeout() {
         return timeout;
     }

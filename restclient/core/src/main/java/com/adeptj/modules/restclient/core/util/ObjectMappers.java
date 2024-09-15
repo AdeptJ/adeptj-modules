@@ -34,6 +34,9 @@ import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 public class ObjectMappers {
 
     private static final ObjectMapper MAPPER = new ObjectMapper()
@@ -47,7 +50,7 @@ public class ObjectMappers {
     }
 
     public static ObjectReader getReader() {
-        return MAPPER.reader();
+        return getMapper().reader();
     }
 
     public static <T> ObjectReader getReader(Class<T> responseType) {
@@ -55,7 +58,7 @@ public class ObjectMappers {
     }
 
     public static ObjectWriter getWriter() {
-        return MAPPER.writer();
+        return getMapper().writer();
     }
 
     public static <T> String serialize(T object) {

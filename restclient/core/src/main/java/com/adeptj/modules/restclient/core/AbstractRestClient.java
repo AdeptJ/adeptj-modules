@@ -3,6 +3,7 @@ package com.adeptj.modules.restclient.core;
 import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import com.adeptj.modules.restclient.core.util.AntPathMatcher;
 import org.jetbrains.annotations.NotNull;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -14,6 +15,8 @@ import static com.adeptj.modules.restclient.core.HttpMethod.DELETE;
 import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
+import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
+import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
  * Base {@link RestClient}
@@ -92,17 +95,6 @@ public abstract class AbstractRestClient implements RestClient {
         return authorizationHeaderValue;
     }
 
-    protected void doBindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        this.getLogger().info("Binding AuthorizationHeaderPlugin: {}", plugin);
-        this.authorizationHeaderPlugins.add(plugin);
-    }
-
-    protected void doUnbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        if (this.authorizationHeaderPlugins.remove(plugin)) {
-            this.getLogger().info("Unbind AuthorizationHeaderPlugin: {}", plugin);
-        }
-    }
-
     protected abstract <T, R> @NotNull ClientResponse<R> doExecuteRequest(@NotNull ClientRequest<T, R> request);
 
     protected abstract Logger getLogger();
@@ -115,5 +107,17 @@ public abstract class AbstractRestClient implements RestClient {
             MDC.put(this.mdcReqIdAttrName, reqId);
         }
         return reqId;
+    }
+
+    @Reference(service = AuthorizationHeaderPlugin.class, cardinality = MULTIPLE, policy = DYNAMIC)
+    protected void bindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
+        this.getLogger().info("Binding AuthorizationHeaderPlugin: {}", plugin);
+        this.authorizationHeaderPlugins.add(plugin);
+    }
+
+    protected void unbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
+        if (this.authorizationHeaderPlugins.remove(plugin)) {
+            this.getLogger().info("Unbind AuthorizationHeaderPlugin: {}", plugin);
+        }
     }
 }

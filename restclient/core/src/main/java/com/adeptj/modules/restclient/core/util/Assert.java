@@ -19,6 +19,9 @@
 */
 package com.adeptj.modules.restclient.core.util;
 
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 public class Assert {
 
     /**

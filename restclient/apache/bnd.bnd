@@ -22,7 +22,7 @@
 
 -dsannotations: *
 
--dsannotations-options: version;minimum=1.4.0
+-dsannotations-options: version;minimum=1.4.0, inherit
 
 Private-Package: com.adeptj.modules.restclient.apache
 

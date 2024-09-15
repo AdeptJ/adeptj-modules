@@ -19,6 +19,9 @@
 */
 package com.adeptj.modules.restclient.core;
 
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 public class RestClientException extends RuntimeException {
 
     public RestClientException(Throwable cause) {

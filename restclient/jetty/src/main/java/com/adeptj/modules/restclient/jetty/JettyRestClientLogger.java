@@ -42,6 +42,9 @@ import static com.adeptj.modules.restclient.core.RestClientConstants.RESPONSE_ST
 import static com.adeptj.modules.restclient.core.RestClientConstants.RESP_FMT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 class JettyRestClientLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

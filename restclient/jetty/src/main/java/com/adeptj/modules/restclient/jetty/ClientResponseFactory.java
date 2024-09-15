@@ -27,6 +27,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
 
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 class ClientResponseFactory {
 
     private ClientResponseFactory() {

@@ -25,7 +25,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 /**
  * AdeptJ Jetty HttpClient configurations.
  *
- * @author Rakesh.Kumar, AdeptJ.
+ * @author Rakesh Kumar, AdeptJ.
  */
 @ObjectClassDefinition(
         name = "AdeptJ Jetty HttpClient Configuration",

@@ -40,6 +40,9 @@ import static com.adeptj.modules.restclient.core.HttpMethod.OPTIONS;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.RestClientConstants.CONTENT_TYPE_JSON;
 
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 class JettyRequestFactory {
 
     private JettyRequestFactory() {

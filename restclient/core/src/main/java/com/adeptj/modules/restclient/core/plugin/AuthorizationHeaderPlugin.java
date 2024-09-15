@@ -30,7 +30,7 @@ import java.util.List;
  * RestClient consumers should implement this interface if they need seamless injection of Authorization
  * header in matching request paths.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 @ConsumerType
 public interface AuthorizationHeaderPlugin {

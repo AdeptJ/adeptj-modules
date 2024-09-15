@@ -19,7 +19,15 @@
 */
 package com.adeptj.modules.restclient.core;
 
+import java.io.Serial;
+
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 public class RestClientInitializationException extends RuntimeException {
+
+    @Serial
+    private static final long serialVersionUID = -2551218247966169049L;
 
     public RestClientInitializationException(Throwable cause) {
         super(cause);

@@ -25,7 +25,6 @@ import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
 import com.adeptj.modules.restclient.core.RestClientInitializationException;
-import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
@@ -35,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +43,12 @@ import java.lang.invoke.MethodHandles;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.eclipse.jetty.http.HttpHeader.AUTHORIZATION;
-import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
-import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
+/**
+ * The RestClient implementation based on Jetty {@link HttpClient}.
+ *
+ * @author Rakesh Kumar, AdeptJ
+ */
 @Designate(ocd = JettyHttpClientConfig.class)
 @Component(service = RestClient.class)
 public class JettyRestClient extends AbstractRestClient {
@@ -142,14 +143,5 @@ public class JettyRestClient extends AbstractRestClient {
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
-    }
-
-    @Reference(service = AuthorizationHeaderPlugin.class, cardinality = MULTIPLE, policy = DYNAMIC)
-    protected void bindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        this.doBindAuthorizationHeaderPlugin(plugin);
-    }
-
-    protected void unbindAuthorizationHeaderPlugin(AuthorizationHeaderPlugin plugin) {
-        this.doUnbindAuthorizationHeaderPlugin(plugin);
     }
 }
