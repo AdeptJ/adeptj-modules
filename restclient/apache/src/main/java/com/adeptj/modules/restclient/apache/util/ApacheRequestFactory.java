@@ -17,28 +17,32 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.commons.crypto.internal;
+package com.adeptj.modules.restclient.apache.util;
 
-import com.adeptj.modules.commons.crypto.PasswordEncoder;
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import com.adeptj.modules.restclient.apache.NonEntityEnclosingRequest;
+import com.adeptj.modules.restclient.core.ClientRequest;
+import com.adeptj.modules.restclient.core.HttpMethod;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * OSGi Configuration for {@link PasswordEncoder}
- *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
-@ObjectClassDefinition(
-        name = "AdeptJ PasswordEncoder Configuration",
-        description = "Configuration for the AdeptJ PasswordEncoder"
-)
-public @interface PasswordEncoderConfig {
+public class ApacheRequestFactory {
 
-    @AttributeDefinition(
-            name = "Exponential Cost",
-            description = "The exponential cost (log2 factor) between 4 and 31 e.g. 12 will be 2^12 = 4096 rounds, " +
-                    "keep the cost factor reasonable as with each increment it would take twice the amount of time to compute. " +
-                    "Default value is 10, which should be sufficient for most of the use cases."
-    )
-    int exponential_cost() default 10;
+    public static <T, R> HttpUriRequest newRequest(@NotNull ClientRequest<T, R> request) {
+        HttpMethod method = request.getMethod();
+        HttpRequestBase apacheRequest = switch (method) {
+            case HEAD, GET, OPTIONS -> new NonEntityEnclosingRequest(method.toString());
+            case POST, PUT, PATCH, DELETE -> HttpClientUtils.createEntityEnclosingRequest(request);
+            default -> throw new IllegalStateException("Unsupported HttpMethod!!");
+        };
+        HttpClientUtils.addHeaders(request, apacheRequest);
+        HttpClientUtils.addQueryParams(request, apacheRequest);
+        return apacheRequest;
+    }
+
+    private ApacheRequestFactory() {
+    }
 }

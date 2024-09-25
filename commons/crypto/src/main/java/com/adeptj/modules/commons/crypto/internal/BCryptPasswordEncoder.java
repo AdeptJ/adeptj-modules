@@ -33,7 +33,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 /**
  * Service implementation for encoding/matching passwords using BCrypt.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 @Component
 public class BCryptPasswordEncoder implements PasswordEncoder {

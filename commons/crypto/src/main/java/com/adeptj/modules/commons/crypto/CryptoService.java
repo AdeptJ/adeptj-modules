@@ -29,7 +29,19 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface CryptoService {
 
+    /**
+     * Encrypt the given string using the AES/GCM/NoPadding algo.
+     *
+     * @param plainText string to be encrypted.
+     * @return encrypted string.
+     */
     String encrypt(String plainText);
 
+    /**
+     * Decrypt the given string using the AES/GCM/NoPadding algo.
+     *
+     * @param cipherText string to be decrypted.
+     * @return decrypted string.
+     */
     String decrypt(String cipherText);
 }

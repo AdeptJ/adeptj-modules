@@ -21,7 +21,7 @@ package com.adeptj.modules.commons.crypto.internal;
 
 import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.CryptoService;
-import com.adeptj.modules.commons.crypto.CryptoUtil;
+import com.adeptj.modules.commons.crypto.util.CryptoUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +68,7 @@ public class AesGcmCryptoService implements CryptoService {
      * @param context the {@link BundleContext} of crypto module.
      */
     @Activate
-    public AesGcmCryptoService(final BundleContext context) {
+    public AesGcmCryptoService(@NotNull final BundleContext context) {
         char[] cryptoKey = this.getFrameworkProperty(context, PROPERTY_CRYPTO_KEY).toCharArray();
         byte[] cryptoSalt = Hex.decode(this.getFrameworkProperty(context, PROPERTY_CRYPTO_SALT));
         int iterations = this.getIterations(context);
@@ -77,20 +77,43 @@ public class AesGcmCryptoService implements CryptoService {
         this.encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.GCM);
     }
 
+    /**
+     * Encrypt the given string using the AES/GCM/NoPadding algo.
+     * <p>
+     * Following steps are taken.
+     * 1. UTF8 encode
+     * 2. encrypt
+     * 3. Hex encode
+     *
+     * @param plainText string to be encrypted.
+     * @return encrypted string.
+     */
     @Override
     public String encrypt(String plainText) {
         byte[] encryptedBytes = null;
         try {
             Validate.isTrue(StringUtils.isNotEmpty(plainText), "plainText can't be null!!");
-            encryptedBytes = this.encryptor.encrypt(Utf8.encode(plainText));
+            byte[] encoded = Utf8.encode(plainText);
+            encryptedBytes = this.encryptor.encrypt(encoded);
             return String.valueOf(Hex.encode(encryptedBytes));
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipe(encryptedBytes);
         }
     }
 
+    /**
+     * Decrypt the given string using the AES/GCM/NoPadding algo.
+     * <p>
+     * Following steps are taken.
+     * 1. Hex decode
+     * 2. decrypt
+     * 3. UTF8 decode
+     *
+     * @param cipherText the encrypted string to be decrypted.
+     * @return decrypted string.
+     */
     @Override
     public String decrypt(String cipherText) {
         byte[] decoded = null;
@@ -100,7 +123,7 @@ public class AesGcmCryptoService implements CryptoService {
             decoded = Hex.decode(cipherText);
             decryptedBytes = this.encryptor.decrypt(decoded);
             return Utf8.decode(decryptedBytes);
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             throw new CryptoException(ex);
         } finally {
             CryptoUtil.nullSafeWipeAll(decoded, decryptedBytes);

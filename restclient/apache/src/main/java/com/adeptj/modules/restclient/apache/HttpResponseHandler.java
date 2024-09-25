@@ -19,17 +19,21 @@
 */
 package com.adeptj.modules.restclient.apache;
 
+import com.adeptj.modules.restclient.apache.util.ClientResponseFactory;
 import com.adeptj.modules.restclient.core.ClientResponse;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
 
 import java.io.IOException;
 
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
 public class HttpResponseHandler<T> implements ResponseHandler<ClientResponse<T>> {
 
     private final Class<T> responseAs;
 
-    HttpResponseHandler(Class<T> responseAs) {
+    public HttpResponseHandler(Class<T> responseAs) {
         this.responseAs = responseAs;
     }
 

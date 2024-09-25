@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.util;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
@@ -35,13 +35,13 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-class ClientResponseFactory {
-
-    private ClientResponseFactory() {
-    }
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
+public class ClientResponseFactory {
 
     @NotNull
-    static <R> ClientResponse<R> newResponse(@NotNull HttpResponse response, Class<R> responseAs) throws IOException {
+    public static <R> ClientResponse<R> newResponse(@NotNull HttpResponse response, Class<R> responseAs) throws IOException {
         ClientResponse<R> clientResponse = new ClientResponse<>();
         StatusLine statusLine = response.getStatusLine();
         clientResponse.setStatus(statusLine.getStatusCode());
@@ -68,5 +68,8 @@ class ClientResponseFactory {
             clientResponse.setContent(ObjectMappers.deserialize(entity.getContent(), responseAs));
         }
         return clientResponse;
+    }
+
+    private ClientResponseFactory() {
     }
 }

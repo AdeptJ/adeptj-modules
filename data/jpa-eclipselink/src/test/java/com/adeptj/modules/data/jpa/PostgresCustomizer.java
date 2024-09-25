@@ -1,9 +1,9 @@
 package com.adeptj.modules.data.jpa;
 
-import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

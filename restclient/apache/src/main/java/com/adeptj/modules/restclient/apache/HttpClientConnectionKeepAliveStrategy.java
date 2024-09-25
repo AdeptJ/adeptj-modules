@@ -30,16 +30,16 @@ import org.apache.http.protocol.HttpContext;
  * If the keep-alive timeout directive in the response is shorter than our configured max, honor that.
  * Otherwise, go with the configured maximum.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
-class HttpClientConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
+public class HttpClientConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
 
     private final long maxIdleTime;
 
     /**
      * @param maxIdleTime the maximum time a connection may be idle
      */
-    HttpClientConnectionKeepAliveStrategy(long maxIdleTime) {
+    public HttpClientConnectionKeepAliveStrategy(long maxIdleTime) {
         this.maxIdleTime = maxIdleTime;
     }
 

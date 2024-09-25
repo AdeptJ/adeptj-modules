@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.util;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
@@ -46,14 +46,14 @@ import static com.adeptj.modules.restclient.core.RestClientConstants.REQ_FMT;
 import static com.adeptj.modules.restclient.core.RestClientConstants.RESPONSE_START;
 import static com.adeptj.modules.restclient.core.RestClientConstants.RESP_FMT;
 
-class ApacheRestClientLogger {
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
+public class ApacheRestClientLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private ApacheRestClientLogger() {
-    }
-
-    static void logRequest(String reqId, HttpUriRequest request) {
+    public static void logRequest(String reqId, HttpUriRequest request) {
         String body = getBody(request);
         LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(),
                 request.getURI(),
@@ -61,7 +61,7 @@ class ApacheRestClientLogger {
                 StringUtils.isEmpty(body) ? "<<NO BODY>>" : body);
     }
 
-    static <T> void logResponse(String reqId, ClientResponse<T> response, long executionTime) {
+    public static <T> void logResponse(String reqId, ClientResponse<T> response, long executionTime) {
         LOGGER.info(RESP_FMT, RESPONSE_START, reqId, response.getStatus(),
                 ObjectMappers.serializePrettyPrint(response.getHeaders()),
                 (response.getContent() instanceof String ? response.getContent() : "<<SKIPPED>>"),
@@ -100,5 +100,8 @@ class ApacheRestClientLogger {
             }
         }
         return ObjectMappers.serializePrettyPrint(headers);
+    }
+
+    private ApacheRestClientLogger() {
     }
 }

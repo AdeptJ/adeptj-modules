@@ -17,15 +17,20 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.internal;
 
+import com.adeptj.modules.restclient.apache.util.ApacheRequestFactory;
+import com.adeptj.modules.restclient.apache.util.ApacheRestClientLogger;
+import com.adeptj.modules.restclient.apache.util.ClientResponseFactory;
+import com.adeptj.modules.restclient.apache.HttpClientConnectionKeepAliveStrategy;
+import com.adeptj.modules.restclient.apache.HttpClientIdleConnectionEvictor;
+import com.adeptj.modules.restclient.apache.HttpResponseHandler;
 import com.adeptj.modules.restclient.core.AbstractRestClient;
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.RestClient;
 import com.adeptj.modules.restclient.core.RestClientException;
 import com.adeptj.modules.restclient.core.RestClientInitializationException;
-import com.adeptj.modules.restclient.core.plugin.AuthorizationHeaderPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -47,8 +52,9 @@ import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -65,15 +71,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
-import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
-import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 
 /**
  * The RestClient implementation based on Apache HttpComponent's {@link CloseableHttpClient}.
  *
  * @author Rakesh Kumar, AdeptJ
  */
-@Designate(ocd = ApacheHttpClientConfig.class)
+@Designate(ocd = ApacheRestClient.ApacheHttpClientConfig.class)
 @Component(service = RestClient.class)
 public class ApacheRestClient extends AbstractRestClient {
 
@@ -92,11 +96,11 @@ public class ApacheRestClient extends AbstractRestClient {
         super(config.debug_request(), config.mdc_req_id_attribute_name());
         try {
             this.executorService = Executors.newSingleThreadScheduledExecutor();
-            PoolingHttpClientConnectionManager connectionManager = this.getConnectionManager(config);
-            this.httpClient = this.initHttpClient(connectionManager, config);
+            PoolingHttpClientConnectionManager connMgr = this.getConnectionManager(config);
+            this.httpClient = this.initHttpClient(connMgr, config);
             int idleTimeout = config.idle_timeout();
             int initialDelay = idleTimeout * 2;
-            HttpClientIdleConnectionEvictor evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager);
+            HttpClientIdleConnectionEvictor evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connMgr);
             this.executorService.scheduleAtFixedRate(evictor, initialDelay, idleTimeout, SECONDS);
             LOGGER.info("Apache HttpClient Started!");
         } catch (Exception ex) {
@@ -220,5 +224,93 @@ public class ApacheRestClient extends AbstractRestClient {
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Apache HttpClient configurations.
+     *
+     * @author Rakesh Kumar, AdeptJ
+     */
+    @ObjectClassDefinition(
+            name = "AdeptJ Apache HttpClient Configuration",
+            description = "AdeptJ Apache HttpClient Configuration"
+    )
+    public @interface ApacheHttpClientConfig {
+
+        @AttributeDefinition(
+                name = "Skip HostName Verification",
+                description = "Whether to skip HostName verification"
+        )
+        boolean skip_hostname_verification() default true;
+
+        @AttributeDefinition(
+                name = "Disable Cookie Management",
+                description = "Whether to disable cookie management"
+        )
+        boolean disable_cookie_management();
+
+        @AttributeDefinition(
+                name = "Connect Timeout",
+                description = "HttpClient request connect timeout (milliseconds)."
+        )
+        int connect_timeout() default 300000; // Caller has option to override this using RequestConfig
+
+        @AttributeDefinition(
+                name = "Connection Request Timeout",
+                description = "HttpClient connection request timeout (milliseconds)."
+        )
+        int connection_request_timeout() default 60000;
+
+        @AttributeDefinition(
+                name = "Socket Timeout",
+                description = "HttpClient request socket timeout (milliseconds)."
+        )
+        int socket_timeout() default 300000; // Caller has option to override this using RequestConfig
+
+        // <----------------------------- HttpClient ConnectionPool Settings ----------------------------->
+
+        @AttributeDefinition(
+                name = "HttpClient ConnectionPool Max Idle Time",
+                description = "Maximum time a connection is kept alive in HttpClient ConnectionPool (milliseconds)."
+        )
+        long max_idle_time() default 60000;
+
+        @AttributeDefinition(
+                name = "HttpClient ConnectionPool Max Connections",
+                description = "Maximum number of connections in HttpClient ConnectionPool."
+        )
+        int max_total() default 100;
+
+        @AttributeDefinition(
+                name = "HttpClient ConnectionPool Idle Timeout",
+                description = "Maximum time a connection remains idle in HttpClient ConnectionPool (seconds)."
+        )
+        int idle_timeout() default 60;
+
+        @AttributeDefinition(
+                name = "HttpClient ConnectionPool Max Connections Per Route",
+                description = "Maximum number of default connections per host."
+        )
+        int max_per_route() default 10;
+
+        @AttributeDefinition(
+                name = "HttpClient ConnectionPool Inactive Connection Validation Time",
+                description = "Time interval for validating the connection after inactivity (milliseconds)."
+        )
+        int validate_after_inactivity() default 5000;
+
+        // <-------------------------------------------- RestClient Settings -------------------------------------------->
+
+        @AttributeDefinition(
+                name = "Debug Request",
+                description = "Debug for detecting any issues with the request execution. Please keep it disabled on production systems."
+        )
+        boolean debug_request();
+
+        @AttributeDefinition(
+                name = "SLF4J MDC Request Attribute Name",
+                description = "The attribute might already been setup by application during initial request processing."
+        )
+        String mdc_req_id_attribute_name() default "APACHE_HTTP_CLIENT_REQ_ID";
     }
 }

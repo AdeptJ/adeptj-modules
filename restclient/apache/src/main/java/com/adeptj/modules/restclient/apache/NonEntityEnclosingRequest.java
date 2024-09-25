@@ -21,11 +21,14 @@ package com.adeptj.modules.restclient.apache;
 
 import org.apache.http.client.methods.HttpRequestBase;
 
-class NonEntityEnclosingRequest extends HttpRequestBase {
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
+public class NonEntityEnclosingRequest extends HttpRequestBase {
 
     private final String method;
 
-    NonEntityEnclosingRequest(String method) {
+    public NonEntityEnclosingRequest(String method) {
         this.method = method;
     }
 

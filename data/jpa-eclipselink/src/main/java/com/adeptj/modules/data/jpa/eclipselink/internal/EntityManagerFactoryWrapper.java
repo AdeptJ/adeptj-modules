@@ -24,14 +24,19 @@ import jakarta.persistence.Cache;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitTransactionType;
 import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.Query;
+import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Metamodel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A simple wrapper for {@link EntityManagerFactory}, this way EntityManagerFactory object isn't directly
@@ -110,6 +115,11 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
         throw new UnsupportedOperationException("Managed EntityManagerFactory can't be closed by consumer code!");
     }
 
+    @Override
+    public String getName() {
+        return "";
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -134,6 +144,16 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
         return this.entityManagerFactory.getPersistenceUnitUtil();
     }
 
+    @Override
+    public PersistenceUnitTransactionType getTransactionType() {
+        return null;
+    }
+
+    @Override
+    public SchemaManager getSchemaManager() {
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -156,5 +176,25 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
         this.entityManagerFactory.addNamedEntityGraph(graphName, entityGraph);
+    }
+
+    @Override
+    public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
+        return Map.of();
+    }
+
+    @Override
+    public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
+        return Map.of();
+    }
+
+    @Override
+    public void runInTransaction(Consumer<EntityManager> work) {
+
+    }
+
+    @Override
+    public <R> R callInTransaction(Function<EntityManager, R> work) {
+        return null;
     }
 }

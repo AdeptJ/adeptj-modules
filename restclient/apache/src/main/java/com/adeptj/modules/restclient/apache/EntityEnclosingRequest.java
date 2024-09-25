@@ -21,11 +21,14 @@ package com.adeptj.modules.restclient.apache;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-class EntityEnclosingRequest extends HttpEntityEnclosingRequestBase {
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
+public class EntityEnclosingRequest extends HttpEntityEnclosingRequestBase {
 
     private final String method;
 
-    EntityEnclosingRequest(String method) {
+    public EntityEnclosingRequest(String method) {
         this.method = method;
     }
 

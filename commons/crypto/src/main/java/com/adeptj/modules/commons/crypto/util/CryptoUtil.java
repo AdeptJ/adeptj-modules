@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.commons.crypto;
+package com.adeptj.modules.commons.crypto.util;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -34,9 +34,6 @@ import java.util.Arrays;
  * @author Rakesh Kumar, AdeptJ
  */
 public class CryptoUtil {
-
-    private CryptoUtil() {
-    }
 
     public static void nullSafeWipe(byte[] data) {
         if (ArrayUtils.isNotEmpty(data)) {
@@ -63,5 +60,8 @@ public class CryptoUtil {
         } catch (InvalidKeySpecException ex) {
             throw new IllegalArgumentException("Not a valid secret key", ex);
         }
+    }
+
+    private CryptoUtil() {
     }
 }

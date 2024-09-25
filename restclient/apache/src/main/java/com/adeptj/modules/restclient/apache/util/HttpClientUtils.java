@@ -17,8 +17,9 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.util;
 
+import com.adeptj.modules.restclient.apache.EntityEnclosingRequest;
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import org.apache.http.NameValuePair;
@@ -39,12 +40,15 @@ import java.util.Map;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-class HttpClientUtils {
+/**
+ * @author Rakesh Kumar, AdeptJ
+ */
+public class HttpClientUtils {
 
     private HttpClientUtils() {
     }
 
-    static <T, R> @NotNull EntityEnclosingRequest createEntityEnclosingRequest(@NotNull ClientRequest<T, R> request) {
+    public static <T, R> @NotNull EntityEnclosingRequest createEntityEnclosingRequest(@NotNull ClientRequest<T, R> request) {
         EntityEnclosingRequest entityEnclosingRequest = new EntityEnclosingRequest(request.getMethod().toString());
         Map<String, String> formParams = request.getFormParams();
         if (request.getMethod() == POST && formParams != null && !formParams.isEmpty()) {
@@ -71,7 +75,7 @@ class HttpClientUtils {
         return pairs;
     }
 
-    static <T, R> void addHeaders(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
+    public static <T, R> void addHeaders(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
         Map<String, String> headers = request.getHeaders();
         if (headers != null && !headers.isEmpty()) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -80,7 +84,7 @@ class HttpClientUtils {
         }
     }
 
-    static <T, R> void addQueryParams(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
+    public static <T, R> void addQueryParams(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
         Map<String, String> queryParams = request.getQueryParams();
         if (queryParams == null || queryParams.isEmpty()) {
             apacheRequest.setURI(request.getURI());
