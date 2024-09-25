@@ -1,26 +1,17 @@
 package com.adeptj.modules.data.jpa.wrapper;
 
-import jakarta.persistence.CacheRetrieveMode;
-import jakarta.persistence.CacheStoreMode;
-import jakarta.persistence.ConnectionConsumer;
-import jakarta.persistence.ConnectionFunction;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.FindOption;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.LockOption;
 import jakarta.persistence.Query;
-import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.metamodel.Metamodel;
 
@@ -71,23 +62,8 @@ public class EntityManagerWrapper implements EntityManager {
     }
 
     @Override
-    public <T> T find(Class<T> entityClass, Object primaryKey, FindOption... options) {
-        return null;
-    }
-
-    @Override
-    public <T> T find(EntityGraph<T> entityGraph, Object primaryKey, FindOption... options) {
-        return null;
-    }
-
-    @Override
     public <T> T getReference(Class<T> entityClass, Object primaryKey) {
         return this.delegate.getReference(entityClass, primaryKey);
-    }
-
-    @Override
-    public <T> T getReference(T entity) {
-        return null;
     }
 
     @Override
@@ -116,11 +92,6 @@ public class EntityManagerWrapper implements EntityManager {
     }
 
     @Override
-    public void lock(Object entity, LockModeType lockMode, LockOption... options) {
-
-    }
-
-    @Override
     public void refresh(Object entity) {
         this.delegate.refresh(entity);
     }
@@ -138,11 +109,6 @@ public class EntityManagerWrapper implements EntityManager {
     @Override
     public void refresh(Object entity, LockModeType lockMode, Map<String, Object> properties) {
         this.delegate.refresh(entity, lockMode, properties);
-    }
-
-    @Override
-    public void refresh(Object entity, RefreshOption... options) {
-
     }
 
     @Override
@@ -166,26 +132,6 @@ public class EntityManagerWrapper implements EntityManager {
     }
 
     @Override
-    public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
-
-    }
-
-    @Override
-    public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
-
-    }
-
-    @Override
-    public CacheRetrieveMode getCacheRetrieveMode() {
-        return null;
-    }
-
-    @Override
-    public CacheStoreMode getCacheStoreMode() {
-        return null;
-    }
-
-    @Override
     public void setProperty(String propertyName, Object value) {
         this.delegate.setProperty(propertyName, value);
     }
@@ -203,11 +149,6 @@ public class EntityManagerWrapper implements EntityManager {
     @Override
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
         return this.delegate.createQuery(criteriaQuery);
-    }
-
-    @Override
-    public <T> TypedQuery<T> createQuery(CriteriaSelect<T> selectQuery) {
-        return null;
     }
 
     @Override
@@ -233,11 +174,6 @@ public class EntityManagerWrapper implements EntityManager {
     @Override
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
         return this.delegate.createNamedQuery(name, resultClass);
-    }
-
-    @Override
-    public <T> TypedQuery<T> createQuery(TypedQueryReference<T> reference) {
-        return null;
     }
 
     @Override
@@ -344,15 +280,5 @@ public class EntityManagerWrapper implements EntityManager {
     @Override
     public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> entityClass) {
         return this.delegate.getEntityGraphs(entityClass);
-    }
-
-    @Override
-    public <C> void runWithConnection(ConnectionConsumer<C> action) {
-
-    }
-
-    @Override
-    public <C, T> T callWithConnection(ConnectionFunction<C, T> function) {
-        return null;
     }
 }

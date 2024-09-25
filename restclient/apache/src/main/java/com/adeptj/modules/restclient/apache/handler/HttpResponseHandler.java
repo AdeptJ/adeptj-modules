@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.handler;
 
 import com.adeptj.modules.restclient.apache.util.ClientResponseFactory;
 import com.adeptj.modules.restclient.core.ClientResponse;

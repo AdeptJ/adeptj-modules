@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.cleanup;
 
 import org.apache.http.conn.HttpClientConnectionManager;
 

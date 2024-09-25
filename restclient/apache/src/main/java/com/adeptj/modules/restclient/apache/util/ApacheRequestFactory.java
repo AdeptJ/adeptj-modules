@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.restclient.apache.util;
 
-import com.adeptj.modules.restclient.apache.NonEntityEnclosingRequest;
+import com.adeptj.modules.restclient.apache.request.NonEntityEnclosingRequest;
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.HttpMethod;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -34,7 +34,7 @@ public class ApacheRequestFactory {
     public static <T, R> HttpUriRequest newRequest(@NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         HttpRequestBase apacheRequest = switch (method) {
-            case HEAD, GET, OPTIONS -> new NonEntityEnclosingRequest(method.toString());
+            case HEAD, GET, OPTIONS -> new NonEntityEnclosingRequest(method);
             case POST, PUT, PATCH, DELETE -> HttpClientUtils.createEntityEnclosingRequest(request);
             default -> throw new IllegalStateException("Unsupported HttpMethod!!");
         };

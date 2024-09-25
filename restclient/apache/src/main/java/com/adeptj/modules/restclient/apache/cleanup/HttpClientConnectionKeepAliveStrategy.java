@@ -17,23 +17,35 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.cleanup;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.HttpResponse;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
+import org.apache.http.protocol.HttpContext;
 
 /**
+ * Simple implementation of Apache {@link ConnectionKeepAliveStrategy}
+ * <p>
+ * If the keep-alive timeout directive in the response is shorter than our configured max, honor that.
+ * Otherwise, go with the configured maximum.
+ *
  * @author Rakesh Kumar, AdeptJ
  */
-public class EntityEnclosingRequest extends HttpEntityEnclosingRequestBase {
+public class HttpClientConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
 
-    private final String method;
+    private final long maxIdleTime;
 
-    public EntityEnclosingRequest(String method) {
-        this.method = method;
+    /**
+     * @param maxIdleTime the maximum time a connection may be idle
+     */
+    public HttpClientConnectionKeepAliveStrategy(long maxIdleTime) {
+        this.maxIdleTime = maxIdleTime;
     }
 
     @Override
-    public String getMethod() {
-        return this.method;
+    public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+        long duration = DefaultConnectionKeepAliveStrategy.INSTANCE.getKeepAliveDuration(response, context);
+        return (duration > 0 && duration < this.maxIdleTime) ? duration : this.maxIdleTime;
     }
 }

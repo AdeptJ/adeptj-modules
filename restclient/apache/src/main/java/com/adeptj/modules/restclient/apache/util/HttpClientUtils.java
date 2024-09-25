@@ -19,7 +19,7 @@
 */
 package com.adeptj.modules.restclient.apache.util;
 
-import com.adeptj.modules.restclient.apache.EntityEnclosingRequest;
+import com.adeptj.modules.restclient.apache.request.EntityEnclosingRequest;
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import org.apache.http.NameValuePair;
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -45,26 +44,23 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class HttpClientUtils {
 
-    private HttpClientUtils() {
-    }
-
     public static <T, R> @NotNull EntityEnclosingRequest createEntityEnclosingRequest(@NotNull ClientRequest<T, R> request) {
-        EntityEnclosingRequest entityEnclosingRequest = new EntityEnclosingRequest(request.getMethod().toString());
+        EntityEnclosingRequest enclosingRequest = new EntityEnclosingRequest(request.getMethod());
+        // Handle Form Post - application/x-www-form-urlencoded
         Map<String, String> formParams = request.getFormParams();
-        if (request.getMethod() == POST && formParams != null && !formParams.isEmpty()) {
-            // Handle Form Post - application/x-www-form-urlencoded
+        if (formParams != null && !formParams.isEmpty()) {
             List<NameValuePair> params = HttpClientUtils.createNameValuePairs(formParams);
-            entityEnclosingRequest.setEntity(new UrlEncodedFormEntity(params, UTF_8));
-            return entityEnclosingRequest;
+            enclosingRequest.setEntity(new UrlEncodedFormEntity(params, UTF_8));
+            return enclosingRequest;
         }
         T body = request.getBody();
         if (body != null) {
             String data = ObjectMappers.serialize(body);
             StringEntity entity = new StringEntity(data, UTF_8);
             entity.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-            entityEnclosingRequest.setEntity(entity);
+            enclosingRequest.setEntity(entity);
         }
-        return entityEnclosingRequest;
+        return enclosingRequest;
     }
 
     static @NotNull List<NameValuePair> createNameValuePairs(@NotNull Map<String, String> params) {
@@ -98,5 +94,8 @@ public class HttpClientUtils {
         } catch (URISyntaxException ex) {
             throw new RuntimeException(ex); // NOSONAR
         }
+    }
+
+    private HttpClientUtils() {
     }
 }

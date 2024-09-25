@@ -17,19 +17,20 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache;
+package com.adeptj.modules.restclient.apache.request;
 
-import org.apache.http.client.methods.HttpRequestBase;
+import com.adeptj.modules.restclient.core.HttpMethod;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
 /**
  * @author Rakesh Kumar, AdeptJ
  */
-public class NonEntityEnclosingRequest extends HttpRequestBase {
+public class EntityEnclosingRequest extends HttpEntityEnclosingRequestBase {
 
     private final String method;
 
-    public NonEntityEnclosingRequest(String method) {
-        this.method = method;
+    public EntityEnclosingRequest(HttpMethod method) {
+        this.method = method.toString();
     }
 
     @Override
