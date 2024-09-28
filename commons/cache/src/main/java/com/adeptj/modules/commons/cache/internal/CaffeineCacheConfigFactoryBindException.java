@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016-2024, AdeptJ (http://adeptj.com)                          #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -19,13 +19,16 @@
 */
 package com.adeptj.modules.commons.cache.internal;
 
+import java.io.Serial;
+
 /**
  * Exception thrown when a cache already exists in CaffeineCacheConfigFactory bind method.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 class CaffeineCacheConfigFactoryBindException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 1539582056947196713L;
 
     CaffeineCacheConfigFactoryBindException(String message) {

@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016-2024, AdeptJ (http://adeptj.com)                          #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,7 +17,6 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.cache;
 
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,7 @@ import java.util.function.Function;
 /**
  * The {@link Cache}
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 public interface Cache<K, V> {
 

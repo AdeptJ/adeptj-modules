@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016-2024, AdeptJ (http://adeptj.com)                          #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,7 +17,6 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.cache;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,12 +30,9 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 /**
  * Utilities for cache module.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 public final class CacheUtil {
-
-    private CacheUtil() {
-    }
 
     private static final String KEY_CACHE_NAME = "cache.name";
 
@@ -62,5 +58,8 @@ public final class CacheUtil {
         if (cache != null) {
             cache.clear();
         }
+    }
+
+    private CacheUtil() {
     }
 }

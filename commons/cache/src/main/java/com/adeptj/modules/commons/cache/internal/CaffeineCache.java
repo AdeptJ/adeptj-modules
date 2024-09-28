@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             # 
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016-2024, AdeptJ (http://adeptj.com)                          #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,7 +17,6 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.cache.internal;
 
 import com.adeptj.modules.commons.cache.Cache;
@@ -31,7 +30,7 @@ import java.util.function.Function;
 /**
  * Implementation for Cache interface, internally this uses the Caffeine cache.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 public final class CaffeineCache<K, V> implements Cache<K, V> {
 

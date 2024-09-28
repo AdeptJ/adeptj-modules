@@ -133,6 +133,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.extension -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+            <version>4.0.4</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>

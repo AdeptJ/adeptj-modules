@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016-2024, AdeptJ (http://adeptj.com)                          #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,11 +17,12 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.cache.internal;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import static com.adeptj.modules.commons.cache.internal.CaffeineCacheConfigFactory.PID;
 import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE;
@@ -31,7 +32,7 @@ import static org.osgi.service.component.annotations.ConfigurationPolicy.REQUIRE
  *
  * @author Rakesh.Kumar, AdeptJ
  */
-@Designate(ocd = CaffeineCacheConfig.class, factory = true)
+@Designate(ocd = CaffeineCacheConfigFactory.CaffeineCacheConfig.class, factory = true)
 @Component(service = CaffeineCacheConfigFactory.class, name = PID, configurationPolicy = REQUIRE)
 public class CaffeineCacheConfigFactory {
 
@@ -39,5 +40,31 @@ public class CaffeineCacheConfigFactory {
 
     public CaffeineCacheConfigFactory() {
         // Added for Sonar issue.
+    }
+
+    /**
+     * Configuration for Caffeine cache.
+     *
+     * @author Rakesh Kumar, AdeptJ
+     */
+    @ObjectClassDefinition(
+            name = "AdeptJ CaffeineCache Configuration Factory",
+            description = "Factory for creating AdeptJ CaffeineCache Configurations."
+    )
+    public @interface CaffeineCacheConfig {
+
+        @AttributeDefinition(name = "Cache Name", description = "A meaningful name of the configured cache.")
+        String cache_name(); // NOSONAR
+
+        @AttributeDefinition(
+                name = "Cache Spec",
+                description = "The cache spec literal for configuring Caffeine cache. " +
+                        "Please see - https://github.com/ben-manes/caffeine/wiki/Specification"
+        )
+        String cache_spec() default "maximumSize=16,expireAfterWrite=3600s"; // NOSONAR
+
+        // name hint non-editable property
+        String webconsole_configurationFactory_nameHint() default
+                "Caffeine Cache ({" + "cache.name" + "}" + ": " + "{" + "cache.spec" + "})"; // NOSONAR
     }
 }

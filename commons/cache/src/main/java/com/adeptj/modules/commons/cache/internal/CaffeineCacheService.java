@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://adeptj.com)                               #
+#    Copyright 2016-2024, AdeptJ (http://adeptj.com)                          #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,7 +17,6 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.cache.internal;
 
 import com.adeptj.modules.commons.cache.Cache;
@@ -34,11 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
 import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
@@ -46,7 +45,7 @@ import static org.osgi.service.component.annotations.ReferencePolicy.DYNAMIC;
 /**
  * Caffeine cache based implementation of {@link CacheService}.
  *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
 @Component
 public class CaffeineCacheService implements CacheService {
@@ -55,11 +54,11 @@ public class CaffeineCacheService implements CacheService {
 
     private final ConcurrentMap<String, Cache<?, ?>> caches;
 
-    private final List<String> configPids;
+    private final List<String> cacheConfigPids;
 
     public CaffeineCacheService() {
         this.caches = new ConcurrentHashMap<>();
-        this.configPids = new CopyOnWriteArrayList<>();
+        this.cacheConfigPids = new ArrayList<>();
     }
 
     /**
@@ -103,6 +102,7 @@ public class CaffeineCacheService implements CacheService {
     protected void stop() {
         LOGGER.info("CacheService is being stopped, it will clear all the Cache instances.");
         this.clearCaches(this.caches.keySet());
+        this.caches.forEach((cacheName, cache) -> cache.clear());
         this.caches.clear();
     }
 
@@ -119,13 +119,13 @@ public class CaffeineCacheService implements CacheService {
         String cacheSpec = CacheUtil.getCacheSpec(properties);
         this.caches.put(cacheName, new CaffeineCache<>(cacheName, cacheSpec));
         LOGGER.info("CaffeineCache ({}:{}) initialized!!", cacheName, cacheSpec);
-        this.configPids.add(pid);
+        this.cacheConfigPids.add(pid);
     }
 
     protected void unbindCaffeineCacheConfigFactory(@NotNull Map<String, Object> properties) {
         String pid = CacheUtil.getServicePid(properties);
         LOGGER.info("Unbinding CaffeineCacheConfigFactory with pid - {}", pid);
-        if (this.configPids.remove(pid)) {
+        if (this.cacheConfigPids.remove(pid)) {
             CacheUtil.nullSafeClear(this.caches.remove(CacheUtil.getCacheName(properties)));
         }
     }

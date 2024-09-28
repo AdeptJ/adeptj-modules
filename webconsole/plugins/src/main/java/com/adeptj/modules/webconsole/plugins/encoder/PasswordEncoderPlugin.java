@@ -19,7 +19,6 @@
 */
 package com.adeptj.modules.webconsole.plugins.encoder;
 
-import com.adeptj.modules.commons.crypto.CryptoException;
 import com.adeptj.modules.commons.crypto.PasswordEncoder;
 import com.adeptj.modules.commons.utils.annotation.ConfigPluginId;
 import com.adeptj.modules.commons.utils.annotation.WebConsolePlugin;
@@ -97,8 +96,8 @@ public class PasswordEncoderPlugin extends AbstractServlet {
         if (StringUtils.isNotEmpty(plainText)) {
             try {
                 encodedText = this.passwordEncoder.encode(plainText);
-            } catch (CryptoException ce) {
-                encodedText = "Exception while encoding Plain Text: " + ce;
+            } catch (Exception ex) { // NOSONAR
+                encodedText = "Exception while encoding Plain Text: " + ex;
             }
         }
         this.populateVariableResolver(req, plainText, encodedText);
