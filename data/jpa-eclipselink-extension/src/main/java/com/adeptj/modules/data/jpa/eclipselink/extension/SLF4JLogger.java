@@ -47,9 +47,11 @@ public class SLF4JLogger extends AbstractSessionLog {
      * Creates an instance of EclipseLink logger bridge over SLF4J
      */
     public SLF4JLogger() {
-        // Set default logging levels for all logging categories.
+        // Set default logging levels for all logging categories - default level is 0, which means ALL.
         final byte defaultLevel = LogLevel.toValue(level).getId();
+        // There are 24 log categories as of v4.0.4 of EclipseLink
         this.logLevels = new LogLevel[LogCategory.length];
+        // After this call, the logLevels array's each element will be LogLevel.ALL
         Arrays.fill(this.logLevels, LogLevel.toValue(defaultLevel));
     }
 
@@ -143,7 +145,7 @@ public class SLF4JLogger extends AbstractSessionLog {
         }
         final LogCategory category = LogCategory.toValue(logEntry.getNameSpace());
         if (category == null) {
-            // Let's just silently return.
+            // Let's just return silently.
             return;
         }
         final byte levelId = (byte) logEntry.getLevel();
