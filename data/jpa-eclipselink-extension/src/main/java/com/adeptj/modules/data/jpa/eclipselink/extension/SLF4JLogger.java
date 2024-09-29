@@ -143,11 +143,11 @@ public class SLF4JLogger extends AbstractSessionLog {
         }
         final LogCategory category = LogCategory.toValue(logEntry.getNameSpace());
         if (category == null) {
-            // Lets just silently return.
+            // Let's just silently return.
             return;
         }
-        final int levelId = logEntry.getLevel();
-        if (this.logLevels[category.getId()].shouldLog((byte) levelId)) {
+        final byte levelId = (byte) logEntry.getLevel();
+        if (this.logLevels[category.getId()].shouldLog(levelId)) {
             final Logger logger = LoggerFactory.getLogger(category.getNameSpace());
             final LogLevel level = LogLevel.toValue(levelId);
             // If EclipseLink LogLevel is ALL or FINEST but SLF4J TRACE is not enabled, return right away.
@@ -178,16 +178,12 @@ public class SLF4JLogger extends AbstractSessionLog {
     }
 
     private void doLogSLF4J(final Logger logger, final LogLevel level, final String msg, final Throwable t) {
-        if (level == LogLevel.ALL || level == LogLevel.FINEST) {
-            logger.trace(msg, t);
-        } else if (level == LogLevel.FINER || level == LogLevel.FINE) {
-            logger.debug(msg, t);
-        } else if (level == LogLevel.CONFIG || level == LogLevel.INFO) {
-            logger.info(msg, t);
-        } else if (level == LogLevel.WARNING) {
-            logger.warn(msg, t);
-        } else if (level == LogLevel.SEVERE) {
-            logger.error(msg, t);
+        switch (level) {
+            case ALL, FINEST -> logger.trace(msg, t);
+            case FINER, FINE -> logger.debug(msg, t);
+            case CONFIG, INFO -> logger.info(msg, t);
+            case WARNING -> logger.warn(msg, t);
+            case SEVERE -> logger.error(msg, t);
         }
     }
 }
