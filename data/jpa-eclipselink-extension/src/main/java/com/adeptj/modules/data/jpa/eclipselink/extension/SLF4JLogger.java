@@ -178,12 +178,16 @@ public class SLF4JLogger extends AbstractSessionLog {
     }
 
     private void doLogSLF4J(final Logger logger, final LogLevel level, final String msg, final Throwable t) {
-        switch (level) {
-            case ALL, FINEST -> logger.trace(msg, t);
-            case FINER, FINE -> logger.debug(msg, t);
-            case CONFIG, INFO -> logger.info(msg, t);
-            case WARNING -> logger.warn(msg, t);
-            case SEVERE -> logger.error(msg, t);
+        if (level == LogLevel.ALL || level == LogLevel.FINEST) {
+            logger.trace(msg, t);
+        } else if (level == LogLevel.FINER || level == LogLevel.FINE) {
+            logger.debug(msg, t);
+        } else if (level == LogLevel.CONFIG || level == LogLevel.INFO) {
+            logger.info(msg, t);
+        } else if (level == LogLevel.WARNING) {
+            logger.warn(msg, t);
+        } else if (level == LogLevel.SEVERE) {
+            logger.error(msg, t);
         }
     }
 }
