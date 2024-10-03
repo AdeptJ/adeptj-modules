@@ -20,14 +20,17 @@
 
 package com.adeptj.modules.commons.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +39,7 @@ import java.io.IOException;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
@@ -49,12 +53,14 @@ public class JacksonJsonUtil {
     private JacksonJsonUtil() {
     }
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-            .enable(INDENT_OUTPUT)
-            .disable(WRITE_DATES_AS_TIMESTAMPS)
-            .setSerializationInclusion(NON_NULL)
-            .setDefaultPropertyInclusion(NON_DEFAULT)
-            .registerModule(new BlackbirdModule());
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
+            .disable(INDENT_OUTPUT, WRITE_DATES_AS_TIMESTAMPS)
+            .disable(FAIL_ON_UNKNOWN_PROPERTIES)
+            .serializationInclusion(NON_NULL)
+            .defaultPropertyInclusion(JsonInclude.Value.construct(NON_DEFAULT, NON_DEFAULT))
+            .addModule(new BlackbirdModule())
+            .addModule(new JavaTimeModule())
+            .build();
 
     public static ObjectMapper objectMapper() {
         return OBJECT_MAPPER;

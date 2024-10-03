@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LogEntryConsumer implements LogListener {
 
-    private static final String LOGGER_NAME = "com.adeptj.modules.commons.logging.osgi.Logger";
+    private static final String LOGGER_NAME = "com.adeptj.modules.commons.logging.OsgiToSlf4jLogger";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LOGGER_NAME);
 

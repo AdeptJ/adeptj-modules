@@ -1,24 +1,18 @@
 package com.adeptj.modules.data.mongodb.internal;
 
 import com.mongodb.ClientSessionOptions;
-import com.mongodb.ReadConcern;
-import com.mongodb.ReadPreference;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.ChangeStreamIterable;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.ListDatabasesIterable;
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCluster;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.connection.ClusterDescription;
 import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 class MongoClientWrapper implements MongoClient {
 
@@ -26,56 +20,6 @@ class MongoClientWrapper implements MongoClient {
 
     MongoClientWrapper(@NotNull MongoClient delegate) {
         this.delegate = delegate;
-    }
-
-    @Override
-    public CodecRegistry getCodecRegistry() {
-        return this.delegate.getCodecRegistry();
-    }
-
-    @Override
-    public ReadPreference getReadPreference() {
-        return this.delegate.getReadPreference();
-    }
-
-    @Override
-    public WriteConcern getWriteConcern() {
-        return this.delegate.getWriteConcern();
-    }
-
-    @Override
-    public ReadConcern getReadConcern() {
-        return this.delegate.getReadConcern();
-    }
-
-    @Override
-    public Long getTimeout(TimeUnit timeUnit) {
-        return this.delegate.getTimeout(timeUnit);
-    }
-
-    @Override
-    public MongoCluster withCodecRegistry(CodecRegistry codecRegistry) {
-        return this.delegate.withCodecRegistry(codecRegistry);
-    }
-
-    @Override
-    public MongoCluster withReadPreference(ReadPreference readPreference) {
-        return this.delegate.withReadPreference(readPreference);
-    }
-
-    @Override
-    public MongoCluster withWriteConcern(WriteConcern writeConcern) {
-        return this.delegate.withWriteConcern(writeConcern);
-    }
-
-    @Override
-    public MongoCluster withReadConcern(ReadConcern readConcern) {
-        return this.delegate.withReadConcern(readConcern);
-    }
-
-    @Override
-    public MongoCluster withTimeout(long timeout, TimeUnit timeUnit) {
-        return this.delegate.withTimeout(timeout, timeUnit);
     }
 
     @Override
