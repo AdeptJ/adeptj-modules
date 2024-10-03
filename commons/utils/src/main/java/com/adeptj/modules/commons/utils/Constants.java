@@ -27,9 +27,6 @@ package com.adeptj.modules.commons.utils;
  */
 public final class Constants {
 
-    private Constants() {
-    }
-
     public static final String EQ = "=";
 
     public static final String COMMA = ",";
@@ -39,4 +36,7 @@ public final class Constants {
     public static final String UTF8 = "UTF-8";
 
     public static final String SHA_256 = "SHA-256";
+
+    private Constants() {
+    }
 }

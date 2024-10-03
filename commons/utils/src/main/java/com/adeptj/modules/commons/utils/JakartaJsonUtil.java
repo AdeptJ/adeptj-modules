@@ -26,9 +26,6 @@ import static jakarta.json.stream.JsonGenerator.PRETTY_PRINTING;
  */
 public class JakartaJsonUtil {
 
-    private JakartaJsonUtil() {
-    }
-
     private static final Jsonb JSONB;
 
     private static final JsonReaderFactory READER_FACTORY;
@@ -53,6 +50,9 @@ public class JakartaJsonUtil {
                 .withProvider(provider)
                 .withConfig(new JsonbConfig().withFormatting(FALSE).withEncoding(UTF8))
                 .build();
+    }
+
+    private JakartaJsonUtil() {
     }
 
     public static Jsonb getJsonb() {

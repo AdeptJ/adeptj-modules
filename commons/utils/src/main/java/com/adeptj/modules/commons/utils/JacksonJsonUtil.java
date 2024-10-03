@@ -50,9 +50,6 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
  */
 public class JacksonJsonUtil {
 
-    private JacksonJsonUtil() {
-    }
-
     private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
             .disable(INDENT_OUTPUT, WRITE_DATES_AS_TIMESTAMPS)
             .disable(FAIL_ON_UNKNOWN_PROPERTIES)
@@ -61,6 +58,9 @@ public class JacksonJsonUtil {
             .addModule(new BlackbirdModule())
             .addModule(new JavaTimeModule())
             .build();
+
+    private JacksonJsonUtil() {
+    }
 
     public static ObjectMapper objectMapper() {
         return OBJECT_MAPPER;

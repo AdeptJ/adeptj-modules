@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #                                                                             #
-#    Copyright 2016, AdeptJ (http://www.adeptj.com)                           #
+#    Copyright 2016-2024, AdeptJ (http://www.adeptj.com)                      #
 #                                                                             #
 #    Licensed under the Apache License, Version 2.0 (the "License");          #
 #    you may not use this file except in compliance with the License.         #
@@ -17,8 +17,9 @@
 #                                                                             #
 ###############################################################################
 */
-
 package com.adeptj.modules.commons.utils;
+
+import java.io.Serial;
 
 /**
  * Exception thrown by {@link JacksonJsonUtil} methods.
@@ -27,6 +28,7 @@ package com.adeptj.modules.commons.utils;
  */
 public class JacksonException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 3001096294812228143L;
 
     public JacksonException(Throwable cause) {
