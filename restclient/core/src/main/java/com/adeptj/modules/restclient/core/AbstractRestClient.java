@@ -77,7 +77,7 @@ public abstract class AbstractRestClient implements RestClient {
     @Override
     public <T, R> ClientResponse<R> executeRequest(@NotNull ClientRequest<T, R> request) {
         if (request.getMethod() == null) {
-            throw new IllegalStateException("No HttpMethod set in the ClientRequest!!");
+            throw new RestClientException("No HttpMethod set in the ClientRequest!!");
         }
         return this.doExecuteRequest(request);
     }

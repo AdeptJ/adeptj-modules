@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.jetty;
+package com.adeptj.modules.restclient.jetty.util;
 
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
@@ -45,20 +45,20 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 /**
  * @author Rakesh Kumar, AdeptJ
  */
-class JettyRestClientLogger {
+public class JettyRestClientLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private JettyRestClientLogger() {
     }
 
-    static <T, R> void logRequest(String reqId, ClientRequest<T, R> request, Request jettyRequest) {
+    public static <T, R> void logRequest(String reqId, ClientRequest<T, R> request, Request jettyRequest) {
         LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(), request.getURI(),
                 serializeHeaders(jettyRequest.getHeaders()),
                 getBody(request));
     }
 
-    static void logResponse(String reqId, ContentResponse response, long executionTime) {
+    public static void logResponse(String reqId, ContentResponse response, long executionTime) {
         LOGGER.info(RESP_FMT, RESPONSE_START, reqId, response.getStatus(), serializeHeaders(response.getHeaders()),
                 new String(response.getContent(), UTF_8),
                 TimeUnit.NANOSECONDS.toMillis(executionTime),

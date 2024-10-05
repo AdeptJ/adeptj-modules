@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.jetty;
+package com.adeptj.modules.restclient.jetty.util;
 
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.HttpMethod;
@@ -37,18 +37,17 @@ import java.util.concurrent.TimeUnit;
 import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.HEAD;
 import static com.adeptj.modules.restclient.core.HttpMethod.OPTIONS;
-import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.RestClientConstants.CONTENT_TYPE_JSON;
 
 /**
  * @author Rakesh Kumar, AdeptJ
  */
-class JettyRequestFactory {
+public class JettyRequestFactory {
 
     private JettyRequestFactory() {
     }
 
-    static <T, R> Request newRequest(@NotNull HttpClient httpClient, @NotNull ClientRequest<T, R> request) {
+    public static <T, R> Request newRequest(@NotNull HttpClient httpClient, @NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         Assert.notNull(method, "HttpMethod can't be null");
         Request jettyRequest = httpClient.newRequest(request.getURI()).method(method.toString());

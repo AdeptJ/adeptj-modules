@@ -17,7 +17,7 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.jetty;
+package com.adeptj.modules.restclient.jetty.util;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
 import com.adeptj.modules.restclient.core.util.ClientResponseUtil;
@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 /**
  * @author Rakesh Kumar, AdeptJ
  */
-class ClientResponseFactory {
+public class ClientResponseFactory {
 
     private ClientResponseFactory() {
     }
 
     @NotNull
-    static <R> ClientResponse<R> newResponse(@NotNull ContentResponse response, Class<R> responseAs) {
+    public static <R> ClientResponse<R> newResponse(@NotNull ContentResponse response, Class<R> responseAs) {
         ClientResponse<R> cr = new ClientResponse<>();
         cr.setStatus(response.getStatus());
         cr.setReason(response.getReason());

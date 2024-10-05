@@ -103,10 +103,24 @@ public class ClientRequest<T, R> {
         return body;
     }
 
+    /**
+     * Builder for use case where no response serialization is needed.
+     *
+     * @param <T> The type of the body
+     * @param <R> The type of the response
+     * @return the Builder instance.
+     */
     public static <T, R> Builder<T, R> builder() {
-        return new Builder<>();
+        return builder(null);
     }
 
+    /**
+     * Builder for use case where response serialization of given type is needed .
+     *
+     * @param <T> The type of the body
+     * @param <R> The type of the response
+     * @return the Builder instance.
+     */
     public static <T, R> Builder<T, R> builder(Class<R> responseAs) {
         return new Builder<>(responseAs);
     }
@@ -129,10 +143,7 @@ public class ClientRequest<T, R> {
 
         private T body;
 
-        private Class<R> responseAs;
-
-        public Builder() {
-        }
+        private final Class<R> responseAs;
 
         public Builder(Class<R> responseAs) {
             this.responseAs = responseAs;
