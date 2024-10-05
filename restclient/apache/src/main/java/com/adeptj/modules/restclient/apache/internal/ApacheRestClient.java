@@ -244,7 +244,7 @@ public class ApacheRestClient extends AbstractRestClient {
                 name = "Skip HostName Verification",
                 description = "Whether to skip HostName verification"
         )
-        boolean skip_hostname_verification() default true;
+        boolean skip_hostname_verification();
 
         @AttributeDefinition(
                 name = "Disable Cookie Management",
