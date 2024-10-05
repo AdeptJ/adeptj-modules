@@ -17,21 +17,17 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.core;
+package com.adeptj.modules.restclient.core.util;
 
 /**
- * Enum for common Http methods.
- *
- * @author Rakesh.Kumar, AdeptJ
+ * @author Rakesh Kumar, AdeptJ
  */
-public enum HttpMethod {
-    HEAD,
-    OPTIONS,
-    GET,
-    POST,
-    PUT,
-    DELETE,
-    PATCH,
-    TRACE,
-    CONNECT
+public class ClientResponseUtil {
+
+    private ClientResponseUtil() {
+    }
+
+    public static <R> boolean isSkipResponseSerialization(Class<R> responseAs) {
+        return responseAs == null || responseAs == Object.class || responseAs == void.class;
+    }
 }

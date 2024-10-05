@@ -7,12 +7,13 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.adeptj.modules.restclient.core.HttpMethod.DELETE;
 import static com.adeptj.modules.restclient.core.HttpMethod.GET;
+import static com.adeptj.modules.restclient.core.HttpMethod.PATCH;
 import static com.adeptj.modules.restclient.core.HttpMethod.POST;
 import static com.adeptj.modules.restclient.core.HttpMethod.PUT;
 import static org.osgi.service.component.annotations.ReferenceCardinality.MULTIPLE;
@@ -34,7 +35,7 @@ public abstract class AbstractRestClient implements RestClient {
     protected AbstractRestClient(boolean debugRequest, String mdcReqIdAttrName) {
         this.debugRequest = debugRequest;
         this.mdcReqIdAttrName = mdcReqIdAttrName;
-        this.authorizationHeaderPlugins = new CopyOnWriteArrayList<>();
+        this.authorizationHeaderPlugins = new ArrayList<>();
     }
 
     protected <T, R> void ensureHttpMethod(@NotNull ClientRequest<T, R> request, HttpMethod method) {
@@ -58,6 +59,12 @@ public abstract class AbstractRestClient implements RestClient {
     @Override
     public <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request) {
         this.ensureHttpMethod(request, PUT);
+        return this.executeRequest(request);
+    }
+
+    @Override
+    public <T, R> ClientResponse<R> PATCH(@NotNull ClientRequest<T, R> request) {
+        this.ensureHttpMethod(request, PATCH);
         return this.executeRequest(request);
     }
 
@@ -86,8 +93,9 @@ public abstract class AbstractRestClient implements RestClient {
         for (AuthorizationHeaderPlugin plugin : plugins) {
             for (String pattern : plugin.getPathPatterns()) {
                 if (matcher.isMatch(pattern, reqPath)) {
-                    this.getLogger().info("Authorization header added to request [{}] by plugin [{}]", reqPath, plugin);
-                    authorizationHeaderValue = plugin.getType() + " " + plugin.getValue();
+                    this.getLogger()
+                            .info("Authorization header added to request [{}] by plugin [{}]", reqPath, plugin);
+                    authorizationHeaderValue = plugin.getType().getValue() + " " + plugin.getValue();
                     break;
                 }
             }

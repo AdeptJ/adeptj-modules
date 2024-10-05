@@ -20,6 +20,7 @@
 package com.adeptj.modules.restclient.jetty;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
+import com.adeptj.modules.restclient.core.util.ClientResponseUtil;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.http.HttpField;
@@ -47,7 +48,7 @@ class ClientResponseFactory {
                     .collect(Collectors.toMap(HttpField::getName, HttpField::getValue)));
         }
         // 2. if no response body is expected then return without setting the content.
-        if (responseAs == void.class || responseAs == Void.class) {
+        if (ClientResponseUtil.isSkipResponseSerialization(responseAs)) {
             return cr;
         }
         // 3. byte[] is expected - the Jetty client response is already byte[]

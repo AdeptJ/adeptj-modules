@@ -17,33 +17,35 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache.cleanup;
+package com.adeptj.modules.restclient.apache.housekeeping;
 
-import org.apache.http.conn.HttpClientConnectionManager;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
+import org.apache.http.HttpResponse;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
+import org.apache.http.protocol.HttpContext;
 
 /**
- * HttpClient idle connection evictor.
+ * Simple implementation of Apache {@link ConnectionKeepAliveStrategy}
+ * <p>
+ * If the keep-alive timeout directive in the response is shorter than our configured max, honor that.
+ * Otherwise, go with the configured maximum.
  *
  * @author Rakesh Kumar, AdeptJ
  */
-public class HttpClientIdleConnectionEvictor implements Runnable {
+public class HttpClientConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
 
-    private final int idleTimeout;
-
-    private final HttpClientConnectionManager connectionManager;
-
-    public HttpClientIdleConnectionEvictor(int idleTimeout, HttpClientConnectionManager connectionManager) {
-        this.idleTimeout = idleTimeout;
-        this.connectionManager = connectionManager;
-    }
+    private final long maxIdleTime;
 
     /**
-     * TaskScheduler executes this method by the configured delay and close idle connections.
+     * @param maxIdleTime the maximum time a connection may be idle
      */
+    public HttpClientConnectionKeepAliveStrategy(long maxIdleTime) {
+        this.maxIdleTime = maxIdleTime;
+    }
+
     @Override
-    public void run() {
-        this.connectionManager.closeIdleConnections(this.idleTimeout, SECONDS);
+    public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
+        long duration = DefaultConnectionKeepAliveStrategy.INSTANCE.getKeepAliveDuration(response, context);
+        return (duration > 0 && duration < this.maxIdleTime) ? duration : this.maxIdleTime;
     }
 }

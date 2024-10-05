@@ -17,35 +17,39 @@
 #                                                                             #
 ###############################################################################
 */
-package com.adeptj.modules.restclient.apache.cleanup;
+package com.adeptj.modules.restclient.apache.housekeeping;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
-import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.conn.HttpClientConnectionManager;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
- * Simple implementation of Apache {@link ConnectionKeepAliveStrategy}
- * <p>
- * If the keep-alive timeout directive in the response is shorter than our configured max, honor that.
- * Otherwise, go with the configured maximum.
+ * HttpClient idle connection evictor.
  *
  * @author Rakesh Kumar, AdeptJ
  */
-public class HttpClientConnectionKeepAliveStrategy implements ConnectionKeepAliveStrategy {
+public class HttpClientIdleConnectionEvictor implements Runnable {
 
-    private final long maxIdleTime;
+    private final int idleTimeout;
 
-    /**
-     * @param maxIdleTime the maximum time a connection may be idle
-     */
-    public HttpClientConnectionKeepAliveStrategy(long maxIdleTime) {
-        this.maxIdleTime = maxIdleTime;
+    private volatile HttpClientConnectionManager connectionManager;
+
+    public HttpClientIdleConnectionEvictor(int idleTimeout, HttpClientConnectionManager connectionManager) {
+        this.idleTimeout = idleTimeout;
+        this.connectionManager = connectionManager;
     }
 
+    /**
+     * TaskScheduler executes this method by the configured delay and close idle connections.
+     */
     @Override
-    public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
-        long duration = DefaultConnectionKeepAliveStrategy.INSTANCE.getKeepAliveDuration(response, context);
-        return (duration > 0 && duration < this.maxIdleTime) ? duration : this.maxIdleTime;
+    public void run() {
+        if (this.connectionManager != null) {
+            this.connectionManager.closeIdleConnections(this.idleTimeout, SECONDS);
+        }
+    }
+
+    public void unsetConnectionManager() {
+        this.connectionManager = null;
     }
 }

@@ -72,7 +72,7 @@ class JettyRequestFactory {
         }
         // 5. Handle Form Post - application/x-www-form-urlencoded
         Map<String, String> formParams = request.getFormParams();
-        if (method == POST && formParams != null && !formParams.isEmpty()) {
+        if (formParams != null && !formParams.isEmpty()) {
             Fields fields = new Fields();
             formParams.forEach(fields::put);
             jettyRequest.body(new FormRequestContent(fields));

@@ -22,6 +22,8 @@ package com.adeptj.modules.restclient.apache.request;
 import com.adeptj.modules.restclient.core.HttpMethod;
 import org.apache.http.client.methods.HttpRequestBase;
 
+import java.net.URI;
+
 /**
  * @author Rakesh Kumar, AdeptJ
  */
@@ -29,7 +31,8 @@ public class NonEntityEnclosingRequest extends HttpRequestBase {
 
     private final String method;
 
-    public NonEntityEnclosingRequest(HttpMethod method) {
+    public NonEntityEnclosingRequest(URI uri, HttpMethod method) {
+        super.setURI(uri);
         this.method = method.toString();
     }
 

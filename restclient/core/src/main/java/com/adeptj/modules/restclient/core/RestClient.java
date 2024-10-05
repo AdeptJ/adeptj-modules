@@ -36,6 +36,8 @@ public interface RestClient {
 
     <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request);
 
+    <T, R> ClientResponse<R> PATCH(@NotNull ClientRequest<T, R> request);
+
     <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request);
 
     <T, R> ClientResponse<R> executeRequest(@NotNull ClientRequest<T, R> request);

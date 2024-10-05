@@ -21,6 +21,7 @@ package com.adeptj.modules.restclient.apache.util;
 
 import com.adeptj.modules.restclient.apache.request.EntityEnclosingRequest;
 import com.adeptj.modules.restclient.core.ClientRequest;
+import com.adeptj.modules.restclient.core.RestClientException;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -44,26 +45,29 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class HttpClientUtils {
 
-    public static <T, R> @NotNull EntityEnclosingRequest createEntityEnclosingRequest(@NotNull ClientRequest<T, R> request) {
-        EntityEnclosingRequest enclosingRequest = new EntityEnclosingRequest(request.getMethod());
-        // Handle Form Post - application/x-www-form-urlencoded
+    private HttpClientUtils() {
+    }
+
+    public static <T, R> @NotNull EntityEnclosingRequest getEntityEnclosingRequest(@NotNull ClientRequest<T, R> request) {
+        EntityEnclosingRequest entityRequest = new EntityEnclosingRequest(request.getURI(), request.getMethod());
+        // Handle Form - application/x-www-form-urlencoded
         Map<String, String> formParams = request.getFormParams();
         if (formParams != null && !formParams.isEmpty()) {
-            List<NameValuePair> params = HttpClientUtils.createNameValuePairs(formParams);
-            enclosingRequest.setEntity(new UrlEncodedFormEntity(params, UTF_8));
-            return enclosingRequest;
+            List<NameValuePair> params = HttpClientUtils.getNameValuePairs(formParams);
+            entityRequest.setEntity(new UrlEncodedFormEntity(params, UTF_8));
+            return entityRequest;
         }
         T body = request.getBody();
         if (body != null) {
             String data = ObjectMappers.serialize(body);
             StringEntity entity = new StringEntity(data, UTF_8);
             entity.setContentType(ContentType.APPLICATION_JSON.getMimeType());
-            enclosingRequest.setEntity(entity);
+            entityRequest.setEntity(entity);
         }
-        return enclosingRequest;
+        return entityRequest;
     }
 
-    static @NotNull List<NameValuePair> createNameValuePairs(@NotNull Map<String, String> params) {
+    static @NotNull List<NameValuePair> getNameValuePairs(@NotNull Map<String, String> params) {
         List<NameValuePair> pairs = new ArrayList<>();
         for (Map.Entry<String, String> entry : params.entrySet()) {
             pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
@@ -82,20 +86,15 @@ public class HttpClientUtils {
 
     public static <T, R> void addQueryParams(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
         Map<String, String> queryParams = request.getQueryParams();
-        if (queryParams == null || queryParams.isEmpty()) {
-            apacheRequest.setURI(request.getURI());
-            return;
+        if (queryParams != null && queryParams.isEmpty()) {
+            try {
+                URI uri = new URIBuilder(request.getURI())
+                        .addParameters(HttpClientUtils.getNameValuePairs(queryParams))
+                        .build();
+                apacheRequest.setURI(uri);
+            } catch (URISyntaxException ex) {
+                throw new RestClientException(ex);
+            }
         }
-        try {
-            URI uri = new URIBuilder(request.getURI())
-                    .addParameters(HttpClientUtils.createNameValuePairs(queryParams))
-                    .build();
-            apacheRequest.setURI(uri);
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException(ex); // NOSONAR
-        }
-    }
-
-    private HttpClientUtils() {
     }
 }

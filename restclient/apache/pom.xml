@@ -30,8 +30,8 @@
     <artifactId>adeptj-modules-restclient-apache</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>AdeptJ Modules :: RestClient :: Apache</name>
-    <description>AdeptJ Modules :: Apache HttpClient based RestClient</description>
+    <name>AdeptJ Modules :: RestClient :: Apache HttpClient</name>
+    <description>AdeptJ Modules :: Apache HttpClient 4 based RestClient</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

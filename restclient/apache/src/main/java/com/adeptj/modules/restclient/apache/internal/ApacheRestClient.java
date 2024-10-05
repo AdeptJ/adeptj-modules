@@ -19,12 +19,12 @@
 */
 package com.adeptj.modules.restclient.apache.internal;
 
+import com.adeptj.modules.restclient.apache.handler.HttpResponseHandler;
+import com.adeptj.modules.restclient.apache.housekeeping.HttpClientConnectionKeepAliveStrategy;
+import com.adeptj.modules.restclient.apache.housekeeping.HttpClientIdleConnectionEvictor;
 import com.adeptj.modules.restclient.apache.util.ApacheRequestFactory;
 import com.adeptj.modules.restclient.apache.util.ApacheRestClientLogger;
 import com.adeptj.modules.restclient.apache.util.ClientResponseFactory;
-import com.adeptj.modules.restclient.apache.cleanup.HttpClientConnectionKeepAliveStrategy;
-import com.adeptj.modules.restclient.apache.cleanup.HttpClientIdleConnectionEvictor;
-import com.adeptj.modules.restclient.apache.handler.HttpResponseHandler;
 import com.adeptj.modules.restclient.core.AbstractRestClient;
 import com.adeptj.modules.restclient.core.ClientRequest;
 import com.adeptj.modules.restclient.core.ClientResponse;
@@ -91,19 +91,21 @@ public class ApacheRestClient extends AbstractRestClient {
 
     private final ScheduledExecutorService executorService;
 
+    private final HttpClientIdleConnectionEvictor evictor;
+
     @Activate
     public ApacheRestClient(@NotNull ApacheHttpClientConfig config) {
         super(config.debug_request(), config.mdc_req_id_attribute_name());
         try {
-            this.executorService = Executors.newSingleThreadScheduledExecutor();
-            PoolingHttpClientConnectionManager connMgr = this.getConnectionManager(config);
-            this.httpClient = this.initHttpClient(connMgr, config);
+            PoolingHttpClientConnectionManager connectionManager = this.getConnectionManager(config);
+            this.httpClient = this.initHttpClient(connectionManager, config);
             int idleTimeout = config.idle_timeout();
-            int initialDelay = idleTimeout * 2;
-            HttpClientIdleConnectionEvictor evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connMgr);
-            this.executorService.scheduleAtFixedRate(evictor, initialDelay, idleTimeout, SECONDS);
+            int initialDelay = idleTimeout * 2; // 2 minutes
+            this.evictor = new HttpClientIdleConnectionEvictor(idleTimeout, connectionManager);
+            this.executorService = Executors.newSingleThreadScheduledExecutor();
+            this.executorService.scheduleAtFixedRate(this.evictor, initialDelay, idleTimeout, SECONDS);
             LOGGER.info("Apache HttpClient Started!");
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             throw new RestClientInitializationException(ex);
         }
     }
@@ -119,8 +121,7 @@ public class ApacheRestClient extends AbstractRestClient {
             } else {
                 response = this.httpClient.execute(apacheRequest, new HttpResponseHandler<>(request.getResponseAs()));
             }
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
+        } catch (Exception ex) { // NOSONAR
             throw new RestClientException(ex);
         }
         return response;
@@ -140,7 +141,8 @@ public class ApacheRestClient extends AbstractRestClient {
         AtomicLong startTime = new AtomicLong(System.nanoTime());
         try (CloseableHttpResponse response = this.httpClient.execute(request)) {
             long executionTime = startTime.updateAndGet(time -> (System.nanoTime() - time));
-            ClientResponse<R> clientResponse = ClientResponseFactory.newResponse(response, clientRequest.getResponseAs());
+            ClientResponse<R> clientResponse =
+                    ClientResponseFactory.newResponse(response, clientRequest.getResponseAs());
             ApacheRestClientLogger.logResponse(requestId, clientResponse, executionTime);
             EntityUtils.consumeQuietly(response.getEntity());
             return clientResponse;
@@ -216,9 +218,10 @@ public class ApacheRestClient extends AbstractRestClient {
         LOGGER.info("Stopping Apache HttpClient!");
         try {
             this.executorService.shutdown();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             LOGGER.error(ex.getMessage(), ex);
         }
+        this.evictor.unsetConnectionManager();
         try {
             this.httpClient.close();
         } catch (IOException ex) {

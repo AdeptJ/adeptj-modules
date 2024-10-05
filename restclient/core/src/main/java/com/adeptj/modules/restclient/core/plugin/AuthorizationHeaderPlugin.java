@@ -41,7 +41,7 @@ public interface AuthorizationHeaderPlugin {
      * @return authentication scheme such as Bearer or Basic
      */
     @NotNull
-    String getType();
+    AuthType getType();
 
     /**
      * Should return the Authorization header value.
@@ -64,4 +64,21 @@ public interface AuthorizationHeaderPlugin {
      */
     @NotNull
     List<String> getPathPatterns();
+
+    enum AuthType {
+
+        BASIC("Basic"),
+
+        BEARER("Bearer");
+
+        private final String value;
+
+        AuthType(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

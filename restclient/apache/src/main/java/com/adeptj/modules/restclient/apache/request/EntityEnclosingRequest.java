@@ -22,6 +22,8 @@ package com.adeptj.modules.restclient.apache.request;
 import com.adeptj.modules.restclient.core.HttpMethod;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
+import java.net.URI;
+
 /**
  * @author Rakesh Kumar, AdeptJ
  */
@@ -29,7 +31,8 @@ public class EntityEnclosingRequest extends HttpEntityEnclosingRequestBase {
 
     private final String method;
 
-    public EntityEnclosingRequest(HttpMethod method) {
+    public EntityEnclosingRequest(URI uri, HttpMethod method) {
+        super.setURI(uri);
         this.method = method.toString();
     }
 

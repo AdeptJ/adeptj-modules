@@ -24,9 +24,6 @@ package com.adeptj.modules.restclient.core;
  */
 public class RestClientConstants {
 
-    private RestClientConstants() {
-    }
-
     public static final String CONTENT_TYPE_JSON = "application/json";
 
     public static final String HEADER_AUTHORIZATION = "Authorization";
@@ -43,4 +40,6 @@ public class RestClientConstants {
     public static final String RESP_FMT
             = "\n{}\n Request ID: {}\n Response Status: {}\n Response Headers: {}\n Response Body: {}\n Total Time: {} ms\n\n{}";
 
+    private RestClientConstants() {
+    }
 }

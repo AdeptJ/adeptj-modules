@@ -20,6 +20,8 @@
 package com.adeptj.modules.restclient.apache.util;
 
 import com.adeptj.modules.restclient.core.ClientResponse;
+import com.adeptj.modules.restclient.core.util.Assert;
+import com.adeptj.modules.restclient.core.util.ClientResponseUtil;
 import com.adeptj.modules.restclient.core.util.ObjectMappers;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -40,6 +42,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class ClientResponseFactory {
 
+    private ClientResponseFactory() {
+    }
+
     @NotNull
     public static <R> ClientResponse<R> newResponse(@NotNull HttpResponse response, Class<R> responseAs) throws IOException {
         ClientResponse<R> clientResponse = new ClientResponse<>();
@@ -53,10 +58,11 @@ public class ClientResponseFactory {
                     .collect(Collectors.toMap(Header::getName, Header::getValue)));
         }
         // 2. if no response body is expected then return without setting the content.
-        if (responseAs == void.class || responseAs == Void.class) {
+        if (ClientResponseUtil.isSkipResponseSerialization(responseAs)) {
             return clientResponse;
         }
         HttpEntity entity = response.getEntity();
+        Assert.notNull(entity, "HTTP entity is null!");
         // 3. byte[] is expected.
         if (responseAs == byte[].class) {
             clientResponse.setContent(responseAs.cast(IOUtils.toByteArray(entity.getContent())));
@@ -68,8 +74,5 @@ public class ClientResponseFactory {
             clientResponse.setContent(ObjectMappers.deserialize(entity.getContent(), responseAs));
         }
         return clientResponse;
-    }
-
-    private ClientResponseFactory() {
     }
 }

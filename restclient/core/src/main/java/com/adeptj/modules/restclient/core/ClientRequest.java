@@ -20,6 +20,7 @@
 package com.adeptj.modules.restclient.core;
 
 import com.adeptj.modules.restclient.core.util.Assert;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -55,8 +56,8 @@ public class ClientRequest<T, R> {
 
     private ClientRequest(URI uri, Class<R> responseAs) {
         Assert.notNull(uri, "URI can't be null!");
-        Assert.notNull(responseAs, "responseAs can't be null!");
         this.uri = uri;
+        // responseAs can be null, means no http client response serialization is needed.
         this.responseAs = responseAs;
     }
 
@@ -64,7 +65,7 @@ public class ClientRequest<T, R> {
         return uri;
     }
 
-    public Class<R> getResponseAs() {
+    public @Nullable Class<R> getResponseAs() {
         return responseAs;
     }
 
@@ -106,6 +107,10 @@ public class ClientRequest<T, R> {
         return new Builder<>();
     }
 
+    public static <T, R> Builder<T, R> builder(Class<R> responseAs) {
+        return new Builder<>(responseAs);
+    }
+
     // Builder
 
     public static class Builder<T, R> {
@@ -125,6 +130,13 @@ public class ClientRequest<T, R> {
         private T body;
 
         private Class<R> responseAs;
+
+        public Builder() {
+        }
+
+        public Builder(Class<R> responseAs) {
+            this.responseAs = responseAs;
+        }
 
         public Builder<T, R> uri(URI uri) {
             this.uri = uri;
@@ -197,11 +209,6 @@ public class ClientRequest<T, R> {
 
         public Builder<T, R> body(T body) {
             this.body = body;
-            return this;
-        }
-
-        public Builder<T, R> responseAs(Class<R> responseAs) {
-            this.responseAs = responseAs;
             return this;
         }
 
