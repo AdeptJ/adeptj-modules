@@ -35,7 +35,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hibernate-core.version>6.6.1.Final</hibernate-core.version>
+        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
+        <eclipselink.version>5.0.0-B03</eclipselink.version>
+        <hibernate-core.version>7.0.0.Beta1</hibernate-core.version>
     </properties>
 
     <!-- Project Information -->

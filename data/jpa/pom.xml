@@ -35,6 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
     </properties>
 
     <!-- Project Information -->
