@@ -202,7 +202,7 @@ public @interface EntityManagerFactoryConfig {
                     @Option(label = "DATABASE", value = DDL_DATABASE_GENERATION),
                     @Option(label = "SQL_SCRIPT", value = DDL_SQL_SCRIPT_GENERATION),
             })
-    String ddl_generation_output_mode() default DDL_BOTH_GENERATION;
+    String ddl_generation_output_mode() default DDL_DATABASE_GENERATION;
 
     @AttributeDefinition(
             name = "DDL Generation Strategy",
