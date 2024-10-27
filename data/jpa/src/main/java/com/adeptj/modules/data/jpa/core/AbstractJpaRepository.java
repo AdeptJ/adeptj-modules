@@ -59,7 +59,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -82,8 +81,6 @@ import static jakarta.persistence.ParameterMode.OUT;
 @ConsumerType
 public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Serializable> implements JpaRepository<T, ID> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     /**
      * The {@link EntityManagerFactory}'s lifecycle is managed by EntityManagerFactoryLifecycle therefore consumers
      * must not attempt to create or close it on their own.
@@ -101,6 +98,17 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             throw new IllegalStateException("EntityManagerFactory is null!!");
         }
         return this.entityManagerFactory;
+    }
+
+    /**
+     * Gets the Logger of the subclass.
+     * <p>
+     * Note: subclasses can override this method as return a cached(declared as static) instance.
+     *
+     * @return the {@link Logger}
+     */
+    protected Logger getLogger() {
+        return LoggerFactory.getLogger(this.getClass());
     }
 
     protected void beginTransaction(@NotNull EntityManager em) {
@@ -200,7 +208,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     @Override
     public int updateByCriteria(UpdateCriteria<T> criteria) {
         int rowsUpdated = this.executeCriteriaQuery(criteria);
-        LOGGER.debug("No. of rows updated: {}", rowsUpdated);
+        this.getLogger().debug("No. of rows updated: {}", rowsUpdated);
         return rowsUpdated;
     }
 
@@ -216,7 +224,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         try {
             T entityToDelete = em.find(entity, primaryKey);
             if (entityToDelete == null) {
-                LOGGER.warn("Entity couldn't be deleted because it doesn't exists in DB: [{}]", entity);
+                this.getLogger().warn("Entity couldn't be deleted because it doesn't exists in DB: [{}]", entity);
             } else {
                 this.beginTransaction(em);
                 em.remove(entityToDelete);
@@ -243,7 +251,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             this.beginTransaction(em);
             int rowsDeleted = query.executeUpdate();
             this.commitTransaction(em);
-            LOGGER.debug("deleteByJpaNamedQuery: No. of rows deleted: [{}]", rowsDeleted);
+            this.getLogger().debug("deleteByJpaNamedQuery: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
@@ -260,7 +268,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     @Override
     public int deleteByCriteria(DeleteCriteria<T> criteria) {
         int rowsDeleted = this.executeCriteriaQuery(criteria);
-        LOGGER.debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
+        this.getLogger().debug("deleteByCriteria: No. of rows deleted: [{}]", rowsDeleted);
         return rowsDeleted;
     }
 
@@ -278,7 +286,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             this.beginTransaction(em);
             int rowsDeleted = query.executeUpdate();
             this.commitTransaction(em);
-            LOGGER.debug("deleteAll: No. of rows deleted: [{}]", rowsDeleted);
+            this.getLogger().debug("deleteAll: No. of rows deleted: [{}]", rowsDeleted);
             return rowsDeleted;
         } catch (Exception ex) { // NOSONAR
             Transactions.markRollback(em);
@@ -294,7 +302,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
         try {
             Query criteriaQuery = this.getCriteriaQuery(em, criteria);
             if (criteriaQuery == null) { // This should never happen.
-                LOGGER.warn("Could not create criteria query!!");
+                this.getLogger().warn("Could not create criteria query!!");
                 return 0;
             }
             this.beginTransaction(em);
@@ -375,7 +383,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<T> root = cq.from(criteria.getEntity());
-            cq.multiselect(this.getTupleSelections(criteria, root));
+            cb.tuple(this.getTupleSelections(criteria, root));
             cq.where(Predicates.from(cb, root, criteria));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
