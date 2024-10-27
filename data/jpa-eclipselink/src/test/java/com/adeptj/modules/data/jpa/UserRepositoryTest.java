@@ -232,7 +232,7 @@ public class UserRepositoryTest {
     @Test
     public void testFindByCriteria() {
         List<User> users = this.repository.findByCriteria(ReadCriteria.builder(User.class)
-                .addCriteriaAttribute("contact", "1234567893")
+                .addCriteriaAttribute("contact", "1234567891")
                 .build());
         users.get(0).getAddresses().forEach(address -> LOGGER.info(address.toString()));
         LOGGER.info("Rows found: {}", users.size());
@@ -240,7 +240,7 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindById() {
-        User user = this.repository.findById(User.class, 9L);
+        User user = this.repository.findById(User.class, 505L);
         user.getAddresses().forEach(address -> LOGGER.info(address.toString()));
     }
 
@@ -412,14 +412,14 @@ public class UserRepositoryTest {
     @Test
     public void testFindSingleResultByNamedJpaQuery_1() {
         User user = this.repository.findSingleResultByNamedQuery(User.class, "User.ScalarResult.NamedJpaQuery_1",
-                new PositionalParam(1, 8L));
+                new PositionalParam(1, 505L));
         LOGGER.info("User: {}", user);
     }
 
     @Test
     public void testFindSingleResultByNamedJpaQuery_2() {
         Object[] data = this.repository.findSingleResultByNamedQuery(Object[].class, "User.ScalarResult.NamedJpaQuery_2",
-                new PositionalParam(1, 8L));
+                new PositionalParam(1, 505L));
         for (Object o : data) {
             LOGGER.info("{}", o);
         }
@@ -428,7 +428,7 @@ public class UserRepositoryTest {
     @Test
     public void testFindSingleResultByNamedNativeQuery() {
         String email = this.repository.findSingleResultByNamedQuery(String.class, "User.ScalarResult.NamedNativeQuery",
-                new PositionalParam(1, 8L));
+                new PositionalParam(1, 505L));
         LOGGER.info("User email: {}", email);
     }
 
