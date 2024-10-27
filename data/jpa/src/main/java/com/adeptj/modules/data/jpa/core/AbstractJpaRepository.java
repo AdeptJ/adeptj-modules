@@ -383,7 +383,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<T> root = cq.from(criteria.getEntity());
-            cb.tuple(this.getTupleSelections(criteria, root));
+            cq.multiselect(this.getTupleSelections(criteria, root));
             cq.where(Predicates.from(cb, root, criteria));
             return em.createQuery(cq).getResultList();
         } catch (Exception ex) { // NOSONAR
