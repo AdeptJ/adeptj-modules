@@ -103,7 +103,7 @@ public abstract class AbstractJpaRepository<T extends BaseEntity, ID extends Ser
     /**
      * Gets the Logger of the subclass.
      * <p>
-     * Note: subclasses can override this method as return a cached(declared as static) instance.
+     * Note: subclasses can override this method and return a cached(declared as static) {@link Logger} instance.
      *
      * @return the {@link Logger}
      */
