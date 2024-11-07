@@ -8,8 +8,13 @@ import org.apache.commons.lang3.Validate;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 import org.mongojack.JacksonMongoCollection;
+import org.mongojack.MongoCollection;
 import org.osgi.annotation.versioning.ConsumerType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,13 +29,28 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
     private final Class<T> documentClass;
 
     /**
-     * Initializes the {@link #documentClass} field with a non null document class object.
-     *
-     * @param documentClass the document class required by {@link JacksonMongoCollection}
+     * Initializes the {@link #documentClass} field from the type parameter specified by the subclass.
+     * <p>
+     * Following rules apply:
+     * <p>
+     * 1. If the subclass is not parameterized then an exception is thrown.
+     * 2. If the subclass is parameterized and the type parameter class is annotated with @MongoCollection
      */
-    protected AbstractMongoRepository(Class<T> documentClass) {
-        Validate.isTrue((documentClass != null), "documentClass must not be null!");
-        this.documentClass = documentClass;
+    @SuppressWarnings("unchecked")
+    public AbstractMongoRepository() {
+        Type type = this.getClass().getGenericSuperclass();
+        // 1. check if the subclass is parameterized.
+        if (type instanceof ParameterizedType parameterizedType) {
+            this.documentClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
+            // 2. subclass is parameterized, now check if the type parameter class is annotated with @MongoCollection.
+            MongoCollection annotation = this.documentClass.getAnnotation(MongoCollection.class);
+            if (annotation == null) {
+                throw new IllegalStateException("Class " + this.documentClass + " is not annotated with @MongoCollection!!");
+            }
+        } else {
+            throw new IllegalStateException("Class " + type.getTypeName() + " is not parameterized, please provide"
+                    + " the type parameter of the class annotated with @MongoCollection!!");
+        }
     }
 
     protected JacksonMongoCollection<T> getMongoCollection() {
@@ -53,6 +73,17 @@ public abstract class AbstractMongoRepository<T> implements MongoRepository<T> {
 
     public Class<T> getDocumentClass() {
         return this.documentClass;
+    }
+
+    /**
+     * Gets the Logger of the subclass.
+     * <p>
+     * Note: subclasses can override this method and return a cached(declared as static) {@link Logger} instance.
+     *
+     * @return the {@link Logger}
+     */
+    protected Logger getLogger() {
+        return LoggerFactory.getLogger(this.getClass());
     }
 
     // << --------------------------- Public --------------------------- >>
