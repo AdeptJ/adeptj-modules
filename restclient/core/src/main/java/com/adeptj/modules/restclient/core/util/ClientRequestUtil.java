@@ -19,40 +19,39 @@
 */
 package com.adeptj.modules.restclient.core.util;
 
-import static java.lang.String.format;
+import java.net.URI;
+import java.util.Locale;
+
+import static com.adeptj.modules.restclient.core.util.Assert.newIAE;
+
 
 /**
  * @author Rakesh Kumar, AdeptJ
  */
-public class Assert {
+public class ClientRequestUtil {
+
+    private ClientRequestUtil() {
+    }
 
     /**
-     * Assert a boolean expression, throwing IllegalArgumentException.
+     * Borrowed with love from JDK's HttpRequestBuilderImpl.
+     * <p>
+     * Check the given {@link URI} for scheme and host.
      *
-     * @param expression a boolean expression
-     * @param message    the exception message to use if the assertion fails
-     * @throws IllegalArgumentException if expression is <code>false</code>
+     * @param uri the request {@link URI}
      */
-    public static void isTrue(boolean expression, String message, Object... args) {
-        if (!expression) {
-            throw newIAE(message, args);
+    public static void checkURI(URI uri) {
+        Assert.notNull(uri, "URI can't be null!");
+        String scheme = uri.getScheme();
+        if (scheme == null) {
+            throw newIAE("URI with undefined scheme");
         }
-    }
-
-    public static IllegalArgumentException newIAE(String message, Object... args) {
-        return new IllegalArgumentException(format(message, args));
-    }
-
-    /**
-     * Assert that an object is not null.
-     *
-     * @param object  the object to check
-     * @param message the exception message to use if the assertion fails
-     * @throws IllegalArgumentException if the object is <code>null</code>
-     */
-    public static void notNull(Object object, String message) {
-        if (object == null) {
-            throw newIAE(message);
+        scheme = scheme.toLowerCase(Locale.US);
+        if (!(scheme.equals("https") || scheme.equals("http"))) {
+            throw newIAE("invalid URI scheme %s", scheme);
+        }
+        if (uri.getHost() == null) {
+            throw newIAE("unsupported URI %s", uri);
         }
     }
 }

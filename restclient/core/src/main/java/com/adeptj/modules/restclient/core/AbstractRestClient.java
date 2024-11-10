@@ -32,10 +32,13 @@ public abstract class AbstractRestClient implements RestClient {
 
     protected final List<AuthorizationHeaderPlugin> authorizationHeaderPlugins;
 
+    private final AntPathMatcher matcher;
+
     protected AbstractRestClient(boolean debugRequest, String mdcReqIdAttrName) {
         this.debugRequest = debugRequest;
         this.mdcReqIdAttrName = mdcReqIdAttrName;
         this.authorizationHeaderPlugins = new ArrayList<>();
+        this.matcher = AntPathMatcher.builder().build();
     }
 
     protected <T, R> void ensureHttpMethod(@NotNull ClientRequest<T, R> request, HttpMethod method) {
@@ -89,10 +92,9 @@ public abstract class AbstractRestClient implements RestClient {
             return null;
         }
         String authorizationHeaderValue = null;
-        AntPathMatcher matcher = AntPathMatcher.builder().build();
         for (AuthorizationHeaderPlugin plugin : plugins) {
             for (String pattern : plugin.getPathPatterns()) {
-                if (matcher.isMatch(pattern, reqPath)) {
+                if (this.matcher.isMatch(pattern, reqPath)) {
                     this.getLogger()
                             .info("Authorization header added to request [{}] by plugin [{}]", reqPath, plugin);
                     authorizationHeaderValue = plugin.getType().getValue() + " " + plugin.getValue();

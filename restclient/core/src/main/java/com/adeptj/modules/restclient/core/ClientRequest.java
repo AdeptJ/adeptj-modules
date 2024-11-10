@@ -20,6 +20,7 @@
 package com.adeptj.modules.restclient.core;
 
 import com.adeptj.modules.restclient.core.util.Assert;
+import com.adeptj.modules.restclient.core.util.ClientRequestUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
@@ -37,7 +38,9 @@ public class ClientRequest<T, R> {
 
     private final URI uri;
 
-    private final Class<R> responseAs;
+    private Class<R> responseAs;
+
+    private Class<R> responseDeserializationType;
 
     private HttpMethod method;
 
@@ -49,16 +52,16 @@ public class ClientRequest<T, R> {
 
     private Map<String, String> formParams;
 
+    private Map<String, String> uriVariables;
+
     /**
      * The JSON body, which will be serialized to String if not already a String.
      */
     private T body;
 
-    private ClientRequest(URI uri, Class<R> responseAs) {
-        Assert.notNull(uri, "URI can't be null!");
+    private ClientRequest(URI uri) {
+        ClientRequestUtil.checkURI(uri);
         this.uri = uri;
-        // responseAs can be null, means no http client response serialization is needed.
-        this.responseAs = responseAs;
     }
 
     public URI getURI() {
@@ -67,6 +70,11 @@ public class ClientRequest<T, R> {
 
     public @Nullable Class<R> getResponseAs() {
         return responseAs;
+    }
+
+    public void setResponseAs(Class<R> responseAs) {
+        // responseAs can be null, means no response deserialization is needed.
+        this.responseAs = responseAs;
     }
 
     public HttpMethod getMethod() {
@@ -224,7 +232,8 @@ public class ClientRequest<T, R> {
         }
 
         public ClientRequest<T, R> build() {
-            ClientRequest<T, R> request = new ClientRequest<>(this.uri, this.responseAs);
+            ClientRequest<T, R> request = new ClientRequest<>(this.uri);
+            request.responseAs = this.responseAs;
             request.method = this.method;
             request.timeout = this.timeout;
             request.headers = this.headers;

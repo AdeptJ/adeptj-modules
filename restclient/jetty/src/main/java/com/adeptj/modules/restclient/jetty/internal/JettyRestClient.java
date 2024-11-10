@@ -81,7 +81,7 @@ public class JettyRestClient extends AbstractRestClient {
             transport.getClientConnector().setTCPNoDelay(config.tcp_no_delay());
             this.httpClient.start();
             LOGGER.info("Jetty HttpClient Started!");
-        } catch (Exception ex) {
+        } catch (Exception ex) { // NOSONAR
             throw new RestClientInitializationException(ex);
         }
     }
