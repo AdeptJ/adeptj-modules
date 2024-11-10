@@ -95,7 +95,7 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
      */
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        // store in a local var as it might be updated by the modified method, see the update method in this class.
+        // store in a local var as it might be updated by the modified method, see the start method in this class.
         String tempLogoutURI = this.logoutURI;
         // Note: Semantics of this method states that Session invalidation should not happen here.
         // Not using response.sendRedirect due to exception handling we need to do, avoiding that.
@@ -133,7 +133,7 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
     )
     public @interface WebConsoleSecurityConfig {
 
-        int CARDINALITY = 100;
+        int ROLES_CARDINALITY = 100;
 
         String ROLE_OSGI_ADMIN = "OSGiAdmin";
 
@@ -146,7 +146,7 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
         @AttributeDefinition(
                 name = "WebConsole Security Roles",
                 description = "Security roles required by WebConsoleSecurityProvider for auth purpose.",
-                cardinality = CARDINALITY
+                cardinality = ROLES_CARDINALITY
         )
         String[] roles() default {ROLE_OSGI_ADMIN,};
 
