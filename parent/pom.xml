@@ -47,6 +47,7 @@
         <adeptj.user>admin</adeptj.user>
         <adeptj.password>admin</adeptj.password>
         <!-- AdeptJ Maven Plugin properties end -->
+        <bnd.version>7.0.0</bnd.version>
         <jakarta.servlet5-api.version>5.0.0</jakarta.servlet5-api.version>
     </properties>
 
