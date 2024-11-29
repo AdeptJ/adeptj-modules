@@ -35,6 +35,9 @@ import java.util.Arrays;
  */
 public class CryptoUtil {
 
+    private CryptoUtil() {
+    }
+
     public static void nullSafeWipe(byte[] data) {
         if (ArrayUtils.isNotEmpty(data)) {
             Arrays.fill(data, (byte) 0);
@@ -60,8 +63,5 @@ public class CryptoUtil {
         } catch (InvalidKeySpecException ex) {
             throw new IllegalArgumentException("Not a valid secret key", ex);
         }
-    }
-
-    private CryptoUtil() {
     }
 }
