@@ -39,7 +39,7 @@
         <asyncutil.version>0.1.0</asyncutil.version>
         <weld-api.version>5.0.SP3</weld-api.version>
         <jandex.version>3.2.3</jandex.version>
-        <jboss-logging-annotations.version>3.0.2.Final</jboss-logging-annotations.version>
+        <jboss-logging-annotations.version>3.0.3.Final</jboss-logging-annotations.version>
     </properties>
 
     <!-- Project Information -->
