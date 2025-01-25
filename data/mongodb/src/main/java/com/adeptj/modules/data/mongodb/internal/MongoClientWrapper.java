@@ -1,5 +1,6 @@
 package com.adeptj.modules.data.mongodb.internal;
 
+import com.mongodb.ClientBulkWriteException;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
@@ -11,6 +12,9 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCluster;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.bulk.ClientBulkWriteOptions;
+import com.mongodb.client.model.bulk.ClientBulkWriteResult;
+import com.mongodb.client.model.bulk.ClientNamespacedWriteModel;
 import com.mongodb.connection.ClusterDescription;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -172,6 +176,26 @@ class MongoClientWrapper implements MongoClient {
                                                                   @NotNull List<? extends Bson> pipeline,
                                                                   @NotNull Class<TResult> tResultClass) {
         return this.delegate.watch(clientSession, pipeline, tResultClass);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(List<? extends ClientNamespacedWriteModel> models) throws ClientBulkWriteException {
+        return this.delegate.bulkWrite(models);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(List<? extends ClientNamespacedWriteModel> models, ClientBulkWriteOptions options) throws ClientBulkWriteException {
+        return this.delegate.bulkWrite(models, options);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(ClientSession clientSession, List<? extends ClientNamespacedWriteModel> models) throws ClientBulkWriteException {
+        return this.delegate.bulkWrite(clientSession, models);
+    }
+
+    @Override
+    public ClientBulkWriteResult bulkWrite(ClientSession clientSession, List<? extends ClientNamespacedWriteModel> models, ClientBulkWriteOptions options) throws ClientBulkWriteException {
+        return this.delegate.bulkWrite(clientSession, models, options);
     }
 
     @Override
