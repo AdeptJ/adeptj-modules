@@ -28,7 +28,7 @@
         <relativePath/>
     </parent>
     <artifactId>adeptj-modules-parent</artifactId>
-    <version>17</version>
+    <version>18</version>
     <packaging>pom</packaging>
     <name>AdeptJ Modules :: Parent</name>
     <description>Parent for AdeptJ Modules Project</description>
