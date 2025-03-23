@@ -35,7 +35,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jetty.version>12.0.18</jetty.version>
     </properties>
 
     <!-- Project Information -->
