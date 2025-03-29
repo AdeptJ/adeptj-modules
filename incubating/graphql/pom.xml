@@ -17,7 +17,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java-dataloader.version>3.3.0</java-dataloader.version>
+        <java-dataloader.version>3.4.0</java-dataloader.version>
         <graphql-java.version>22.3</graphql-java.version>
         <graphql-java-kickstart.version>16.0.0</graphql-java-kickstart.version>
         <graphql-java-servlet.version>16.0.0</graphql-java-servlet.version>

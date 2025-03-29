@@ -36,6 +36,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hikaricp.version>6.3.0</hikaricp.version>
     </properties>
 
     <!-- Project Information -->
