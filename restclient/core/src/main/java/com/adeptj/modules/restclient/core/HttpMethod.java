@@ -26,12 +26,11 @@ package com.adeptj.modules.restclient.core;
  */
 public enum HttpMethod {
     HEAD,
-    OPTIONS,
     GET,
     POST,
     PUT,
     DELETE,
     PATCH,
-    TRACE,
-    CONNECT
+    OPTIONS,
+    TRACE
 }

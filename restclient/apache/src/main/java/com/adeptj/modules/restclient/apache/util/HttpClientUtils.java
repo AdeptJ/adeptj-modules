@@ -86,7 +86,7 @@ public class HttpClientUtils {
 
     public static <T, R> void addQueryParams(@NotNull ClientRequest<T, R> request, HttpRequestBase apacheRequest) {
         Map<String, String> queryParams = request.getQueryParams();
-        if (queryParams != null && queryParams.isEmpty()) {
+        if (queryParams != null && !queryParams.isEmpty()) {
             try {
                 URI uri = new URIBuilder(request.getURI())
                         .addParameters(HttpClientUtils.getNameValuePairs(queryParams))
