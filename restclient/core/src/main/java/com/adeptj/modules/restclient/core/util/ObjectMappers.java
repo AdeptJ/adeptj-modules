@@ -39,11 +39,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class ObjectMappers {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper()
-            .enable(INDENT_OUTPUT)
-            .disable(WRITE_DATES_AS_TIMESTAMPS)
-            .setSerializationInclusion(NON_NULL)
-            .setDefaultPropertyInclusion(NON_DEFAULT);
+    private static final ObjectMapper MAPPER;
+
+    static {
+        MAPPER = new ObjectMapper()
+                .enable(INDENT_OUTPUT)
+                .disable(WRITE_DATES_AS_TIMESTAMPS)
+                .setSerializationInclusion(NON_NULL)
+                .setDefaultPropertyInclusion(NON_DEFAULT);
+    }
 
     public static ObjectMapper getMapper() {
         return MAPPER;

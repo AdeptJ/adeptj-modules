@@ -97,7 +97,7 @@ public abstract class AbstractRestClient implements RestClient {
                 if (this.matcher.isMatch(pattern, reqPath)) {
                     this.getLogger()
                             .info("Authorization header added to request [{}] by plugin [{}]", reqPath, plugin);
-                    authorizationHeaderValue = plugin.getType().getValue() + " " + plugin.getValue();
+                    authorizationHeaderValue = plugin.getType() + " " + plugin.getValue();
                     break;
                 }
             }
