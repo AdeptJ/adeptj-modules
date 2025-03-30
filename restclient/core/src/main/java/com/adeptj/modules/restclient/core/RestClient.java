@@ -30,22 +30,22 @@ import org.osgi.annotation.versioning.ProviderType;
 @ProviderType
 public interface RestClient {
 
-    <T, R> ClientResponse<R> GET(@NotNull ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> get(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> POST(@NotNull ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> post(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> put(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> PATCH(@NotNull ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> patch(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> delete(@NotNull ClientRequest<T, R> request);
 
-    <T, R> ClientResponse<R> executeRequest(@NotNull ClientRequest<T, R> request);
+    <T, R> ClientResponse<R> execute(@NotNull ClientRequest<T, R> request);
 
     /**
      * Provides the internal http client.
      *
      * @return the internal http client
      */
-    <T> T unwrap(@NotNull Class<T> type);
+    <C> C unwrap(@NotNull Class<C> type);
 }

@@ -48,41 +48,41 @@ public abstract class AbstractRestClient implements RestClient {
     }
 
     @Override
-    public <T, R> ClientResponse<R> GET(@NotNull ClientRequest<T, R> request) {
+    public <T, R> ClientResponse<R> get(@NotNull ClientRequest<T, R> request) {
         this.ensureHttpMethod(request, GET);
-        return this.executeRequest(request);
+        return this.execute(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> POST(@NotNull ClientRequest<T, R> request) {
+    public <T, R> ClientResponse<R> post(@NotNull ClientRequest<T, R> request) {
         this.ensureHttpMethod(request, POST);
-        return this.executeRequest(request);
+        return this.execute(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> PUT(@NotNull ClientRequest<T, R> request) {
+    public <T, R> ClientResponse<R> put(@NotNull ClientRequest<T, R> request) {
         this.ensureHttpMethod(request, PUT);
-        return this.executeRequest(request);
+        return this.execute(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> PATCH(@NotNull ClientRequest<T, R> request) {
+    public <T, R> ClientResponse<R> patch(@NotNull ClientRequest<T, R> request) {
         this.ensureHttpMethod(request, PATCH);
-        return this.executeRequest(request);
+        return this.execute(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> DELETE(@NotNull ClientRequest<T, R> request) {
+    public <T, R> ClientResponse<R> delete(@NotNull ClientRequest<T, R> request) {
         this.ensureHttpMethod(request, DELETE);
-        return this.executeRequest(request);
+        return this.execute(request);
     }
 
     @Override
-    public <T, R> ClientResponse<R> executeRequest(@NotNull ClientRequest<T, R> request) {
+    public <T, R> ClientResponse<R> execute(@NotNull ClientRequest<T, R> request) {
         if (request.getMethod() == null) {
             throw new RestClientException("No HttpMethod set in the ClientRequest!!");
         }
-        return this.doExecuteRequest(request);
+        return this.doExecute(request);
     }
 
     protected String getAuthorizationHeaderValue(String reqPath) {
@@ -105,7 +105,7 @@ public abstract class AbstractRestClient implements RestClient {
         return authorizationHeaderValue;
     }
 
-    protected abstract <T, R> @NotNull ClientResponse<R> doExecuteRequest(@NotNull ClientRequest<T, R> request);
+    protected abstract <T, R> @NotNull ClientResponse<R> doExecute(@NotNull ClientRequest<T, R> request);
 
     protected abstract Logger getLogger();
 

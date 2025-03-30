@@ -111,7 +111,7 @@ public class ApacheRestClient extends AbstractRestClient {
     }
 
     @Override
-    protected <T, R> @NotNull ClientResponse<R> doExecuteRequest(@NotNull ClientRequest<T, R> request) {
+    protected <T, R> @NotNull ClientResponse<R> doExecute(@NotNull ClientRequest<T, R> request) {
         HttpUriRequest apacheRequest = ApacheRequestFactory.newRequest(request);
         this.addAuthorizationHeader(apacheRequest);
         ClientResponse<R> response;
@@ -152,7 +152,7 @@ public class ApacheRestClient extends AbstractRestClient {
     }
 
     @Override
-    public <T> T unwrap(@NotNull Class<T> type) {
+    public <C> C unwrap(@NotNull Class<C> type) {
         if (type.isInstance(this.httpClient)) {
             return type.cast(this.httpClient);
         }
