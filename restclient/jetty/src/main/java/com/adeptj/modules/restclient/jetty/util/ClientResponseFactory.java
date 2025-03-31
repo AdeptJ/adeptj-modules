@@ -48,7 +48,7 @@ public class ClientResponseFactory {
                     .collect(Collectors.toMap(HttpField::getName, HttpField::getValue)));
         }
         // 2. if no response body is expected then return without setting the content.
-        if (ClientResponseUtil.isSkipResponseSerialization(responseAs)) {
+        if (ClientResponseUtil.isSkipResponseDeserialization(responseAs)) {
             return cr;
         }
         // 3. byte[] is expected - the Jetty client response is already byte[]

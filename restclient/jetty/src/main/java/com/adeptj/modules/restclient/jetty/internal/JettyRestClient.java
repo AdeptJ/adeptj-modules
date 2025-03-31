@@ -93,7 +93,7 @@ public class JettyRestClient extends AbstractRestClient {
             Request jettyRequest = JettyRequestFactory.newRequest(this.httpClient, request);
             this.addAuthorizationHeader(jettyRequest);
             if (this.debugRequest) {
-                response = this.executeRequestDebug(request, jettyRequest);
+                response = this.executeDebug(request, jettyRequest);
             } else {
                 response = jettyRequest.send();
             }
@@ -110,7 +110,7 @@ public class JettyRestClient extends AbstractRestClient {
         }
     }
 
-    private <T, R> ContentResponse executeRequestDebug(ClientRequest<T, R> cr, Request jettyRequest) throws Exception {
+    private <T, R> ContentResponse executeDebug(ClientRequest<T, R> cr, Request jettyRequest) throws Exception {
         try {
             String requestId = this.getRequestId();
             JettyRestClientLogger.logRequest(requestId, cr, jettyRequest);

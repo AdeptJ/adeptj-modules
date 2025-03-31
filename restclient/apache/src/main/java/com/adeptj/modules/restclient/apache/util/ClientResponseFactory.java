@@ -58,7 +58,7 @@ public class ClientResponseFactory {
                     .collect(Collectors.toMap(Header::getName, Header::getValue)));
         }
         // 2. if no response body is expected then return without setting the content.
-        if (ClientResponseUtil.isSkipResponseSerialization(responseAs)) {
+        if (ClientResponseUtil.isSkipResponseDeserialization(responseAs)) {
             return clientResponse;
         }
         HttpEntity entity = response.getEntity();

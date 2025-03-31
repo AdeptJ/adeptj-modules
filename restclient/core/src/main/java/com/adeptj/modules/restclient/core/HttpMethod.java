@@ -31,6 +31,6 @@ public enum HttpMethod {
     PUT,
     DELETE,
     PATCH,
-    OPTIONS,
-    TRACE
+    OPTIONS
+    // Not defining TRACE and CONNECT, for what purpose?
 }

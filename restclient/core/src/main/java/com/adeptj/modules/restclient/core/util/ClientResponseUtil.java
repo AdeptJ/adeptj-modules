@@ -27,7 +27,10 @@ public class ClientResponseUtil {
     private ClientResponseUtil() {
     }
 
-    public static <R> boolean isSkipResponseSerialization(Class<R> responseAs) {
-        return responseAs == null || responseAs == Object.class || responseAs == void.class || responseAs == Void.class;
+    public static <R> boolean isSkipResponseDeserialization(Class<R> responseAs) {
+        return responseAs == null
+                || responseAs == Object.class
+                || responseAs == void.class
+                || responseAs == Void.class;
     }
 }

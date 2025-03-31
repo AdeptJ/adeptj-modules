@@ -32,12 +32,12 @@ import org.eclipse.jetty.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.adeptj.modules.restclient.core.HttpMethod.GET;
 import static com.adeptj.modules.restclient.core.HttpMethod.HEAD;
 import static com.adeptj.modules.restclient.core.HttpMethod.OPTIONS;
 import static com.adeptj.modules.restclient.core.RestClientConstants.CONTENT_TYPE_JSON;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * @author Rakesh Kumar, AdeptJ
@@ -53,7 +53,7 @@ public class JettyRequestFactory {
         Request jettyRequest = httpClient.newRequest(request.getURI()).method(method.toString());
         // 1. Handle timeout
         if (request.getTimeout() > 0) {
-            jettyRequest.timeout(request.getTimeout(), TimeUnit.MILLISECONDS);
+            jettyRequest.timeout(request.getTimeout(), MILLISECONDS);
         }
         // 2. Handle headers
         Map<String, String> headers = request.getHeaders();

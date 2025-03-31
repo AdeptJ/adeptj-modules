@@ -117,7 +117,7 @@ public class ApacheRestClient extends AbstractRestClient {
         ClientResponse<R> response;
         try {
             if (this.debugRequest) {
-                response = this.executeRequestDebug(request, apacheRequest);
+                response = this.executeDebug(request, apacheRequest);
             } else {
                 response = this.httpClient.execute(apacheRequest, new HttpResponseHandler<>(request.getResponseAs()));
             }
@@ -134,8 +134,8 @@ public class ApacheRestClient extends AbstractRestClient {
         }
     }
 
-    private <T, R> @NotNull ClientResponse<R> executeRequestDebug(@NotNull ClientRequest<T, R> clientRequest,
-                                                                  HttpUriRequest request) throws IOException {
+    private <T, R> @NotNull ClientResponse<R> executeDebug(@NotNull ClientRequest<T, R> clientRequest,
+                                                           HttpUriRequest request) throws IOException {
         String requestId = this.getRequestId();
         ApacheRestClientLogger.logRequest(requestId, request);
         AtomicLong startTime = new AtomicLong(System.nanoTime());

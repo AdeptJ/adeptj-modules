@@ -19,7 +19,6 @@
 */
 package com.adeptj.modules.restclient.core;
 
-import com.adeptj.modules.restclient.core.util.Assert;
 import com.adeptj.modules.restclient.core.util.ClientRequestUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,8 +50,6 @@ public class ClientRequest<T, R> {
     private Map<String, String> queryParams;
 
     private Map<String, String> formParams;
-
-    private Map<String, String> uriVariables;
 
     /**
      * The JSON body, which will be serialized to String if not already a String.
@@ -107,6 +104,10 @@ public class ClientRequest<T, R> {
         return formParams;
     }
 
+    public Class<R> getResponseDeserializationType() {
+        return responseDeserializationType;
+    }
+
     public T getBody() {
         return body;
     }
@@ -148,6 +149,8 @@ public class ClientRequest<T, R> {
         private Map<String, String> queryParams;
 
         private Map<String, String> formParams;
+
+        private Map<String, Object> uriVariables;
 
         private T body;
 
@@ -226,13 +229,33 @@ public class ClientRequest<T, R> {
             return this;
         }
 
+        public Builder<T, R> uriVariables(String name, Object value) {
+            if (this.uriVariables == null) {
+                this.uriVariables = new HashMap<>();
+            }
+            this.uriVariables.put(name, value);
+            return this;
+        }
+
+        public Builder<T, R> uriVariables(Map<String, Object> params) {
+            if (this.uriVariables == null) {
+                this.uriVariables = new HashMap<>();
+            }
+            this.uriVariables.putAll(params);
+            return this;
+        }
+
         public Builder<T, R> body(T body) {
             this.body = body;
             return this;
         }
 
         public ClientRequest<T, R> build() {
-            ClientRequest<T, R> request = new ClientRequest<>(this.uri);
+            URI tempUri = this.uri;
+            if (this.uriVariables != null && !this.uriVariables.isEmpty()) {
+                // Here apply the uri variables to the path.
+            }
+            ClientRequest<T, R> request = new ClientRequest<>(tempUri);
             request.responseAs = this.responseAs;
             request.method = this.method;
             request.timeout = this.timeout;
