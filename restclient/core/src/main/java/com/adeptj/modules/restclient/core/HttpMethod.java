@@ -25,8 +25,8 @@ package com.adeptj.modules.restclient.core;
  * @author Rakesh.Kumar, AdeptJ
  */
 public enum HttpMethod {
-    HEAD,
     GET,
+    HEAD,
     POST,
     PUT,
     DELETE,

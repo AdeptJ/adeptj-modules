@@ -34,7 +34,7 @@ public class ApacheRequestFactory {
     public static <T, R> HttpUriRequest newRequest(@NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         HttpRequestBase apacheRequest = switch (method) {
-            case HEAD, GET, OPTIONS, TRACE -> new NonEntityEnclosingRequest(request.getURI(), method);
+            case GET, HEAD, OPTIONS -> new NonEntityEnclosingRequest(request.getURI(), method);
             case POST, PUT, PATCH, DELETE -> HttpClientUtils.getEntityEnclosingRequest(request);
         };
         HttpClientUtils.addHeaders(request, apacheRequest);
