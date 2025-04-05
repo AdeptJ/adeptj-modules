@@ -53,6 +53,9 @@ public class ApacheRestClientLogger {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private ApacheRestClientLogger() {
+    }
+
     public static void logRequest(String reqId, HttpUriRequest request) {
         String body = getBody(request);
         LOGGER.info(REQ_FMT, REQUEST_START, reqId, request.getMethod(),
@@ -100,8 +103,5 @@ public class ApacheRestClientLogger {
             }
         }
         return ObjectMappers.serializePrettyPrint(headers);
-    }
-
-    private ApacheRestClientLogger() {
     }
 }

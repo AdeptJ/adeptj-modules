@@ -31,6 +31,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ApacheRequestFactory {
 
+    private ApacheRequestFactory() {
+    }
+
     public static <T, R> HttpUriRequest newRequest(@NotNull ClientRequest<T, R> request) {
         HttpMethod method = request.getMethod();
         HttpRequestBase apacheRequest = switch (method) {
@@ -40,8 +43,5 @@ public class ApacheRequestFactory {
         HttpClientUtils.addHeaders(request, apacheRequest);
         HttpClientUtils.addQueryParams(request, apacheRequest);
         return apacheRequest;
-    }
-
-    private ApacheRequestFactory() {
     }
 }
