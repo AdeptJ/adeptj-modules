@@ -312,8 +312,7 @@ public class EntityManagerWrapper implements EntityManager {
 
     @Override
     public EntityManagerFactory getEntityManagerFactory() {
-        // Not allowing the caller to close the underlying EntityManagerFactory.
-        return null;
+        return this.delegate.getEntityManagerFactory();
     }
 
     @Override

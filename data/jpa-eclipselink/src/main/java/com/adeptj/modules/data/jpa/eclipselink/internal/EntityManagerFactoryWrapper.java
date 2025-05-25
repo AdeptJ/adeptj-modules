@@ -147,12 +147,12 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
     @Override
     public PersistenceUnitTransactionType getTransactionType() {
-        return null;
+        return this.entityManagerFactory.getTransactionType();
     }
 
     @Override
     public SchemaManager getSchemaManager() {
-        return null;
+        return this.entityManagerFactory.getSchemaManager();
     }
 
     /**
@@ -181,21 +181,21 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
     @Override
     public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
-        return null;
+        return this.entityManagerFactory.getNamedQueries(resultType);
     }
 
     @Override
     public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
-        return null;
+        return this.entityManagerFactory.getNamedEntityGraphs(entityType);
     }
 
     @Override
     public void runInTransaction(Consumer<EntityManager> work) {
-
+        this.entityManagerFactory.runInTransaction(work);
     }
 
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
-        return null;
+        return this.entityManagerFactory.callInTransaction(work);
     }
 }
