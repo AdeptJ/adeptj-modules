@@ -47,10 +47,10 @@ import java.util.function.Function;
  */
 class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
-    private final EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory delegate;
 
-    EntityManagerFactoryWrapper(@NotNull EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
+    EntityManagerFactoryWrapper(@NotNull EntityManagerFactory delegate) {
+        this.delegate = delegate;
     }
 
     /**
@@ -58,7 +58,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public EntityManager createEntityManager() {
-        return this.entityManagerFactory.createEntityManager();
+        return this.delegate.createEntityManager();
     }
 
     /**
@@ -66,7 +66,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public EntityManager createEntityManager(Map map) {
-        return this.entityManagerFactory.createEntityManager(map);
+        return this.delegate.createEntityManager(map);
     }
 
     /**
@@ -74,12 +74,12 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        return this.entityManagerFactory.createEntityManager(synchronizationType);
+        return this.delegate.createEntityManager(synchronizationType);
     }
 
     @Override
     public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        return this.entityManagerFactory.createEntityManager(synchronizationType, map);
+        return this.delegate.createEntityManager(synchronizationType, map);
     }
 
     /**
@@ -87,7 +87,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public CriteriaBuilder getCriteriaBuilder() {
-        return this.entityManagerFactory.getCriteriaBuilder();
+        return this.delegate.getCriteriaBuilder();
     }
 
     /**
@@ -95,7 +95,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public Metamodel getMetamodel() {
-        return this.entityManagerFactory.getMetamodel();
+        return this.delegate.getMetamodel();
     }
 
     /**
@@ -103,7 +103,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public boolean isOpen() {
-        return this.entityManagerFactory.isOpen();
+        return this.delegate.isOpen();
     }
 
     /**
@@ -118,7 +118,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
 
     @Override
     public String getName() {
-        return this.entityManagerFactory.getName();
+        return this.delegate.getName();
     }
 
     /**
@@ -126,7 +126,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public Map<String, Object> getProperties() {
-        return this.entityManagerFactory.getProperties();
+        return this.delegate.getProperties();
     }
 
     /**
@@ -134,7 +134,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public Cache getCache() {
-        return this.entityManagerFactory.getCache();
+        return this.delegate.getCache();
     }
 
     /**
@@ -142,17 +142,17 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public PersistenceUnitUtil getPersistenceUnitUtil() {
-        return this.entityManagerFactory.getPersistenceUnitUtil();
+        return this.delegate.getPersistenceUnitUtil();
     }
 
     @Override
     public PersistenceUnitTransactionType getTransactionType() {
-        return this.entityManagerFactory.getTransactionType();
+        return this.delegate.getTransactionType();
     }
 
     @Override
     public SchemaManager getSchemaManager() {
-        return this.entityManagerFactory.getSchemaManager();
+        return this.delegate.getSchemaManager();
     }
 
     /**
@@ -160,7 +160,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public void addNamedQuery(String name, Query query) {
-        this.entityManagerFactory.addNamedQuery(name, query);
+        this.delegate.addNamedQuery(name, query);
     }
 
     /**
@@ -168,7 +168,7 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public <T> T unwrap(Class<T> cls) {
-        return this.entityManagerFactory.unwrap(cls);
+        return this.delegate.unwrap(cls);
     }
 
     /**
@@ -176,26 +176,26 @@ class EntityManagerFactoryWrapper implements EntityManagerFactory {
      */
     @Override
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        this.entityManagerFactory.addNamedEntityGraph(graphName, entityGraph);
+        this.delegate.addNamedEntityGraph(graphName, entityGraph);
     }
 
     @Override
     public <R> Map<String, TypedQueryReference<R>> getNamedQueries(Class<R> resultType) {
-        return this.entityManagerFactory.getNamedQueries(resultType);
+        return this.delegate.getNamedQueries(resultType);
     }
 
     @Override
     public <E> Map<String, EntityGraph<? extends E>> getNamedEntityGraphs(Class<E> entityType) {
-        return this.entityManagerFactory.getNamedEntityGraphs(entityType);
+        return this.delegate.getNamedEntityGraphs(entityType);
     }
 
     @Override
     public void runInTransaction(Consumer<EntityManager> work) {
-        this.entityManagerFactory.runInTransaction(work);
+        this.delegate.runInTransaction(work);
     }
 
     @Override
     public <R> R callInTransaction(Function<EntityManager, R> work) {
-        return this.entityManagerFactory.callInTransaction(work);
+        return this.delegate.callInTransaction(work);
     }
 }
