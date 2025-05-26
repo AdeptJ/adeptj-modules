@@ -28,8 +28,7 @@
 
 Export-Package:  com.adeptj.modules.graphql
 
-Import-Package: org.slf4j;version="[1.7,3)", \
-                !com.google.errorprone.annotations.*, \
+Import-Package: !com.google.errorprone.annotations.*, \
                 !javax.annotation.*, \
                 !lombok.*, \
                 !org.checkerframework.*, \

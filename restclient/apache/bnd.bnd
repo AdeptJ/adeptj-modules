@@ -26,9 +26,6 @@
 
 Private-Package: com.adeptj.modules.restclient.apache.*
 
-Import-Package: org.slf4j;version="[1.7,3)", \
-                *
-
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ Incubating

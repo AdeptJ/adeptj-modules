@@ -30,9 +30,6 @@ Export-Package: com.adeptj.modules.jaxrs.core,\
                 !com.adeptj.modules.jaxrs.core.jwt.filter, \
                 !com.adeptj.modules.jaxrs.core.jwt.resource
 
-Import-Package: org.slf4j;version="[1.7,3)", \
-                *
-
 Bundle-Name: ${project.name}
 
 Bundle-Category: AdeptJ JAX-RS
