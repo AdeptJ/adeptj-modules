@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hibernate-core.version>7.0.6.Final</hibernate-core.version>
+        <hibernate-core.version>7.0.7.Final</hibernate-core.version>
     </properties>
 
     <!-- Project Information -->
