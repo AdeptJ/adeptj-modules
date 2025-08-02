@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.adeptj</groupId>
         <artifactId>adeptj-modules-parent</artifactId>
-        <version>19</version>
+        <version>20</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
     <artifactId>adeptj-modules-websecurity-oauth</artifactId>
