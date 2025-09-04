@@ -48,7 +48,7 @@
         <adeptj.password>admin</adeptj.password>
         <!-- AdeptJ Maven Plugin properties end -->
         <bnd.version>7.1.0</bnd.version>
-        <adeptj-maven-plugin.version>1.8.3</adeptj-maven-plugin.version>
+        <adeptj-maven-plugin.version>1.8.4</adeptj-maven-plugin.version>
     </properties>
 
     <!-- Project Information -->
