@@ -2,6 +2,7 @@ package com.adeptj.modules.data.mongodb.internal;
 
 import com.mongodb.ClientBulkWriteException;
 import com.mongodb.ClientSessionOptions;
+import com.mongodb.MongoDriverInformation;
 import com.mongodb.ReadConcern;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
@@ -201,5 +202,10 @@ class MongoClientWrapper implements MongoClient {
     @Override
     public @NotNull ClusterDescription getClusterDescription() {
         return this.delegate.getClusterDescription();
+    }
+
+    @Override
+    public void appendMetadata(MongoDriverInformation mongoDriverInformation) {
+        this.delegate.appendMetadata(mongoDriverInformation);
     }
 }
