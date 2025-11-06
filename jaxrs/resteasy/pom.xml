@@ -38,7 +38,7 @@
         <resteasy-tracing-api.version>2.0.1.Final</resteasy-tracing-api.version>
         <asyncutil.version>0.1.0</asyncutil.version>
         <weld-api.version>6.0.Final</weld-api.version>
-        <jandex.version>3.4.0</jandex.version>
+        <jandex.version>3.5.1</jandex.version>
         <jboss-logging-annotations.version>3.0.4.Final</jboss-logging-annotations.version>
     </properties>
 
