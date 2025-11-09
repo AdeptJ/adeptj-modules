@@ -77,7 +77,7 @@ public class JettyRestClient extends AbstractRestClient {
             this.httpClient.setMaxRedirects(config.max_redirects());
             this.httpClient.setRequestBufferSize(config.request_buffer_size());
             this.httpClient.setResponseBufferSize(config.response_buffer_size());
-            HttpClientTransportOverHTTP transport = (HttpClientTransportOverHTTP) this.httpClient.getTransport();
+            HttpClientTransportOverHTTP transport = (HttpClientTransportOverHTTP) this.httpClient.getHttpClientTransport();
             transport.getClientConnector().setTCPNoDelay(config.tcp_no_delay());
             this.httpClient.start();
             LOGGER.info("Jetty HttpClient Started!");

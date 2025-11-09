@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.felix.webconsole.spi.SecurityProvider;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
@@ -74,7 +75,7 @@ public class RoleBasedSecurityProvider implements SecurityProvider {
     @Override
     public boolean authorize(Object user, String role) {
         String[] tempRoles = this.roles;
-        return Stream.of(tempRoles).anyMatch(r -> StringUtils.equals(r, role));
+        return Stream.of(tempRoles).anyMatch(r -> Strings.CS.equals(r, role));
     }
 
     /**

@@ -28,7 +28,7 @@ import jakarta.ws.rs.container.ResourceInfo;
 import jakarta.ws.rs.core.FeatureContext;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -108,7 +108,7 @@ public class JwtDynamicFeature implements DynamicFeature {
             for (String row : this.filterMapping) {
                 String[] mapping = row.split(EQ);
                 if (ArrayUtils.getLength(mapping) == 2
-                        && resource.equals(mapping[0]) && StringUtils.containsAny(mapping[1], method, ASTERISK)) {
+                        && resource.equals(mapping[0]) && Strings.CS.containsAny(mapping[1], method, ASTERISK)) {
                     context.register(this.claimsIntrospectionFilter, AUTHORIZATION);
                     LOGGER.info(FILTER_REG_MSG, resource, method);
                 }

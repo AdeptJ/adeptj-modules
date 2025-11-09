@@ -28,6 +28,7 @@ import jakarta.servlet.Servlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.felix.webconsole.servlet.AbstractServlet;
 import org.apache.felix.webconsole.servlet.RequestVariableResolver;
 import org.jetbrains.annotations.NotNull;
@@ -112,9 +113,9 @@ public class CryptoPlugin extends AbstractServlet implements ConfigurationPlugin
     }
 
     private void handleProperty(Dictionary<String, Object> properties, Object pid, String key, String currentValue) {
-        if (StringUtils.startsWith(currentValue, ENCRYPTION_PREFIX)) {
+        if (Strings.CS.startsWith(currentValue, ENCRYPTION_PREFIX)) {
             String newValue = this.decrypt(currentValue);
-            if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(currentValue, newValue)) {
+            if (StringUtils.isNotEmpty(newValue) && !Strings.CS.equals(currentValue, newValue)) {
                 properties.put(key, newValue);
                 LOGGER.info("Decrypted the value of configuration property '{}' for PID [{}]", key, pid);
             }
@@ -124,9 +125,9 @@ public class CryptoPlugin extends AbstractServlet implements ConfigurationPlugin
     private void handleMultiValueProperty(Object pid, String key, String @NotNull [] currentValues) {
         for (int i = 0; i < currentValues.length; i++) {
             String currentValue = currentValues[i];
-            if (StringUtils.startsWith(currentValue, ENCRYPTION_PREFIX)) {
+            if (Strings.CS.startsWith(currentValue, ENCRYPTION_PREFIX)) {
                 String newValue = this.decrypt(currentValue);
-                if (StringUtils.isNotEmpty(newValue) && !StringUtils.equals(newValue, currentValue)) {
+                if (StringUtils.isNotEmpty(newValue) && !Strings.CS.equals(newValue, currentValue)) {
                     // update the array with the new value.
                     currentValues[i] = newValue;
                     LOGGER.info("Decrypted the value at index [{}] of multi value configuration property '{}' for PID [{}]",

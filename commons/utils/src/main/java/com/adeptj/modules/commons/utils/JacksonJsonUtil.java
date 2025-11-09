@@ -53,7 +53,7 @@ public class JacksonJsonUtil {
     private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
             .disable(INDENT_OUTPUT, WRITE_DATES_AS_TIMESTAMPS)
             .disable(FAIL_ON_UNKNOWN_PROPERTIES)
-            .serializationInclusion(NON_NULL)
+            .defaultPropertyInclusion(JsonInclude.Value.construct(NON_NULL, NON_NULL))
             .defaultPropertyInclusion(JsonInclude.Value.construct(NON_DEFAULT, NON_DEFAULT))
             .addModule(new BlackbirdModule())
             .addModule(new JavaTimeModule())

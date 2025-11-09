@@ -20,11 +20,12 @@
 
 package com.adeptj.modules.security.core.credential;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -55,7 +56,7 @@ public class UsernamePasswordCredential implements Credential {
         String username = request.getParameter(PARAM_J_USERNAME);
         String password = request.getParameter(PARAM_J_PASSWORD);
         if (METHOD_POST.equals(request.getMethod()) && StringUtils.isNoneEmpty(username, password)
-                && StringUtils.endsWith(request.getRequestURI(), LOGIN_URI_SUFFIX)) {
+                && Strings.CS.endsWith(request.getRequestURI(), LOGIN_URI_SUFFIX)) {
             return new UsernamePasswordCredential(username, password.toCharArray());
         }
         return null;

@@ -34,7 +34,7 @@ import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import io.jsonwebtoken.lang.Assert;
 import io.jsonwebtoken.security.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -105,11 +105,11 @@ public class JwtServiceImpl implements JwtService {
 
     private SignatureAlgorithm getSignatureAlgorithm(@NotNull String alg) {
         SignatureAlgorithm signatureAlgorithm = null;
-        if (StringUtils.equals(alg, "RS256")) {
+        if (Strings.CS.equals(alg, "RS256")) {
             signatureAlgorithm = Jwts.SIG.RS256;
-        } else if (StringUtils.equals(alg, "RS384")) {
+        } else if (Strings.CS.equals(alg, "RS384")) {
             signatureAlgorithm = Jwts.SIG.RS384;
-        } else if (StringUtils.equals(alg, "RS512")) {
+        } else if (Strings.CS.equals(alg, "RS512")) {
             signatureAlgorithm = Jwts.SIG.RS512;
         }
         LOGGER.info("Selected JWT SignatureAlgorithm: [{}]", signatureAlgorithm);

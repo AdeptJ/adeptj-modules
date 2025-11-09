@@ -1,6 +1,6 @@
 package com.adeptj.modules.security.oauth;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  * OAuthProviderType.
@@ -30,7 +30,7 @@ public enum OAuthProviderType {
 
     public static OAuthProviderType from(String providerName) {
         for (OAuthProviderType providerType : OAuthProviderType.values()) {
-            if (StringUtils.equals(providerName, providerType.toString())) {
+            if (Strings.CS.equals(providerName, providerType.toString())) {
                 return providerType;
             }
         }

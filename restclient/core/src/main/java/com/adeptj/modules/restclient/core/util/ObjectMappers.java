@@ -45,7 +45,7 @@ public class ObjectMappers {
         MAPPER = new ObjectMapper()
                 .enable(INDENT_OUTPUT)
                 .disable(WRITE_DATES_AS_TIMESTAMPS)
-                .setSerializationInclusion(NON_NULL)
+                .setDefaultPropertyInclusion(NON_NULL)
                 .setDefaultPropertyInclusion(NON_DEFAULT);
     }
 

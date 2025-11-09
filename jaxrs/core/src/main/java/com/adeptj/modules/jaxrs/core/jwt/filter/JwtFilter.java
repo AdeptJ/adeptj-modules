@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -104,7 +105,7 @@ public class JwtFilter implements ContainerRequestFilter {
         }
         if (StringUtils.isEmpty(jwt)) { // get from the Authorization header.
             String bearerToken = requestContext.getHeaderString(AUTHORIZATION);
-            if (StringUtils.startsWith(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE)) {
+            if (Strings.CS.startsWith(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE)) {
                 jwt = StringUtils.substring(bearerToken, AUTH_SCHEME_BEARER_WITH_SPACE.length()).trim();
             }
         }
