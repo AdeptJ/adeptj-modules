@@ -35,7 +35,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cayenne.version>4.2.2</cayenne.version>
+        <cayenne.version>4.2.3</cayenne.version>
     </properties>
 
     <!-- Project Information -->
