@@ -35,8 +35,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <httpcore5.version>5.4</httpcore5.version>
-        <httpcore5-h2.version>5.4</httpcore5-h2.version>
+        <httpcore5.version>5.4.2</httpcore5.version>
+        <httpcore5-h2.version>5.4.2</httpcore5-h2.version>
         <httpclient5.version>5.6</httpclient5.version>
     </properties>
 
