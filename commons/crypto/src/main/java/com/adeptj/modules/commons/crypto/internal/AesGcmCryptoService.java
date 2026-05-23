@@ -36,6 +36,7 @@ import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 
 /**
  * Service implementation for encrypting/decrypting any text using AES/GCM/NoPadding algo.
@@ -69,12 +70,20 @@ public class AesGcmCryptoService implements CryptoService {
      */
     @Activate
     public AesGcmCryptoService(@NotNull final BundleContext context) {
-        char[] cryptoKey = this.getFrameworkProperty(context, PROPERTY_CRYPTO_KEY).toCharArray();
-        byte[] cryptoSalt = Hex.decode(this.getFrameworkProperty(context, PROPERTY_CRYPTO_SALT));
-        int iterations = this.getIterations(context);
-        SecretKey secretKey = CryptoUtil.createPBESecretKey(PBE_ALGO, cryptoKey, cryptoSalt, iterations, PBE_KEY_LENGTH);
-        BytesKeyGenerator ivGenerator = KeyGenerators.secureRandom(GCM_IV_LENGTH);
-        this.encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.GCM);
+        char[] cryptoKey = null;
+        byte[] cryptoSalt = null;
+        try {
+            cryptoKey = this.getFrameworkProperty(context, PROPERTY_CRYPTO_KEY).toCharArray();
+            cryptoSalt = Hex.decode(this.getFrameworkProperty(context, PROPERTY_CRYPTO_SALT));
+            int iterations = this.getIterations(context);
+            SecretKey secretKey = CryptoUtil.createPBESecretKey(PBE_ALGO, cryptoKey, cryptoSalt, iterations,
+                    PBE_KEY_LENGTH);
+            BytesKeyGenerator ivGenerator = KeyGenerators.secureRandom(GCM_IV_LENGTH);
+            this.encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.GCM);
+        } finally {
+            Arrays.fill(cryptoKey, '\0');
+            Arrays.fill(cryptoSalt, (byte) 0);
+        }
     }
 
     /**

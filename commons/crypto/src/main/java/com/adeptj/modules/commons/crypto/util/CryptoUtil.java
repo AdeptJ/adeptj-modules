@@ -54,14 +54,19 @@ public class CryptoUtil {
     }
 
     public static SecretKey createPBESecretKey(String algorithm, char[] password, byte[] salt, int iterations, int keyLength) {
+        PBEKeySpec keySpec = null;
         try {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithm);
-            PBEKeySpec keySpec = new PBEKeySpec(password, salt, iterations, keyLength);
+            keySpec = new PBEKeySpec(password, salt, iterations, keyLength);
             return secretKeyFactory.generateSecret(keySpec);
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalArgumentException("Not a valid encryption algorithm", ex);
         } catch (InvalidKeySpecException ex) {
             throw new IllegalArgumentException("Not a valid secret key", ex);
+        } finally {
+            if (keySpec != null) {
+                keySpec.clearPassword();
+            }
         }
     }
 }
