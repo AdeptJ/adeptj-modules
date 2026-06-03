@@ -81,8 +81,12 @@ public class AesGcmCryptoService implements CryptoService {
             BytesKeyGenerator ivGenerator = KeyGenerators.secureRandom(GCM_IV_LENGTH);
             this.encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.GCM);
         } finally {
-            Arrays.fill(cryptoKey, '\0');
-            Arrays.fill(cryptoSalt, (byte) 0);
+            if (cryptoKey != null) {
+                Arrays.fill(cryptoKey, '\0');
+            }
+            if (cryptoSalt != null) {
+                Arrays.fill(cryptoSalt, (byte) 0);
+            }
         }
     }
 
