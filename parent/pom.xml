@@ -39,7 +39,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skipTests>true</skipTests>
         <skipITs>true</skipITs>
-        <bnd.version>7.2.3</bnd.version>
+        <bnd.version>7.3.0</bnd.version>
         <adeptj-maven-plugin.version>1.8.7</adeptj-maven-plugin.version>
         <!-- AdeptJ Maven Plugin properties start -->
         <adeptj.base.url>http://localhost:8080</adeptj.base.url>
